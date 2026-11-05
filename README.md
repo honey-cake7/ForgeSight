@@ -4,52 +4,32 @@ An incremental project for offline industrial surface-defect inspection on an
 NVIDIA Jetson Orin Nano, with deterministic grading, local inspection history,
 and a Llama-family advisory model running on the device through ExecuTorch.
 
-**Current state:** Stage 1 data/input preparation is verified on the PC, including
-a frozen split, role-based image/mask loader, and inspected development previews. There is
-no complete inspection application or verified Jetson runtime yet.
-The user reports that the Jetson is currently unavailable.
-Stage 2.7 generated real text from the exported Llama 3.2 1B model through
-ExecuTorch's native C++ runner, called from Python on desktop WSL. The original
-PTE/tokenizer fingerprints were verified. Actual Llama/ExecuTorch Jetson
-inference remains blocked by device unavailability. See
-[the runtime evidence and candidate](docs/EDGE_RUNTIME.md).
-The source-pinned export recipe is preparation only; it reports its missing
-inputs and does not download weights, install packages, or create a model.
-The device capture harness still refuses this PC as a Jetson target. All 86
-project tests pass. Desktop text is real; advice quality, defect detection,
-Jetson performance, and disconnected operation remain unverified.
+**Current state: Stage 5 desktop saved-image prototype verified.** The system
+runs a real trained EfficientAD-S model, highlights response regions, saves one
+record per declared part and adds deterministic pixel-only decisions. It is
+not yet a complete application or a verified Jetson/camera system.
 
-Stage 3.1 selected EfficientAD-S at 256x256 for first training, balancing fixed
-runtime cost, memory and potential lower precision. Actual untrained architecture
-probes compared it with medium/higher-resolution variants and compact/heavier
-PatchCore candidates. These are not accuracy or Jetson benchmarks. See
-[the trade-offs, measurements and training prerequisites](docs/VISION_BASELINE.md).
+- [Vision training and choice](docs/VISION_BASELINE.md): EfficientAD-S 256x256,
+  10,000 FP32 training steps on 176 normal images; [training evidence](docs/VISION_TRAINING.md).
+- [Frozen calibration](docs/VISION_CALIBRATION.md): threshold 0.2277658; cached
+  desktop forward-only p50/p95 14.54/14.80 ms, excluding image I/O and app work.
+- [Held-out evaluation](docs/VISION_EVALUATION.md): flagged 87/89 defects,
+  missed two scratches, false alarms on 2/22 good images. No test-driven retuning.
+- [Part gate and records](docs/INSPECTION.md): nine replay frames -> four declared
+  part records, five repeats suppressed, including an explicit input error.
+- [ForgeGrade prototype](docs/FORGEGRADE.md): real replay gives PASS, REVIEW,
+  PASS, REVIEW. Types remain unknown. REJECT size/location rules pass synthetic
+  policy tests; automatic type-based rejection is not yet supported by the model.
+  The two missed scratches still receive provisional PASS in a cache-only rule
+  diagnostic; production use is not established. No millimeters or certification.
+- [Llama / ExecuTorch evidence](docs/EDGE_RUNTIME.md): genuine Llama 3.2 1B text
+  generation through the native ExecuTorch runner on desktop WSL. Actual Jetson
+  inference and integration as inspection advice remain open.
 
-Stage 3.2 completed real EfficientAD-S training: 10,000 FP32 updates on the 176
-normal fitting images, with the verified teacher and generic-image regularization.
-The final checkpoint passes independent reload/state/output checks. Its original
-training snapshot remains uncalibrated. No
-validation or holdout pixels were used in training. See the
-[training evidence, learning curve, and commands](docs/VISION_TRAINING.md).
-
-Stage 3.3 fitted a separate calibrated model/policy bundle using 22 map-fitting
-and 22 threshold-setting normals. The provisional image-score threshold is
-0.2277658; this yields candidate flags, not quality grades or probabilities.
-Three map-fitting normals were flagged; zero threshold-setting normals were
-flagged by construction. Independent accuracy and recall remain unevaluated.
-The trained calibrated PC model measured 14.54/14.80 ms p50/p95 for cached-input
-FP32 forward only. See [calibration evidence and limits](docs/VISION_CALIBRATION.md).
-
-Stage 3.4 now supplies real held-out evidence: 87/89 defects detected, two
-missed scratched nuts, and two false alarms among 22 good images. Threshold and
-model remain frozen. Types remain unknown. See [evaluation](docs/VISION_EVALUATION.md).
-Earlier stage paragraphs above describe historical snapshots, superseded by
-this evaluation for benchmark detection only. Jetson and camera proof remain open.
-
-Stage 4 adds [real inspection records and a one-part gate](docs/INSPECTION.md).
-The saved-image replay turns 9 frames into 4 records, with 5 repeated frames
-suppressed. All 94 tests pass in the existing locked vision environment.
-Use that environment for the full suite, which now includes NumPy/OpenCV tests.
+All **101 tests pass** in the existing locked vision environment. No packages
+were installed/upgraded in Stages 3.4?5. The Jetson remains unavailable; exact
+hardware, camera performance and disconnected edge operation are unverified.
+**Next stage: Stage 6 SQLite history and restart/duplicate checks**, after review.
 
 ## Start here
 
@@ -77,8 +57,8 @@ The benchmark domain is MVTec AD `metal_nut`. Its real archive and extracted
 fingerprint, counts, and split policy are in `docs/DATASET.md`. A frozen manifest
 assigns 176 fit, 44 normal-validation, four development, and 111 holdout samples.
 A verified loader reads fitting, validation, and development roles. A local
-contact sheet shows supplied ground-truth annotations; no model predictions
-exist yet. Final evaluation uses a disclosed custom holdout that excludes
+contact sheet shows supplied ground-truth annotations; separate model overlays
+now exist in local evaluation/inspection outputs. Evaluation uses a custom holdout that excludes
 development previews. Controlled physical samples and actual Jetson camera
 validation are separate later evidence.
 
@@ -112,10 +92,10 @@ samples. The red overlays are dataset annotations, not detector predictions.
 The source, license, manifest fingerprint, and pixel-area metadata accompany
 the image in `preview.json`. No holdout images are displayed.
 
-Run the 86 current data-integrity, edge, training/calibration-boundary and measurement tests:
+Run all 101 data-integrity, edge, vision-boundary, inspection and grading tests:
 
 ```powershell
-wsl -d Ubuntu --exec .venv/bin/python -B -m unittest discover -s tests -v
+wsl -d Ubuntu --exec /root/.cache/forgesight/vision-v1/venv/bin/python -B -m unittest discover -s tests -v
 ```
 
 Read the Stage 2 [candidate, blockers, recipe, and capture instructions](docs/EDGE_RUNTIME.md)
@@ -127,9 +107,9 @@ Verify the downloaded source model against the publisher-checked reference:
 wsl -d Ubuntu --exec .venv/bin/python -B -m forgesight.edge_assets
 ```
 
-The verified source weights are not an exported `.pte` or a successful runtime
-test. A separate CPU export environment now passes real exporter startup and
-configuration parsing. Its [locked setup and checks](docs/EDGE_RUNTIME.md#25-isolated-export-environment)
+Source-asset verification alone is not export or inference. A separate CPU
+export environment passed exporter startup and configuration parsing; later
+steps completed real export and desktop execution. Its [locked setup and checks](docs/EDGE_RUNTIME.md#25-isolated-export-environment)
 are verified on this WSL host. Conversion and desktop generation now pass;
 quality and Jetson execution remain open. The
 [export record and verification command](docs/EDGE_RUNTIME.md#26-actual-model-export)
@@ -164,5 +144,4 @@ It does not load a defect dataset, run a model, or test Jetson. Installation and
 the check were also reproduced in a second fresh temporary environment.
 
 Datasets, model binaries, secrets, runtime databases, and generated outputs stay
-outside Git. A local commit records a snapshot on this PC; pushing to GitHub
-requires a separate authorized operation.
+outside Git. Verified steps are committed and pushed under the user's standing authorization; recorded manifests contain permitted metadata only.

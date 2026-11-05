@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "policy_id": "forgegrade-metal-nut-pixel-prototype-v1",
+  "policy_sha256": "0c6f0937371db04858f34f13df84a030fb1e6c2ad715e1149d2c04e341a60567",
+  "policy_file_sha256": "5696929a7088f82de9cf2b7aec59aee11650ccf49d9f26e6523126808e7c088c",
+  "replay_report_path": "artifacts/core/graded_replay_v1/replay_report.json",
+  "replay_report_sha256": "7bfa84eedd94d30ae3cb51acb3d50709081e75f9635c021d4321e20bc5fbfe2c",
+  "replay_frames": 9,
+  "replay_records": 4,
+  "replay_suppressed_frames": 5,
+  "replay_grades": [
+    "PASS",
+    "REVIEW",
+    "PASS",
+    "REVIEW"
+  ],
+  "cached_holdout_scope": "POST_EVALUATION_RULE_DIAGNOSTIC_NOT_FRESH_INDEPENDENT_GRADE_ACCEPTANCE",
+  "new_holdout_model_forwards": 0,
+  "diagnostic_rows_are_new_part_events": false,
+  "cached_holdout_counts": {
+    "ground_truth_good": {
+      "PASS": 17,
+      "REVIEW": 5
+    },
+    "ground_truth_anomalous": {
+      "REVIEW": 87,
+      "PASS": 2
+    }
+  },
+  "known_defects_provisionally_passed": [
+    "test/scratch/000.png",
+    "test/scratch/022.png"
+  ],
+  "automatic_type_based_reject_verified": false,
+  "jetson_verified": false,
+  "physical_scale_calibrated": false,
+  "industrial_certified": false
+}

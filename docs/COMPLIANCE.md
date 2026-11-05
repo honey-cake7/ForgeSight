@@ -30,6 +30,15 @@ accuracy evidence. Model-only desktop timing and successful bundle reload do
 not verify defect recall, production false alarms, final grades, or Jetson
 performance. All 86 tests pass. See `docs/VISION_CALIBRATION.md`.
 
+Stages 3.4?5 supersede the earlier unevaluated snapshots for desktop benchmark
+work. The frozen baseline detected 87/89 anomalies with 2/22 false alarms.
+Real replay verified capture gating, graded JSON records and explicit errors.
+Unknown anomaly types remain REVIEW. REJECT geometry rules are synthetic policy
+tests; no actual type classifier or industrial acceptance policy is available.
+Two missed scratches still get provisional PASS in a cached rule diagnostic.
+Useful Llama advisory integration remains open; deterministic hold/check action
+text is not generated advice. See `docs/FORGEGRADE.md`.
+
 The [organizer clarification shared by the user](ORGANIZER_CLARIFICATION.md)
 accepts the Jetson Orin platform family for PS5, subject to the mandatory
 technologies. It clears the platform-eligibility question; actual device
@@ -40,9 +49,9 @@ inventory, runtime, and offline compliance still require measured evidence.
 | Jetson Orin platform-family eligibility for PS5 | CONFIRMED in organizer reply shared by user | Recorded clarification; exact device inventory and deployment remain separate gates |
 | Real surface anomaly detection | VERIFIED on PC benchmark only | Frozen holdout: 87/89 defects, 2/22 false alarms; see VISION_EVALUATION.md. Camera/edge remain open |
 | Defect type | NOT VERIFIED | Same-domain labeled evaluation; retain `unknown` when unsupported |
-| Severity and operator decisions | NOT VERIFIED | Versioned deterministic rules and behavior tests |
+| Severity and operator decisions | PC PIXEL-PROTOTYPE VERIFIED; industrial severity open | Versioned rules, 101 tests, real replay; unknown types REVIEW, no physical tolerances |
 | Useful operator recommendations | NOT VERIFIED | Actual evidence-linked advice with uncertainty and next checks |
-| Every-inspection history | NOT VERIFIED | Persisted PASS/REVIEW/REJECT/error records, restart and duplicate checks |
+| Every-inspection history | JSON REPLAY RECORDS VERIFIED; database/restart open | Actual graded/error JSON records; SQLite durability and queries are Stage 6 |
 | One event per physical part | REPLAY GATE VERIFIED; physical proof open | 9 replay frames produce 4 declared-part records; actual camera/identity unverified |
 | Exact eligible edge hardware | BLOCKED - NOT VERIFIED | Device-side module/RAM/architecture/JetPack inventory; device currently unavailable |
 | Llama-family inference via ExecuTorch on Jetson | BLOCKED - NOT VERIFIED | Actual locally generated text plus model/runtime/artifact provenance and measurements |

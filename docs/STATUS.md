@@ -2,14 +2,24 @@
 
 ## Current stage
 
-Stage 4: saved-image inspection records and explicit new-part capture gate
-verified on desktop. Replay: 9 frames -> 4 records, 5 suppressed repeats;
-3 actual model forwards and 1 explicit input error. All 94 tests pass.
-Geometry is model-response area/box/diagonal in pixels, not physical damage.
-See `docs/INSPECTION.md` and `manifests/inspection_replay_v1.json`.
-Stage 3.4 evaluation remains frozen: 87/89 defects flagged, 2/22 false alarms,
-two missed scratches, type unknown. No holdout reinference or model retuning.
-Next authorized task: Stage 5 deterministic pixel-only decisions.
+Stage 5: desktop saved-image ForgeGrade prototype verified through the authorized
+stage gate. All 101 tests pass. Versioned deterministic decisions include policy
+snapshot/hash and pixel-only geometry. Real replay: 9 frames -> 4 records,
+5 repeats suppressed, grades PASS/REVIEW/PASS/REVIEW. Original Stage 4 outputs
+are preserved. Unknown/unreliable anomaly types and errors route to REVIEW.
+REJECT size/location rules are tested synthetic policy cases, not actual type
+classifier results. No type classifier, physical scale or certification exists.
+
+Stage 3.4 remains frozen: 87/89 defects flagged, 2/22 false alarms, two missed
+scratches. Cache-only post-evaluation rule diagnostic: good 17 PASS/5 REVIEW;
+defective 2 provisional PASS/87 REVIEW. The two missed scratches remain a real
+limitation. No model/threshold tuning or further holdout inference occurred.
+See `docs/FORGEGRADE.md`, `docs/VISION_EVALUATION.md` and committed manifests.
+
+STOPPED FOR REVIEW after Stage 5. Next exact action: Stage 6 SQLite persistence
+for graded/error records with unique IDs, duplicate handling and restart queries.
+No Stage 6 code or database was created. Type classification, approved tolerances,
+physical part identity/camera proof and the mandatory edge gates remain open.
 
 Stage 2.7 desktop Llama generation through ExecuTorch is verified. Stage 1 and
 the transition to Stage 3 were accepted by the user. Actual Stage 2 inference

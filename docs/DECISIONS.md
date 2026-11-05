@@ -382,3 +382,21 @@ parts; image hashing provides provenance, not identity. Persist JSON records,
 map references and explicit errors now; restart-safe database handling stays
 in Stage 6. Region geometry uses the previously declared response threshold,
 8-connectivity and no morphology. All 94 tests and the real replay pass.
+
+## 023: Separate anomaly response, type uncertainty and prototype quality rules
+
+Use a pure deterministic function with a pinned model/score policy, snapshot
+and canonical policy hash on every decision. Add a numerical 10% normal-score
+review band; do not describe it as a confidence probability. Unknown/unseen or
+unreliable anomaly types always review before any size/location rejection rule.
+Example area/box-diagonal and optional rectangular-zone limits demonstrate
+configuration only; no approved drawing or physical tolerances exist. Default
+zones remain empty. Pixel response extent is not a calibrated damage mask.
+
+Integrate rules into actual inspect-one-image, including failures; preserve
+historical outputs and prove new replay separately. REJECT fixtures explicitly
+assert synthetic reliable-type evidence; the actual model does not supply it.
+A cache-only post-evaluation diagnostic still passes two known scratches; record
+that limitation and do not tune cutoffs to erase it. No new holdout inference,
+training, dependencies, SQLite, UI or advisory wiring is added. Llama remains
+mandatory via ExecuTorch on-device and cannot override decisions. Stop at Stage 5.

@@ -41,9 +41,13 @@ def validate_part_id(part_id: str):
         raise ValueError('A nonempty operator-declared part ID of at most 128 characters is required.')
 
 
-def inspect_one_image(path: Path, part_id: str, predictor, output: Path) -> InspectionRecord:
+def inspect_one_image(path: Path, part_id: str, predictor, output: Path,
+                      grade_policy: Path = Path('configs/forgegrade_v1.json')) -> InspectionRecord:
     """An invalid image yields an ERROR record. Output-write errors propagate."""
     validate_part_id(part_id)
+    from forgesight.grade import grade_record, validate_policy
+    policy = json.loads(grade_policy.read_text())
+    validate_policy(policy)
     output.mkdir(parents=True, exist_ok=True)
     started = time.perf_counter()
     record = InspectionRecord(
@@ -91,6 +95,7 @@ def inspect_one_image(path: Path, part_id: str, predictor, output: Path) -> Insp
     except Exception as exc:
         record.status = 'ERROR'
         record.error = {'type': type(exc).__name__, 'message': str(exc)}
+    record.decision = grade_record(asdict(record), policy)
     record.timings['inspection_before_record_write_ms'] = (time.perf_counter() - started) * 1000
     record.timings['scope'] = 'decode/hash, prediction, regions, map and overlay writes; excludes bundle load, record write and Llama'
     with (output / f'{record.inspection_id}.json').open('x') as stream:

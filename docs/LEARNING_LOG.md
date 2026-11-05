@@ -425,3 +425,19 @@ records, including one unreadable-input error. Two declared nuts used the same
 picture and still counted separately. Regions report response pixels and box
 size, not millimeters. Next a separate, predictable rule decides what action
 to suggest; the language model will never own that decision.
+
+## Stage 5: Make the action predictable, and keep uncertainty visible
+
+The program now adds a repeatable action to each saved inspection. The same
+picture evidence and rule file always give the same action. A clear normal
+candidate gets a provisional PASS; an unusual picture with unknown defect type
+gets REVIEW, as does a failed inspection. The real replay produced two passes
+and two reviews, with repeated frames still suppressed.
+
+We tested example rejection rules with controlled size/location fixtures; those
+are tests of rules, not a newly trained classifier. Highlighted pixel area is
+not true damage area or millimeters. Applying the rules to the existing test
+caches still provisionally passes the two missed scratches. A rule engine cannot
+repair evidence that the detector missed. Real manufacturing tolerances, defect
+names, camera/Jetson tests and offline Llama advice remain future proof. Next,
+Stage 6 will store records so history can be queried after restarting.

@@ -68,3 +68,11 @@ interpretation, not an installation attempt during the audit. Device model
 alone may not identify module SKU or physical RAM; confirm those separately.
 Camera presence does not prove capture, and free RAM does not establish LLM
 runtime feasibility.
+
+## Through Stage 5: hardware evidence boundary
+
+Stages 3.4?5 ran in the existing desktop WSL vision environment on the RTX 2000
+Ada. They add saved-image evaluation, replay gating and pixel grading only.
+No Jetson connection, camera command, JetPack change or on-device measurement
+occurred. Device availability is unchanged: BLOCKED - NOT VERIFIED. Desktop
+cached model-only timings are not complete inspection or Jetson timings.
