@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "status": "FROZEN_HOLDOUT_EVALUATED_NO_TUNING",
+  "protocol": {
+    "schema_version": 1,
+    "protocol": "metal-nut-frozen-holdout-v1",
+    "calibration_reference": "manifests/efficientad_s_calibration_v1.json",
+    "dataset_manifest": "manifests/metal_nut_v1.json",
+    "role": "final_holdout",
+    "expected_images": 111,
+    "precision": "fp32",
+    "pixel_auc_grid": "original source grid, bilinear score-map resize, original binary annotations",
+    "region_support_rule": "source-grid score strictly above the already-frozen image-score threshold; response extent only, not physical defect area",
+    "connectedness": 8,
+    "morphological_filtering": "none",
+    "pixel_mask_quality_threshold": "NOT_SEPARATELY_CALIBRATED",
+    "predicted_defect_type": "unknown",
+    "tune_from_holdout": false,
+    "repeat_inference": false
+  },
+  "protocol_sha256": "45fc82e318c358ffd5df1e4e7e78dd55f779902d09ffd561cc1158402f96db49",
+  "calibration_reference_sha256": "5ab9d3379478cdac3d7e15bf27372adad0793eaf248325581744b27e49bd7dc2",
+  "checkpoint_sha256": "aa2407dba9f74db8472ee6adc5968eefc7c243d9f200d70f2d3a792fd0b7f4fd",
+  "policy_sha256": "33a28c23328c63abf93fa0e01d270eda52f4a0195f7b8df89c14dda44e77a687",
+  "threshold": 0.22776579856872559,
+  "started_utc": "2026-11-05T21:27:57.411615+00:00",
+  "output": "artifacts/vision/holdout_evaluation_v1",
+  "evaluation_source_sha256": "fa15e8ec67b763629df4fbfd38284749f6b24e9286c5bc493a5d0d36db0977c7",
+  "metrics": {
+    "images": 111,
+    "tp": 87,
+    "tn": 20,
+    "fp": 2,
+    "fn": 2,
+    "recall": 0.9775280898876404,
+    "precision": 0.9775280898876404,
+    "false_alarm_rate": 0.09090909090909091,
+    "accuracy": 0.963963963963964,
+    "f1": 0.9775280898876404,
+    "image_auroc": 0.9759959141981613,
+    "pixel_auroc_source_grid": 0.9692061897060105
+  },
+  "per_ground_truth_class": {
+    "bent": {
+      "images": 24,
+      "flagged": 24,
+      "note": "Grouped by dataset ground truth, not predicted defect type."
+    },
+    "color": {
+      "images": 21,
+      "flagged": 21,
+      "note": "Grouped by dataset ground truth, not predicted defect type."
+    },
+    "flip": {
+      "images": 22,
+      "flagged": 22,
+      "note": "Grouped by dataset ground truth, not predicted defect type."
+    },
+    "good": {
+      "images": 22,
+      "flagged": 2,
+      "note": "Grouped by dataset ground truth, not predicted defect type."
+    },
+    "scratch": {
+      "images": 22,
+      "flagged": 20,
+      "note": "Grouped by dataset ground truth, not predicted defect type."
+    }
+  },
+  "false_negatives": [
+    "test/scratch/000.png",
+    "test/scratch/022.png"
+  ],
+  "false_positives": [
+    "test/good/007.png",
+    "test/good/016.png"
+  ],
+  "predictions_sha256": "42c13562a15e6da3fae172c76392ac5c503d47a4f3cbbf5fbcd57578ef19f106",
+  "predicted_defect_type": "unknown",
+  "subtype_classification": "NOT_IMPLEMENTED",
+  "pixel_mask_accuracy": "NOT_EVALUATED_NO_SEPARATE_PIXEL_THRESHOLD",
+  "jetson_proof": "NOT_VERIFIED"
+}

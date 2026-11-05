@@ -1,0 +1,58 @@
+{
+  "files": {
+    "LICENSE.txt": {
+      "bytes": 7712,
+      "publisher_digest": "085b47c1575cb889b7024030e60b78f54f0b8c9e",
+      "publisher_digest_algorithm": "git-blob-sha1",
+      "publisher_match": true,
+      "sha256": "0b4284c1f87029e67654c7953afa16279961632cf73dcfe33374c4c2f298fa35"
+    },
+    "USE_POLICY.md": {
+      "bytes": 6021,
+      "publisher_digest": "ac3c5f21b9779e3da0677d6d3c587778fe3a331e",
+      "publisher_digest_algorithm": "git-blob-sha1",
+      "publisher_match": true,
+      "sha256": "40e2777d7faa6beaf98400654170f414d8ab29b921b5163ad4ea0a1d39894201"
+    },
+    "original/consolidated.00.pth": {
+      "bytes": 2471677246,
+      "publisher_digest": "fc17d497df5e4175b3a8acb4f5865b26f7fc1b009b25bef814b95fde10e8a1f3",
+      "publisher_digest_algorithm": "sha256",
+      "publisher_match": true,
+      "sha256": "fc17d497df5e4175b3a8acb4f5865b26f7fc1b009b25bef814b95fde10e8a1f3"
+    },
+    "original/params.json": {
+      "bytes": 220,
+      "publisher_digest": "9cd8dbdf2dc6f4d8abb60bdb5ce64f4bec2fdfd9",
+      "publisher_digest_algorithm": "git-blob-sha1",
+      "publisher_match": true,
+      "sha256": "1d616a44f3cdac29b9288cf14718b76eb1bed56ed38be1f7e39b06ed139e3733"
+    },
+    "original/tokenizer.model": {
+      "bytes": 2183982,
+      "publisher_digest": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55",
+      "publisher_digest_algorithm": "sha256",
+      "publisher_match": true,
+      "sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55"
+    }
+  },
+  "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+  "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+  "params": {
+    "dim": 2048,
+    "ffn_dim_multiplier": 1.5,
+    "multiple_of": 256,
+    "n_heads": 32,
+    "n_kv_heads": 8,
+    "n_layers": 16,
+    "norm_eps": 1e-05,
+    "rope_theta": 500000.0,
+    "use_scaled_rope": true,
+    "vocab_size": 128256
+  },
+  "publisher_metadata_url": "https://huggingface.co/api/models/meta-llama/Llama-3.2-1B-Instruct/revision/9213176726f574b556790deb65791e0c5aa438b6?blobs=true",
+  "schema_version": 1,
+  "tokenizer_base_tokens": 128000,
+  "verification_scope": "Downloaded source assets matched pinned publisher metadata; no export or inference.",
+  "verified_date_local": "2026-11-05"
+}

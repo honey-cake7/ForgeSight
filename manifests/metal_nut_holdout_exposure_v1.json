@@ -1,0 +1,29 @@
+{
+  "status": "HOLDOUT_EXPOSED_EVALUATION_COMPLETED",
+  "protocol": {
+    "schema_version": 1,
+    "protocol": "metal-nut-frozen-holdout-v1",
+    "calibration_reference": "manifests/efficientad_s_calibration_v1.json",
+    "dataset_manifest": "manifests/metal_nut_v1.json",
+    "role": "final_holdout",
+    "expected_images": 111,
+    "precision": "fp32",
+    "pixel_auc_grid": "original source grid, bilinear score-map resize, original binary annotations",
+    "region_support_rule": "source-grid score strictly above the already-frozen image-score threshold; response extent only, not physical defect area",
+    "connectedness": 8,
+    "morphological_filtering": "none",
+    "pixel_mask_quality_threshold": "NOT_SEPARATELY_CALIBRATED",
+    "predicted_defect_type": "unknown",
+    "tune_from_holdout": false,
+    "repeat_inference": false
+  },
+  "protocol_sha256": "45fc82e318c358ffd5df1e4e7e78dd55f779902d09ffd561cc1158402f96db49",
+  "calibration_reference_sha256": "5ab9d3379478cdac3d7e15bf27372adad0793eaf248325581744b27e49bd7dc2",
+  "checkpoint_sha256": "aa2407dba9f74db8472ee6adc5968eefc7c243d9f200d70f2d3a792fd0b7f4fd",
+  "policy_sha256": "33a28c23328c63abf93fa0e01d270eda52f4a0195f7b8df89c14dda44e77a687",
+  "threshold": 0.22776579856872559,
+  "started_utc": "2026-11-05T21:27:57.411615+00:00",
+  "output": "artifacts/vision/holdout_evaluation_v1",
+  "evaluation_source_sha256": "fa15e8ec67b763629df4fbfd38284749f6b24e9286c5bc493a5d0d36db0977c7",
+  "report_sha256": "bab5d19cecf5b391fab6303070e05990137af61c1c414f92614f729914f2cce9"
+}

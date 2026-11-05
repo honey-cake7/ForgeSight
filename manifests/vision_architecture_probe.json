@@ -1,0 +1,703 @@
+{
+  "status": "UNTRAINED_ARCHITECTURE_TIMINGS_ONLY",
+  "accuracy": "NOT_EVALUATED",
+  "dataset_images_read": 0,
+  "holdout_images_read": 0,
+  "optimizer_steps": 0,
+  "weights": "RANDOM_INITIALIZATION_NO_PRETRAINED_DOWNLOADS",
+  "input": "Synthetic RGB uniform random, device-resident batch 1",
+  "scope": "Forward including native anomaly-map/score calculations; excludes I/O, resize, H2D/D2H, camera, grading, logs, UI and Llama contention",
+  "jetson_latency": "NOT_VERIFIED",
+  "latency_target_ms": null,
+  "cpu_threads": 8,
+  "warmup": 10,
+  "samples": 50,
+  "tf32": false,
+  "cudnn_benchmark": false,
+  "seed": 42,
+  "fit_count_for_bank_estimate": 176,
+  "host": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+  "python": "3.12.14",
+  "packages": {
+    "torch": "2.6.0+cu124",
+    "torchvision": "0.21.0+cu124",
+    "anomalib": "2.6.2",
+    "timm": "1.0.31",
+    "numpy": "2.2.6",
+    "lightning": "2.6.6"
+  },
+  "cuda": "12.4",
+  "gpu": "NVIDIA RTX 2000 Ada Generation",
+  "source_commit": "cc5f400a4a4b1b14b5a3ee5078063c250a8f522e",
+  "initial_probe_source_sha256": "8ac5e3b6bfe8fa9998ce522e2fbcf3787f91e3c9aa90a23a7beaeafd5ba7ef67",
+  "amp_probe_source_sha256": "da672734152f9ef18b23b6079e4f73539a1f0dbd71e33c1c35015a465327571a",
+  "dependency_lock_sha256": "dc7dcf3d1696429277aacd0c7cb282741957deb354434bfd7d15970fe4683e15",
+  "user_preference": "Balance good accuracy with lower inference time; no fixed latency or parts/minute target.",
+  "results": [
+    {
+      "case": {
+        "model": "efficientad",
+        "size": "small",
+        "resolution": 256,
+        "precision": "fp32"
+      },
+      "device": "cuda",
+      "accuracy": "NOT_EVALUATED",
+      "status": "RUNTIME_PROBE_PASSED_NOT_TRAINED",
+      "batch_size": 1,
+      "parameters": 8058628,
+      "parameter_bytes": 32234512,
+      "implementation_sha256": "8f80c2db5e546e5209f105c757d8c88c70c48e86bcf1d036b797fff88be3bd08",
+      "output_shape": [
+        1,
+        1,
+        256,
+        256
+      ],
+      "wall_model_only": {
+        "samples": 50,
+        "p50_ms": 14.640065000037339,
+        "p95_ms": 15.195866900023702,
+        "min_ms": 14.193689999956405,
+        "max_ms": 15.422932999967998
+      },
+      "cuda_event_model_only": {
+        "samples": 50,
+        "p50_ms": 14.614991664886475,
+        "p95_ms": 15.164462280273437,
+        "min_ms": 14.167807579040527,
+        "max_ms": 15.398207664489746
+      },
+      "cuda_peak_allocated_bytes": 106689024,
+      "cuda_incremental_peak_bytes": 73662464,
+      "run": "initial_fp32_and_amp"
+    },
+    {
+      "case": {
+        "model": "efficientad",
+        "size": "small",
+        "resolution": 256,
+        "precision": "fp32"
+      },
+      "device": "cpu",
+      "accuracy": "NOT_EVALUATED",
+      "status": "RUNTIME_PROBE_PASSED_NOT_TRAINED",
+      "batch_size": 1,
+      "parameters": 8058628,
+      "parameter_bytes": 32234512,
+      "implementation_sha256": "8f80c2db5e546e5209f105c757d8c88c70c48e86bcf1d036b797fff88be3bd08",
+      "output_shape": [
+        1,
+        1,
+        256,
+        256
+      ],
+      "wall_model_only": {
+        "samples": 50,
+        "p50_ms": 88.03108349997046,
+        "p95_ms": 99.77112889993693,
+        "min_ms": 82.62786500006314,
+        "max_ms": 116.59189500005596
+      },
+      "run": "initial_fp32_and_amp"
+    },
+    {
+      "case": {
+        "model": "efficientad",
+        "size": "small",
+        "resolution": 384,
+        "precision": "fp32"
+      },
+      "device": "cuda",
+      "accuracy": "NOT_EVALUATED",
+      "status": "RUNTIME_PROBE_PASSED_NOT_TRAINED",
+      "batch_size": 1,
+      "parameters": 8058628,
+      "parameter_bytes": 32234512,
+      "implementation_sha256": "8f80c2db5e546e5209f105c757d8c88c70c48e86bcf1d036b797fff88be3bd08",
+      "output_shape": [
+        1,
+        1,
+        384,
+        384
+      ],
+      "wall_model_only": {
+        "samples": 50,
+        "p50_ms": 33.41201050000109,
+        "p95_ms": 34.16649610001059,
+        "min_ms": 32.88941999994677,
+        "max_ms": 35.281074999943485
+      },
+      "cuda_event_model_only": {
+        "samples": 50,
+        "p50_ms": 33.38507270812988,
+        "p95_ms": 34.13053035736084,
+        "min_ms": 32.8656005859375,
+        "max_ms": 35.162017822265625
+      },
+      "cuda_peak_allocated_bytes": 196318720,
+      "cuda_incremental_peak_bytes": 162309120,
+      "run": "initial_fp32_and_amp"
+    },
+    {
+      "case": {
+        "model": "efficientad",
+        "size": "small",
+        "resolution": 384,
+        "precision": "fp32"
+      },
+      "device": "cpu",
+      "accuracy": "NOT_EVALUATED",
+      "status": "RUNTIME_PROBE_PASSED_NOT_TRAINED",
+      "batch_size": 1,
+      "parameters": 8058628,
+      "parameter_bytes": 32234512,
+      "implementation_sha256": "8f80c2db5e546e5209f105c757d8c88c70c48e86bcf1d036b797fff88be3bd08",
+      "output_shape": [
+        1,
+        1,
+        384,
+        384
+      ],
+      "wall_model_only": {
+        "samples": 50,
+        "p50_ms": 219.8667104999572,
+        "p95_ms": 238.45356549998658,
+        "min_ms": 213.82094400007645,
+        "max_ms": 262.4243980000074
+      },
+      "run": "initial_fp32_and_amp"
+    },
+    {
+      "case": {
+        "model": "efficientad",
+        "size": "medium",
+        "resolution": 256,
+        "precision": "fp32"
+      },
+      "device": "cuda",
+      "accuracy": "NOT_EVALUATED",
+      "status": "RUNTIME_PROBE_PASSED_NOT_TRAINED",
+      "batch_size": 1,
+      "parameters": 20739204,
+      "parameter_bytes": 82956816,
+      "implementation_sha256": "8f80c2db5e546e5209f105c757d8c88c70c48e86bcf1d036b797fff88be3bd08",
+      "output_shape": [
+        1,
+        1,
+        256,
+        256
+      ],
+      "wall_model_only": {
+        "samples": 50,
+        "p50_ms": 40.596274499989704,
+        "p95_ms": 41.36871680003651,
+        "min_ms": 39.74314599997797,
+        "max_ms": 41.48601300005339
+      },
+      "cuda_event_model_only": {
+        "samples": 50,
+        "p50_ms": 40.543840408325195,
+        "p95_ms": 41.32194194793701,
+        "min_ms": 39.71865463256836,
+        "max_ms": 41.43308639526367
+      },
+      "cuda_peak_allocated_bytes": 221229056,
+      "cuda_incremental_peak_bytes": 136693760,
+      "run": "initial_fp32_and_amp"
+    },
+    {
+      "case": {
+        "model": "efficientad",
+        "size": "medium",
+        "resolution": 256,
+        "precision": "fp32"
+      },
+      "device": "cpu",
+      "accuracy": "NOT_EVALUATED",
+      "status": "RUNTIME_PROBE_PASSED_NOT_TRAINED",
+      "batch_size": 1,
+      "parameters": 20739204,
+      "parameter_bytes": 82956816,
+      "implementation_sha256": "8f80c2db5e546e5209f105c757d8c88c70c48e86bcf1d036b797fff88be3bd08",
+      "output_shape": [
+        1,
+        1,
+        256,
+        256
+      ],
+      "wall_model_only": {
+        "samples": 50,
+        "p50_ms": 269.0871769999603,
+        "p95_ms": 292.5846373000013,
+        "min_ms": 255.07511299997532,
+        "max_ms": 334.1195230000267
+      },
+      "run": "initial_fp32_and_amp"
+    },
+    {
+      "case": {
+        "model": "patchcore",
+        "backbone": "resnet18",
+        "bank_rows": 1000,
+        "resolution": 256,
+        "precision": "fp32"
+      },
+      "device": "cuda",
+      "accuracy": "NOT_EVALUATED",
+      "status": "RUNTIME_PROBE_PASSED_NOT_TRAINED",
+      "batch_size": 1,
+      "synthetic_bank": {
+        "rows": 1000,
+        "dimensions": 384,
+        "patches_per_image": 1024,
+        "bytes": 1536000,
+        "note": "Random values; no fitting or coreset selection performed."
+      },
+      "parameters": 2782784,
+      "parameter_bytes": 11131136,
+      "implementation_sha256": "a5e5bc1ed22ed86db477000092e8e628b0c02a99cdd6ec6789c0ab8b924aaba9",
+      "output_shape": [
+        1,
+        1,
+        256,
+        256
+      ],
+      "wall_model_only": {
+        "samples": 50,
+        "p50_ms": 4.167512000037732,
+        "p95_ms": 4.763120000018262,
+        "min_ms": 2.7528480000000854,
+        "max_ms": 4.939873000012085
+      },
+      "cuda_event_model_only": {
+        "samples": 50,
+        "p50_ms": 4.097023963928223,
+        "p95_ms": 4.684339189529419,
+        "min_ms": 2.674623966217041,
+        "max_ms": 4.873856067657471
+      },
+      "cuda_peak_allocated_bytes": 30397440,
+      "cuda_incremental_peak_bytes": 8388608,
+      "run": "initial_fp32_and_amp"
+    },
+    {
+      "case": {
+        "model": "patchcore",
+        "backbone": "resnet18",
+        "bank_rows": 1000,
+        "resolution": 256,
+        "precision": "fp32"
+      },
+      "device": "cpu",
+      "accuracy": "NOT_EVALUATED",
+      "status": "RUNTIME_PROBE_PASSED_NOT_TRAINED",
+      "batch_size": 1,
+      "synthetic_bank": {
+        "rows": 1000,
+        "dimensions": 384,
+        "patches_per_image": 1024,
+        "bytes": 1536000,
+        "note": "Random values; no fitting or coreset selection performed."
+      },
+      "parameters": 2782784,
+      "parameter_bytes": 11131136,
+      "implementation_sha256": "a5e5bc1ed22ed86db477000092e8e628b0c02a99cdd6ec6789c0ab8b924aaba9",
+      "output_shape": [
+        1,
+        1,
+        256,
+        256
+      ],
+      "wall_model_only": {
+        "samples": 50,
+        "p50_ms": 10.798897499967097,
+        "p95_ms": 18.828168150014335,
+        "min_ms": 8.765223000068545,
+        "max_ms": 19.77067200004967
+      },
+      "run": "initial_fp32_and_amp"
+    },
+    {
+      "case": {
+        "model": "patchcore",
+        "backbone": "resnet18",
+        "bank_rows": null,
+        "resolution": 256,
+        "precision": "fp32"
+      },
+      "device": "cuda",
+      "accuracy": "NOT_EVALUATED",
+      "status": "RUNTIME_PROBE_PASSED_NOT_TRAINED",
+      "batch_size": 1,
+      "synthetic_bank": {
+        "rows": 18022,
+        "dimensions": 384,
+        "patches_per_image": 1024,
+        "bytes": 27681792,
+        "note": "Random values; no fitting or coreset selection performed."
+      },
+      "parameters": 2782784,
+      "parameter_bytes": 11131136,
+      "implementation_sha256": "a5e5bc1ed22ed86db477000092e8e628b0c02a99cdd6ec6789c0ab8b924aaba9",
+      "output_shape": [
+        1,
+        1,
+        256,
+        256
+      ],
+      "wall_model_only": {
+        "samples": 50,
+        "p50_ms": 10.176771500027826,
+        "p95_ms": 11.035938049974447,
+        "min_ms": 9.653471999968133,
+        "max_ms": 11.099295999997594
+      },
+      "cuda_event_model_only": {
+        "samples": 50,
+        "p50_ms": 10.12385606765747,
+        "p95_ms": 10.967414283752442,
+        "min_ms": 9.470975875854492,
+        "max_ms": 11.03974437713623
+      },
+      "cuda_peak_allocated_bytes": 124513792,
+      "cuda_incremental_peak_bytes": 76359168,
+      "run": "initial_fp32_and_amp"
+    },
+    {
+      "case": {
+        "model": "patchcore",
+        "backbone": "resnet18",
+        "bank_rows": null,
+        "resolution": 256,
+        "precision": "fp32"
+      },
+      "device": "cpu",
+      "accuracy": "NOT_EVALUATED",
+      "status": "RUNTIME_PROBE_PASSED_NOT_TRAINED",
+      "batch_size": 1,
+      "synthetic_bank": {
+        "rows": 18022,
+        "dimensions": 384,
+        "patches_per_image": 1024,
+        "bytes": 27681792,
+        "note": "Random values; no fitting or coreset selection performed."
+      },
+      "parameters": 2782784,
+      "parameter_bytes": 11131136,
+      "implementation_sha256": "a5e5bc1ed22ed86db477000092e8e628b0c02a99cdd6ec6789c0ab8b924aaba9",
+      "output_shape": [
+        1,
+        1,
+        256,
+        256
+      ],
+      "wall_model_only": {
+        "samples": 50,
+        "p50_ms": 43.631037999944056,
+        "p95_ms": 64.89383455001985,
+        "min_ms": 39.83239000001504,
+        "max_ms": 73.53934000002482
+      },
+      "run": "initial_fp32_and_amp"
+    },
+    {
+      "case": {
+        "model": "patchcore",
+        "backbone": "wide_resnet50_2",
+        "bank_rows": null,
+        "resolution": 256,
+        "precision": "fp32"
+      },
+      "device": "cuda",
+      "accuracy": "NOT_EVALUATED",
+      "status": "RUNTIME_PROBE_PASSED_NOT_TRAINED",
+      "batch_size": 1,
+      "synthetic_bank": {
+        "rows": 18022,
+        "dimensions": 1536,
+        "patches_per_image": 1024,
+        "bytes": 110727168,
+        "note": "Random values; no fitting or coreset selection performed."
+      },
+      "parameters": 24862528,
+      "parameter_bytes": 99450112,
+      "implementation_sha256": "a5e5bc1ed22ed86db477000092e8e628b0c02a99cdd6ec6789c0ab8b924aaba9",
+      "output_shape": [
+        1,
+        1,
+        256,
+        256
+      ],
+      "wall_model_only": {
+        "samples": 50,
+        "p50_ms": 25.236666500006777,
+        "p95_ms": 25.79224815000316,
+        "min_ms": 24.81505899993408,
+        "max_ms": 29.942643000026692
+      },
+      "cuda_event_model_only": {
+        "samples": 50,
+        "p50_ms": 25.16009521484375,
+        "p95_ms": 25.72698564529419,
+        "min_ms": 24.730623245239258,
+        "max_ms": 29.898624420166016
+      },
+      "cuda_peak_allocated_bytes": 343791104,
+      "cuda_incremental_peak_bytes": 121733632,
+      "run": "initial_fp32_and_amp"
+    },
+    {
+      "case": {
+        "model": "patchcore",
+        "backbone": "wide_resnet50_2",
+        "bank_rows": null,
+        "resolution": 256,
+        "precision": "fp32"
+      },
+      "device": "cpu",
+      "accuracy": "NOT_EVALUATED",
+      "status": "RUNTIME_PROBE_PASSED_NOT_TRAINED",
+      "batch_size": 1,
+      "synthetic_bank": {
+        "rows": 18022,
+        "dimensions": 1536,
+        "patches_per_image": 1024,
+        "bytes": 110727168,
+        "note": "Random values; no fitting or coreset selection performed."
+      },
+      "parameters": 24862528,
+      "parameter_bytes": 99450112,
+      "implementation_sha256": "a5e5bc1ed22ed86db477000092e8e628b0c02a99cdd6ec6789c0ab8b924aaba9",
+      "output_shape": [
+        1,
+        1,
+        256,
+        256
+      ],
+      "wall_model_only": {
+        "samples": 50,
+        "p50_ms": 130.56901450005398,
+        "p95_ms": 162.12666145002004,
+        "min_ms": 119.96821100001398,
+        "max_ms": 202.2948510000333
+      },
+      "run": "initial_fp32_and_amp"
+    },
+    {
+      "case": {
+        "model": "efficientad",
+        "size": "small",
+        "resolution": 256,
+        "precision": "amp_fp16"
+      },
+      "device": "cuda",
+      "accuracy": "NOT_EVALUATED",
+      "status": "RUNTIME_PROBE_PASSED_NOT_TRAINED",
+      "batch_size": 1,
+      "parameters": 8058628,
+      "parameter_bytes": 32234512,
+      "implementation_sha256": "8f80c2db5e546e5209f105c757d8c88c70c48e86bcf1d036b797fff88be3bd08",
+      "output_shape": [
+        1,
+        1,
+        256,
+        256
+      ],
+      "wall_model_only": {
+        "samples": 50,
+        "p50_ms": 5.706081500022719,
+        "p95_ms": 6.084126049955785,
+        "min_ms": 5.257206999999653,
+        "max_ms": 7.794482999997854
+      },
+      "cuda_event_model_only": {
+        "samples": 50,
+        "p50_ms": 5.68123197555542,
+        "p95_ms": 6.0600670337677,
+        "min_ms": 5.234528064727783,
+        "max_ms": 7.768928050994873
+      },
+      "cuda_peak_allocated_bytes": 85007872,
+      "cuda_incremental_peak_bytes": 43461632,
+      "run": "initial_fp32_and_amp"
+    },
+    {
+      "case": {
+        "model": "efficientad",
+        "size": "small",
+        "resolution": 256,
+        "precision": "amp_fp16"
+      },
+      "device": "cuda",
+      "accuracy": "NOT_EVALUATED",
+      "status": "RUNTIME_PROBE_PASSED_NOT_TRAINED",
+      "batch_size": 1,
+      "parameters": 8058628,
+      "parameter_bytes": 32234512,
+      "implementation_sha256": "8f80c2db5e546e5209f105c757d8c88c70c48e86bcf1d036b797fff88be3bd08",
+      "output_shape": [
+        1,
+        1,
+        256,
+        256
+      ],
+      "wall_model_only": {
+        "samples": 50,
+        "p50_ms": 7.490269499953683,
+        "p95_ms": 8.19121769997082,
+        "min_ms": 5.544570999973075,
+        "max_ms": 8.542899000076432
+      },
+      "cuda_event_model_only": {
+        "samples": 50,
+        "p50_ms": 7.445935964584351,
+        "p95_ms": 8.14555640220642,
+        "min_ms": 5.516287803649902,
+        "max_ms": 8.49897575378418
+      },
+      "cuda_peak_allocated_bytes": 75451392,
+      "cuda_incremental_peak_bytes": 42424832,
+      "run": "amp_comparison"
+    },
+    {
+      "case": {
+        "model": "patchcore",
+        "backbone": "resnet18",
+        "bank_rows": 1000,
+        "resolution": 256,
+        "precision": "amp_fp16"
+      },
+      "device": "cuda",
+      "accuracy": "NOT_EVALUATED",
+      "status": "RUNTIME_PROBE_PASSED_NOT_TRAINED",
+      "batch_size": 1,
+      "synthetic_bank": {
+        "rows": 1000,
+        "dimensions": 384,
+        "patches_per_image": 1024,
+        "bytes": 1536000,
+        "note": "Random values; no fitting or coreset selection performed."
+      },
+      "parameters": 2782784,
+      "parameter_bytes": 11131136,
+      "implementation_sha256": "a5e5bc1ed22ed86db477000092e8e628b0c02a99cdd6ec6789c0ab8b924aaba9",
+      "output_shape": [
+        1,
+        1,
+        256,
+        256
+      ],
+      "wall_model_only": {
+        "samples": 50,
+        "p50_ms": 11.251350999998522,
+        "p95_ms": 11.569546300017919,
+        "min_ms": 8.366175999981351,
+        "max_ms": 11.753072999908909
+      },
+      "cuda_event_model_only": {
+        "samples": 50,
+        "p50_ms": 11.151792049407959,
+        "p95_ms": 11.505915069580078,
+        "min_ms": 8.306495666503906,
+        "max_ms": 11.603967666625977
+      },
+      "cuda_peak_allocated_bytes": 33535488,
+      "cuda_incremental_peak_bytes": 11526656,
+      "run": "amp_comparison"
+    },
+    {
+      "case": {
+        "model": "patchcore",
+        "backbone": "resnet18",
+        "bank_rows": null,
+        "resolution": 256,
+        "precision": "amp_fp16"
+      },
+      "device": "cuda",
+      "accuracy": "NOT_EVALUATED",
+      "status": "RUNTIME_PROBE_PASSED_NOT_TRAINED",
+      "batch_size": 1,
+      "synthetic_bank": {
+        "rows": 18022,
+        "dimensions": 384,
+        "patches_per_image": 1024,
+        "bytes": 27681792,
+        "note": "Random values; no fitting or coreset selection performed."
+      },
+      "parameters": 2782784,
+      "parameter_bytes": 11131136,
+      "implementation_sha256": "a5e5bc1ed22ed86db477000092e8e628b0c02a99cdd6ec6789c0ab8b924aaba9",
+      "output_shape": [
+        1,
+        1,
+        256,
+        256
+      ],
+      "wall_model_only": {
+        "samples": 50,
+        "p50_ms": 13.854390000005878,
+        "p95_ms": 14.303040199979478,
+        "min_ms": 11.923164999984692,
+        "max_ms": 15.080637999972168
+      },
+      "cuda_event_model_only": {
+        "samples": 50,
+        "p50_ms": 13.779952049255371,
+        "p95_ms": 14.241652631759644,
+        "min_ms": 11.697152137756348,
+        "max_ms": 14.999456405639648
+      },
+      "cuda_peak_allocated_bytes": 108890624,
+      "cuda_incremental_peak_bytes": 60736000,
+      "run": "amp_comparison"
+    },
+    {
+      "case": {
+        "model": "patchcore",
+        "backbone": "wide_resnet50_2",
+        "bank_rows": null,
+        "resolution": 256,
+        "precision": "amp_fp16"
+      },
+      "device": "cuda",
+      "accuracy": "NOT_EVALUATED",
+      "status": "RUNTIME_PROBE_PASSED_NOT_TRAINED",
+      "batch_size": 1,
+      "synthetic_bank": {
+        "rows": 18022,
+        "dimensions": 1536,
+        "patches_per_image": 1024,
+        "bytes": 110727168,
+        "note": "Random values; no fitting or coreset selection performed."
+      },
+      "parameters": 24862528,
+      "parameter_bytes": 99450112,
+      "implementation_sha256": "a5e5bc1ed22ed86db477000092e8e628b0c02a99cdd6ec6789c0ab8b924aaba9",
+      "output_shape": [
+        1,
+        1,
+        256,
+        256
+      ],
+      "wall_model_only": {
+        "samples": 50,
+        "p50_ms": 22.803947999989305,
+        "p95_ms": 23.400353249945738,
+        "min_ms": 19.100609000020086,
+        "max_ms": 23.97956200002227
+      },
+      "cuda_event_model_only": {
+        "samples": 50,
+        "p50_ms": 22.74555206298828,
+        "p95_ms": 23.302171325683595,
+        "min_ms": 19.017471313476562,
+        "max_ms": 23.893247604370117
+      },
+      "cuda_peak_allocated_bytes": 391731200,
+      "cuda_incremental_peak_bytes": 169673728,
+      "run": "amp_comparison"
+    }
+  ],
+  "raw_evidence": "artifacts/vision/stage3_1/{probe,amp_probe}/probe.json"
+}

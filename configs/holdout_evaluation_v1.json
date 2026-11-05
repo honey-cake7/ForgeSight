@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "protocol": "metal-nut-frozen-holdout-v1",
+  "calibration_reference": "manifests/efficientad_s_calibration_v1.json",
+  "dataset_manifest": "manifests/metal_nut_v1.json",
+  "role": "final_holdout",
+  "expected_images": 111,
+  "precision": "fp32",
+  "pixel_auc_grid": "original source grid, bilinear score-map resize, original binary annotations",
+  "region_support_rule": "source-grid score strictly above the already-frozen image-score threshold; response extent only, not physical defect area",
+  "connectedness": 8,
+  "morphological_filtering": "none",
+  "pixel_mask_quality_threshold": "NOT_SEPARATELY_CALIBRATED",
+  "predicted_defect_type": "unknown",
+  "tune_from_holdout": false,
+  "repeat_inference": false
+}

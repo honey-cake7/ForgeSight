@@ -1,0 +1,235 @@
+{
+  "schema_version": 1,
+  "status": "TRAINED_UNCALIBRATED_NOT_ACCURACY_VERIFIED",
+  "algorithm": "EfficientAD-S",
+  "input_resolution": [
+    256,
+    256
+  ],
+  "run_kind": "first_baseline_not_paper_reproduction",
+  "completed_steps": 10000,
+  "training_config": {
+    "schema_version": 1,
+    "run_kind": "first_baseline_not_paper_reproduction",
+    "steps": 10000,
+    "seed": 42,
+    "batch_size": 1,
+    "precision": "fp32",
+    "tf32": false,
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": true,
+    "learning_rate": 0.0001,
+    "weight_decay": 1e-05,
+    "lr_decay_fraction": 0.95,
+    "lr_decay_gamma": 0.1,
+    "log_every": 100,
+    "checkpoint_steps": [
+      1000,
+      5000,
+      10000
+    ],
+    "cpu_threads": 8,
+    "auxiliary_workers": 4,
+    "teacher_std_epsilon": 1e-06,
+    "fit_role": "fit",
+    "normal_validation_role": "validation_normal",
+    "validation_pixel_reads_this_step": 0,
+    "holdout_access": false,
+    "map_quantile_calibration": "NEXT_SUBSTEP",
+    "decision_threshold": "NOT_SET",
+    "bitwise_reproducibility": "NOT_CLAIMED"
+  },
+  "model_config": {
+    "schema_version": 1,
+    "status": "SELECTED_FOR_FIRST_TRAINING_NOT_QUALITY_VALIDATED",
+    "algorithm": "EfficientAD",
+    "model_size": "small",
+    "implementation": "anomalib",
+    "implementation_version": "2.6.2",
+    "implementation_commit": "cc5f400a4a4b1b14b5a3ee5078063c250a8f522e",
+    "teacher_architecture": "SmallPatchDescriptionNetwork",
+    "teacher_out_channels": 384,
+    "input": {
+      "resolution": [
+        256,
+        256
+      ],
+      "layout": "NCHW",
+      "color": "RGB",
+      "range": [
+        0,
+        1
+      ],
+      "resize": "full frame, no center crop",
+      "external_normalization": false,
+      "normalization": "ImageNet normalization inside upstream networks"
+    },
+    "padding": false,
+    "pad_maps": true,
+    "train_batch_size": 1,
+    "reference_precision": "fp32",
+    "candidate_optimization": "AMP FP16 execution passed; trained accuracy and device deployment must be validated before adoption.",
+    "data_manifest": "manifests/metal_nut_v1.json",
+    "data_manifest_sha256": "14b11ebd03d5107c7ef3478e1c4d20887237e2fbef58601ac043014b8f0e340f",
+    "fit_role": "fit",
+    "fit_normal_images": 176,
+    "validation_role": "validation_normal",
+    "validation_normal_images": 44,
+    "final_holdout_access": "NOT_AUTHORIZED_BY_THIS_STEP",
+    "teacher_assets_status": "ARCHIVE_AND_SMALL_TEACHER_VERIFIED",
+    "regularization_assets_status": "ARCHIVE_VERIFIED_TRAIN_SPLIT_AVAILABLE",
+    "pretrained_teacher_archive": {
+      "url": "https://github.com/open-edge-platform/anomalib/releases/download/efficientad_pretrained_weights/efficientad_pretrained_weights.zip",
+      "expected_sha256_from_upstream": "c09aeaa2b33f244b3261a5efdaeae8f8284a949470a4c5a526c61275fe62684a"
+    },
+    "regularization_archive": {
+      "url": "https://s3.amazonaws.com/fast-ai-imageclas/imagenette2.tgz",
+      "expected_sha256_from_upstream": "6cbfac238434d89fe99e651496f0812ebc7a10fa62bd42d6874042bf01de4efd"
+    },
+    "asset_condition": "Review source/license/availability and verify hashes before using pretrained/regularization assets; no silent removal of teacher or regularization loss.",
+    "latency_target_ms": null,
+    "tradeoff_goal": "Balance defect recall/false alarms with batch-1 p50/p95 latency and shared Jetson memory; no fixed user target.",
+    "fallback": "PatchCore ResNet-18, layer2/layer3; bank size chosen only after fitting/validation, not from synthetic timing alone.",
+    "resolution_escalation": "Compare a separately trained/calibrated 384px variant if 256px loses thin-defect evidence; do not choose on final holdout.",
+    "defect_type": "NOT_IMPLEMENTED",
+    "severity": "NOT_IMPLEMENTED",
+    "accuracy": "NOT_EVALUATED",
+    "jetson_latency": "NOT_VERIFIED",
+    "llama_runtime_requirement": "On-device Llama via ExecuTorch remains mandatory; separate asynchronous worker, actual device gate still blocked.",
+    "asset_reference": "manifests/vision_training_assets.json"
+  },
+  "implementation_commit": "cc5f400a4a4b1b14b5a3ee5078063c250a8f522e",
+  "packages": {
+    "torch": "2.6.0+cu124",
+    "torchvision": "0.21.0+cu124",
+    "anomalib": "2.6.2",
+    "numpy": "2.2.6",
+    "pillow": "13.0.0"
+  },
+  "gpu": "NVIDIA RTX 2000 Ada Generation",
+  "training_wall_seconds": 1158.350108313,
+  "cuda_peak_allocated_bytes": 542685184,
+  "memory_scope": "Peak PyTorch allocation in training, not whole-device memory or inference allocation.",
+  "teacher_statistics": {
+    "fit_images": 176,
+    "spatial_values_per_channel": 551936,
+    "std_clamped_channels": 0,
+    "accumulation_dtype": "float64"
+  },
+  "teacher_file": {
+    "bytes": 10779695,
+    "sha256": "a16ded54719674435576aee641152616a640dfc6dc2b83115dab6e226610ae7d"
+  },
+  "dataset_manifest": "manifests/metal_nut_v1.json",
+  "fit_images": 176,
+  "fit_paths_sha256": "ec22566962fac92cfc7fa5471b7095a591c608cf4cc488ccf79d95b0b29d9725",
+  "normal_validation_images_reserved": 44,
+  "training_phase_pixel_reads": {
+    "fit": 176,
+    "validation_normal": 0,
+    "development_preview": 0,
+    "final_holdout": 0
+  },
+  "additional_verification_reads": "Teacher smoke, intermediate reload and final reload each read the already-used fit anchor; zero validation/development/holdout pixels.",
+  "auxiliary_images_available": 9469,
+  "auxiliary_classes_ignored": 10,
+  "auxiliary_use": "Imagenette train only; labels discarded; regularization only",
+  "state_sha256_initial": {
+    "teacher": "948b2631aea60da41d74633652de7f55033d899a111740739aa5f6125f47900e",
+    "student": "a822be0024aefe767c78fd395edc242440ce3f02c1ad5e8b13847b36d447ad31",
+    "ae": "5b00871e14a1b1c3d3b0959dc14fdb3bb5356b05b6b193b46685db4611e8b357"
+  },
+  "state_sha256_final": {
+    "teacher": "948b2631aea60da41d74633652de7f55033d899a111740739aa5f6125f47900e",
+    "student": "7df7abc45b6d2d688d5c30e2544e7176f725058d076f64c4bce10953837e9b4d",
+    "ae": "bf7fa060fa5ce2430b50208444f3c724ef28ff364bdc75dfb3491562965f7be9"
+  },
+  "checkpoints": [
+    {
+      "path": "artifacts/vision/efficientad_s_train_v1/checkpoint_step_001000.pth",
+      "bytes": 75199220,
+      "sha256": "161bb487ea54ae674e5322f024ebd4bebf22909fe076d2a1f7d9aabb772d50c6",
+      "step": 1000
+    },
+    {
+      "path": "artifacts/vision/efficientad_s_train_v1/checkpoint_step_005000.pth",
+      "bytes": 75199220,
+      "sha256": "cfcc7a0dc771949f8274737d5d756bc5a3584c36d4c0a4119ca8c3c2ba267700",
+      "step": 5000
+    },
+    {
+      "path": "artifacts/vision/efficientad_s_train_v1/checkpoint_step_010000.pth",
+      "bytes": 75199220,
+      "sha256": "85106f4a9ef6ec3e9c8acb4056dc2db2124e54284209e10d686dd36dea66ca0d",
+      "step": 10000
+    }
+  ],
+  "final_checkpoint": {
+    "path": "artifacts/vision/efficientad_s_train_v1/checkpoint_step_010000.pth",
+    "bytes": 75199220,
+    "sha256": "85106f4a9ef6ec3e9c8acb4056dc2db2124e54284209e10d686dd36dea66ca0d",
+    "step": 10000
+  },
+  "loss_summary": {
+    "first_step_total": 21.776891983114183,
+    "step100_window_mean": 16.305209938213324,
+    "final_step_total": 2.023078255355358,
+    "final_window_mean": 2.2712742391042413,
+    "log_rows": 101,
+    "note": "Training losses only; no validation loss, accuracy or severity inference."
+  },
+  "source_input_sha256": {
+    "configs/vision_baseline.json": "6b9b8649ac0350acb48e4729baac1878dfba0f4754f0133728e1e7d210eac684",
+    "configs/efficientad_s_training.json": "ae32e280bdc18c2eb667f79a1294b9f9e2b43efef61fae794204d1f02b0ba6b7",
+    "artifacts/vision/stage3_2/assets.json": "25b6f65acb466afa5a8e258c6f9ee7f41061080c54aa91b40b54186e1bc2fc7e",
+    "manifests/metal_nut_v1.json": "14b11ebd03d5107c7ef3478e1c4d20887237e2fbef58601ac043014b8f0e340f",
+    "requirements/pylock.vision.toml": "dc7dcf3d1696429277aacd0c7cb282741957deb354434bfd7d15970fe4683e15",
+    "/mnt/c/Users/RF AND SIMULATION/Desktop/honey/ForgeSight/forgesight/vision_train.py": "7c7dca57d64687a1ed19599f5c3e539266a6a9d82e07bbf6066a167b95b5ff45"
+  },
+  "reload_verification": {
+    "status": "CHECKPOINT_RELOAD_VERIFIED_NOT_ACCURACY_EVALUATED",
+    "accuracy": "NOT_EVALUATED",
+    "holdout_images_read": 0,
+    "step": 10000,
+    "checkpoint": {
+      "path": "artifacts/vision/efficientad_s_train_v1/checkpoint_step_010000.pth",
+      "bytes": 75199220,
+      "sha256": "85106f4a9ef6ec3e9c8acb4056dc2db2124e54284209e10d686dd36dea66ca0d",
+      "step": 10000
+    },
+    "device": "cuda",
+    "state_sha256": {
+      "teacher": "948b2631aea60da41d74633652de7f55033d899a111740739aa5f6125f47900e",
+      "student": "7df7abc45b6d2d688d5c30e2544e7176f725058d076f64c4bce10953837e9b4d",
+      "ae": "bf7fa060fa5ce2430b50208444f3c724ef28ff364bdc75dfb3491562965f7be9"
+    },
+    "fit_anchor": "train/good/000.png",
+    "raw_score": 0.1621895134449005,
+    "score_difference": 0.0,
+    "map_shape": [
+      1,
+      1,
+      256,
+      256
+    ],
+    "map_calibration": "NOT_RUN",
+    "decision_threshold": "NOT_SET",
+    "jetson_proof": "NOT_VERIFIED"
+  },
+  "evidence_sha256": {
+    "artifacts/vision/efficientad_s_train_v1/losses.jsonl": "3c54862bdaf9b21145b347bfca5b03121e39a7b1bbc1873648c9be69da033277",
+    "artifacts/vision/efficientad_s_train_v1/training_loss.png": "97ebf56afcba6de99a251c437c650def6289d3d185640b3fe56b4912881e37fb",
+    "forgesight/vision_checkpoint.py": "d9e078a30c74239c130bf766b5f97e49b9d067f64a7da1ba8c90c6113320c18d",
+    "manifests/vision_training_assets.json": "265bf0516f469a0e171c5c254b76b5f67558058d8225e25d42c970265a879311"
+  },
+  "local_run_directory": "artifacts/vision/efficientad_s_train_v1",
+  "map_calibration": "NOT_RUN",
+  "decision_threshold": "NOT_SET",
+  "accuracy": "NOT_EVALUATED",
+  "defect_type": "NOT_IMPLEMENTED",
+  "severity": "NOT_IMPLEMENTED",
+  "trained_inference_latency": "NOT_MEASURED",
+  "jetson_proof": "BLOCKED_NOT_VERIFIED",
+  "offline_operation": "NOT_VERIFIED",
+  "bitwise_retraining_reproducibility": "NOT_CLAIMED"
+}

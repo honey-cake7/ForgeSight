@@ -1,0 +1,47 @@
+{
+  "status": "TRAINING_ASSETS_HASH_VERIFIED",
+  "assets": {
+    "pretrained_teacher_archive": {
+      "source_url": "https://github.com/open-edge-platform/anomalib/releases/download/efficientad_pretrained_weights/efficientad_pretrained_weights.zip",
+      "download_host_path": "https://release-assets.githubusercontent.com/github-production-release-asset/423775360/d2a14009-95fa-4bac-aa8f-c380c948a298",
+      "archive_path": "/root/.cache/forgesight/vision-v1/training_assets/efficientad_pretrained_weights.zip",
+      "archive_bytes": 39960466,
+      "archive_sha256": "c09aeaa2b33f244b3261a5efdaeae8f8284a949470a4c5a526c61275fe62684a",
+      "extracted_root": "/root/.cache/forgesight/vision-v1/training_assets/efficientad_pretrained_weights.zip.extracted",
+      "files": 2,
+      "uncompressed_bytes": 42890512
+    },
+    "regularization_archive": {
+      "source_url": "https://s3.amazonaws.com/fast-ai-imageclas/imagenette2.tgz",
+      "download_host_path": "https://s3.amazonaws.com/fast-ai-imageclas/imagenette2.tgz",
+      "archive_path": "/root/.cache/forgesight/vision-v1/training_assets/imagenette2.tgz",
+      "archive_bytes": 1557161267,
+      "archive_sha256": "6cbfac238434d89fe99e651496f0812ebc7a10fa62bd42d6874042bf01de4efd",
+      "extracted_root": "/root/.cache/forgesight/vision-v1/training_assets/imagenette2.tgz.extracted",
+      "files": 13395,
+      "uncompressed_bytes": 1569906854
+    }
+  },
+  "teacher_small": {
+    "status": "PRETRAINED_TEACHER_FORWARD_VERIFIED",
+    "teacher_bytes": 10779695,
+    "teacher_sha256": "a16ded54719674435576aee641152616a640dfc6dc2b83115dab6e226610ae7d",
+    "fit_source": "train/good/000.png",
+    "feature_shape": [
+      1,
+      384,
+      56,
+      56
+    ],
+    "optimizer_steps": 0,
+    "holdout_images_read": 0
+  },
+  "source_review": {
+    "review_date": "2026-11-06",
+    "implementation_source": "https://github.com/open-edge-platform/anomalib/tree/cc5f400a4a4b1b14b5a3ee5078063c250a8f522e",
+    "imagenette_source": "https://github.com/fastai/imagenette",
+    "repository_license": "Apache-2.0 in upstream repositories; no claim this relicenses ImageNet photographs",
+    "scope": "Local noncommercial research prototype; raw images and binary weights are not redistributed in Git",
+    "auxiliary_use": "Imagenette train images only, generic-image regularization; class labels discarded, not metal_nut defect labels"
+  }
+}

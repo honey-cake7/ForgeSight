@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "status": "PC_SMOKE_VERIFIED_NOT_JETSON_PROOF",
+  "scope": "Linux x86_64 desktop functional smoke test only",
+  "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+  "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+  "host": {
+    "system": "Linux",
+    "architecture": "x86_64",
+    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43"
+  },
+  "packages": {
+    "torch": "2.14.0+cpu",
+    "executorch": "1.5.1+cpu",
+    "pytorch-tokenizers": "1.6.0"
+  },
+  "model_artifact": {
+    "bytes": 802247040,
+    "sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739",
+    "file_identifier": "ET12"
+  },
+  "tokenizer": {
+    "bytes": 2183982,
+    "sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55"
+  },
+  "native_runner": {
+    "path": "/root/.cache/forgesight/et1.5.1/venv/lib/python3.12/site-packages/executorch/extension/llm/runner/_llm_runner.cpython-312-x86_64-linux-gnu.so",
+    "bytes": 3927168,
+    "sha256": "28fad8296eb8acbb1c67a4ea6bb0918b7f5069d48f75d265fec092f3bffc3a08"
+  },
+  "kernel_libraries": [
+    {
+      "relative_path": "lib/libexecutorch_kernels_quantized.so",
+      "bytes": 306520,
+      "sha256": "f4e2b0e331c34a8dca523739c5a285d53ff0767c7c424888d42608df290573b2"
+    },
+    {
+      "relative_path": "extension/llm/custom_ops/libcustom_ops_aot_lib.so",
+      "bytes": 869560,
+      "sha256": "cc77e070c57389af30d64bc0869ac896ad660818922a42ed4cac5be9d48fda45"
+    }
+  ],
+  "prompt_text": "In one sentence, explain why stable lighting helps compare two inspection images. Do not claim that you inspected a part.",
+  "formatted_prompt": "<|begin_of_text|><|start_header_id|>user<|end_header_id|>\n\nIn one sentence, explain why stable lighting helps compare two inspection images. Do not claim that you inspected a part.<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n",
+  "prompt_token_ids": [
+    128000,
+    128006,
+    882,
+    128007,
+    271,
+    644,
+    832,
+    11914,
+    11,
+    10552,
+    3249,
+    15528,
+    18186,
+    8779,
+    9616,
+    1403,
+    26767,
+    5448,
+    13,
+    3234,
+    539,
+    3802,
+    430,
+    499,
+    62884,
+    264,
+    961,
+    13,
+    128009,
+    128006,
+    78191,
+    128007,
+    271
+  ],
+  "prompt_token_count": 33,
+  "generation_config": {
+    "echo": false,
+    "temperature": 0.0,
+    "warming": false,
+    "max_new_tokens": 64,
+    "seq_len": -1,
+    "num_bos": 0,
+    "num_eos": 0
+  },
+  "torch_num_threads": 8,
+  "generated_text_raw": "Stable lighting helps compare two inspection images by ensuring that the lighting conditions are consistent, allowing the comparison of the images to be more accurate and reliable.<|eot_id|>",
+  "callback_chunks": 31,
+  "native_stats": [
+    {
+      "prefill_token_per_sec": 206.25,
+      "decode_token_per_sec": 30.1811,
+      "prompt_tokens": 33,
+      "generated_tokens": 30,
+      "model_load_start_ms": 1793907370259,
+      "model_load_end_ms": 1793907373161,
+      "inference_start_ms": 1793907373163,
+      "inference_end_ms": 1793907374317,
+      "model_execution_start_ms": 1793907374282,
+      "model_execution_end_ms": 1793907374314,
+      "prompt_eval_end_ms": 1793907373323,
+      "first_token_ms": 1793907373323,
+      "aggregate_sampling_time_ms": 1,
+      "aggregate_model_execution_time_ms": 1112,
+      "SCALING_FACTOR_UNITS_PER_SECOND": 1000
+    }
+  ],
+  "runner_constructor_seconds": 0.5166352939999967,
+  "generate_call_seconds": 4.076500065000005,
+  "process": {
+    "argv": [
+      "env",
+      "OMP_NUM_THREADS=8",
+      "HF_HUB_OFFLINE=1",
+      "TRANSFORMERS_OFFLINE=1",
+      "/root/.cache/forgesight/et1.5.1/venv/bin/python",
+      "-B",
+      "-m",
+      "forgesight.edge_pc_smoke",
+      "--worker",
+      "/mnt/c/Users/RF AND SIMULATION/Desktop/honey/ForgeSight/artifacts/edge/pc_generation_verified/request.json"
+    ],
+    "returncode": 0,
+    "completion_reason": "EXITED",
+    "process_wall_seconds": 8.892899416999995,
+    "sampled_peak_rss_kib": 1218376,
+    "rss_sampling_interval_seconds": 0.05,
+    "memory_note": "Sampled process RSS; may miss peaks and excludes other processes.",
+    "stdout_bytes": 747,
+    "stderr_bytes": 2316
+  },
+  "content_review": "Coherent general response to the lighting prompt; no claim to have inspected a part. This is a functional smoke check, not advice-quality evaluation.",
+  "first_failed_attempt": "pc_generation_attempt_01 lacked explicit registration of embedding_4bit, update_cache and custom_sdpa kernels; return code 1 and no generation. Logs preserved locally.",
+  "runtime_resolution": "Explicitly load wheel-provided quantized and LLM custom-op libraries with torch.ops.load_library before native generation. No rebuild, dependency change, model change or substitute runtime.",
+  "source_sha256": {
+    "forgesight/edge_pc_smoke.py": "19b85469d33decb024f309927e432e4c80cd46b85cea794f526f4dfede8b9089",
+    "configs/edge_smoke_prompt.txt": "a0c898cc543dbc40c21cfad75be64a5e00e9dde48380bd98939ce281e32785ec",
+    "manifests/llama3_2_1b_export.json": "0050cc2129fbdd3a30ed328ebaee726966045241af51b726848a90346d4269de",
+    "manifests/llama3_2_1b_assets.json": "cf4cecd80404d30c0a5bd04cfae254c6dd9214948dd573594a2b61d637bccdbb",
+    "requirements/pylock.export.toml": "64a86b39a1f0184d27527f4cf961c536b62885ddaa4282ae2366ded9086262de"
+  },
+  "local_evidence": "artifacts/edge/pc_generation_verified",
+  "quality": "NOT_EVALUATED",
+  "offline_status": "NOT_VERIFIED",
+  "jetson_proof": "BLOCKED_NOT_VERIFIED"
+}

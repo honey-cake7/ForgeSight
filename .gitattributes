@@ -1,0 +1,14 @@
+# Keep shared Windows/WSL text files consistent.
+*.md text eol=lf
+*.py text eol=lf
+*.sh text eol=lf
+*.txt text eol=lf
+*.in text eol=lf
+*.toml text eol=lf
+*.json text eol=lf
+*.sha256 text eol=lf
+.gitignore text eol=lf
+.gitattributes text eol=lf
+
+# The original roadmap intentionally uses two-space Markdown line breaks.
+FORGESIGHT_STEP_BY_STEP_ROADMAP.md whitespace=-blank-at-eol

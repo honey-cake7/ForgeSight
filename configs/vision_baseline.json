@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "status": "SELECTED_FOR_FIRST_TRAINING_NOT_QUALITY_VALIDATED",
+  "algorithm": "EfficientAD",
+  "model_size": "small",
+  "implementation": "anomalib",
+  "implementation_version": "2.6.2",
+  "implementation_commit": "cc5f400a4a4b1b14b5a3ee5078063c250a8f522e",
+  "teacher_architecture": "SmallPatchDescriptionNetwork",
+  "teacher_out_channels": 384,
+  "input": {
+    "resolution": [
+      256,
+      256
+    ],
+    "layout": "NCHW",
+    "color": "RGB",
+    "range": [
+      0,
+      1
+    ],
+    "resize": "full frame, no center crop",
+    "external_normalization": false,
+    "normalization": "ImageNet normalization inside upstream networks"
+  },
+  "padding": false,
+  "pad_maps": true,
+  "train_batch_size": 1,
+  "reference_precision": "fp32",
+  "candidate_optimization": "AMP FP16 execution passed; trained accuracy and device deployment must be validated before adoption.",
+  "data_manifest": "manifests/metal_nut_v1.json",
+  "data_manifest_sha256": "14b11ebd03d5107c7ef3478e1c4d20887237e2fbef58601ac043014b8f0e340f",
+  "fit_role": "fit",
+  "fit_normal_images": 176,
+  "validation_role": "validation_normal",
+  "validation_normal_images": 44,
+  "final_holdout_access": "NOT_AUTHORIZED_BY_THIS_STEP",
+  "teacher_assets_status": "ARCHIVE_AND_SMALL_TEACHER_VERIFIED",
+  "regularization_assets_status": "ARCHIVE_VERIFIED_TRAIN_SPLIT_AVAILABLE",
+  "pretrained_teacher_archive": {
+    "url": "https://github.com/open-edge-platform/anomalib/releases/download/efficientad_pretrained_weights/efficientad_pretrained_weights.zip",
+    "expected_sha256_from_upstream": "c09aeaa2b33f244b3261a5efdaeae8f8284a949470a4c5a526c61275fe62684a"
+  },
+  "regularization_archive": {
+    "url": "https://s3.amazonaws.com/fast-ai-imageclas/imagenette2.tgz",
+    "expected_sha256_from_upstream": "6cbfac238434d89fe99e651496f0812ebc7a10fa62bd42d6874042bf01de4efd"
+  },
+  "asset_condition": "Review source/license/availability and verify hashes before using pretrained/regularization assets; no silent removal of teacher or regularization loss.",
+  "latency_target_ms": null,
+  "tradeoff_goal": "Balance defect recall/false alarms with batch-1 p50/p95 latency and shared Jetson memory; no fixed user target.",
+  "fallback": "PatchCore ResNet-18, layer2/layer3; bank size chosen only after fitting/validation, not from synthetic timing alone.",
+  "resolution_escalation": "Compare a separately trained/calibrated 384px variant if 256px loses thin-defect evidence; do not choose on final holdout.",
+  "defect_type": "NOT_IMPLEMENTED",
+  "severity": "NOT_IMPLEMENTED",
+  "accuracy": "NOT_EVALUATED",
+  "jetson_latency": "NOT_VERIFIED",
+  "llama_runtime_requirement": "On-device Llama via ExecuTorch remains mandatory; separate asynchronous worker, actual device gate still blocked.",
+  "asset_reference": "manifests/vision_training_assets.json"
+}

@@ -1,0 +1,561 @@
+{
+  "schema_version": 1,
+  "status": "CALIBRATED_POLICY_FROZEN_HOLDOUT_NOT_EVALUATED",
+  "policy": {
+    "schema_version": 1,
+    "policy_version": "metal-nut-efficientad-s-fp32-v1",
+    "status": "PROVISIONAL_NORMAL_ONLY_POLICY",
+    "validation_role": "validation_normal",
+    "split_seed": 42,
+    "split_method": "sort by SHA-256 of seed:path, then path; first map_fit_count fit maps",
+    "map_fit_count": 22,
+    "map_quantiles": [
+      0.9,
+      0.995
+    ],
+    "branch_scale": 0.1,
+    "branch_weights": [
+      0.5,
+      0.5
+    ],
+    "image_score": "maximum of the equally weighted normalized branch maps",
+    "nominal_normal_flag_level": 0.05,
+    "threshold_rule": "ceil((n+1)*(1-alpha))-th smallest independent normal threshold score",
+    "comparison": "strict_greater_than",
+    "above_threshold": "ANOMALY_CANDIDATE",
+    "at_or_below_threshold": "NORMAL_CANDIDATE",
+    "nonfinite_score": "ERROR",
+    "is_probability": false,
+    "is_final_quality_grade": false,
+    "defect_recall": "NOT_EVALUATED",
+    "guarantee_scope": "Rank calculation assumes exchangeable future normal images and a score function fixed independently of threshold samples. These assumptions and production false-alarm performance are not verified.",
+    "final_holdout_access": false,
+    "threshold": 0.22776579856872559,
+    "n": 22,
+    "order_statistic_rank": 22,
+    "nominal_alpha": 0.05,
+    "rank_tail_fraction_under_assumptions": 0.043478260869565216,
+    "map_quantile_values": {
+      "qa_st": 0.22039654850959778,
+      "qb_st": 0.265423059463501,
+      "qa_ae": 0.04703303799033165,
+      "qb_ae": 0.1132587194442749
+    },
+    "calibrated_checkpoint_sha256": "aa2407dba9f74db8472ee6adc5968eefc7c243d9f200d70f2d3a792fd0b7f4fd",
+    "source_checkpoint_sha256": "85106f4a9ef6ec3e9c8acb4056dc2db2124e54284209e10d686dd36dea66ca0d"
+  },
+  "model_reference": {
+    "schema_version": 1,
+    "status": "SELECTED_FOR_FIRST_TRAINING_NOT_QUALITY_VALIDATED",
+    "algorithm": "EfficientAD",
+    "model_size": "small",
+    "implementation": "anomalib",
+    "implementation_version": "2.6.2",
+    "implementation_commit": "cc5f400a4a4b1b14b5a3ee5078063c250a8f522e",
+    "teacher_architecture": "SmallPatchDescriptionNetwork",
+    "teacher_out_channels": 384,
+    "input": {
+      "resolution": [
+        256,
+        256
+      ],
+      "layout": "NCHW",
+      "color": "RGB",
+      "range": [
+        0,
+        1
+      ],
+      "resize": "full frame, no center crop",
+      "external_normalization": false,
+      "normalization": "ImageNet normalization inside upstream networks"
+    },
+    "padding": false,
+    "pad_maps": true,
+    "train_batch_size": 1,
+    "reference_precision": "fp32",
+    "candidate_optimization": "AMP FP16 execution passed; trained accuracy and device deployment must be validated before adoption.",
+    "data_manifest": "manifests/metal_nut_v1.json",
+    "data_manifest_sha256": "14b11ebd03d5107c7ef3478e1c4d20887237e2fbef58601ac043014b8f0e340f",
+    "fit_role": "fit",
+    "fit_normal_images": 176,
+    "validation_role": "validation_normal",
+    "validation_normal_images": 44,
+    "final_holdout_access": "NOT_AUTHORIZED_BY_THIS_STEP",
+    "teacher_assets_status": "ARCHIVE_AND_SMALL_TEACHER_VERIFIED",
+    "regularization_assets_status": "ARCHIVE_VERIFIED_TRAIN_SPLIT_AVAILABLE",
+    "pretrained_teacher_archive": {
+      "url": "https://github.com/open-edge-platform/anomalib/releases/download/efficientad_pretrained_weights/efficientad_pretrained_weights.zip",
+      "expected_sha256_from_upstream": "c09aeaa2b33f244b3261a5efdaeae8f8284a949470a4c5a526c61275fe62684a"
+    },
+    "regularization_archive": {
+      "url": "https://s3.amazonaws.com/fast-ai-imageclas/imagenette2.tgz",
+      "expected_sha256_from_upstream": "6cbfac238434d89fe99e651496f0812ebc7a10fa62bd42d6874042bf01de4efd"
+    },
+    "asset_condition": "Review source/license/availability and verify hashes before using pretrained/regularization assets; no silent removal of teacher or regularization loss.",
+    "latency_target_ms": null,
+    "tradeoff_goal": "Balance defect recall/false alarms with batch-1 p50/p95 latency and shared Jetson memory; no fixed user target.",
+    "fallback": "PatchCore ResNet-18, layer2/layer3; bank size chosen only after fitting/validation, not from synthetic timing alone.",
+    "resolution_escalation": "Compare a separately trained/calibrated 384px variant if 256px loses thin-defect evidence; do not choose on final holdout.",
+    "defect_type": "NOT_IMPLEMENTED",
+    "severity": "NOT_IMPLEMENTED",
+    "accuracy": "NOT_EVALUATED",
+    "jetson_latency": "NOT_VERIFIED",
+    "llama_runtime_requirement": "On-device Llama via ExecuTorch remains mandatory; separate asynchronous worker, actual device gate still blocked.",
+    "asset_reference": "manifests/vision_training_assets.json"
+  },
+  "dataset_manifest_sha256": "14b11ebd03d5107c7ef3478e1c4d20887237e2fbef58601ac043014b8f0e340f",
+  "source_checkpoint": {
+    "path": "artifacts/vision/efficientad_s_train_v1/checkpoint_step_010000.pth",
+    "bytes": 75199220,
+    "sha256": "85106f4a9ef6ec3e9c8acb4056dc2db2124e54284209e10d686dd36dea66ca0d",
+    "step": 10000
+  },
+  "calibrated_checkpoint": {
+    "path": "artifacts/vision/calibration_v1/efficientad_s_calibrated.pth",
+    "bytes": 32258710,
+    "sha256": "aa2407dba9f74db8472ee6adc5968eefc7c243d9f200d70f2d3a792fd0b7f4fd"
+  },
+  "policy_file_sha256": "33a28c23328c63abf93fa0e01d270eda52f4a0195f7b8df89c14dda44e77a687",
+  "state_sha256_before": {
+    "teacher": "948b2631aea60da41d74633652de7f55033d899a111740739aa5f6125f47900e",
+    "student": "7df7abc45b6d2d688d5c30e2544e7176f725058d076f64c4bce10953837e9b4d",
+    "ae": "bf7fa060fa5ce2430b50208444f3c724ef28ff364bdc75dfb3491562965f7be9",
+    "mean_std": "9a9185528793f1b33255fb05af039894d068089d65a1a5c85582ac886e8b3c20"
+  },
+  "state_sha256_after": {
+    "teacher": "948b2631aea60da41d74633652de7f55033d899a111740739aa5f6125f47900e",
+    "student": "7df7abc45b6d2d688d5c30e2544e7176f725058d076f64c4bce10953837e9b4d",
+    "ae": "bf7fa060fa5ce2430b50208444f3c724ef28ff364bdc75dfb3491562965f7be9",
+    "mean_std": "9a9185528793f1b33255fb05af039894d068089d65a1a5c85582ac886e8b3c20"
+  },
+  "quantile_pixel_count_per_branch": 1441792,
+  "normal_scores": [
+    {
+      "path": "train/good/107.png",
+      "source_sha256": "5cf5af99f8600cead0b02f4bff69e35ccd63e07d02b8f98d906382024c3a32c4",
+      "calibration_subset": "map_fit",
+      "score": 0.04672085493803024,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/094.png",
+      "source_sha256": "eb0adec31df0d47f3aeb4d4de5ae53c2f92d22f76c4eda577f65e985abbe7ac4",
+      "calibration_subset": "map_fit",
+      "score": 0.05415768548846245,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/004.png",
+      "source_sha256": "3f862185a62a2c3f18aa87cae9eb7b85c4c66e32a5479afb6bec28fd1b20ca51",
+      "calibration_subset": "map_fit",
+      "score": 0.18858252465724945,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/156.png",
+      "source_sha256": "b51a12856251473d1b7d957e108aa327a684612dbda7725be9c22809c461537d",
+      "calibration_subset": "map_fit",
+      "score": 0.2875634431838989,
+      "candidate": "ANOMALY_CANDIDATE"
+    },
+    {
+      "path": "train/good/040.png",
+      "source_sha256": "0a0b2282bed006f89e16f127f822f4bae54fd3703971ec4254db9e702b0f13a9",
+      "calibration_subset": "map_fit",
+      "score": 0.13560055196285248,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/022.png",
+      "source_sha256": "d5332d37a350175a4e833eb4797ea63e01d492ba60df3b95b21ca030dbdc2729",
+      "calibration_subset": "map_fit",
+      "score": 0.17669469118118286,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/090.png",
+      "source_sha256": "b8765008c85d3011d65d9834589e42353003ca568769c1b02b033e7258f3a1dd",
+      "calibration_subset": "map_fit",
+      "score": 0.11519574373960495,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/199.png",
+      "source_sha256": "248b0e3b972f6852853c387e023de091a146d248ffb288d27343dfd44a20b065",
+      "calibration_subset": "map_fit",
+      "score": 0.10591109097003937,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/203.png",
+      "source_sha256": "43cc97fb8131862a5973832727d5c850dd8f7b396943650781cd9477148b2272",
+      "calibration_subset": "map_fit",
+      "score": 0.016359347850084305,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/009.png",
+      "source_sha256": "4598a73a719ed71c4a6de76b5039dbd010cf1d2c5c850aa95ce8b3976741654d",
+      "calibration_subset": "map_fit",
+      "score": 0.042596034705638885,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/176.png",
+      "source_sha256": "1740318cbb48532f816cbde8145c5693a20787a3d236f076c294380edb46fc0e",
+      "calibration_subset": "map_fit",
+      "score": 0.08712369203567505,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/162.png",
+      "source_sha256": "bacf69c9bf3655e3b16160f2f14bd7992a83a29e3ea973d8823358c39a1915fe",
+      "calibration_subset": "map_fit",
+      "score": 0.09920147806406021,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/048.png",
+      "source_sha256": "009a3e3fd2c09e77a62135c67873707b1dc8d5628e57d4026599bed27c4f5fbe",
+      "calibration_subset": "map_fit",
+      "score": 0.12684689462184906,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/071.png",
+      "source_sha256": "29bfda59533c141a9b21fd168f2ca34f141d64364865c650981eef8de7254b16",
+      "calibration_subset": "map_fit",
+      "score": 0.08406959474086761,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/130.png",
+      "source_sha256": "6e611145040e64a7521a0d4ef031ed2986b212c579f9409e2112a6dcffb83200",
+      "calibration_subset": "map_fit",
+      "score": 0.05062739551067352,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/205.png",
+      "source_sha256": "15f70d5d2fabc25964d056ca7b6ad1f71c4dc1fb5a5af6e5ef2039eefc2d71ca",
+      "calibration_subset": "map_fit",
+      "score": 0.050672467797994614,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/008.png",
+      "source_sha256": "5687ef973d78e670cb86dc4f5ed2ca5361e272930f27a50988bddd2cac66a1aa",
+      "calibration_subset": "map_fit",
+      "score": 0.07403264194726944,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/044.png",
+      "source_sha256": "261cd2ee50138d66727e1f529c20892fa7a6d476dfefb360522ef58f010ccf19",
+      "calibration_subset": "map_fit",
+      "score": 0.07689686119556427,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/086.png",
+      "source_sha256": "5de4f20dd337ebc831490c37bff5b9a7f233ed59189d6cae2070480a35fc027b",
+      "calibration_subset": "map_fit",
+      "score": 0.008388770744204521,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/020.png",
+      "source_sha256": "93925b4a26e767567315cd14851deb6e6bcaaf09f896123d1b42a43b36881899",
+      "calibration_subset": "map_fit",
+      "score": 0.2371618151664734,
+      "candidate": "ANOMALY_CANDIDATE"
+    },
+    {
+      "path": "train/good/064.png",
+      "source_sha256": "2df33534d618f0c6cf20693852440d15c17c705abbb588ab66282af4a069f620",
+      "calibration_subset": "map_fit",
+      "score": 0.2715546786785126,
+      "candidate": "ANOMALY_CANDIDATE"
+    },
+    {
+      "path": "train/good/206.png",
+      "source_sha256": "a68329033fd70dc7df1bde3a88e1a2af43217f842a7b32cdd6244c6f954e45c6",
+      "calibration_subset": "map_fit",
+      "score": 0.08391617238521576,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/167.png",
+      "source_sha256": "357c611ca7b838afb3119c3213bc5717c77766f08cf1adbb9ee831e5bea392e2",
+      "calibration_subset": "threshold",
+      "score": 0.04699894040822983,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/217.png",
+      "source_sha256": "22efa66a6c17a79924e488f5c5db0cba3f444216c3b589b380fbc6a46c8a58eb",
+      "calibration_subset": "threshold",
+      "score": 0.08847410976886749,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/149.png",
+      "source_sha256": "7c47591a8dcf42d61058844cfb389ab52460057a621cb0293b54a4cedc652f67",
+      "calibration_subset": "threshold",
+      "score": 0.16784973442554474,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/021.png",
+      "source_sha256": "82323595367a8648b94adf40cbf672bc0835ab751336e574f1c0ec0b09af4319",
+      "calibration_subset": "threshold",
+      "score": 0.1553722321987152,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/139.png",
+      "source_sha256": "59827b4d81e74449244811189f73fda9d4f7064ea0e6db4c55f54f18e033b6fc",
+      "calibration_subset": "threshold",
+      "score": 0.052496567368507385,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/183.png",
+      "source_sha256": "64be07ae0beef134e85ef409b8325b257877779f3b559e73ca31652f9716bcd3",
+      "calibration_subset": "threshold",
+      "score": 0.09253132343292236,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/113.png",
+      "source_sha256": "8fb007ceb1e0c1a91c36bb957980599d15053d50d2cae96426dff4ee5c9463ba",
+      "calibration_subset": "threshold",
+      "score": 0.06618211418390274,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/015.png",
+      "source_sha256": "004f21bbd96b3119492c432ea1c688198bfccb27f99ad3cbc4168f905e3b8883",
+      "calibration_subset": "threshold",
+      "score": 0.05630058795213699,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/103.png",
+      "source_sha256": "9eb740428ac54f8d6d242ac45411bb6f44e3a259a5814a1ee0ba62257212524a",
+      "calibration_subset": "threshold",
+      "score": 0.043985024094581604,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/201.png",
+      "source_sha256": "e7280ce7a716165be2d9f0cf6bd1a171420801e7318954e995bcdee4842f7277",
+      "calibration_subset": "threshold",
+      "score": 0.06278924643993378,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/151.png",
+      "source_sha256": "e67089511c4507984afe50f97745ffd7ec441deb89c6894319cde1d002caeaab",
+      "calibration_subset": "threshold",
+      "score": 0.090841144323349,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/191.png",
+      "source_sha256": "f1d4c61787f94bd654667a3ee93d3f447a0f5a031395cb6afd6e65b69a44287c",
+      "calibration_subset": "threshold",
+      "score": 0.10119061917066574,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/006.png",
+      "source_sha256": "b95e9ca1fe88c757e5a41ff0cbe97f52c9935a8921744849fac0d2708842a94f",
+      "calibration_subset": "threshold",
+      "score": 0.06795953959226608,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/023.png",
+      "source_sha256": "6c69e056e2ffe41f60efe4fc077e96bdd3f3f3b9df1479e71abba1a65f0b5fe5",
+      "calibration_subset": "threshold",
+      "score": 0.1664247363805771,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/132.png",
+      "source_sha256": "a796074b4be5e6a417f26a44fbafb976ad475635b3ee34ca19823c5388b7a2f0",
+      "calibration_subset": "threshold",
+      "score": 0.22776579856872559,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/207.png",
+      "source_sha256": "883a61f417b4b955011ff6cb4d6508e5dfa0e2e89a647e6056e00a51d4b34406",
+      "calibration_subset": "threshold",
+      "score": 0.1004188284277916,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/109.png",
+      "source_sha256": "d3035895eab20bbef6fad2e8087b8a1b1ca1edf484af52fc366a339be0e5129d",
+      "calibration_subset": "threshold",
+      "score": 0.13534311950206757,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/181.png",
+      "source_sha256": "c3a9ec0715c03b61ce3c47f0296bf68e0a467965e9149a5065d8e61187f4d44a",
+      "calibration_subset": "threshold",
+      "score": 0.07414678484201431,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/007.png",
+      "source_sha256": "f61b3c9743f71e90ac0a9532284c4cabea3a9512e09b0b744120e69c60a6f65d",
+      "calibration_subset": "threshold",
+      "score": 0.10279472172260284,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/141.png",
+      "source_sha256": "32287cd020196640384329e9a56ca77c57fe7027af0ef13b406d7dbf2985b7b4",
+      "calibration_subset": "threshold",
+      "score": 0.09092800319194794,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/039.png",
+      "source_sha256": "c6d2624e524e5f0e7328e155b82614baf5706d296fc7cd69526ca7b0c6392a4b",
+      "calibration_subset": "threshold",
+      "score": 0.09220802783966064,
+      "candidate": "NORMAL_CANDIDATE"
+    },
+    {
+      "path": "train/good/041.png",
+      "source_sha256": "85a4d1df3afa3c18f1dd0a079f299e75246e6825f0b789312e17128da42c2d55",
+      "calibration_subset": "threshold",
+      "score": 0.1302710473537445,
+      "candidate": "NORMAL_CANDIDATE"
+    }
+  ],
+  "upstream_map_max_abs_error": 2.9802322387695312e-08,
+  "validation_images_read": 44,
+  "map_fit_images": 22,
+  "threshold_images": 22,
+  "final_holdout_images_read": 0,
+  "development_images_read": 0,
+  "optimizer_steps": 0,
+  "normal_flag_counts_resubstitution_only": {
+    "map_fit": 3,
+    "threshold": 0
+  },
+  "timing": {
+    "device": "cuda",
+    "warmup": 10,
+    "samples": 50,
+    "p50_ms": 14.540128000000152,
+    "p95_ms": 14.797546249999627,
+    "min_ms": 14.192875999999188,
+    "max_ms": 14.875722000002867,
+    "raw_ms": [
+      14.20136600000177,
+      14.516283999999047,
+      14.192875999999188,
+      14.545006000002303,
+      14.459077000001486,
+      14.37694399999856,
+      14.324196000000455,
+      14.194136000000412,
+      14.643636999998932,
+      14.80168399999826,
+      14.875722000002867,
+      14.398119999999182,
+      14.80633399999931,
+      14.541988000001282,
+      14.771260999999924,
+      14.46786800000055,
+      14.394882000001274,
+      14.664555000003077,
+      14.382637000000642,
+      14.71118499999946,
+      14.532723000002079,
+      14.685940999999758,
+      14.445192000000162,
+      14.210176999998936,
+      14.603926000003042,
+      14.263840000001693,
+      14.78346699999733,
+      14.497203000001235,
+      14.659165999997725,
+      14.470348999999771,
+      14.587937000001716,
+      14.55477300000041,
+      14.538267999999022,
+      14.726519999999965,
+      14.470368999997874,
+      14.708840000000833,
+      14.504987999998775,
+      14.463866999999908,
+      14.792489000001297,
+      14.327412000000095,
+      14.638986999997883,
+      14.768078999999545,
+      14.614657999999281,
+      14.278177999997865,
+      14.644409999998942,
+      14.608149000000736,
+      14.568600000000487,
+      14.342999000000134,
+      14.289827000002475,
+      14.784165999998322
+    ],
+    "scope": "Cached input, calibrated FP32 model/map/score forward plus synchronization; excludes I/O, resize, transfers, candidate comparison, logs/UI/Llama; one desktop process"
+  },
+  "source_sha256": {
+    "configs/vision_score_policy.json": "b6f0a2cd6cdf3f6b88dec590cb403a9a6bde0dc2115f70168b817ac6ae761d7d",
+    "manifests/efficientad_s_training_v1.json": "f83fd6ac58e154c39c2376284b3a5b9ed6104e8265e67ea8677a7e88d8f87cba",
+    "/mnt/c/Users/RF AND SIMULATION/Desktop/honey/ForgeSight/forgesight/vision_calibrate.py": "7357f5900307b204c37dd16ed802a650d6edb588ec52e70ce342e6222ca12475",
+    "requirements/pylock.vision.toml": "dc7dcf3d1696429277aacd0c7cb282741957deb354434bfd7d15970fe4683e15"
+  },
+  "false_alarm_generalization": "NOT_VERIFIED",
+  "defect_recall": "NOT_EVALUATED",
+  "candidate_flags_are_quality_grades": false,
+  "jetson_proof": "NOT_VERIFIED",
+  "bundle_reload_verification": {
+    "status": "CALIBRATED_BUNDLE_RELOAD_VERIFIED",
+    "model_and_teacher_statistics_unchanged": true,
+    "reference_math_flags_restored": true,
+    "checks": [
+      {
+        "path": "train/good/132.png",
+        "score": 0.22776579856872559,
+        "stored_score": 0.22776579856872559,
+        "absolute_difference": 0.0,
+        "candidate": "NORMAL_CANDIDATE",
+        "subset": "threshold"
+      },
+      {
+        "path": "train/good/107.png",
+        "score": 0.04672085493803024,
+        "stored_score": 0.04672085493803024,
+        "absolute_difference": 0.0,
+        "candidate": "NORMAL_CANDIDATE",
+        "subset": "map_fit"
+      }
+    ],
+    "validation_anchor_rereads": 2,
+    "final_holdout_images_read": 0,
+    "defect_recall": "NOT_EVALUATED"
+  },
+  "bundle_loader_sha256": "5d3bae9f94fbb0f6103f74aec3972c91fbc8853f4eba50049fec4ae76209b259",
+  "normal_score_plot_sha256": "d5cf5425bedbe5b8d2a756474600fa0ff75b592bca34a00153078214c5d4b16c",
+  "local_evidence_directory": "artifacts/vision/calibration_v1",
+  "resubstitution_warning": "Threshold-setting normals: 0/22 flagged by construction. Map-fitting normals: 3/22 flagged. Neither group nor their combined count is an independent false-alarm estimate; no defect images were evaluated.",
+  "normal_score_plot": "artifacts/vision/calibration_v1/normal_scores_reviewed.png",
+  "accuracy": "NOT_EVALUATED",
+  "defect_type": "NOT_IMPLEMENTED",
+  "severity": "NOT_IMPLEMENTED",
+  "end_to_end_latency": "NOT_MEASURED",
+  "offline_operation": "NOT_VERIFIED"
+}

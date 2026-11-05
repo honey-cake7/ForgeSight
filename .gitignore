@@ -1,0 +1,46 @@
+# Python environments and generated caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Local credentials and tool state
+.env
+.env.*
+!.env.example
+.aws/
+.codex/
+
+# Local datasets, weights, outputs, and inspection history
+/data/
+/datasets/
+/models/
+/weights/
+/artifacts/
+/runs/
+/logs/
+*.pt
+*.pth
+*.onnx
+*.pte
+*.engine
+*.safetensors
+*.sqlite
+*.sqlite3
+*.sqlite-wal
+*.sqlite-shm
+*.sqlite3-wal
+*.sqlite3-shm
+*.db
+*.db-wal
+*.db-shm
+
+# Original architecture reference: retained locally outside source history
+/Edge AI Quality Control Model Pipeline.pdf
+
+# OS-generated files
+Thumbs.db
+.DS_Store

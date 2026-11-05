@@ -1,0 +1,86 @@
+{
+  "executorch_commit": "3b60683923245cf472b7323426920e15623ba361",
+  "fields": {
+    "backend": [
+      "xnnpack",
+      "coreml",
+      "vulkan",
+      "qnn",
+      "openvino",
+      "torchao",
+      "tosa",
+      "ethosu",
+      "vgf",
+      "mlx"
+    ],
+    "base": [
+      "model_class",
+      "params",
+      "checkpoint",
+      "lora_config",
+      "tokenizer_path",
+      "metadata",
+      "use_lora",
+      "preq_mode",
+      "preq_group_size",
+      "preq_embedding_quantize"
+    ],
+    "debug": [
+      "profile_memory",
+      "profile_path",
+      "generate_etrecord",
+      "generate_full_logits",
+      "verbose"
+    ],
+    "export": [
+      "max_seq_length",
+      "max_context_length",
+      "output_dir",
+      "output_name",
+      "so_library",
+      "export_only",
+      "foundation_weights_file",
+      "lora_weights_file"
+    ],
+    "model": [
+      "dtype_override",
+      "enable_dynamic_shape",
+      "use_shared_embedding",
+      "use_sdpa_with_kv_cache",
+      "expand_rope_table",
+      "use_attention_sink",
+      "output_prune_map",
+      "input_prune_map",
+      "use_kv_cache",
+      "quantize_kv_cache",
+      "static_quantize_kv_cache",
+      "static_quantize_kv_cache_scale",
+      "local_global_attention",
+      "use_moe_quantized_op"
+    ],
+    "quantization": [
+      "QMODE_OPTIONS",
+      "AO_QUANT_PATTERNS",
+      "qmode",
+      "embedding_quantize",
+      "pt2e_quantize",
+      "group_size",
+      "use_spin_quant",
+      "use_qat",
+      "quantize_scope",
+      "calibration_tasks",
+      "calibration_limit",
+      "calibration_seq_length",
+      "calibration_data",
+      "use_hqq"
+    ],
+    "xnnpack": [
+      "enabled",
+      "extended_ops",
+      "enable_bf16"
+    ]
+  },
+  "schema_version": 1,
+  "source_path": "extension/llm/export/config/llm_config.py",
+  "source_sha256": "19ddd09846fb166e2dd06ac2205655ccadc2e40129dabe4f1d283cdfa9010072"
+}

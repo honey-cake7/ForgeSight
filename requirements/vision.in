@@ -1,0 +1,6 @@
+# Stage 3 desktop candidates: CPython 3.12 / Linux x86_64 / CUDA 12.4.
+# Separate from the image and ExecuTorch environments. Install the reviewed lock.
+torch @ https://download-r2.pytorch.org/whl/cu124/torch-2.6.0%2Bcu124-cp312-cp312-linux_x86_64.whl#sha256=a393b506844035c0dac2f30ea8478c343b8e95a429f06f3b3cadfc7f53adb597
+torchvision @ https://download-r2.pytorch.org/whl/cu124/torchvision-0.21.0%2Bcu124-cp312-cp312-linux_x86_64.whl#sha256=efb53ea0af7bf09b7b53e2a18b9be6d245f7d46a90b51d5cf97f37e9b929a991
+anomalib==2.6.2
+numpy==2.2.6

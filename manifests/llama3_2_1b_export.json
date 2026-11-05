@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "status": "EXPORTED_NOT_INFERENCE_VERIFIED",
+  "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+  "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+  "executorch_commit": "3b60683923245cf472b7323426920e15623ba361",
+  "backend_requested": "xnnpack",
+  "quantization": {
+    "qmode": "8da4w",
+    "group_size": 128,
+    "embedding_quantize": "4,32"
+  },
+  "max_seq_length": 128,
+  "max_context_length": 512,
+  "artifact": {
+    "bytes": 802247040,
+    "sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739",
+    "local_relative_path": "artifacts/edge/export_attempt_01/exported/llama3_2_1b_xnnpack.pte"
+  },
+  "packages": {
+    "torch": "2.14.0+cpu",
+    "torchvision": "0.29.0+cpu",
+    "executorch": "1.5.1+cpu",
+    "torchao": "0.18.0",
+    "torchtune": "0.0.0",
+    "transformers": "5.0.0rc1"
+  },
+  "inputs_sha256": {
+    "configs/edge_llama.json": "3013c57799500c84970d16ddc39ebd56c0e0a6be176d7696614a43d21db93e89",
+    "manifests/llama3_2_1b_assets.json": "cf4cecd80404d30c0a5bd04cfae254c6dd9214948dd573594a2b61d637bccdbb",
+    "requirements/pylock.export.toml": "64a86b39a1f0184d27527f4cf961c536b62885ddaa4282ae2366ded9086262de",
+    "artifacts/edge/export_attempt_01/export_config.yaml": "c5072384caebe3c96ae988d58fd200a28ef90c20385592f5bd0d25dcf9c7bb25"
+  },
+  "export_process": {
+    "argv": [
+      "/root/.cache/forgesight/et1.5.1/venv/bin/python",
+      "-B",
+      "-m",
+      "extension.llm.export.export_llm",
+      "--config",
+      "/mnt/c/Users/RF AND SIMULATION/Desktop/honey/ForgeSight/artifacts/edge/export_attempt_01/export_config.yaml"
+    ],
+    "returncode": 0,
+    "completion_reason": "EXITED",
+    "process_wall_seconds": 248.463838298,
+    "sampled_peak_rss_kib": 8237948,
+    "rss_sampling_interval_seconds": 0.05,
+    "memory_note": "Sampled process RSS; may miss peaks and excludes other processes.",
+    "stdout_bytes": 395483,
+    "stderr_bytes": 22358
+  },
+  "output_path_note": "Upstream output_name ending in .pte bypassed output_dir. Original remains in source checkout; identical copy placed at local_relative_path. Future recipes use an extension-free stem.",
+  "device_inference": "BLOCKED_NOT_VERIFIED",
+  "model_inference": "NOT_RUN",
+  "quality": "NOT_VERIFIED",
+  "offline_operation": "NOT_VERIFIED",
+  "export_working_directory": "/root/.cache/forgesight/et1.5.1/executorch",
+  "omp_num_threads": 8,
+  "artifact_validation": {
+    "status": "ARTIFACT_LOADED_NOT_INFERENCE_VERIFIED",
+    "verification": "Runtime.load_program default InternalConsistency",
+    "methods": [
+      "enable_dynamic_shape",
+      "forward",
+      "get_bos_id",
+      "get_eos_ids",
+      "get_max_context_len",
+      "get_max_seq_len",
+      "get_n_layers",
+      "get_vocab_size",
+      "use_kv_cache",
+      "use_sdpa_with_kv_cache"
+    ],
+    "program_metadata_bytes": 167680,
+    "delegates": {
+      "forward": [
+        "XnnpackBackend"
+      ],
+      "get_max_seq_len": [],
+      "get_max_context_len": [],
+      "get_n_layers": [],
+      "get_vocab_size": [],
+      "use_kv_cache": [],
+      "use_sdpa_with_kv_cache": [],
+      "enable_dynamic_shape": [],
+      "get_bos_id": [],
+      "get_eos_ids": []
+    },
+    "method_execution": "NOT_RUN"
+  },
+  "file_identifier": "ET12"
+}
