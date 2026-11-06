@@ -56,3 +56,10 @@ The current inspection CLI commits JSON and SQLite by default and takes
 CaptureGate accepts `already_recorded=store.has_part` to refuse recorded IDs
 after restart. Earlier Stage 4 JSON-only proof above remains a historical
 snapshot. See [SQLite behavior, retries and proof](STORAGE.md).
+
+## Stage 7 current command update
+
+The full current suite includes FastAPI contract tests and uses
+`/root/.cache/forgesight/app-v1/venv/bin/python`, with 119 tests passing. Earlier
+stage-specific test counts/vision-environment commands above describe their
+historical snapshots. See [the current operator workflow](OPERATOR_APP.md).

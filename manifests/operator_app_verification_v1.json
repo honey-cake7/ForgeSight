@@ -1,0 +1,491 @@
+{
+  "schema_version": 1,
+  "scope": "DESKTOP_LOCAL_OPERATOR_API_AND_REAL_BROWSER_REPLAY",
+  "browser_proof": {
+    "scope": "REAL_BROWSER_CLICK_REAL_GPU_MODEL_AND_SQLITE_DESKTOP_REPLAY",
+    "browser": "156.0.8078.4",
+    "inspections": [
+      {
+        "record": {
+          "advice_status": "NOT_REQUESTED_STAGE_9_PENDING",
+          "artifacts": {
+            "response_overlay": "/mnt/c/Users/RF AND SIMULATION/Desktop/honey/ForgeSight/artifacts/app_stage7/proof_runtime/records/d7908acd-2deb-442a-8762-f399a8220934_response.png",
+            "response_overlay_sha256": "98eccff596247dfbf596db8041b279119a14666d74354cfaf129329d4ef33532",
+            "score_map": "/mnt/c/Users/RF AND SIMULATION/Desktop/honey/ForgeSight/artifacts/app_stage7/proof_runtime/records/d7908acd-2deb-442a-8762-f399a8220934.npz",
+            "score_map_sha256": "46c785e3436e6f061fe1411809dcfcb123b0b7a3bc31f80754696560e7f97747"
+          },
+          "candidate": "NORMAL_CANDIDATE",
+          "decision": {
+            "authority": "DETERMINISTIC_RULES_ONLY",
+            "evidence": {
+              "response_area_px": 0,
+              "score": 0.028454091399908066
+            },
+            "grade": "PASS",
+            "industrial_certified": false,
+            "operator_action": "No anomaly flagged under this benchmark policy. PASS is provisional; missed scratches are documented.",
+            "physical_scale_calibrated": false,
+            "policy_id": "forgegrade-metal-nut-pixel-prototype-v1",
+            "policy_sha256": "0c6f0937371db04858f34f13df84a030fb1e6c2ad715e1149d2c04e341a60567",
+            "policy_snapshot": {
+              "accepted_types": [
+                "bent",
+                "color",
+                "flip",
+                "scratch"
+              ],
+              "checkpoint_sha256": "aa2407dba9f74db8472ee6adc5968eefc7c243d9f200d70f2d3a792fd0b7f4fd",
+              "critical_zones": [],
+              "geometry_cutoffs": "Illustrative rule-engine examples, not manufacturing tolerances. Not selected to optimize holdout results.",
+              "image_threshold": 0.22776579856872559,
+              "industrial_certified": false,
+              "normal_review_margin_fraction": 0.1,
+              "physical_scale_calibrated": false,
+              "pixel_threshold_validated": false,
+              "policy_id": "forgegrade-metal-nut-pixel-prototype-v1",
+              "reject_bbox_diagonal_px": 140.0,
+              "reject_response_area_fraction": 0.01,
+              "required_type_status": "VALIDATED_SAME_DOMAIN_RELIABLE",
+              "schema_version": 1,
+              "scope": "UNCERTIFIED_BENCHMARK_SAVED_IMAGE_PROTOTYPE",
+              "score_margin": "Numerical proximity guard only, not calibrated confidence.",
+              "score_policy_sha256": "33a28c23328c63abf93fa0e01d270eda52f4a0195f7b8df89c14dda44e77a687",
+              "source_size_px": [
+                700,
+                700
+              ],
+              "units": "pixels"
+            },
+            "reason": "NORMAL_CANDIDATE_OUTSIDE_REVIEW_BAND",
+            "severity": "NO_FLAGGED_RESPONSE",
+            "units": "pixels"
+          },
+          "error": null,
+          "geometry": {
+            "connectivity": 8,
+            "length_definition": "bounding-box diagonal proxy; not measured scratch length",
+            "measurement": "thresholded_model_response_not_physical_damage",
+            "morphology": "none",
+            "pixel_threshold_validated": false,
+            "regions": [],
+            "source_size_px": [
+              700,
+              700
+            ],
+            "threshold": 0.22776579856872559,
+            "total_area_px": 0,
+            "units": "pixels"
+          },
+          "inspection_id": "d7908acd-2deb-442a-8762-f399a8220934",
+          "model": {
+            "checkpoint_sha256": "aa2407dba9f74db8472ee6adc5968eefc7c243d9f200d70f2d3a792fd0b7f4fd",
+            "image_threshold": 0.22776579856872559,
+            "input_size_px": [
+              256,
+              256
+            ],
+            "jetson_verified": false,
+            "name": "EfficientAD-S",
+            "precision": "fp32",
+            "runtime_device": "cuda",
+            "score_policy_sha256": "33a28c23328c63abf93fa0e01d270eda52f4a0195f7b8df89c14dda44e77a687"
+          },
+          "part_id": "UI-PROOF-A",
+          "predicted_defect_type": "unknown",
+          "schema_version": 1,
+          "score": 0.028454091399908066,
+          "source": {
+            "mode": "SAVED_IMAGE_REPLAY",
+            "path": "/mnt/c/Users/RF AND SIMULATION/Desktop/honey/ForgeSight/data/mvtec_ad/metal_nut/train/good/000.png",
+            "sha256": "b0309325bc305ae8b19246884f20397b951285786aecca0ebf1d009e9799e350",
+            "size_px": [
+              700,
+              700
+            ]
+          },
+          "status": "ANALYZED",
+          "timestamp_utc": "2026-11-06T16:30:16.807980+00:00",
+          "timings": {
+            "inspection_before_record_write_ms": 813.401662000004,
+            "model_forward_ms": 586.3578230000002,
+            "predict_image_ms": 592.7936699999918,
+            "scope": "decode/hash, prediction, regions, grading, map and overlay writes; excludes bundle/policy load, duplicate check, JSON/SQLite writes and Llama",
+            "timing_scope": "predict_image includes resize/transfers/maps, excludes file decode/hash, regions, grading, output I/O and Llama"
+          },
+          "type_status": "NO_VALIDATED_SUBTYPE_CLASSIFIER"
+        },
+        "media": {
+          "source": "/api/inspections/d7908acd-2deb-442a-8762-f399a8220934/source",
+          "overlay": "/api/inspections/d7908acd-2deb-442a-8762-f399a8220934/overlay"
+        }
+      },
+      {
+        "record": {
+          "advice_status": "NOT_REQUESTED_STAGE_9_PENDING",
+          "artifacts": {
+            "response_overlay": "/mnt/c/Users/RF AND SIMULATION/Desktop/honey/ForgeSight/artifacts/app_stage7/proof_runtime/records/d9130609-fecb-4a37-a78b-9f28401169b2_response.png",
+            "response_overlay_sha256": "a477fbe51db3e73da1a1442997ae9ff07a2568353ac0819176006b0b0e5fd981",
+            "score_map": "/mnt/c/Users/RF AND SIMULATION/Desktop/honey/ForgeSight/artifacts/app_stage7/proof_runtime/records/d9130609-fecb-4a37-a78b-9f28401169b2.npz",
+            "score_map_sha256": "5f018a674f4d4c9aa0df0cd1927d602a3a40e66c8540caf1d97a06a562f7ca82"
+          },
+          "candidate": "ANOMALY_CANDIDATE",
+          "decision": {
+            "authority": "DETERMINISTIC_RULES_ONLY",
+            "evidence": {
+              "response_area_px": 9015
+            },
+            "grade": "REVIEW",
+            "industrial_certified": false,
+            "operator_action": "Hold this part for human inspection; check image quality and the highlighted response. No factory cause is inferred.",
+            "physical_scale_calibrated": false,
+            "policy_id": "forgegrade-metal-nut-pixel-prototype-v1",
+            "policy_sha256": "0c6f0937371db04858f34f13df84a030fb1e6c2ad715e1149d2c04e341a60567",
+            "policy_snapshot": {
+              "accepted_types": [
+                "bent",
+                "color",
+                "flip",
+                "scratch"
+              ],
+              "checkpoint_sha256": "aa2407dba9f74db8472ee6adc5968eefc7c243d9f200d70f2d3a792fd0b7f4fd",
+              "critical_zones": [],
+              "geometry_cutoffs": "Illustrative rule-engine examples, not manufacturing tolerances. Not selected to optimize holdout results.",
+              "image_threshold": 0.22776579856872559,
+              "industrial_certified": false,
+              "normal_review_margin_fraction": 0.1,
+              "physical_scale_calibrated": false,
+              "pixel_threshold_validated": false,
+              "policy_id": "forgegrade-metal-nut-pixel-prototype-v1",
+              "reject_bbox_diagonal_px": 140.0,
+              "reject_response_area_fraction": 0.01,
+              "required_type_status": "VALIDATED_SAME_DOMAIN_RELIABLE",
+              "schema_version": 1,
+              "scope": "UNCERTIFIED_BENCHMARK_SAVED_IMAGE_PROTOTYPE",
+              "score_margin": "Numerical proximity guard only, not calibrated confidence.",
+              "score_policy_sha256": "33a28c23328c63abf93fa0e01d270eda52f4a0195f7b8df89c14dda44e77a687",
+              "source_size_px": [
+                700,
+                700
+              ],
+              "units": "pixels"
+            },
+            "reason": "UNKNOWN_UNSEEN_OR_UNRELIABLE_TYPE",
+            "severity": "UNASSESSED",
+            "units": "pixels"
+          },
+          "error": null,
+          "geometry": {
+            "connectivity": 8,
+            "length_definition": "bounding-box diagonal proxy; not measured scratch length",
+            "measurement": "thresholded_model_response_not_physical_damage",
+            "morphology": "none",
+            "pixel_threshold_validated": false,
+            "regions": [
+              {
+                "area_px": 38,
+                "bbox_diagonal_px": 9.899494936611665,
+                "bbox_xywh_px": [
+                  375,
+                  122,
+                  7,
+                  7
+                ],
+                "region_id": 1
+              },
+              {
+                "area_px": 8977,
+                "bbox_diagonal_px": 181.04419349981927,
+                "bbox_xywh_px": [
+                  512,
+                  361,
+                  139,
+                  116
+                ],
+                "region_id": 2
+              }
+            ],
+            "source_size_px": [
+              700,
+              700
+            ],
+            "threshold": 0.22776579856872559,
+            "total_area_px": 9015,
+            "units": "pixels"
+          },
+          "inspection_id": "d9130609-fecb-4a37-a78b-9f28401169b2",
+          "model": {
+            "checkpoint_sha256": "aa2407dba9f74db8472ee6adc5968eefc7c243d9f200d70f2d3a792fd0b7f4fd",
+            "image_threshold": 0.22776579856872559,
+            "input_size_px": [
+              256,
+              256
+            ],
+            "jetson_verified": false,
+            "name": "EfficientAD-S",
+            "precision": "fp32",
+            "runtime_device": "cuda",
+            "score_policy_sha256": "33a28c23328c63abf93fa0e01d270eda52f4a0195f7b8df89c14dda44e77a687"
+          },
+          "part_id": "UI-PROOF-B",
+          "predicted_defect_type": "unknown",
+          "schema_version": 1,
+          "score": 0.6828088760375977,
+          "source": {
+            "mode": "SAVED_IMAGE_REPLAY",
+            "path": "/mnt/c/Users/RF AND SIMULATION/Desktop/honey/ForgeSight/data/mvtec_ad/metal_nut/test/bent/017.png",
+            "sha256": "b49cc898143c46a8c3a8697411d04a078b36f60f4798ccc68aea33ea8fcac026",
+            "size_px": [
+              700,
+              700
+            ]
+          },
+          "status": "ANALYZED",
+          "timestamp_utc": "2026-11-06T16:30:17.767940+00:00",
+          "timings": {
+            "inspection_before_record_write_ms": 238.6052100000029,
+            "model_forward_ms": 26.134331000008615,
+            "predict_image_ms": 31.988927000000444,
+            "scope": "decode/hash, prediction, regions, grading, map and overlay writes; excludes bundle/policy load, duplicate check, JSON/SQLite writes and Llama",
+            "timing_scope": "predict_image includes resize/transfers/maps, excludes file decode/hash, regions, grading, output I/O and Llama"
+          },
+          "type_status": "NO_VALIDATED_SUBTYPE_CLASSIFIER"
+        },
+        "media": {
+          "source": "/api/inspections/d9130609-fecb-4a37-a78b-9f28401169b2/source",
+          "overlay": "/api/inspections/d9130609-fecb-4a37-a78b-9f28401169b2/overlay"
+        }
+      }
+    ],
+    "summary": {
+      "schema_version": 1,
+      "inspection_count": 2,
+      "distinct_part_count": 2,
+      "original_grade_counts": {
+        "PASS": 1,
+        "REVIEW": 1,
+        "REJECT": 0
+      },
+      "processing_status_counts": {
+        "ANALYZED": 2,
+        "ERROR": 0
+      },
+      "unverified_correction_count": 0
+    },
+    "duplicate_post_status": 409,
+    "refresh_preserved_records": true,
+    "history_filter_and_view_worked": true,
+    "mobile_width_px": 390,
+    "mobile_horizontal_overflow": false,
+    "page_errors": [],
+    "external_requests": [],
+    "same_image_scores_geometry_as_stage5": true,
+    "new_holdout_inference": 0,
+    "resumed_after_layout_failure": true,
+    "inspection_trigger_note": "Original browser run clicked Inspect twice and saved these records before a mobile-layout assertion failed; this run verifies the existing records without new inference.",
+    "jetson_verified": false,
+    "physical_camera_verified": false,
+    "llama_advice_connected": false,
+    "screenshots": {
+      "operator_desktop.png": "e6b2fd09801cd944c26a6320e2d35485052a6bda146791e4e98c7881f150e98d",
+      "operator_mobile.png": "bfea375806972a8d6897593f5a599e3ab6442839bcbb82fbb1506007f67154e6"
+    }
+  },
+  "server_restart_proof": {
+    "scope": "FRESH_BROWSER_AFTER_REAL_SERVER_RESTART",
+    "summary": {
+      "schema_version": 1,
+      "inspection_count": 2,
+      "distinct_part_count": 2,
+      "original_grade_counts": {
+        "PASS": 1,
+        "REVIEW": 1,
+        "REJECT": 0
+      },
+      "processing_status_counts": {
+        "ANALYZED": 2,
+        "ERROR": 0
+      },
+      "unverified_correction_count": 0
+    },
+    "latest": {
+      "inspection": {
+        "record": {
+          "advice_status": "NOT_REQUESTED_STAGE_9_PENDING",
+          "artifacts": {
+            "response_overlay": "/mnt/c/Users/RF AND SIMULATION/Desktop/honey/ForgeSight/artifacts/app_stage7/proof_runtime/records/d9130609-fecb-4a37-a78b-9f28401169b2_response.png",
+            "response_overlay_sha256": "a477fbe51db3e73da1a1442997ae9ff07a2568353ac0819176006b0b0e5fd981",
+            "score_map": "/mnt/c/Users/RF AND SIMULATION/Desktop/honey/ForgeSight/artifacts/app_stage7/proof_runtime/records/d9130609-fecb-4a37-a78b-9f28401169b2.npz",
+            "score_map_sha256": "5f018a674f4d4c9aa0df0cd1927d602a3a40e66c8540caf1d97a06a562f7ca82"
+          },
+          "candidate": "ANOMALY_CANDIDATE",
+          "decision": {
+            "authority": "DETERMINISTIC_RULES_ONLY",
+            "evidence": {
+              "response_area_px": 9015
+            },
+            "grade": "REVIEW",
+            "industrial_certified": false,
+            "operator_action": "Hold this part for human inspection; check image quality and the highlighted response. No factory cause is inferred.",
+            "physical_scale_calibrated": false,
+            "policy_id": "forgegrade-metal-nut-pixel-prototype-v1",
+            "policy_sha256": "0c6f0937371db04858f34f13df84a030fb1e6c2ad715e1149d2c04e341a60567",
+            "policy_snapshot": {
+              "accepted_types": [
+                "bent",
+                "color",
+                "flip",
+                "scratch"
+              ],
+              "checkpoint_sha256": "aa2407dba9f74db8472ee6adc5968eefc7c243d9f200d70f2d3a792fd0b7f4fd",
+              "critical_zones": [],
+              "geometry_cutoffs": "Illustrative rule-engine examples, not manufacturing tolerances. Not selected to optimize holdout results.",
+              "image_threshold": 0.22776579856872559,
+              "industrial_certified": false,
+              "normal_review_margin_fraction": 0.1,
+              "physical_scale_calibrated": false,
+              "pixel_threshold_validated": false,
+              "policy_id": "forgegrade-metal-nut-pixel-prototype-v1",
+              "reject_bbox_diagonal_px": 140.0,
+              "reject_response_area_fraction": 0.01,
+              "required_type_status": "VALIDATED_SAME_DOMAIN_RELIABLE",
+              "schema_version": 1,
+              "scope": "UNCERTIFIED_BENCHMARK_SAVED_IMAGE_PROTOTYPE",
+              "score_margin": "Numerical proximity guard only, not calibrated confidence.",
+              "score_policy_sha256": "33a28c23328c63abf93fa0e01d270eda52f4a0195f7b8df89c14dda44e77a687",
+              "source_size_px": [
+                700,
+                700
+              ],
+              "units": "pixels"
+            },
+            "reason": "UNKNOWN_UNSEEN_OR_UNRELIABLE_TYPE",
+            "severity": "UNASSESSED",
+            "units": "pixels"
+          },
+          "error": null,
+          "geometry": {
+            "connectivity": 8,
+            "length_definition": "bounding-box diagonal proxy; not measured scratch length",
+            "measurement": "thresholded_model_response_not_physical_damage",
+            "morphology": "none",
+            "pixel_threshold_validated": false,
+            "regions": [
+              {
+                "area_px": 38,
+                "bbox_diagonal_px": 9.899494936611665,
+                "bbox_xywh_px": [
+                  375,
+                  122,
+                  7,
+                  7
+                ],
+                "region_id": 1
+              },
+              {
+                "area_px": 8977,
+                "bbox_diagonal_px": 181.04419349981927,
+                "bbox_xywh_px": [
+                  512,
+                  361,
+                  139,
+                  116
+                ],
+                "region_id": 2
+              }
+            ],
+            "source_size_px": [
+              700,
+              700
+            ],
+            "threshold": 0.22776579856872559,
+            "total_area_px": 9015,
+            "units": "pixels"
+          },
+          "inspection_id": "d9130609-fecb-4a37-a78b-9f28401169b2",
+          "model": {
+            "checkpoint_sha256": "aa2407dba9f74db8472ee6adc5968eefc7c243d9f200d70f2d3a792fd0b7f4fd",
+            "image_threshold": 0.22776579856872559,
+            "input_size_px": [
+              256,
+              256
+            ],
+            "jetson_verified": false,
+            "name": "EfficientAD-S",
+            "precision": "fp32",
+            "runtime_device": "cuda",
+            "score_policy_sha256": "33a28c23328c63abf93fa0e01d270eda52f4a0195f7b8df89c14dda44e77a687"
+          },
+          "part_id": "UI-PROOF-B",
+          "predicted_defect_type": "unknown",
+          "schema_version": 1,
+          "score": 0.6828088760375977,
+          "source": {
+            "mode": "SAVED_IMAGE_REPLAY",
+            "path": "/mnt/c/Users/RF AND SIMULATION/Desktop/honey/ForgeSight/data/mvtec_ad/metal_nut/test/bent/017.png",
+            "sha256": "b49cc898143c46a8c3a8697411d04a078b36f60f4798ccc68aea33ea8fcac026",
+            "size_px": [
+              700,
+              700
+            ]
+          },
+          "status": "ANALYZED",
+          "timestamp_utc": "2026-11-06T16:30:17.767940+00:00",
+          "timings": {
+            "inspection_before_record_write_ms": 238.6052100000029,
+            "model_forward_ms": 26.134331000008615,
+            "predict_image_ms": 31.988927000000444,
+            "scope": "decode/hash, prediction, regions, grading, map and overlay writes; excludes bundle/policy load, duplicate check, JSON/SQLite writes and Llama",
+            "timing_scope": "predict_image includes resize/transfers/maps, excludes file decode/hash, regions, grading, output I/O and Llama"
+          },
+          "type_status": "NO_VALIDATED_SUBTYPE_CLASSIFIER"
+        },
+        "media": {
+          "source": "/api/inspections/d9130609-fecb-4a37-a78b-9f28401169b2/source",
+          "overlay": "/api/inspections/d9130609-fecb-4a37-a78b-9f28401169b2/overlay"
+        }
+      }
+    },
+    "page_errors": [],
+    "external_requests": [],
+    "screenshots": {
+      "history_after_server_restart.png": "e6b2fd09801cd944c26a6320e2d35485052a6bda146791e4e98c7881f150e98d"
+    }
+  },
+  "software_tests": {
+    "count": 119,
+    "result": "PASS",
+    "log": "artifacts/app_stage7/tests_final.log",
+    "log_sha256": "633e26da064d11b4d0c6b33d11a6ddd68b505827452ad7ca4b1d143e39e3c12e"
+  },
+  "dependency_verification": {
+    "app_lock": "requirements/pylock.app.toml",
+    "sha256": "929a9f6c2b177b8dc2caec7ace47584b28c67720141b93529cb61470f44b2aff",
+    "app_packages": 101,
+    "original_vision_package_versions_preserved": 89,
+    "fresh_lock_install_passed": true,
+    "original_four_environment_inventories_unchanged": true,
+    "qa_lock_sha256": "7dc1933fa1d4bd2759e98c0ebec0cb30096f299bd566035ea0a7f8b8d0bc4ee5"
+  },
+  "database": {
+    "path": "/mnt/c/Users/RF AND SIMULATION/Desktop/honey/ForgeSight/artifacts/app_stage7/proof_runtime/inspections.sqlite3",
+    "sha256_at_verification": "810acbd37e1521f4e978f6bffb76a73cf1e849025f10eaf8ef2ef8bde403ce52",
+    "integrity": {
+      "integrity_check": [
+        "ok"
+      ],
+      "foreign_key_check": [],
+      "foreign_keys_enabled": true,
+      "journal_mode": "delete",
+      "synchronous": 2,
+      "schema_version": 1,
+      "application_id": 1179863367
+    }
+  },
+  "model_and_frozen_score_policy_unchanged": true,
+  "first_browser_failure": "Mobile overflow from absolute hidden table label; fixed containing block; first two actual records retained, layout QA resumed without more inference.",
+  "no_new_holdout_model_forwards": true,
+  "camera_connected": false,
+  "jetson_verified": false,
+  "llama_advice_connected": false,
+  "network_disconnection_verified": false
+}

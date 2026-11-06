@@ -122,3 +122,10 @@ Next is **Stage 6: SQLite persistence**, including errors, distinct inspection
 IDs and duplicate/restart checks. Jetson execution, physical camera tests,
 reliable defect types, approved geometry tolerances and offline proof remain
 open. The current authorization stops at Stage 5.
+
+## Stage 7 current command update
+
+The full current suite includes FastAPI contract tests and uses
+`/root/.cache/forgesight/app-v1/venv/bin/python`, with 119 tests passing. Earlier
+stage-specific test counts/vision-environment commands above describe their
+historical snapshots. See [the current operator workflow](OPERATOR_APP.md).

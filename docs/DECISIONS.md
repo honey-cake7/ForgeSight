@@ -422,3 +422,25 @@ JSON import retry without model execution. No cross-file atomicity, automatic
 pending recovery, power-loss guarantee or camera identity proof is claimed.
 All 112 tests and the actual 4-record separate-process proof pass. Stop after
 Stage 6; Stage 7 API/UI is the next review gate.
+
+## 025: Keep the operator app local, real and limited to exposed samples
+
+Use FastAPI with buildless local HTML/CSS/JS. A new isolated app environment
+adds 12 dependencies while preserving all 89 pinned vision versions. Keep the
+four existing environments unchanged and reproduce the app lock in a fresh
+temporary environment. Browser QA is isolated in a Windows-only environment.
+No hosted deployment, frontend package service, CDN or cloud runtime is added.
+
+Load the calibrated model once, use explicit CUDA/CPU choice, and permit one
+inspection at a time with immediate busy refusal. Reuse the real part gate,
+grading function and SQLite commit path. Config is read-only and the sample
+catalog contains fit/development images only. Serve recorded source/overlay
+references, verify source and new overlay hashes, and never expose arbitrary
+paths. Render unknown type, pixel-only rules, the two missed scratches, replay
+mode and pending Llama advice explicitly. Operator text is deterministic.
+
+Actual browser clicks produced two real records. Keep those records after the
+mobile overflow failure, fix the containing block and resume layout verification
+without new inference. Refresh and a restarted server retain the results.
+119 tests pass; no new holdout inference or tuning. Stop for review before the
+physical Jetson/camera Stage 8. ExecuTorch on-device remains mandatory and open.

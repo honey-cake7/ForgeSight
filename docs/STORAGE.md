@@ -159,3 +159,10 @@ the two missed scratches, physical part tracking, industrial tolerances, Jetson
 camera/offline operation and on-device Llama/ExecuTorch advice remain open.
 **Next: Stage 7, the smallest local backend and operator screen.** Stop for review
 before that stage.
+
+## Stage 7 current command update
+
+The full current suite includes FastAPI contract tests and uses
+`/root/.cache/forgesight/app-v1/venv/bin/python`, with 119 tests passing. Earlier
+stage-specific test counts/vision-environment commands above describe their
+historical snapshots. See [the current operator workflow](OPERATOR_APP.md).

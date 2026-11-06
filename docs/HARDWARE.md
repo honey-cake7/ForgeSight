@@ -85,3 +85,12 @@ requires no GPU or added package. Actual vision replay still used the desktop
 RTX 2000 Ada, not Jetson. No device became connected or available in this step.
 The stage does not establish camera identity, edge database compatibility,
 thermal/latency behavior or disconnected Jetson operation.
+
+## Stage 7 local operator proof
+
+The API/model ran in a new WSL app environment on the desktop RTX 2000 Ada.
+Windows headless Chromium exercised the real loopback UI. Both valid image
+scores/geometry matched earlier results; server restart preserved two records.
+No Jetson or camera connected, and browser-local requests do not establish a
+disconnected edge test. Actual device inventory and camera domain remain the
+next Stage 8 gate. No desktop UI timing is promoted to Jetson performance.

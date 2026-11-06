@@ -190,6 +190,64 @@ training snapshots. The actual model-only FP32 timing uses the desktop CUDA GPU
 with the training recipe's math flags; it is not a Jetson or end-to-end result.
 See [calibration/reload commands and limitations](VISION_CALIBRATION.md).
 
+## Stage 7: isolated operator app and browser QA
+
+The desktop app runs in a new Linux environment at
+`/root/.cache/forgesight/app-v1/venv`. All 89 package versions from the original
+vision lock are preserved; 12 additions make 101 locked packages. Inputs are
+`requirements/app.in` and `requirements/vision.in`; the installed, hashed lock
+is `requirements/pylock.app.toml`. FastAPI 0.162.0, Uvicorn 0.54.0 and HTTPX
+0.28.1 are pinned. This is a CPython 3.12/Linux x86_64/CUDA desktop lock, not
+an unverified Jetson installation recipe.
+
+From PowerShell, choose a fresh environment root rather than overwriting an
+existing one. The following illustrates the actual created environment:
+
+```powershell
+wsl -d Ubuntu --exec /root/.local/bin/uv venv --python /root/.cache/forgesight/vision-v1/venv/bin/python /root/.cache/forgesight/app-v1/venv
+wsl -d Ubuntu --exec /root/.local/bin/uv pip sync --python /root/.cache/forgesight/app-v1/venv/bin/python requirements/pylock.app.toml
+wsl -d Ubuntu --exec /root/.local/bin/uv pip check --python /root/.cache/forgesight/app-v1/venv/bin/python
+```
+
+The lock was compiled with uv 0.12.15 using a constraint inventory of all
+existing vision distributions except pip. Its versions were checked against
+the committed 89-package vision lock before installation. An initial blanket
+binary-only resolution refused the pre-existing source-only FreIA dependency;
+that failure is retained. Resolution then used the already reviewed identical
+source-only distribution entries/hashes, without relaxing package versions.
+New desktop dependencies resolved from official PyPI metadata. The normal
+installation command uses the reviewed lock, not a new unconstrained resolve.
+
+A second fresh temporary environment reproduced the complete app lock,
+dependency check and FastAPI/operator/test-client imports. Actual browser
+inference in the primary app environment matched the earlier same-image scores
+and geometry exactly. Full before/after inventories of the image, shared GPU,
+ExecuTorch export and vision environments are identical. Existing environments
+were not upgraded. Evidence is under `artifacts/app_stage7/`.
+
+Windows browser QA uses a separate environment at
+`%LOCALAPPDATA%\forgesight\ui-qa-v1`, with existing Windows Python 3.10.11.
+`requirements/pylock.ui_qa.toml` pins Playwright 1.64.1 and its dependencies;
+Chromium is downloaded into that QA root. Browser tools are not runtime app
+dependencies and no Linux browser/system packages were installed.
+
+Illustrative PowerShell reproduction, using a new QA root if one already exists:
+
+```powershell
+$qaRoot = Join-Path $env:LOCALAPPDATA 'forgesight\ui-qa-v1'
+uv venv --python 3.10 $qaRoot
+uv pip sync --python "$qaRoot\Scripts\python.exe" requirements/pylock.ui_qa.toml
+$env:PLAYWRIGHT_BROWSERS_PATH = Join-Path $qaRoot 'browsers'
+& "$qaRoot\Scripts\python.exe" -m playwright install chromium
+# Against a running real loopback server with a fresh empty proof database:
+& "$qaRoot\Scripts\python.exe" -B scripts/verify_operator_browser.py --output artifacts/app_stage7/browser_first
+```
+
+The full current 119-test suite uses the app environment. The browser script
+requires its specific proof IDs and a new output directory; restart/layout
+checks can use its explicit restart/resume modes. See
+[the operator app, launch command and proof limits](OPERATOR_APP.md).
+
 ## Stage 6: SQLite without another dependency
 
 Storage uses Python's built-in sqlite3. The existing project `.venv` reports

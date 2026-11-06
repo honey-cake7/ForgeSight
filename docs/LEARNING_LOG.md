@@ -459,3 +459,21 @@ We still save the JSON first. If database writing fails, the original result
 can be imported later without inspecting the image again. Abrupt power-loss
 recovery is not tested. All 112 software tests pass; the next stage will let
 an operator inspect images and view this stored history on a small local screen.
+
+## Stage 7: Connect a button to the actual inspection pipeline
+
+The screen is now a working front door to the model, rules and database.
+Clicking Inspect sends the declared part/photo IDs to the local backend. It
+runs the real detector, saves one result and returns the actual image response
+and action. Refreshing asks the database for history; it never reruns the model.
+
+A browser inspected a normal example and an anomalous example, saving one
+provisional PASS and one REVIEW with unknown defect type. Repeating the same
+part was refused. The records and images still appeared after restarting the
+whole server. A narrow-screen layout bug was found and fixed using the existing
+records, without repeating inference. All 119 software tests pass.
+
+Everything shown is saved-image replay on the PC. Camera capture, real physical
+part identity and Llama advice are clearly pending. Next we need the actual
+Jetson and controlled camera samples, because a familiar benchmark picture is
+not evidence that a different camera/lighting setup will work equally well.

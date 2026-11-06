@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="ForgeSight local saved-image inspection workspace.">
+  <title>ForgeSight | Local inspection</title>
+  <link rel="icon" href="/assets/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/style.css">
+  <script src="/assets/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="ForgeSight home"><span class="brand-mark" aria-hidden="true">F<span></span></span><span>FORGESIGHT<span class="brand-sub">INSPECTION WORKSPACE</span></span></a>
+    <div class="connection"><span id="health-dot" class="status-dot"></span><span id="health-label">Connecting to local service</span></div>
+  </header>
+  <main>
+    <div class="page-heading"><div><p class="eyebrow">QUALITY CONTROL / METAL NUT</p><h1>One part. One inspection.</h1><p class="intro">Inspect a saved photo, review the evidence, and keep the result.</p></div><span class="mode-tag">SAVED-IMAGE REPLAY <span>PC</span></span></div>
+    <div class="prototype-note"><span class="notice-icon" aria-hidden="true">i</span><p><strong>Prototype decisions.</strong> Defect names and physical camera validation are pending. Two scratched nuts were missed in the reserved-image test. PASS is provisional.</p></div>
+    <div id="message" class="message" role="alert" hidden></div>
+    <section class="workspace" aria-label="Inspection workspace">
+      <div class="evidence card">
+        <div class="card-heading"><div><p class="eyebrow">VISUAL EVIDENCE</p><h2 id="result-heading">Ready for your first inspection</h2></div><span id="grade" class="grade neutral">NO RESULT</span></div>
+        <div class="image-grid">
+          <figure><div class="image-frame"><img id="source-image" alt="Source photo for the selected saved inspection" hidden><div id="source-empty" class="image-empty"><span class="image-symbol" aria-hidden="true">+</span><span>Source photo</span><small>Choose a photo and inspect a part</small></div></div><figcaption>01 <span>Original photo</span></figcaption></figure>
+          <figure><div class="image-frame"><img id="overlay-image" alt="Model response and region boxes for the selected inspection" hidden><div id="overlay-empty" class="image-empty"><span class="image-symbol" aria-hidden="true">&#9633;</span><span>Model response</span><small>Highlighted pixels will appear here</small></div></div><figcaption>02 <span>Highlighted response</span></figcaption></figure>
+        </div>
+        <div class="finding-grid"><div><span class="field-label">Finding</span><strong id="finding">No inspection selected</strong></div><div><span class="field-label">Defect type</span><strong id="defect-type">Unknown &middot; classifier pending</strong></div><div><span class="field-label">Response area</span><strong id="area">&mdash;</strong></div></div>
+        <div class="evidence-footer"><span id="result-time">Saved results appear here after inspection.</span><span id="model-time">Measurements are in pixels.</span></div>
+      </div>
+      <aside class="controls">
+        <section class="card inspect-card"><p class="eyebrow">NEW INSPECTION</p><h2>Inspect one part</h2><p class="muted">Declare a new part before inspecting its photo.</p>
+          <form id="inspect-form">
+            <label for="part-id">Part ID</label><input id="part-id" name="part-id" placeholder="e.g. BENCH-001" maxlength="128" required autocomplete="off" aria-describedby="part-help"><small id="part-help">One unique ID per distinct part. Repeated IDs are blocked.</small>
+            <label for="sample-id">Saved photo</label><select id="sample-id" name="sample-id" required disabled><option value="">Loading photos&hellip;</option></select>
+            <button id="inspect-button" class="primary" type="submit" disabled><span id="button-label">Inspect part</span><span aria-hidden="true">&#8594;</span></button>
+            <p id="inspect-progress" role="status" class="progress" aria-live="polite"></p>
+          </form>
+          <div class="replay-help"><span class="tiny-dot"></span><p>Saved benchmark examples only.<br>No camera is connected.</p></div>
+        </section>
+        <section class="card guidance"><p class="eyebrow">OPERATOR ACTION</p><h2 id="action-heading">Review the evidence</h2><p id="operator-action">Run an inspection to see the action from the recorded grading policy.</p><div class="advice-state"><span class="tiny-dot pending"></span>Llama advice is not connected yet.</div></section>
+        <details class="profile"><summary>Inspection profile <span aria-hidden="true">+</span></summary><p>EfficientAD-S &middot; FP32<br>700 &times; 700 RGB photos &rarr; 256 &times; 256 model input<br>Pixel-only prototype policy<br>No calibrated millimetres or certified acceptance limits.</p></details>
+      </aside>
+    </section>
+    <section class="card history-section" aria-labelledby="history-heading">
+      <div class="history-heading"><div><p class="eyebrow">LOCAL SQLITE HISTORY</p><h2 id="history-heading">Saved inspections <span id="total-count" class="count">0</span></h2><p class="muted">Original results persist after restarting. Refresh does not create an inspection.</p></div><div class="history-tools"><label for="grade-filter" class="sr-only">Filter history by decision</label><select id="grade-filter"><option value="">All decisions</option><option value="PASS">PASS</option><option value="REVIEW">REVIEW</option><option value="REJECT">REJECT</option></select><button id="refresh-history" class="secondary" type="button">Refresh history</button></div></div>
+      <div id="counts" class="history-counts" aria-live="polite">Loading saved counts&hellip;</div>
+      <div class="table-scroll"><table><thead><tr><th scope="col">PART</th><th scope="col">SAVED TIME</th><th scope="col">DECISION</th><th scope="col">FINDING</th><th scope="col">RESPONSE</th><th scope="col"><span class="sr-only">Open inspection</span></th></tr></thead><tbody id="history-body"></tbody></table></div>
+      <p id="history-empty" class="history-empty" hidden>No inspections in this view. Inspect a new part to save the first result.</p>
+      <div class="pagination"><span id="page-label">Showing saved results</span><div><button id="previous-page" class="secondary small" type="button" disabled>Previous</button><button id="next-page" class="secondary small" type="button" disabled>Next</button></div></div>
+    </section>
+    <footer>FORGESIGHT AI <span>Local saved-image prototype &middot; Jetson and offline edge proof pending</span></footer>
+  </main>
+</body>
+</html>

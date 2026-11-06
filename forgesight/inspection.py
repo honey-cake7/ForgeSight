@@ -93,6 +93,7 @@ def inspect_one_image(path: Path, part_id: str, predictor, output: Path,
             overlay_path = output / f'{record.inspection_id}_response.png'
             overlay.save(overlay_path)
             record.artifacts['response_overlay'] = str(overlay_path)
+            record.artifacts['response_overlay_sha256'] = hashlib.sha256(overlay_path.read_bytes()).hexdigest()
             record.timings = {k: prediction[k] for k in ('model_forward_ms', 'predict_image_ms', 'timing_scope')}
             record.status = 'ANALYZED'
     except Exception as exc:

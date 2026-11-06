@@ -46,6 +46,13 @@ note demonstrates storage, not an actual operator finding. History summaries
 count original decisions. No new model/threshold/holdout work, network service,
 camera, Jetson or power-loss acceptance claim follows. See `docs/STORAGE.md`.
 
+Stage 7 adds a real local operator workflow. Browser Inspect clicks ran the GPU
+model and saved one PASS/one REVIEW; duplicate submission, refresh, filtering
+and full server restart retained the same two records. The screen shows real
+images, unknown type and pending advice. All 119 tests pass. Browser requests
+were local, but network disconnection and Jetson execution remain unverified.
+No new holdout access/model tuning occurred. See `docs/OPERATOR_APP.md`.
+
 The [organizer clarification shared by the user](ORGANIZER_CLARIFICATION.md)
 accepts the Jetson Orin platform family for PS5, subject to the mandatory
 technologies. It clears the platform-eligibility question; actual device

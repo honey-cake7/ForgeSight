@@ -2,31 +2,36 @@
 
 ## Current stage
 
-Stage 6: local SQLite inspection history verified on desktop. The real replay
-saved 4 declared-part records from 9 frames, suppressing 5 repeats: 2 provisional
-PASS and 2 REVIEW, including one explicit failed-image ERROR. After the writer
-process exited, separate Python processes returned all original records exactly.
-Four exact-record retries added zero rows; changed-content and repeated-part
-conflicts were refused. A restarted gate and the actual CLI blocked a previously
-recorded part before new inference/model loading. All 112 tests pass.
+Stage 7: local FastAPI operator workflow verified on desktop. The browser's
+Inspect button ran the actual calibrated GPU model and grade/SQLite pipeline
+on two already exposed fit/development photos. Saved outcomes: one provisional
+PASS, one unknown-type REVIEW. Scores/source hashes/geometry exactly match
+Stage 5. Duplicate POST returned 409 with no additional row. Refresh, filtered
+history, View and fresh browser after full server restart retain both records.
+All 119 tests pass, including seven API/HTTP contract tests.
 
-Schema version 1 stores metadata/provenance and file references, not image bytes.
-Correction claims are appended separately as UNVERIFIED_OPERATOR_CLAIM, preserving
-original decisions/counts. One clearly synthetic correction-storage demonstration
-is saved in the proof database; it is not a real operator finding. REJECT storage
-is verified with a synthetic unit fixture only. Integrity check: ok, no foreign-key
-violations. Database-write failure preserves JSON for explicit retry.
-See `docs/STORAGE.md` and `manifests/sqlite_storage_verification_v1.json`.
+The screen displays actual source/overlay images, pixel area, unknown type,
+recorded action and SQLite counts. Saved-image replay mode, camera/Jetson limits
+and disconnected Llama advice are explicit. Configuration is read-only; the
+catalog excludes final holdout. A first browser mobile-overflow failure was
+fixed; existing real records were preserved and QA resumed without inference.
+Desktop/mobile and restart screenshots are local. No page errors or external
+browser HTTP requests were observed; this is not an offline edge proof.
+See `docs/OPERATOR_APP.md` and `manifests/operator_app_verification_v1.json`.
 
-No new holdout inference, model/policy tuning or dependencies. The detector's
-same-image scores/geometry match Stage 5. Two missed scratches, unknown defect
-types and provisional physical-geometry/grade limits remain real gaps. Jetson,
-camera and disconnected Llama/ExecuTorch operation remain unverified.
+A new app environment adds FastAPI/Uvicorn/HTTPX with all 89 original vision
+versions unchanged (101 locked packages total). A fresh lock installation
+passed; all four earlier environments have identical before/after inventories.
+Windows browser QA has its own environment. Model and score policy hashes are
+unchanged, and no new holdout inference/training/tuning occurred. No raw dataset
+images, screenshots with dataset pixels, model weights or databases enter Git.
 
-STOPPED FOR REVIEW after Stage 6. Next exact action: Stage 7, a minimal local
-backend and operator screen that runs actual inspection and queries SQLite.
-No Stage 7 API, web server or UI was implemented. Automatic pending-file recovery,
-process-kill/power-loss tests and backup/restore remain unverified.
+STOPPED FOR REVIEW after Stage 7. Next exact action: Stage 8, read-only Jetson
+hardware/camera audit when the physical device is available, then controlled
+real-sample capture and domain-shift assessment. Jetson was last reported
+unavailable. No camera/device work was performed in this stage. Reliable defect
+names, industrial tolerances, two missed scratches, camera identity and mandatory
+Llama/ExecuTorch/offline edge gates remain open.
 
 Stage 2.7 desktop Llama generation through ExecuTorch is verified. Stage 1 and
 the transition to Stage 3 were accepted by the user. Actual Stage 2 inference
@@ -260,8 +265,8 @@ proof and do not establish a defect-inspection application.
 
 ## Next exact task
 
-Stage 7: build the smallest local backend and operator screen. Inspect must run
-the actual model/grade/storage path; history must query SQLite after refresh.
-Show the real image/response overlay, unknown type, provisional decision and
-explicit errors. Preserve the part gate and keep advice visibly pending until
-real ExecuTorch integration. Stop for review before Stage 8 camera/Jetson work.
+Stage 8: first confirm physical Jetson availability and perform a read-only
+inventory of its exact module/RAM, architecture, JetPack/software and camera.
+Then establish the controlled capture setup and test real parts with distinct
+IDs. Assess camera-vs-benchmark domain shift before optimizing or claiming
+accuracy/latency. Keep all unavailable device evidence BLOCKED - NOT VERIFIED.

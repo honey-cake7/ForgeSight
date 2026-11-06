@@ -4,11 +4,11 @@ An incremental project for offline industrial surface-defect inspection on an
 NVIDIA Jetson Orin Nano, with deterministic grading, local inspection history,
 and a Llama-family advisory model running on the device through ExecuTorch.
 
-**Current state: Stage 6 desktop saved-image persistence verified.** The system
+**Current state: Stage 7 local operator workflow verified on desktop.** The system
 runs a real trained EfficientAD-S model, highlights response regions, saves one
 record per declared part, adds deterministic pixel-only decisions and saves
-local SQLite history. It is not yet a complete application or a verified
-Jetson/camera system.
+local SQLite history. A local screen runs real inspection and browses saved
+results. Jetson/camera deployment and complete offline edge operation remain open.
 
 - [Vision training and choice](docs/VISION_BASELINE.md): EfficientAD-S 256x256,
   10,000 FP32 training steps on 176 normal images; [training evidence](docs/VISION_TRAINING.md).
@@ -31,10 +31,29 @@ Jetson/camera system.
   and duplicate IDs are handled explicitly. Correction proposals remain
   separate, unverified claims and preserve the original decision.
 
-All **112 tests pass** in the existing locked vision environment. No packages
-were installed/upgraded in Stages 3.4 through 6. The Jetson remains unavailable; exact
+- [Local operator screen and API](docs/OPERATOR_APP.md): Inspect runs the real
+  model and saves to SQLite. Actual source/response images, provisional actions
+  and persisted history survive refresh and server restart. Replay only; no
+  camera or generated advisory is presented as connected.
+
+All **119 tests pass** in the new locked app environment. All four earlier
+environments are unchanged; the app preserves all 89 vision package versions. The Jetson remains unavailable; exact
 hardware, camera performance and disconnected edge operation are unverified.
-**Next stage: Stage 7 local backend and operator screen**, after review.
+**Next stage: Stage 8 Jetson/camera validation**, after review and device availability.
+
+## Open the local operator screen
+
+From PowerShell in the project folder on this configured PC:
+
+```powershell
+wsl -d Ubuntu --exec /root/.cache/forgesight/app-v1/venv/bin/python -B -m forgesight.operator_app
+```
+
+After startup, open **http://127.0.0.1:8765**. Enter a new part ID, choose a
+saved photo and click Inspect. Keep the terminal open; Ctrl+C stops the server.
+The default working database is `artifacts/runtime/inspections.sqlite3`.
+See [launch options, proof data and limits](docs/OPERATOR_APP.md) and
+[locked environment setup](docs/ENVIRONMENT.md).
 
 ## Start here
 
@@ -97,10 +116,10 @@ samples. The red overlays are dataset annotations, not detector predictions.
 The source, license, manifest fingerprint, and pixel-area metadata accompany
 the image in `preview.json`. No holdout images are displayed.
 
-Run all 112 data-integrity, edge, vision-boundary, inspection, grading and storage tests:
+Run all 119 data-integrity, edge, vision, inspection, grading, storage and API tests:
 
 ```powershell
-wsl -d Ubuntu --exec /root/.cache/forgesight/vision-v1/venv/bin/python -B -m unittest discover -s tests -v
+wsl -d Ubuntu --exec /root/.cache/forgesight/app-v1/venv/bin/python -B -m unittest discover -s tests -v
 ```
 
 Read the Stage 2 [candidate, blockers, recipe, and capture instructions](docs/EDGE_RUNTIME.md)
