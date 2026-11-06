@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "scope": "DESKTOP_SAVED_IMAGE_SQLITE_REPLAY_NOT_CAMERA_OR_JETSON_PROOF",
+  "database": {
+    "path": "artifacts/storage/inspection_replay_v1/inspections.sqlite3",
+    "bytes": 57344,
+    "sha256_at_verification": "446af330c7202f0c1b74b3c7cd436af4d2af9ff409a552bc0d74b937c66c2682",
+    "sqlite_version": "3.53.1"
+  },
+  "replay_report_path": "artifacts/storage/inspection_replay_v1/replay_report.json",
+  "replay_report_sha256": "83e4601e5c99bc6b6f0cb8b82e28dce6a1d7d0b2628ba9ae5a2551457cbafe1a",
+  "replay_frames": 9,
+  "suppressed_repeats": 5,
+  "summary_after_writer_process_exit": {
+    "schema_version": 1,
+    "inspection_count": 4,
+    "distinct_part_count": 4,
+    "original_grade_counts": {
+      "PASS": 2,
+      "REVIEW": 2,
+      "REJECT": 0
+    },
+    "processing_status_counts": {
+      "ANALYZED": 3,
+      "ERROR": 1
+    },
+    "unverified_correction_count": 0
+  },
+  "summary_after_demonstration_claim": {
+    "schema_version": 1,
+    "inspection_count": 4,
+    "distinct_part_count": 4,
+    "original_grade_counts": {
+      "PASS": 2,
+      "REVIEW": 2,
+      "REJECT": 0
+    },
+    "processing_status_counts": {
+      "ANALYZED": 3,
+      "ERROR": 1
+    },
+    "unverified_correction_count": 1
+  },
+  "exact_record_roundtrip_after_restart": true,
+  "idempotent_retries": 4,
+  "refused_conflicts": [
+    "RecordConflict",
+    "PartAlreadyInspected"
+  ],
+  "persistent_gate_blocked": true,
+  "duplicate_cli_returncode": 2,
+  "duplicate_cli_started_inference": false,
+  "same_image_scores_geometry_as_stage5": true,
+  "correction_scope": "ONE_SYNTHETIC_UNVERIFIED_STORAGE_DEMONSTRATION; ORIGINAL_DECISION_UNCHANGED",
+  "reject_storage_scope": "UNIT_FIXTURE_ONLY; NO_REAL_AUTOMATIC_REJECT_CLAIM",
+  "integrity": {
+    "integrity_check": [
+      "ok"
+    ],
+    "foreign_key_check": [],
+    "foreign_keys_enabled": true,
+    "journal_mode": "delete",
+    "synchronous": 2,
+    "schema_version": 1,
+    "application_id": 1179863367
+  },
+  "new_holdout_model_forwards": 0,
+  "physical_camera_identity_verified": false,
+  "jetson_verified": false,
+  "power_loss_or_process_kill_recovery_verified": false,
+  "source_sha256": "c3761f5f0a1c88a6e5b1b4d6937d4737330ea124d9954d195a80fe7d4ae4ac52",
+  "software_verification": {
+    "tests": 112,
+    "result": "PASS",
+    "command": "wsl -d Ubuntu --exec /root/.cache/forgesight/vision-v1/venv/bin/python -B -m unittest discover -s tests -q",
+    "test_log": "artifacts/storage_progress/tests_final.log",
+    "test_log_sha256": "152ac067d0371af00fdd15304e8fed1f2a4021e1a8c9d3c3c311dcc5f4ccb8fe"
+  }
+}

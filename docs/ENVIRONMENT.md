@@ -189,3 +189,13 @@ new weights/metadata-only calibrated checkpoint, preserving the original
 training snapshots. The actual model-only FP32 timing uses the desktop CUDA GPU
 with the training recipe's math flags; it is not a Jetson or end-to-end result.
 See [calibration/reload commands and limitations](VISION_CALIBRATION.md).
+
+## Stage 6: SQLite without another dependency
+
+Storage uses Python's built-in sqlite3. The existing project `.venv` reports
+Python 3.12.14 and SQLite 3.53.1; it can run history, retry and restart-verification
+commands without Torch or NumPy. The real inference replay and complete tests
+use the unchanged locked vision environment. No packages were installed or
+upgraded. The database is local to the project artifacts directory on this
+WSL host; actual Jetson filesystem/runtime checks remain unverified. See
+[storage setup, schema and commands](STORAGE.md).

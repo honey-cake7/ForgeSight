@@ -42,9 +42,12 @@ def validate_part_id(part_id: str):
 
 
 def inspect_one_image(path: Path, part_id: str, predictor, output: Path,
-                      grade_policy: Path = Path('configs/forgegrade_v1.json')) -> InspectionRecord:
+                      grade_policy: Path = Path('configs/forgegrade_v1.json'), *, store=None) -> InspectionRecord:
     """An invalid image yields an ERROR record. Output-write errors propagate."""
     validate_part_id(part_id)
+    if store is not None and store.has_part(part_id):
+        from forgesight.storage import PartAlreadyInspected
+        raise PartAlreadyInspected('Part ID already recorded; no new inference or record created.')
     from forgesight.grade import grade_record, validate_policy
     policy = json.loads(grade_policy.read_text())
     validate_policy(policy)
@@ -97,19 +100,26 @@ def inspect_one_image(path: Path, part_id: str, predictor, output: Path,
         record.error = {'type': type(exc).__name__, 'message': str(exc)}
     record.decision = grade_record(asdict(record), policy)
     record.timings['inspection_before_record_write_ms'] = (time.perf_counter() - started) * 1000
-    record.timings['scope'] = 'decode/hash, prediction, regions, map and overlay writes; excludes bundle load, record write and Llama'
-    with (output / f'{record.inspection_id}.json').open('x') as stream:
+    record.timings['scope'] = 'decode/hash, prediction, regions, grading, map and overlay writes; excludes bundle/policy load, duplicate check, JSON/SQLite writes and Llama'
+    record_path = output / f'{record.inspection_id}.json'
+    with record_path.open('x') as stream:
         json.dump(asdict(record), stream, indent=2, allow_nan=False)
+    if store is not None:
+        try:
+            store.save_inspection(asdict(record))
+        except Exception as exc:
+            raise RuntimeError(f'SQLite save failed; inspection JSON is preserved for retry at {record_path}') from exc
     return record
 
 
 class CaptureGate:
     """Session-local explicit re-arm gate; never infer physical identity from pixels."""
-    def __init__(self):
+    def __init__(self, *, already_recorded=None):
         self.part_id = None
         self.latched = False
         self.seen_ids = set()
         self.suppressed_frames = 0
+        self.already_recorded = already_recorded
 
     def arm(self, part_id: str):
         validate_part_id(part_id)
@@ -117,6 +127,8 @@ class CaptureGate:
             raise ValueError('Current part has not been inspected yet.')
         if part_id in self.seen_ids:
             raise ValueError('Part ID already used in this session; declare a distinct new part.')
+        if self.already_recorded is not None and self.already_recorded(part_id):
+            raise ValueError('Part ID already recorded in persistent history; declare a distinct new part.')
         self.part_id, self.latched = part_id, False
         self.seen_ids.add(part_id)
 
@@ -137,10 +149,15 @@ def main():
     parser.add_argument('--part-id', required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--device', default='cuda', choices=['cuda', 'cpu'])
+    from forgesight.storage import DEFAULT_DATABASE, InspectionStore
+    parser.add_argument('--database', type=Path, default=DEFAULT_DATABASE)
     args = parser.parse_args()
+    store = InspectionStore(args.database)
+    if store.has_part(args.part_id):
+        parser.error('Part ID already recorded; no new model load or inspection attempted.')
     from forgesight.vision_inference import CalibratedPredictor
     predictor = CalibratedPredictor(device=args.device)
-    record = inspect_one_image(args.image, args.part_id, predictor, args.output)
+    record = inspect_one_image(args.image, args.part_id, predictor, args.output, store=store)
     print(json.dumps(asdict(record), indent=2))
     if record.status == 'ERROR':
         raise SystemExit(1)

@@ -441,3 +441,21 @@ caches still provisionally passes the two missed scratches. A rule engine cannot
 repair evidence that the detector missed. Real manufacturing tolerances, defect
 names, camera/Jetson tests and offline Llama advice remain future proof. Next,
 Stage 6 will store records so history can be queried after restarting.
+
+## Stage 6: Keep inspection history after closing the program
+
+SQLite is a local notebook the program can search reliably. A unique inspection
+ID prevents saving the same result twice. A unique declared part ID also stops
+a restart from treating an old part as a new one. Photo hashes do not identify
+physical parts: two distinct good nuts can look identical.
+
+The real replay saved four results, including an input error. New Python
+processes read all four back unchanged; four resave attempts added no rows.
+A changed result or reused part ID was refused. Correction notes stay separate
+and unverified, so a proposal cannot silently rewrite the original evidence.
+The demonstration correction is explicitly synthetic, not a real judgment.
+
+We still save the JSON first. If database writing fails, the original result
+can be imported later without inspecting the image again. Abrupt power-loss
+recovery is not tested. All 112 software tests pass; the next stage will let
+an operator inspect images and view this stored history on a small local screen.

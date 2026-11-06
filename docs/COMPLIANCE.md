@@ -39,6 +39,13 @@ Two missed scratches still get provisional PASS in a cached rule diagnostic.
 Useful Llama advisory integration remains open; deterministic hold/check action
 text is not generated advice. See `docs/FORGEGRADE.md`.
 
+Stage 6 adds actual SQLite storage and separate-process restart queries for
+full graded/error records. Original content and part IDs cannot be silently
+replaced; exact retries are idempotent. One synthetic unverified correction
+note demonstrates storage, not an actual operator finding. History summaries
+count original decisions. No new model/threshold/holdout work, network service,
+camera, Jetson or power-loss acceptance claim follows. See `docs/STORAGE.md`.
+
 The [organizer clarification shared by the user](ORGANIZER_CLARIFICATION.md)
 accepts the Jetson Orin platform family for PS5, subject to the mandatory
 technologies. It clears the platform-eligibility question; actual device
@@ -51,8 +58,8 @@ inventory, runtime, and offline compliance still require measured evidence.
 | Defect type | NOT VERIFIED | Same-domain labeled evaluation; retain `unknown` when unsupported |
 | Severity and operator decisions | PC PIXEL-PROTOTYPE VERIFIED; industrial severity open | Versioned rules, 101 tests, real replay; unknown types REVIEW, no physical tolerances |
 | Useful operator recommendations | NOT VERIFIED | Actual evidence-linked advice with uncertainty and next checks |
-| Every-inspection history | JSON REPLAY RECORDS VERIFIED; database/restart open | Actual graded/error JSON records; SQLite durability and queries are Stage 6 |
-| One event per physical part | REPLAY GATE VERIFIED; physical proof open | 9 replay frames produce 4 declared-part records; actual camera/identity unverified |
+| Every-inspection history | PC SQLITE REPLAY VERIFIED; edge/failure recovery open | Original graded/error records survive writer exit and fresh-process queries; 4 retries add no rows; see STORAGE.md |
+| One event per physical part | REPLAY + PERSISTENT ID GATE VERIFIED; physical proof open | 9 frames -> 4 declared-part records; known IDs blocked after restart; actual physical identity/camera unverified |
 | Exact eligible edge hardware | BLOCKED - NOT VERIFIED | Device-side module/RAM/architecture/JetPack inventory; device currently unavailable |
 | Llama-family inference via ExecuTorch on Jetson | BLOCKED - NOT VERIFIED | Actual locally generated text plus model/runtime/artifact provenance and measurements |
 | Physical camera validation | BLOCKED - NOT VERIFIED | Controlled real samples captured and inspected on Jetson |

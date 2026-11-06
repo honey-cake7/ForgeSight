@@ -76,3 +76,12 @@ Ada. They add saved-image evaluation, replay gating and pixel grading only.
 No Jetson connection, camera command, JetPack change or on-device measurement
 occurred. Device availability is unchanged: BLOCKED - NOT VERIFIED. Desktop
 cached model-only timings are not complete inspection or Jetson timings.
+
+## Stage 6 persistence evidence
+
+The SQLite writer ran on desktop WSL; separate project-environment Python
+processes queried the committed records after the writer exited. Storage
+requires no GPU or added package. Actual vision replay still used the desktop
+RTX 2000 Ada, not Jetson. No device became connected or available in this step.
+The stage does not establish camera identity, edge database compatibility,
+thermal/latency behavior or disconnected Jetson operation.

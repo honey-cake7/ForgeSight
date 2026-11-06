@@ -47,3 +47,12 @@ threshold equality, duplicate suppression, explicit re-arm, same-image new parts
 invalid input, and callback failure. No dependencies were installed or upgraded.
 Stage 5 adds versioned decisions; type classification, SQLite, camera, Llama
 advice integration and Jetson verification remain separate steps.
+
+## Stage 6 persistence update
+
+The current inspection CLI commits JSON and SQLite by default and takes
+`--database PATH`; replay creates a database inside its new output directory.
+`inspect_one_image(..., store=store)` enables the same commit path in Python.
+CaptureGate accepts `already_recorded=store.has_part` to refuse recorded IDs
+after restart. Earlier Stage 4 JSON-only proof above remains a historical
+snapshot. See [SQLite behavior, retries and proof](STORAGE.md).

@@ -4,10 +4,11 @@ An incremental project for offline industrial surface-defect inspection on an
 NVIDIA Jetson Orin Nano, with deterministic grading, local inspection history,
 and a Llama-family advisory model running on the device through ExecuTorch.
 
-**Current state: Stage 5 desktop saved-image prototype verified.** The system
+**Current state: Stage 6 desktop saved-image persistence verified.** The system
 runs a real trained EfficientAD-S model, highlights response regions, saves one
-record per declared part and adds deterministic pixel-only decisions. It is
-not yet a complete application or a verified Jetson/camera system.
+record per declared part, adds deterministic pixel-only decisions and saves
+local SQLite history. It is not yet a complete application or a verified
+Jetson/camera system.
 
 - [Vision training and choice](docs/VISION_BASELINE.md): EfficientAD-S 256x256,
   10,000 FP32 training steps on 176 normal images; [training evidence](docs/VISION_TRAINING.md).
@@ -25,11 +26,15 @@ not yet a complete application or a verified Jetson/camera system.
 - [Llama / ExecuTorch evidence](docs/EDGE_RUNTIME.md): genuine Llama 3.2 1B text
   generation through the native ExecuTorch runner on desktop WSL. Actual Jetson
   inference and integration as inspection advice remain open.
+- [SQLite history](docs/STORAGE.md): four actual replay records survive writer
+  exit and separate-process queries. Four exact retries add zero rows; errors
+  and duplicate IDs are handled explicitly. Correction proposals remain
+  separate, unverified claims and preserve the original decision.
 
-All **101 tests pass** in the existing locked vision environment. No packages
-were installed/upgraded in Stages 3.4?5. The Jetson remains unavailable; exact
+All **112 tests pass** in the existing locked vision environment. No packages
+were installed/upgraded in Stages 3.4 through 6. The Jetson remains unavailable; exact
 hardware, camera performance and disconnected edge operation are unverified.
-**Next stage: Stage 6 SQLite history and restart/duplicate checks**, after review.
+**Next stage: Stage 7 local backend and operator screen**, after review.
 
 ## Start here
 
@@ -92,7 +97,7 @@ samples. The red overlays are dataset annotations, not detector predictions.
 The source, license, manifest fingerprint, and pixel-area metadata accompany
 the image in `preview.json`. No holdout images are displayed.
 
-Run all 101 data-integrity, edge, vision-boundary, inspection and grading tests:
+Run all 112 data-integrity, edge, vision-boundary, inspection, grading and storage tests:
 
 ```powershell
 wsl -d Ubuntu --exec /root/.cache/forgesight/vision-v1/venv/bin/python -B -m unittest discover -s tests -v
@@ -124,6 +129,16 @@ wsl -d Ubuntu --exec /root/.cache/forgesight/et1.5.1/venv/bin/python -B -m forge
 This uses local model/tokenizer files, the native ExecuTorch runner, and explicit
 registration of wheel-provided quantized/custom kernels. It does not certify
 offline or Jetson operation. See [the actual transcript and limits](docs/EDGE_RUNTIME.md#27-real-desktop-generation).
+
+Read the actual Stage 6 history without loading a model:
+
+```powershell
+wsl -d Ubuntu --exec .venv/bin/python -B -m forgesight.storage --db artifacts/storage/inspection_replay_v1/inspections.sqlite3 summary
+```
+
+The inspection CLI now defaults to `artifacts/runtime/inspections.sqlite3`;
+`--database PATH` selects another local database. Replay uses its own SQLite
+file inside the new output directory. See [storage, retry and query commands](docs/STORAGE.md).
 
 ## Development
 

@@ -400,3 +400,25 @@ A cache-only post-evaluation diagnostic still passes two known scratches; record
 that limitation and do not tune cutoffs to erase it. No new holdout inference,
 training, dependencies, SQLite, UI or advisory wiring is added. Llama remains
 mandatory via ExecuTorch on-device and cannot override decisions. Stop at Stage 5.
+
+## 024: Use versioned SQLite transactions and immutable inspection originals
+
+Use Python's existing sqlite3 module, with no new installation or database
+server. Initialize only an empty database, set the ForgeSight application ID
+and schema version 1 atomically, and refuse unrelated/newer files. Store full
+metadata JSON plus query indexes, referencing image/map files outside SQLite.
+Use short explicit transactions, bound parameters, foreign-key enforcement,
+FULL synchronous commits and the default rollback journal for this local path.
+
+Make inspection UUID and declared part ID unique within the database. Exact
+canonical retries add zero rows; changed-content/same-part conflicts are errors.
+Image hashes remain provenance, never deduplication keys. Check history before
+re-arm/model loading, and retain the unique constraint for races. Original
+records stay immutable; append unverified correction claims without rewriting
+original grades/counts or promoting claims to confirmed training data.
+
+Write JSON before database commit, propagate storage failure and permit explicit
+JSON import retry without model execution. No cross-file atomicity, automatic
+pending recovery, power-loss guarantee or camera identity proof is claimed.
+All 112 tests and the actual 4-record separate-process proof pass. Stop after
+Stage 6; Stage 7 API/UI is the next review gate.

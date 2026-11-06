@@ -2,24 +2,31 @@
 
 ## Current stage
 
-Stage 5: desktop saved-image ForgeGrade prototype verified through the authorized
-stage gate. All 101 tests pass. Versioned deterministic decisions include policy
-snapshot/hash and pixel-only geometry. Real replay: 9 frames -> 4 records,
-5 repeats suppressed, grades PASS/REVIEW/PASS/REVIEW. Original Stage 4 outputs
-are preserved. Unknown/unreliable anomaly types and errors route to REVIEW.
-REJECT size/location rules are tested synthetic policy cases, not actual type
-classifier results. No type classifier, physical scale or certification exists.
+Stage 6: local SQLite inspection history verified on desktop. The real replay
+saved 4 declared-part records from 9 frames, suppressing 5 repeats: 2 provisional
+PASS and 2 REVIEW, including one explicit failed-image ERROR. After the writer
+process exited, separate Python processes returned all original records exactly.
+Four exact-record retries added zero rows; changed-content and repeated-part
+conflicts were refused. A restarted gate and the actual CLI blocked a previously
+recorded part before new inference/model loading. All 112 tests pass.
 
-Stage 3.4 remains frozen: 87/89 defects flagged, 2/22 false alarms, two missed
-scratches. Cache-only post-evaluation rule diagnostic: good 17 PASS/5 REVIEW;
-defective 2 provisional PASS/87 REVIEW. The two missed scratches remain a real
-limitation. No model/threshold tuning or further holdout inference occurred.
-See `docs/FORGEGRADE.md`, `docs/VISION_EVALUATION.md` and committed manifests.
+Schema version 1 stores metadata/provenance and file references, not image bytes.
+Correction claims are appended separately as UNVERIFIED_OPERATOR_CLAIM, preserving
+original decisions/counts. One clearly synthetic correction-storage demonstration
+is saved in the proof database; it is not a real operator finding. REJECT storage
+is verified with a synthetic unit fixture only. Integrity check: ok, no foreign-key
+violations. Database-write failure preserves JSON for explicit retry.
+See `docs/STORAGE.md` and `manifests/sqlite_storage_verification_v1.json`.
 
-STOPPED FOR REVIEW after Stage 5. Next exact action: Stage 6 SQLite persistence
-for graded/error records with unique IDs, duplicate handling and restart queries.
-No Stage 6 code or database was created. Type classification, approved tolerances,
-physical part identity/camera proof and the mandatory edge gates remain open.
+No new holdout inference, model/policy tuning or dependencies. The detector's
+same-image scores/geometry match Stage 5. Two missed scratches, unknown defect
+types and provisional physical-geometry/grade limits remain real gaps. Jetson,
+camera and disconnected Llama/ExecuTorch operation remain unverified.
+
+STOPPED FOR REVIEW after Stage 6. Next exact action: Stage 7, a minimal local
+backend and operator screen that runs actual inspection and queries SQLite.
+No Stage 7 API, web server or UI was implemented. Automatic pending-file recovery,
+process-kill/power-loss tests and backup/restore remain unverified.
 
 Stage 2.7 desktop Llama generation through ExecuTorch is verified. Stage 1 and
 the transition to Stage 3 were accepted by the user. Actual Stage 2 inference
@@ -241,7 +248,10 @@ device-only operation correctly exited 2. See `docs/EDGE_RUNTIME.md`.
 | Meta Llama access and local source assets | VERIFIED | User-confirmed access; five files match pinned publisher metadata |
 | Desktop Llama export and artifact metadata | VERIFIED, not inference | Recorded PTE hash and program metadata; generation has separate evidence and quality remains open |
 | Desktop Llama generation via ExecuTorch | VERIFIED, PC-only smoke | Real native runner output and provenance; no device or advice-quality claim |
-| Vision model and defect-type classification | FIRST BASELINE TRAINED/CALIBRATED; accuracy/type NOT VERIFIED | Frozen-policy independent evaluation; candidate flags and maps alone do not classify type or grade quality |
+| Vision benchmark anomaly detection | VERIFIED on PC only | Frozen 111-image evaluation: 87/89 defects flagged, 2/22 false alarms; physical camera/edge proof open |
+| Defect-type classification | NOT VERIFIED | Current predicted types remain unknown; need valid same-domain classification evidence |
+| Pixel-only decision rules | PC PROTOTYPE VERIFIED | Deterministic policy tests/replay; physical tolerances, severity and industrial certification open |
+| Local history and duplicates after restart | PC SQLITE REPLAY VERIFIED | Four original records survive writer exit, exact retries add zero rows; no physical identity or power-loss claim |
 | Offline end-to-end inspection | NOT VERIFIED | Actual disconnected Jetson run |
 
 Stage 1 input preparation is verified and its review gate was accepted. Stage 2
@@ -250,8 +260,8 @@ proof and do not establish a defect-inspection application.
 
 ## Next exact task
 
-Stage 3.4: evaluate the frozen FP32 calibrated model and candidate policy once
-on the 111 reserved final-holdout images. Record actual misses/false alarms,
-continuous anomaly maps and evaluation provenance without tuning on that set.
-Review results before any different stage. Defect type, severity, optimized
-deployment and actual Jetson/offline proof remain open; Stage 3 is not DONE.
+Stage 7: build the smallest local backend and operator screen. Inspect must run
+the actual model/grade/storage path; history must query SQLite after refresh.
+Show the real image/response overlay, unknown type, provisional decision and
+explicit errors. Preserve the part gate and keep advice visibly pending until
+real ExecuTorch integration. Stop for review before Stage 8 camera/Jetson work.
