@@ -1,0 +1,45 @@
+{
+  "scope": "STORED_RECORD_PRESENTATION_QA_NO_NEW_INFERENCE",
+  "browser": "156.0.8078.4",
+  "summary": {
+    "schema_version": 1,
+    "inspection_count": 2,
+    "distinct_part_count": 2,
+    "original_grade_counts": {
+      "PASS": 1,
+      "REVIEW": 1,
+      "REJECT": 0
+    },
+    "processing_status_counts": {
+      "ANALYZED": 2,
+      "ERROR": 0
+    },
+    "unverified_correction_count": 0
+  },
+  "duplicate_post_status": 409,
+  "refresh_preserved_records": true,
+  "history_filter_and_view_worked": true,
+  "mobile_width_px": 390,
+  "mobile_horizontal_overflow": false,
+  "page_errors": [],
+  "external_requests": [],
+  "same_image_scores_geometry_as_stage5": true,
+  "new_holdout_inference": 0,
+  "resumed_after_layout_failure": false,
+  "stored_record_presentation_only": true,
+  "essential_operator_view": true,
+  "history_and_details_collapsed_by_default": true,
+  "error_render_scope": "CLIENT_RENDER_REPLAY_OF_PRIOR_ACTUAL_ERROR_RECORD_NOT_A_NEW_INSPECTION",
+  "inspection_trigger_note": "Two previously verified real records replayed in an isolated test database; no new model inference.",
+  "jetson_verified": false,
+  "physical_camera_verified": false,
+  "llama_advice_connected": false,
+  "screenshots": {
+    "operator_desktop.png": "1513993e7f87e3141bd78e9c20ab330984928fa7a6c9fa0651e30b5c2ee7a583",
+    "operator_mobile.png": "93bc3652510f5099073b52f403294caa7b6874e1a1f81cf7f24d9d650e4baaa8"
+  },
+  "original_proof_database_unchanged": true,
+  "inference_run_for_this_change": false,
+  "model_policy_database_schema_changed": false,
+  "user_running_default_app_not_stopped": true
+}

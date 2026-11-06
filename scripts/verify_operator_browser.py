@@ -16,12 +16,14 @@ def main():
     parser.add_argument('--output', required=True, type=Path)
     parser.add_argument('--restart-only', action='store_true')
     parser.add_argument('--resume-existing', action='store_true', help='Resume layout QA on records saved by a previous interrupted proof; no new inference.')
+    parser.add_argument('--stored-records-only', action='store_true', help='Presentation QA using two previously verified records; no new inference.')
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=False)
     base = args.url.rstrip('/')
     if urlsplit(base).hostname not in ('127.0.0.1', 'localhost'):
         parser.error('This proof is for a loopback server only.')
     errors, remote_requests, saved = [], [], []
+    reuse_records = args.resume_existing or args.stored_records_only
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(headless=True)
         page = browser.new_page(viewport={'width':1440, 'height':1120}, device_scale_factor=1, timezone_id='Asia/Kolkata')
@@ -29,7 +31,7 @@ def main():
         page.on('request', lambda request: remote_requests.append(request.url)
                 if urlsplit(request.url).scheme in ('http', 'https') and urlsplit(request.url).hostname not in ('127.0.0.1','localhost') else None)
         page.goto(base, wait_until='networkidle')
-        expect(page.locator('#health-label')).to_have_text('Local GPU model ready', timeout=60000)
+        expect(page.locator('#health-label')).to_have_text('Ready', timeout=60000)
 
         def get(path):
             result = page.request.get(base+path)
@@ -48,7 +50,7 @@ def main():
             report={'scope':'FRESH_BROWSER_AFTER_REAL_SERVER_RESTART', 'summary':summary,
                     'latest':get('/api/latest'), 'page_errors':errors, 'external_requests':remote_requests}
         else:
-            if args.resume_existing:
+            if reuse_records:
                 assert get('/api/summary')['inspection_count'] == 2
                 saved = sorted(get('/api/history')['items'], key=lambda row: row['record']['part_id'])
                 assert [row['record']['part_id'] for row in saved] == ['UI-PROOF-A','UI-PROOF-B']
@@ -56,8 +58,10 @@ def main():
                 page.locator('#part-id').fill('UI-PROOF-B')
             else:
                 assert get('/api/summary')['inspection_count'] == 0, 'Use a fresh proof database; never overwrite prior proof.'
+                page.locator('#history-panel > summary').click()
                 expect(page.locator('#history-empty')).to_be_visible()
-            for part, sample, grade in ([] if args.resume_existing else [('UI-PROOF-A','normal-fit-000','PASS'), ('UI-PROOF-B','development-1','REVIEW')]):
+                page.locator('#history-panel > summary').click()
+            for part, sample, grade in ([] if reuse_records else [('UI-PROOF-A','normal-fit-000','PASS'), ('UI-PROOF-B','development-1','REVIEW')]):
                 page.locator('#part-id').fill(part)
                 page.locator('#sample-id').select_option(sample)
                 started=time.perf_counter()
@@ -86,6 +90,7 @@ def main():
             expect(page.locator('#result-heading')).to_have_text('UI-PROOF-B')
             expect(page.locator('#overlay-image')).to_be_visible()
             assert get('/api/summary')['inspection_count']==2
+            page.locator('#history-panel > summary').click()
             page.locator('#grade-filter').select_option('PASS')
             expect(page.locator('#history-body tr')).to_have_count(1)
             page.get_by_role('button',name='View inspection UI-PROOF-A',exact=True).click()
@@ -93,6 +98,24 @@ def main():
             page.locator('#grade-filter').select_option('')
             expect(page.locator('#history-body tr')).to_have_count(2)
             page.get_by_role('button',name='View inspection UI-PROOF-B',exact=True).click()
+            expect(page.locator('#overlay-image')).to_be_visible()
+            page.locator('#history-panel > summary').click()
+            expect(page.locator('#area')).not_to_be_visible()
+            expect(page.locator('#model-time')).not_to_be_visible()
+            page.locator('#result-details > summary').click()
+            expect(page.locator('#area')).to_contain_text('9,015')
+            expect(page.locator('#recorded-action')).to_be_visible()
+            page.locator('#result-details > summary').click()
+            # Presentation-only replay of a prior actual failed inspection, not a new model result.
+            failed = json.loads(Path('manifests/graded_inspection_replay_v1.json').read_text())['records'][-1]
+            page.evaluate('(item) => showInspection(item)', {'record':failed,'media':{'source':None,'overlay':None}})
+            expect(page.locator('#defect-type')).to_have_text('Not assessed')
+            expect(page.locator('#grade')).to_have_text('REVIEW')
+            expect(page.locator('#operator-action')).to_contain_text('could not be inspected')
+            page.locator('#result-details > summary').click()
+            expect(page.locator('#error-detail')).to_be_visible()
+            page.locator('#result-details > summary').click()
+            page.evaluate('(item) => showInspection(item)', get('/api/latest')['inspection'])
             expect(page.locator('#overlay-image')).to_be_visible()
             page.screenshot(path=str(args.output/'operator_desktop.png'),full_page=True)
             page.set_viewport_size({'width':390,'height':844})
@@ -104,14 +127,17 @@ def main():
             for current,old in zip(saved,previous[:2]):
                 r=current['record']
                 assert (r['source']['sha256'],r['score'],r['geometry'])==(old['source']['sha256'],old['score'],old['geometry'])
-            report={'scope':'REAL_BROWSER_CLICK_REAL_GPU_MODEL_AND_SQLITE_DESKTOP_REPLAY',
+            report={'scope':'STORED_RECORD_PRESENTATION_QA_NO_NEW_INFERENCE' if args.stored_records_only else 'REAL_BROWSER_CLICK_REAL_GPU_MODEL_AND_SQLITE_DESKTOP_REPLAY',
                     'browser':browser.version,'inspections':saved,'summary':summary,
                     'duplicate_post_status':duplicate.value.status,'refresh_preserved_records':True,
                     'history_filter_and_view_worked':True,'mobile_width_px':390,'mobile_horizontal_overflow':False,
                     'page_errors':errors,'external_requests':remote_requests,
                     'same_image_scores_geometry_as_stage5':True,'new_holdout_inference':0,
                     'resumed_after_layout_failure':args.resume_existing,
-                    'inspection_trigger_note': 'Original browser run clicked Inspect twice and saved these records before a mobile-layout assertion failed; this run verifies the existing records without new inference.' if args.resume_existing else 'Both records created by Inspect clicks in this run.',
+                    'stored_record_presentation_only':args.stored_records_only,
+                    'essential_operator_view':True,'history_and_details_collapsed_by_default':True,
+                    'error_render_scope':'CLIENT_RENDER_REPLAY_OF_PRIOR_ACTUAL_ERROR_RECORD_NOT_A_NEW_INSPECTION',
+                    'inspection_trigger_note': 'Two previously verified real records replayed in an isolated test database; no new model inference.' if args.stored_records_only else 'Original browser run clicked Inspect twice and saved these records before a mobile-layout assertion failed; this run verifies the existing records without new inference.' if args.resume_existing else 'Both records created by Inspect clicks in this run.',
                     'jetson_verified':False,'physical_camera_verified':False,'llama_advice_connected':False}
         assert not errors,errors
         assert not remote_requests,remote_requests

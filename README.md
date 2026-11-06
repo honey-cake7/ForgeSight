@@ -35,6 +35,8 @@ results. Jetson/camera deployment and complete offline edge operation remain ope
   model and saves to SQLite. Actual source/response images, provisional actions
   and persisted history survive refresh and server restart. Replay only; no
   camera or generated advisory is presented as connected.
+  The main screen shows only photo/highlight, result, type and a short action;
+  history and technical details are expandable.
 
 - [ForgeAssist first PC note](docs/FORGEASSIST.md): actual ExecuTorch Llama
   generation links one saved REVIEW record to a prototype checklist. The final

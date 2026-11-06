@@ -28,12 +28,15 @@ function showInspection(item) {
   $('grade').textContent = decision.grade === 'PASS' ? 'PASS · PROVISIONAL' : decision.grade;
   $('grade').className = 'grade ' + decision.grade.toLowerCase();
   $('finding').textContent = finding(record);
-  $('defect-type').textContent = record.predicted_defect_type === 'unknown' ? 'Unknown · classifier pending' : record.predicted_defect_type;
+  $('defect-type').textContent = record.status === 'ERROR' ? 'Not assessed' : record.candidate === 'NORMAL_CANDIDATE' ? 'None flagged' : record.predicted_defect_type === 'unknown' ? 'Unknown' : record.predicted_defect_type;
   $('area').textContent = record.geometry ? number(record.geometry.total_area_px) + ' pixels' : 'Not measured';
-  $('result-time').textContent = 'Saved ' + timestamp(record.timestamp_utc);
+  $('result-time').textContent = timestamp(record.timestamp_utc);
   $('model-time').textContent = record.timings.model_forward_ms === undefined ? 'Input failed; no model timing.' : 'Model forward: ' + record.timings.model_forward_ms.toFixed(1) + ' ms · excludes saving and display';
-  $('action-heading').textContent = decision.grade === 'PASS' ? 'Provisional pass' : decision.grade === 'REJECT' ? 'Segregate for confirmation' : 'Hold for human review';
-  $('operator-action').textContent = record.status === 'ERROR' ? 'Inspection failed: ' + record.error.message + ' No successful defect assessment is claimed. ' + decision.operator_action : decision.operator_action;
+  $('action-heading').textContent = decision.grade === 'PASS' ? 'Provisional pass' : decision.grade === 'REJECT' ? 'Keep the part aside' : 'Hold for human review';
+  $('operator-action').textContent = record.status === 'ERROR' ? 'Image could not be inspected. Check Details.' : decision.grade === 'PASS' ? 'No anomaly flagged. This pass is provisional.' : decision.grade === 'REJECT' ? 'Confirm the result against the approved part specification.' : record.geometry?.total_area_px > 0 ? 'Check the highlighted area before making a decision.' : 'Check the part and photo before making a decision.';
+  $('recorded-action').textContent = decision.operator_action;
+  $('error-detail').hidden = record.status !== 'ERROR';
+  $('error-detail').textContent = record.status === 'ERROR' ? record.error.message : '';
   showImage('source', item.media.source); showImage('overlay', item.media.overlay);
   document.querySelectorAll('#history-body tr').forEach(row => row.classList.toggle('selected', row.dataset.inspection === state.selected));
 }
@@ -68,7 +71,7 @@ $('inspect-form').addEventListener('submit', async event => {
     const item = await api('/api/inspect', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({part_id:part, sample_id:$('sample-id').value})});
     showInspection(item); state.offset = 0; $('grade-filter').value = ''; await refreshHistory();
     $('inspect-progress').textContent = 'Saved one inspection for ' + item.record.part_id + '.';
-    if (item.record.status === 'ERROR') message('The attempt was saved as ERROR / REVIEW. Check the recorded error before proceeding.');
+    if (item.record.status === 'ERROR') message('Inspection failed. Saved for review; see Details.');
   } catch (error) { message(error.message); $('inspect-progress').textContent = 'No new successful inspection is claimed. Check history before retrying.'; }
   finally { state.busy = false; controls(); }
 });
@@ -84,8 +87,8 @@ async function start() {
     await refreshHistory();
     const latest = await api('/api/latest'); showInspection(latest.inspection);
     const health = await api('/api/health'); state.ready = health.model_ready;
-    $('health-label').textContent = health.runtime_device === 'cuda' ? 'Local GPU model ready' : 'Local CPU model ready'; $('health-dot').className = 'status-dot ready';
-  } catch (error) { $('health-label').textContent = 'Local inspection unavailable'; $('health-dot').className = 'status-dot unavailable'; message(error.message); }
+    $('health-label').textContent = 'Ready'; $('health-dot').className = 'status-dot ready';
+  } catch (error) { $('health-label').textContent = 'Unavailable'; $('health-dot').className = 'status-dot unavailable'; message(error.message); }
   controls();
 }
 start();

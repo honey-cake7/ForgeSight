@@ -165,6 +165,40 @@ Stage 9.1 later added a separate CLI advisory component, with 128 current tests
 passing. It is not connected to this screen, so the displayed pending-advice
 message remains accurate. See [the advisory proof and limits](FORGEASSIST.md).
 
+## Minimal operator view
+
+At the user's request, the main view now shows the original/highlighted photo,
+result, defect type and one short next action. PASS remains visibly provisional;
+unknown types remain Unknown and failed images show Not assessed. Source mode
+is a small Saved photos / Prototype label. No unsupported cause or disconnected
+advisory placeholder is shown as a result.
+
+Response area, timing, full recorded action and error details are available under
+Details. History is collapsed by default but still supports filtering/View.
+Model profile, known misses, pending Llama/camera/Jetson validation and other
+limitations are under About this prototype. The stored record, rules, backend
+and source evidence remain unchanged. The short action is a display summary;
+the original complete action remains saved and accessible.
+
+Desktop and 390-pixel mobile browser checks verified the collapsed sections,
+history filters, provisional PASS/unknown-type REVIEW and a presentation-only
+replay of a prior actual ERROR record. QA used copies of two previously verified
+records in an isolated database on port 8767. No inference was rerun. The user's
+already running default app/process was left intact. Screenshots are under
+`artifacts/ui_simplification_v1/browser_final/`; committed metadata is
+`manifests/operator_ui_simplification_v1.json`.
+
+For this presentation-only check, `verify_operator_browser.py` accepts
+`--stored-records-only` with the isolated server URL and a new output directory.
+The first attempt reached an existing app on port 8765 and failed its record-count
+precondition before any inspection POST; the separate test instance avoided
+touching that history. Startup/readiness and initial failure logs are preserved.
+
+Future advisory UI should keep this hierarchy: show a brief supported next check
+or precaution, and a possible cause only when source-backed and labelled as
+unconfirmed unless verified. Put sources, audit/provenance and technical detail
+behind expansion; do not invent values to fill empty fields.
+
 Implementation references: [FastAPI lifespan](https://fastapi.tiangolo.com/advanced/events/),
 [FastAPI testing](https://fastapi.tiangolo.com/tutorial/testing/), and the
 official PyPI distribution metadata pinned in the dependency locks.

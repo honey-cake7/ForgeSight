@@ -17,7 +17,12 @@ All five environments, vision model/policy, original inspection and SQLite
 proof hashes are unchanged. No new vision/holdout inference or package installs.
 See `docs/FORGEASSIST.md` and `manifests/forgeassist_pc_note_v1.json`.
 
-Stage 7 UI remains verified, but correctly shows Llama advice not connected.
+Stage 7 UI remains verified; About this prototype explains advice is not connected.
+Per the user's request, the main view is simplified to photo/highlight, result,
+type and one short next action. History, full record details and prototype
+limitations are expandable. Browser checks passed on desktop/mobile using
+stored-record replay only; no backend, grade or model changes occurred. See
+`docs/OPERATOR_APP.md` and `manifests/operator_ui_simplification_v1.json`.
 This substep is a CLI component only: no background queue, advisory DB migration
 or UI advice states were added. Stage 9 is NOT DONE. Guidance is explicitly
 PROTOTYPE_NOT_FACTORY_APPROVED; possible causes are withheld. Human review and

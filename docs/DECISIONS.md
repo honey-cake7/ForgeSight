@@ -477,3 +477,17 @@ model/policy and all five environments remain unchanged. No UI/queue/storage
 migration yet; next evaluate scenario/refusal behavior before that integration.
 Desktop worker guard remains: a verified native ARM adapter and target budget
 measurement are required on Jetson. Stop after this PC substep for review.
+
+## 028: Show operator essentials before technical detail
+
+The user requested a simple display. Keep photo/highlight, result, type and one
+short next action visible; preserve provisional PASS and unknown/not-assessed
+states. Move area/timing/full action to Details, history to a closed disclosure,
+and prototype limitations to About. Leave unavailable cause/advisory fields out
+of the main view. Full records and evidence are preserved without backend or
+grading changes. Future cause/precaution summaries require supported sources.
+
+Validate the presentation on desktop/mobile using two previously verified
+records copied to a separate test database. Leave the user's live default-port
+app running; stop only the owned isolated preview. No new model inference or
+project-stage advancement is claimed by this UI maintenance change.
