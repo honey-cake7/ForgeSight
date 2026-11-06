@@ -44,6 +44,11 @@ __pycache__/
 # Original architecture reference: retained locally outside source history
 /Edge AI Quality Control Model Pipeline.pdf
 
+# Local project planning/instruction documents
+/FORGESIGHT_CODEX_MASTER_PROMPT_V3.md
+/FORGESIGHT_START_HERE_V3.md
+/FORGESIGHT_STEP_BY_STEP_ROADMAP.md
+
 # OS-generated files
 Thumbs.db
 .DS_Store

@@ -57,11 +57,9 @@ See [launch options, proof data and limits](docs/OPERATOR_APP.md) and
 
 ## Start here
 
-1. [Step-by-step roadmap](FORGESIGHT_STEP_BY_STEP_ROADMAP.md): authoritative
-   stage order and acceptance gates.
-2. [Engineering prompt](FORGESIGHT_CODEX_MASTER_PROMPT_V3.md): teaching and
-   implementation rules.
-3. [Current status](docs/STATUS.md): completed evidence and the next small task.
+1. [Current status](docs/STATUS.md): completed evidence, open gates and next steps.
+2. [Operator app guide](docs/OPERATOR_APP.md): launch instructions and supported workflow.
+3. [Engineering decisions](docs/DECISIONS.md): implementation choices and trade-offs.
 
 The original `Edge AI Quality Control Model Pipeline.pdf` remains in the local
 workspace as a technical reference and is excluded from Git. Its performance

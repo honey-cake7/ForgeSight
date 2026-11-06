@@ -444,3 +444,12 @@ mobile overflow failure, fix the containing block and resume layout verification
 without new inference. Refresh and a restarted server retain the results.
 119 tests pass; no new holdout inference or tuning. Stop for review before the
 physical Jetson/camera Stage 8. ExecuTorch on-device remains mandatory and open.
+
+## 026: Keep original planning instructions local
+
+At the user's request, stop tracking the three original planning/instruction
+Markdown files and ignore their exact root paths. Preserve the local contents
+and keep public status, engineering decisions and operator instructions tracked.
+Update README navigation to public documents. This removes the planning files
+from the current repository tree; existing commits remain unchanged and still
+contain the earlier copies. No history rewrite or force push is performed.
