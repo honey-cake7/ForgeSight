@@ -161,6 +161,10 @@ Jetson performance, on-device ExecuTorch advice and disconnected edge proof
 remain open. **Next is Stage 8: actual Jetson and controlled camera validation.**
 The Jetson was last reported unavailable; no physical-device command ran here.
 
+Stage 9.1 later added a separate CLI advisory component, with 128 current tests
+passing. It is not connected to this screen, so the displayed pending-advice
+message remains accurate. See [the advisory proof and limits](FORGEASSIST.md).
+
 Implementation references: [FastAPI lifespan](https://fastapi.tiangolo.com/advanced/events/),
 [FastAPI testing](https://fastapi.tiangolo.com/tutorial/testing/), and the
 official PyPI distribution metadata pinned in the dependency locks.

@@ -1,0 +1,477 @@
+{
+  "schema_version": 1,
+  "scope": "STAGE_9_1_PC_SINGLE_INSPECTION_CHECKLIST_NOTE_ONLY",
+  "final_report": {
+    "schema_version": 1,
+    "status": "PC_ADVICE_GENERATED_REQUIRES_REVIEW",
+    "scope": "PC_SINGLE_INSPECTION_ADVISORY_NOT_JETSON_OR_PRODUCTION_PROOF",
+    "created_utc": "2026-11-06T17:48:41.764541+00:00",
+    "inspection_id": "d9130609-fecb-4a37-a78b-9f28401169b2",
+    "inspection_file_sha256": "5657809de4b7cfb790b791526fe1454bb4d7fbcc61242bae5790d4682ab4fdf6",
+    "inspection_sha256": "67680061aa5299ad6486aa1f3b0d69642a3ea533f70fb808b3d641617a663fb3",
+    "decision_sha256": "cd01ca29e930ec8ce40561faf092595e1ebd19137493c31b70a19ea58accb807",
+    "authoritative_grade": "REVIEW",
+    "guidance_file_sha256": "0ef2cbf10b43cd54049280a37e2aad46415528082148ac75008fd23d4e1a23b9",
+    "guidance_approval": "PROTOTYPE_NOT_FACTORY_APPROVED",
+    "advisory": {
+      "schema_version": 1,
+      "status": "GENERATED_REQUIRES_HUMAN_REVIEW",
+      "inspection_id": "d9130609-fecb-4a37-a78b-9f28401169b2",
+      "inspection_sha256": "67680061aa5299ad6486aa1f3b0d69642a3ea533f70fb808b3d641617a663fb3",
+      "authoritative_grade": "REVIEW",
+      "decision_sha256": "cd01ca29e930ec8ce40561faf092595e1ebd19137493c31b70a19ea58accb807",
+      "response": {
+        "generated_note": "[E1] Anomaly flagged; grade REVIEW; defect type and cause unknown.\n\n[G1] Prototype checklist: Hold for human review; check image clarity and lighting.",
+        "evidence_ids": [
+          "E1",
+          "G1"
+        ],
+        "possible_explanation": null,
+        "possible_explanation_origin": "HOST_WITHHELD_NO_CAUSAL_EVIDENCE"
+      },
+      "guidance_approval": "PROTOTYPE_NOT_FACTORY_APPROVED",
+      "validation_scope": "HOST_SCHEMA_CITATION_AND_RESTRICTED_VOCABULARY_NOT_SEMANTIC_PROOF",
+      "quality_grade_authority": "DETERMINISTIC_RULES_ONLY",
+      "model_saw_image": false,
+      "jetson_verified": false
+    },
+    "process": {
+      "argv": [
+        "env",
+        "OMP_NUM_THREADS=8",
+        "HF_HUB_OFFLINE=1",
+        "TRANSFORMERS_OFFLINE=1",
+        "/root/.cache/forgesight/et1.5.1/venv/bin/python",
+        "-B",
+        "-m",
+        "forgesight.edge_pc_smoke",
+        "--worker",
+        "/mnt/c/Users/RF AND SIMULATION/Desktop/honey/ForgeSight/artifacts/assist_stage9_1/attempt_08/native/request.json"
+      ],
+      "returncode": 0,
+      "completion_reason": "EXITED",
+      "process_wall_seconds": 8.457473013999788,
+      "sampled_peak_rss_kib": 1220356,
+      "rss_sampling_interval_seconds": 0.05,
+      "memory_note": "Sampled process RSS; may miss peaks and excludes other processes.",
+      "stdout_bytes": 717,
+      "stderr_bytes": 2317
+    },
+    "worker_result": {
+      "scope": "DESKTOP_SMOKE_ONLY",
+      "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+      "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+      "artifact": {
+        "bytes": 802247040,
+        "sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739",
+        "file_identifier": "ET12"
+      },
+      "tokenizer": {
+        "bytes": 2183982,
+        "sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55"
+      },
+      "host": {
+        "system": "Linux",
+        "architecture": "x86_64",
+        "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43"
+      },
+      "packages": {
+        "torch": "2.14.0+cpu",
+        "executorch": "1.5.1+cpu",
+        "pytorch-tokenizers": "1.6.0"
+      },
+      "native_runner": {
+        "path": "/root/.cache/forgesight/et1.5.1/venv/lib/python3.12/site-packages/executorch/extension/llm/runner/_llm_runner.cpython-312-x86_64-linux-gnu.so",
+        "bytes": 3927168,
+        "sha256": "28fad8296eb8acbb1c67a4ea6bb0918b7f5069d48f75d265fec092f3bffc3a08"
+      },
+      "kernel_libraries": [
+        {
+          "relative_path": "lib/libexecutorch_kernels_quantized.so",
+          "bytes": 306520,
+          "sha256": "f4e2b0e331c34a8dca523739c5a285d53ff0767c7c424888d42608df290573b2"
+        },
+        {
+          "relative_path": "extension/llm/custom_ops/libcustom_ops_aot_lib.so",
+          "bytes": 869560,
+          "sha256": "cc77e070c57389af30d64bc0869ac896ad660818922a42ed4cac5be9d48fda45"
+        }
+      ],
+      "prompt_text": "[E1] Anomaly flagged; grade REVIEW; defect type and cause unknown.\n[G1] Prototype checklist: Hold for human review; check image clarity and lighting.",
+      "formatted_prompt": "<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\nYou are an inspection assistant. Reply with only one short operator instruction. State unknown type and cause. Use only supplied facts. Cite [E1][G1].<|eot_id|><|start_header_id|>user<|end_header_id|>\n\n[E1] Anomaly flagged; grade REVIEW; defect type and cause unknown.\n[G1] Prototype checklist: Hold for human review; check image clarity and lighting.<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n",
+      "system_text": "You are an inspection assistant. Reply with only one short operator instruction. State unknown type and cause. Use only supplied facts. Cite [E1][G1].",
+      "prompt_token_ids": [
+        128000,
+        128006,
+        9125,
+        128007,
+        271,
+        2675,
+        527,
+        459,
+        26767,
+        18328,
+        13,
+        18321,
+        449,
+        1193,
+        832,
+        2875,
+        5793,
+        7754,
+        13,
+        3314,
+        9987,
+        955,
+        323,
+        5353,
+        13,
+        5560,
+        1193,
+        17665,
+        13363,
+        13,
+        356,
+        635,
+        510,
+        36,
+        16,
+        1483,
+        38,
+        16,
+        948,
+        128009,
+        128006,
+        882,
+        128007,
+        271,
+        61097,
+        16,
+        60,
+        1556,
+        84192,
+        62309,
+        26,
+        12239,
+        81151,
+        26,
+        23011,
+        955,
+        323,
+        5353,
+        9987,
+        627,
+        73183,
+        16,
+        60,
+        77133,
+        53673,
+        25,
+        23588,
+        369,
+        3823,
+        3477,
+        26,
+        1817,
+        2217,
+        32373,
+        323,
+        18186,
+        13,
+        128009,
+        128006,
+        78191,
+        128007,
+        271
+      ],
+      "prompt_token_count": 82,
+      "generation_config": {
+        "echo": false,
+        "temperature": 0.0,
+        "warming": false,
+        "max_new_tokens": 96,
+        "seq_len": -1,
+        "num_bos": 0,
+        "num_eos": 0
+      },
+      "torch_num_threads": 8,
+      "offline_status": "NOT_VERIFIED",
+      "jetson_proof": "NOT_VERIFIED",
+      "quality": "NOT_EVALUATED",
+      "stats": [
+        {
+          "prefill_token_per_sec": 305.97,
+          "decode_token_per_sec": 30.5556,
+          "prompt_tokens": 82,
+          "generated_tokens": 33,
+          "model_load_start_ms": 1793987325860,
+          "model_load_end_ms": 1793987328636,
+          "inference_start_ms": 1793987328638,
+          "inference_end_ms": 1793987329986,
+          "model_execution_start_ms": 1793987329952,
+          "model_execution_end_ms": 1793987329983,
+          "prompt_eval_end_ms": 1793987328906,
+          "first_token_ms": 1793987328906,
+          "aggregate_sampling_time_ms": 3,
+          "aggregate_model_execution_time_ms": 1300,
+          "SCALING_FACTOR_UNITS_PER_SECOND": 1000
+        }
+      ],
+      "runner_constructor_seconds": 0.5068424190003498,
+      "generate_call_seconds": 4.1456815339997775,
+      "generated_text": "[E1] Anomaly flagged; grade REVIEW; defect type and cause unknown.\n\n[G1] Prototype checklist: Hold for human review; check image clarity and lighting.<|eot_id|>",
+      "callback_chunks": 34,
+      "status": "PC_GENERATION_CAPTURED_REQUIRES_REVIEW"
+    },
+    "runtime_error": null,
+    "validation_error": null,
+    "jetson_verified": false,
+    "offline_network_disconnection_verified": false,
+    "ui_connected": false,
+    "background_queue_implemented": false,
+    "raw_output_path": "artifacts/assist_stage9_1/attempt_08/native/generated.txt",
+    "original_inspection_bytes_unchanged": true,
+    "source_sha256": {
+      "forgesight/assist_contract.py": "d86c9a5676671269122d6ce24f41af6ce0e0f19b0a6b6b4212751e7dcefff482",
+      "forgesight/assist_once.py": "59d4a6ba3b8e452f6ca87be28fda64e3c63b825aefcb426c883b5d6a5129737c",
+      "forgesight/edge_pc_smoke.py": "f690cdf2a44c7fb98e940257e9abf3250b6363b56e684b6121b30f055ad37e6e"
+    }
+  },
+  "attempts": [
+    {
+      "directory": "artifacts/assist_stage9_1/attempt_01",
+      "status": "ADVICE_UNAVAILABLE",
+      "validation_error": "Model response is not a complete JSON advisory; raw output retained for review.",
+      "raw_text": "Here is the JSON response:\n\n```\n{\n  \"possible_explanation\": \"The issue may be related to the anomaly in the image, which is causing the 9015 response pixels. This could be due to a variety of reasons, including a malfunctioning camera, a problem with the image processing software, or a hardware issue.\",\n  \"uncertainty\": \"The uncertainty level is high due to the unknown nature of the anomaly and the type of the anomaly. It is difficult to determine the cause of the anomaly without more information.\",\n  \"next_check\": \"The next check should be to verify the image clarity and lighting against the source",
+      "prompt_tokens": 98,
+      "native_stats": [
+        {
+          "prefill_token_per_sec": 323.432,
+          "decode_token_per_sec": 30.5215,
+          "prompt_tokens": 98,
+          "generated_tokens": 127,
+          "model_load_start_ms": 1793986487675,
+          "model_load_end_ms": 1793986490477,
+          "inference_start_ms": 1793986490480,
+          "inference_end_ms": 1793986494944,
+          "model_execution_start_ms": 1793986494910,
+          "model_execution_end_ms": 1793986494942,
+          "prompt_eval_end_ms": 1793986490783,
+          "first_token_ms": 1793986490783,
+          "aggregate_sampling_time_ms": 14,
+          "aggregate_model_execution_time_ms": 4317,
+          "SCALING_FACTOR_UNITS_PER_SECOND": 1000
+        }
+      ],
+      "report_sha256": "36eda0468b9ffacb58bb156cdcbf0c288e9ceaa6ebb47fec3b50e04605af2f69"
+    },
+    {
+      "directory": "artifacts/assist_stage9_1/attempt_02",
+      "status": "ADVICE_UNAVAILABLE",
+      "validation_error": "Advisory fields require bounded, nonempty text.",
+      "raw_text": "{\n  \"possible_explanation\": null,\n  \"uncertainty\": null,\n  \"next_check\": null,\n  \"evidence_ids\": [\"E1\", \"G1\"]\n}<|eot_id|>",
+      "prompt_tokens": 89,
+      "native_stats": [
+        {
+          "prefill_token_per_sec": 306.897,
+          "decode_token_per_sec": 30.6699,
+          "prompt_tokens": 89,
+          "generated_tokens": 38,
+          "model_load_start_ms": 1793986615701,
+          "model_load_end_ms": 1793986618466,
+          "inference_start_ms": 1793986618470,
+          "inference_end_ms": 1793986619999,
+          "model_execution_start_ms": 1793986619963,
+          "model_execution_end_ms": 1793986619996,
+          "prompt_eval_end_ms": 1793986618760,
+          "first_token_ms": 1793986618760,
+          "aggregate_sampling_time_ms": 6,
+          "aggregate_model_execution_time_ms": 1476,
+          "SCALING_FACTOR_UNITS_PER_SECOND": 1000
+        }
+      ],
+      "report_sha256": "06ec018651126af78c252ce2e5561b0893eba724a987f979411d15074e2b5dc1"
+    },
+    {
+      "directory": "artifacts/assist_stage9_1/attempt_03",
+      "status": "ADVICE_UNAVAILABLE",
+      "validation_error": "Advisory fields exceed the 12-word limit.",
+      "raw_text": "{\n  \"possible_explanation\": null,\n  \"uncertainty\": \"Type and cause of anomaly are unknown; 9015 response pixels are not a reliable indicator.\",\n  \"next_check\": \"Hold for human review; check image clarity and lighting against the source photo\",\n  \"evidence_ids\": [\"E1\", \"G1\"]\n}<|eot_id|>",
+      "prompt_tokens": 108,
+      "native_stats": [
+        {
+          "prefill_token_per_sec": 332.308,
+          "decode_token_per_sec": 30.7152,
+          "prompt_tokens": 108,
+          "generated_tokens": 70,
+          "model_load_start_ms": 1793986738223,
+          "model_load_end_ms": 1793986740993,
+          "inference_start_ms": 1793986740995,
+          "inference_end_ms": 1793986743599,
+          "model_execution_start_ms": 1793986743564,
+          "model_execution_end_ms": 1793986743596,
+          "prompt_eval_end_ms": 1793986741320,
+          "first_token_ms": 1793986741320,
+          "aggregate_sampling_time_ms": 6,
+          "aggregate_model_execution_time_ms": 2520,
+          "SCALING_FACTOR_UNITS_PER_SECOND": 1000
+        }
+      ],
+      "report_sha256": "e50cc1c2cf15feb7b876a8022681e12cae08d4e65ad16c3702d732a9400f9768"
+    },
+    {
+      "directory": "artifacts/assist_stage9_1/attempt_04",
+      "status": "ADVICE_UNAVAILABLE",
+      "validation_error": "Model response is not a complete JSON advisory; raw output retained for review.",
+      "raw_text": "{\n  \"return\": null,\n  \"possible_explanation\": null,\n  \"uncertainty\": \"Unknown type/cause\",\n  \"next_check\": \"G1 prototype\",\n  \"evidence_ids\": [\"E1\", \"G1\"]\n}\n\nNote: Since there are no extra facts, causes, or reliability claims, the JSON output is very concise.<|eot_id|>",
+      "prompt_tokens": 93,
+      "native_stats": [
+        {
+          "prefill_token_per_sec": 304.918,
+          "decode_token_per_sec": 30.4929,
+          "prompt_tokens": 93,
+          "generated_tokens": 73,
+          "model_load_start_ms": 1793986864290,
+          "model_load_end_ms": 1793986867138,
+          "inference_start_ms": 1793986867140,
+          "inference_end_ms": 1793986869839,
+          "model_execution_start_ms": 1793986869804,
+          "model_execution_end_ms": 1793986869836,
+          "prompt_eval_end_ms": 1793986867445,
+          "first_token_ms": 1793986867445,
+          "aggregate_sampling_time_ms": 10,
+          "aggregate_model_execution_time_ms": 2610,
+          "SCALING_FACTOR_UNITS_PER_SECOND": 1000
+        }
+      ],
+      "report_sha256": "043de23fc362f180a31cc849e55956d0016a9fd3417dfc0ba2b1b90deffe3011"
+    },
+    {
+      "directory": "artifacts/assist_stage9_1/attempt_05",
+      "status": "ADVICE_UNAVAILABLE",
+      "validation_error": "Expected a concise 10..50-word advisory.",
+      "raw_text": "[E1][G1]<|eot_id|>",
+      "prompt_tokens": 89,
+      "native_stats": [
+        {
+          "prefill_token_per_sec": 301.695,
+          "decode_token_per_sec": 30.4569,
+          "prompt_tokens": 89,
+          "generated_tokens": 6,
+          "model_load_start_ms": 1793987032420,
+          "model_load_end_ms": 1793987035302,
+          "inference_start_ms": 1793987035305,
+          "inference_end_ms": 1793987035797,
+          "model_execution_start_ms": 1793987035763,
+          "model_execution_end_ms": 1793987035793,
+          "prompt_eval_end_ms": 1793987035600,
+          "first_token_ms": 1793987035600,
+          "aggregate_sampling_time_ms": 2,
+          "aggregate_model_execution_time_ms": 474,
+          "SCALING_FACTOR_UNITS_PER_SECOND": 1000
+        }
+      ],
+      "report_sha256": "33e3eb14be587b83326e539cd774440dff06d529796a9b845e6129d891bb6fc7"
+    },
+    {
+      "directory": "artifacts/assist_stage9_1/attempt_06",
+      "status": "ADVICE_UNAVAILABLE",
+      "validation_error": "Expected a concise 10..50-word advisory.",
+      "raw_text": "Here is a useful sentence that combines the inspection evidence [E1] and the prototype checklist [G1]:\n\n\"The operator should carefully review the anomaly flagged [E1] and verify that the defect type and cause are unknown, while also ensuring that the prototype checklist [G1] is followed to the letter to maintain the integrity of the inspection process.\"\n\nSource citations:\n\n* [E1]: \"Anomaly flagged [E1]. Recorded grade: [G1]. Def",
+      "prompt_tokens": 67,
+      "native_stats": [
+        {
+          "prefill_token_per_sec": 269.076,
+          "decode_token_per_sec": 30.439,
+          "prompt_tokens": 67,
+          "generated_tokens": 95,
+          "model_load_start_ms": 1793987097992,
+          "model_load_end_ms": 1793987100759,
+          "inference_start_ms": 1793987100761,
+          "inference_end_ms": 1793987104131,
+          "model_execution_start_ms": 1793987104097,
+          "model_execution_end_ms": 1793987104130,
+          "prompt_eval_end_ms": 1793987101010,
+          "first_token_ms": 1793987101010,
+          "aggregate_sampling_time_ms": 10,
+          "aggregate_model_execution_time_ms": 3255,
+          "SCALING_FACTOR_UNITS_PER_SECOND": 1000
+        }
+      ],
+      "report_sha256": "7c9681b51e400fcba63747f78258c8d86204753c82ad4589cf8eaa0f405d7567"
+    },
+    {
+      "directory": "artifacts/assist_stage9_1/attempt_07",
+      "status": "ADVICE_UNAVAILABLE",
+      "validation_error": "Generated note includes words/facts outside the permitted evidence/checklist.",
+      "raw_text": "[E1] Anomaly flagged; grade REVIEW; defect type and cause unknown.\n\n[G1] Prototype checklist: Hold for human review; check image clarity and lighting.<|eot_id|>",
+      "prompt_tokens": 82,
+      "native_stats": [
+        {
+          "prefill_token_per_sec": 299.27,
+          "decode_token_per_sec": 30.1645,
+          "prompt_tokens": 82,
+          "generated_tokens": 33,
+          "model_load_start_ms": 1793987219610,
+          "model_load_end_ms": 1793987222457,
+          "inference_start_ms": 1793987222460,
+          "inference_end_ms": 1793987223828,
+          "model_execution_start_ms": 1793987223793,
+          "model_execution_end_ms": 1793987223824,
+          "prompt_eval_end_ms": 1793987222734,
+          "first_token_ms": 1793987222734,
+          "aggregate_sampling_time_ms": 6,
+          "aggregate_model_execution_time_ms": 1319,
+          "SCALING_FACTOR_UNITS_PER_SECOND": 1000
+        }
+      ],
+      "report_sha256": "0ab77e4d79d1a495dbcdef61a66dc9942afe812eda4ec8059d8e1ffe99b18c91"
+    },
+    {
+      "directory": "artifacts/assist_stage9_1/attempt_08",
+      "status": "PC_ADVICE_GENERATED_REQUIRES_REVIEW",
+      "validation_error": null,
+      "raw_text": "[E1] Anomaly flagged; grade REVIEW; defect type and cause unknown.\n\n[G1] Prototype checklist: Hold for human review; check image clarity and lighting.<|eot_id|>",
+      "prompt_tokens": 82,
+      "native_stats": [
+        {
+          "prefill_token_per_sec": 305.97,
+          "decode_token_per_sec": 30.5556,
+          "prompt_tokens": 82,
+          "generated_tokens": 33,
+          "model_load_start_ms": 1793987325860,
+          "model_load_end_ms": 1793987328636,
+          "inference_start_ms": 1793987328638,
+          "inference_end_ms": 1793987329986,
+          "model_execution_start_ms": 1793987329952,
+          "model_execution_end_ms": 1793987329983,
+          "prompt_eval_end_ms": 1793987328906,
+          "first_token_ms": 1793987328906,
+          "aggregate_sampling_time_ms": 3,
+          "aggregate_model_execution_time_ms": 1300,
+          "SCALING_FACTOR_UNITS_PER_SECOND": 1000
+        }
+      ],
+      "report_sha256": "fdb23b74df0d7e77a0d5f80b55cfe9b32c4f711339aebb6f11dbe27ca6baac55"
+    }
+  ],
+  "attempt_count": 8,
+  "first_seven_original_reports_preserved": true,
+  "seventh_and_eighth_raw_outputs_identical": true,
+  "final_output_content_check": "Faithfully restates supplied anomaly/unknown type and cause, fixed REVIEW, and prototype clarity/lighting checks. Does not establish diagnosis or broad advisory reliability.",
+  "software_tests": {
+    "count": 128,
+    "result": "PASS",
+    "log": "artifacts/assist_stage9_1/tests_final.log",
+    "log_sha256": "c958933b9b1638e0022a3e93c1d708a0e7683bf3f55b9b472242f3fdb34993cc"
+  },
+  "environment_inventories_unchanged": true,
+  "original_inspection_database_unchanged": true,
+  "vision_checkpoint_and_policy_unchanged": true,
+  "no_new_vision_or_holdout_inference": true,
+  "jetson_available": false,
+  "stage_8": "BLOCKED_NOT_VERIFIED",
+  "stage_9_complete": false,
+  "background_queue_and_ui_integration": "NOT_IMPLEMENTED_NEXT_SUBSTEP",
+  "actual_approved_factory_sop": "NOT_AVAILABLE_PROTOTYPE_GUIDANCE_ONLY"
+}

@@ -94,3 +94,13 @@ scores/geometry matched earlier results; server restart preserved two records.
 No Jetson or camera connected, and browser-local requests do not establish a
 disconnected edge test. Actual device inventory and camera domain remain the
 next Stage 8 gate. No desktop UI timing is promoted to Jetson performance.
+
+## Stage 9.1 advisory hardware boundary
+
+The actual Llama advisory test used the existing Linux x86_64 CPU ExecuTorch
+runner on desktop WSL, with eight PC CPU threads. One cold child process took
+8.457 seconds, native inference 1.348 seconds, sampled peak RSS 1,220,356 KiB.
+These exclude parent/UI/vision memory and are not Jetson limits or benchmarks.
+The 1B artifact, 128/512 prefill/context limits and 96-token generation bound
+were retained. The worker explicitly rejects unverified ARM use; actual native
+Jetson execution/compatibility and camera validation remain BLOCKED.

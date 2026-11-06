@@ -4,7 +4,7 @@ An incremental project for offline industrial surface-defect inspection on an
 NVIDIA Jetson Orin Nano, with deterministic grading, local inspection history,
 and a Llama-family advisory model running on the device through ExecuTorch.
 
-**Current state: Stage 7 local operator workflow verified on desktop.** The system
+**Current state: Stage 7 UI verified; Stage 9.1 PC advisory component verified.** The system
 runs a real trained EfficientAD-S model, highlights response regions, saves one
 record per declared part, adds deterministic pixel-only decisions and saves
 local SQLite history. A local screen runs real inspection and browses saved
@@ -36,10 +36,18 @@ results. Jetson/camera deployment and complete offline edge operation remain ope
   and persisted history survive refresh and server restart. Replay only; no
   camera or generated advisory is presented as connected.
 
-All **119 tests pass** in the new locked app environment. All four earlier
+- [ForgeAssist first PC note](docs/FORGEASSIST.md): actual ExecuTorch Llama
+  generation links one saved REVIEW record to a prototype checklist. The final
+  note repeats supplied facts/checks; six content/format failures and a validator
+  false positive are retained. No factory diagnosis or general reliability is
+  claimed. Advice is not yet connected to the UI; Stage 9 remains incomplete.
+
+All **128 tests pass** in the new locked app environment. All four earlier
 environments are unchanged; the app preserves all 89 vision package versions. The Jetson remains unavailable; exact
 hardware, camera performance and disconnected edge operation are unverified.
-**Next stage: Stage 8 Jetson/camera validation**, after review and device availability.
+**Stage 8 remains blocked** because Jetson is unavailable. Next PC substep is
+advisory scenario/contract evaluation before background/UI integration; actual
+Jetson/camera validation is still required.
 
 ## Open the local operator screen
 
@@ -114,7 +122,7 @@ samples. The red overlays are dataset annotations, not detector predictions.
 The source, license, manifest fingerprint, and pixel-area metadata accompany
 the image in `preview.json`. No holdout images are displayed.
 
-Run all 119 data-integrity, edge, vision, inspection, grading, storage and API tests:
+Run all 128 data-integrity, edge, vision, inspection, grading, storage, API and advisory tests:
 
 ```powershell
 wsl -d Ubuntu --exec /root/.cache/forgesight/app-v1/venv/bin/python -B -m unittest discover -s tests -v

@@ -453,3 +453,27 @@ and keep public status, engineering decisions and operator instructions tracked.
 Update README navigation to public documents. This removes the planning files
 from the current repository tree; existing commits remain unchanged and still
 contain the earlier copies. No history rewrite or force push is performed.
+
+## 027: Prove one constrained Llama note before background/UI integration
+
+Stage 8 is blocked by reconfirmed Jetson unavailability. Follow the hardware
+blocker rule for independent PC work. Use the existing 1B 8da4w/4-bit-embedding
+ExecuTorch artifact and native runner in its unchanged CPU environment, with
+82 prompt tokens, a 96-token output cap and unchanged export/context bounds.
+Do not increase model/context memory or substitute another runtime.
+
+Keep real-record/decision hashes and E1/G1 source mapping outside the tight
+prompt. Exclude free-text IDs/notes, photos and numerical score/geometry from
+model input. Guidance is a developer prototype checklist, not an approved SOP.
+The host owns JSON, causal withholding and grade authority; Llama supplies a
+short cited note subject to source-vocabulary checks and human review.
+
+Retain all eight attempts: six formatting/content failures, a vocabulary guard
+false positive, then identical source-faithful output accepted after correction.
+Separate system instructions from user evidence; retain/test historical default
+chat formatting. The final note repeats supplied facts/checks and is not broad
+reasoning/usefulness evidence. All 128 tests pass. Source inspection/database,
+model/policy and all five environments remain unchanged. No UI/queue/storage
+migration yet; next evaluate scenario/refusal behavior before that integration.
+Desktop worker guard remains: a verified native ARM adapter and target budget
+measurement are required on Jetson. Stop after this PC substep for review.

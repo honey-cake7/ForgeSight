@@ -477,3 +477,23 @@ Everything shown is saved-image replay on the PC. Camera capture, real physical
 part identity and Llama advice are clearly pending. Next we need the actual
 Jetson and controlled camera samples, because a familiar benchmark picture is
 not evidence that a different camera/lighting setup will work equally well.
+
+## Stage 9.1: Give one inspection to the real local language model
+
+We took a saved anomaly whose fixed decision was REVIEW and asked the actual
+Llama model, running through ExecuTorch, for a source-linked note. No image was
+sent: the input was a short description plus a labelled prototype checklist.
+The final output repeats the unknown type/cause and asks for human review and
+image clarity/lighting checks. It does not diagnose a machine fault.
+
+Testing exposed real limitations. Early answers were too long, empty, badly
+formatted or unsupported, so they stayed unavailable. A later faithful answer
+was blocked by a vocabulary-check bug; correcting it allowed the identical text.
+All failures are saved. A single final example does not prove advice works
+reliably across the application. Code preserves the original grade and input;
+128 tests pass, including timeout/failure and citation/claim checks.
+
+The small exported model and memory/context limits stayed unchanged, with no
+package installation. The screen still says advice is not connected. Next we
+will evaluate the advisory contract on declared scenarios before adding its
+background worker and UI delivery. Jetson and camera proof remain blocked.

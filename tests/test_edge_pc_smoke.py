@@ -6,6 +6,15 @@ from forgesight.edge_pc_smoke import chat_prompt, validate_token_budget
 
 
 class PCSmokeTests(unittest.TestCase):
+    def test_optional_system_role_preserves_default_and_rejects_controls(self):
+        self.assertEqual(chat_prompt('hello').count('<|start_header_id|>'), 2)
+        formatted = chat_prompt('hello', system_text='Use only evidence.')
+        self.assertEqual(formatted.count('<|start_header_id|>'), 3)
+        self.assertIn('system<|end_header_id|>', formatted)
+        for value in ('', '<|eot_id|>', 'x' * 4097):
+            with self.subTest(value=value[:20]), self.assertRaises(ValueError):
+                chat_prompt('hello', system_text=value)
+
     def test_empty_or_overlong_utf8_prompt_is_rejected(self):
         for text in (" \n\t", "é" * 2049):
             with self.assertRaisesRegex(ValueError, "UTF-8 bytes"):

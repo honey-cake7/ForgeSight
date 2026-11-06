@@ -30,7 +30,7 @@ accuracy evidence. Model-only desktop timing and successful bundle reload do
 not verify defect recall, production false alarms, final grades, or Jetson
 performance. All 86 tests pass. See `docs/VISION_CALIBRATION.md`.
 
-Stages 3.4?5 supersede the earlier unevaluated snapshots for desktop benchmark
+Stages 3.4 through 5 supersede the earlier unevaluated snapshots for desktop benchmark
 work. The frozen baseline detected 87/89 anomalies with 2/22 false alarms.
 Real replay verified capture gating, graded JSON records and explicit errors.
 Unknown anomaly types remain REVIEW. REJECT geometry rules are synthetic policy
@@ -53,6 +53,14 @@ images, unknown type and pending advice. All 119 tests pass. Browser requests
 were local, but network disconnection and Jetson execution remain unverified.
 No new holdout access/model tuning occurred. See `docs/OPERATOR_APP.md`.
 
+Stage 9.1 supplies a real source-linked desktop Llama/ExecuTorch note for one
+saved anomaly/REVIEW record. It repeats supplied evidence/checklist facts only.
+Six content/format failures and a seventh validator false positive are retained;
+the identical final source-faithful output passes the corrected vocabulary
+check. Broad advice usefulness is NOT VERIFIED. Guidance is prototype-only;
+causal explanations are withheld. No UI/background integration, actual Jetson
+or offline proof follows. See `docs/FORGEASSIST.md`; all 128 tests pass.
+
 The [organizer clarification shared by the user](ORGANIZER_CLARIFICATION.md)
 accepts the Jetson Orin platform family for PS5, subject to the mandatory
 technologies. It clears the platform-eligibility question; actual device
@@ -64,7 +72,7 @@ inventory, runtime, and offline compliance still require measured evidence.
 | Real surface anomaly detection | VERIFIED on PC benchmark only | Frozen holdout: 87/89 defects, 2/22 false alarms; see VISION_EVALUATION.md. Camera/edge remain open |
 | Defect type | NOT VERIFIED | Same-domain labeled evaluation; retain `unknown` when unsupported |
 | Severity and operator decisions | PC PIXEL-PROTOTYPE VERIFIED; industrial severity open | Versioned rules, 101 tests, real replay; unknown types REVIEW, no physical tolerances |
-| Useful operator recommendations | NOT VERIFIED | Actual evidence-linked advice with uncertainty and next checks |
+| Useful operator recommendations | ONE PC CHECKLIST NOTE VERIFIED; broad usefulness open | Actual ExecuTorch note cites real record/prototype checklist; no factory diagnosis, approved SOP, UI or device proof |
 | Every-inspection history | PC SQLITE REPLAY VERIFIED; edge/failure recovery open | Original graded/error records survive writer exit and fresh-process queries; 4 retries add no rows; see STORAGE.md |
 | One event per physical part | REPLAY + PERSISTENT ID GATE VERIFIED; physical proof open | 9 frames -> 4 declared-part records; known IDs blocked after restart; actual physical identity/camera unverified |
 | Exact eligible edge hardware | BLOCKED - NOT VERIFIED | Device-side module/RAM/architecture/JetPack inventory; device currently unavailable |

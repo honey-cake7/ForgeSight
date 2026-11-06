@@ -2,36 +2,39 @@
 
 ## Current stage
 
-Stage 7: local FastAPI operator workflow verified on desktop. The browser's
-Inspect button ran the actual calibrated GPU model and grade/SQLite pipeline
-on two already exposed fit/development photos. Saved outcomes: one provisional
-PASS, one unknown-type REVIEW. Scores/source hashes/geometry exactly match
-Stage 5. Duplicate POST returned 409 with no additional row. Refresh, filtered
-history, View and fresh browser after full server restart retain both records.
-All 119 tests pass, including seven API/HTTP contract tests.
+Stage 9.1 PC-only component: one existing real anomaly/REVIEW inspection now
+passes through the actual ExecuTorch Llama runner into a separate source-linked
+note. The final text faithfully repeats the unknown type/cause, fixed REVIEW
+and prototype human-review/clarity/lighting checks, citing E1/G1. It is not
+factory diagnosis or broad usefulness proof. All 128 tests pass.
 
-The screen displays actual source/overlay images, pixel area, unknown type,
-recorded action and SQLite counts. Saved-image replay mode, camera/Jetson limits
-and disconnected Llama advice are explicit. Configuration is read-only; the
-catalog excludes final holdout. A first browser mobile-overflow failure was
-fixed; existing real records were preserved and QA resumed without inference.
-Desktop/mobile and restart screenshots are local. No page errors or external
-browser HTTP requests were observed; this is not an offline edge proof.
-See `docs/OPERATOR_APP.md` and `manifests/operator_app_verification_v1.json`.
+Eight development attempts are retained. Six had formatting/content failures;
+the seventh source-faithful output hit a validator false positive. Correcting
+source vocabulary allowed the identical eighth output. Earlier outputs remain
+unavailable. The final system/evidence prompt is 82 tokens; native generation
+reports 33 tokens within a 96-token output cap, unchanged 128/512 export bounds.
+All five environments, vision model/policy, original inspection and SQLite
+proof hashes are unchanged. No new vision/holdout inference or package installs.
+See `docs/FORGEASSIST.md` and `manifests/forgeassist_pc_note_v1.json`.
 
-A new app environment adds FastAPI/Uvicorn/HTTPX with all 89 original vision
-versions unchanged (101 locked packages total). A fresh lock installation
-passed; all four earlier environments have identical before/after inventories.
-Windows browser QA has its own environment. Model and score policy hashes are
-unchanged, and no new holdout inference/training/tuning occurred. No raw dataset
-images, screenshots with dataset pixels, model weights or databases enter Git.
+Stage 7 UI remains verified, but correctly shows Llama advice not connected.
+This substep is a CLI component only: no background queue, advisory DB migration
+or UI advice states were added. Stage 9 is NOT DONE. Guidance is explicitly
+PROTOTYPE_NOT_FACTORY_APPROVED; possible causes are withheld. Human review and
+broader scenario testing remain required before integrating advice.
 
-STOPPED FOR REVIEW after Stage 7. Next exact action: Stage 8, read-only Jetson
-hardware/camera audit when the physical device is available, then controlled
-real-sample capture and domain-shift assessment. Jetson was last reported
-unavailable. No camera/device work was performed in this stage. Reliable defect
-names, industrial tolerances, two missed scratches, camera identity and mandatory
-Llama/ExecuTorch/offline edge gates remain open.
+Stage 8 remains BLOCKED - NOT VERIFIED: the user reconfirmed Jetson unavailable.
+Independent PC advisory work proceeds under the hardware-blocker rule; no
+physical-camera/device command or on-device/offline proof occurred. The current
+native wrapper is desktop x86_64 guarded and requires a verified ARM adapter
+before Jetson deployment. Desktop CPU threads/timing/memory are not target claims.
+
+STOPPED FOR REVIEW after Substep 9.1. Next PC action: predeclare scenarios and
+evaluate/extend the advisory contract across normal/anomaly/error/refusal cases,
+then implement bounded background execution and separate stored/UI advice states.
+Exact Jetson audit/camera validation remains the next physical-device action.
+Reliable defect names, approved industrial limits, the two missed scratches and
+mandatory Jetson Llama/ExecuTorch/offline proof remain open.
 
 Stage 2.7 desktop Llama generation through ExecuTorch is verified. Stage 1 and
 the transition to Stage 3 were accepted by the user. Actual Stage 2 inference
@@ -265,8 +268,8 @@ proof and do not establish a defect-inspection application.
 
 ## Next exact task
 
-Stage 8: first confirm physical Jetson availability and perform a read-only
-inventory of its exact module/RAM, architecture, JetPack/software and camera.
-Then establish the controlled capture setup and test real parts with distinct
-IDs. Assess camera-vs-benchmark domain shift before optimizing or claiming
-accuracy/latency. Keep all unavailable device evidence BLOCKED - NOT VERIFIED.
+Substep 9.2 PC: predeclare advisory scenarios and evaluate/extend the final
+contract for normal, anomaly, failed-input and refusal cases. Keep generated
+text separate from deterministic grades and require evidence/uncertainty checks.
+After that proof, add bounded background execution, persisted advisory state
+and UI delivery. Stage 8 is blocked until the Jetson is physically available.

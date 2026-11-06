@@ -257,3 +257,15 @@ use the unchanged locked vision environment. No packages were installed or
 upgraded. The database is local to the project artifacts directory on this
 WSL host; actual Jetson filesystem/runtime checks remain unverified. See
 [storage setup, schema and commands](STORAGE.md).
+
+## Stage 9.1: reuse existing isolated environments
+
+The controller runs in the app environment; the actual Llama child runs in the
+existing ExecuTorch 1.5.1+cpu environment with PyTorch 2.14.0+cpu. No packages
+were installed or upgraded. Full before/after inventories match for all five
+Linux environments (image, shared GPU, exporter, vision and app). The vision
+model, score policy and original inspection database hashes remain unchanged.
+The native smoke worker now supports an optional bounded system message;
+default historical chat formatting is unchanged and regression-tested. The
+current child remains x86_64-only: this is not a Jetson installation recipe.
+See [the advisory component and recorded limitations](FORGEASSIST.md).

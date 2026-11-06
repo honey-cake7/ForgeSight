@@ -13,14 +13,20 @@ from forgesight.edge_assets import fingerprint
 from forgesight.edge_capture import capture_process
 
 
-def chat_prompt(text: str) -> str:
+def chat_prompt(text: str, *, system_text: str | None = None) -> str:
     text = text.strip()
     if not text or len(text.encode("utf-8")) > 4096:
         raise ValueError("Smoke prompt must contain 1-4096 UTF-8 bytes.")
     if "<|" in text or "|>" in text:
         raise ValueError("Smoke prompt must not contain chat control markers.")
     # BOS is explicit, so GenerationConfig must use num_bos=0.
-    return ("<|begin_of_text|><|start_header_id|>user<|end_header_id|>\n\n"
+    system = ''
+    if system_text is not None:
+        if (not isinstance(system_text, str) or not system_text.strip()
+                or len(system_text.encode('utf-8')) > 4096 or '<|' in system_text or '|>' in system_text):
+            raise ValueError('System text must be bounded plain text without chat controls.')
+        system = '<|start_header_id|>system<|end_header_id|>\n\n' + system_text.strip() + '<|eot_id|>'
+    return ("<|begin_of_text|>" + system + "<|start_header_id|>user<|end_header_id|>\n\n"
             + text + "<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n")
 
 
@@ -55,7 +61,7 @@ def worker(request: dict) -> dict:
     if (tokenizer_size, tokenizer_hash) != (expected["bytes"], expected["sha256"]):
         raise ValueError("Tokenizer fingerprint differs from the pinned source assets.")
     source_text = Path(request["prompt"]).read_text(encoding="utf-8")
-    formatted = chat_prompt(source_text)
+    formatted = chat_prompt(source_text, system_text=request.get('system_text'))
 
     import torch
     import executorch
@@ -77,8 +83,10 @@ def worker(request: dict) -> dict:
     tokenizer = CppTiktoken()
     tokenizer.load(str(tokenizer_path))
     ids = tokenizer.encode(formatted, 0, 0)
+    header_count = 3 if request.get('system_text') is not None else 2
     if (ids[0] != 128000 or ids.count(128000) != 1
-            or ids.count(128006) != 2 or ids.count(128007) != 2 or ids.count(128009) != 1):
+            or ids.count(128006) != header_count or ids.count(128007) != header_count
+            or ids.count(128009) != header_count - 1):
         raise ValueError("Chat markers did not tokenize into the expected Llama IDs.")
     validate_token_budget(len(ids), request["max_new_tokens"], profile)
     output = Path(request["output"])
@@ -97,6 +105,7 @@ def worker(request: dict) -> dict:
                                 "sha256": native_hash},
               "kernel_libraries": kernel_libraries,
               "prompt_text": source_text.strip(), "formatted_prompt": formatted,
+              "system_text": request.get('system_text'),
               "prompt_token_ids": ids, "prompt_token_count": len(ids),
               "generation_config": generation, "torch_num_threads": torch.get_num_threads(),
               "offline_status": "NOT_VERIFIED", "jetson_proof": "NOT_VERIFIED",

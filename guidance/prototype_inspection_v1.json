@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "document_id": "forgesight-prototype-image-review-v1",
+  "approval_status": "PROTOTYPE_NOT_FACTORY_APPROVED",
+  "origin": "Developer-authored checklist for the existing saved-image REVIEW workflow; not a factory SOP or standard.",
+  "scope": "Explain recorded image evidence and request human verification. No machine adjustments, repair instructions, physical tolerances or confirmed causes are authorized.",
+  "entries": [
+    {
+      "id": "G1",
+      "candidate": "ANOMALY_CANDIDATE",
+      "grade": "REVIEW",
+      "text": "Hold for human review; check image clarity and lighting."
+    }
+  ]
+}
