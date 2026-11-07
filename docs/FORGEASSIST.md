@@ -1,4 +1,4 @@
-# ForgeAssist first advisory component — Stage 9.1, PC only
+# ForgeAssist advisory component — Stages 9.1–9.2, PC only
 
 Stage 8 camera/hardware work is BLOCKED: the user still has no Jetson. Under
 the roadmap's hardware-blocker rule, this independent PC substep takes one
@@ -36,11 +36,13 @@ The original inspection JSON and SQLite database are not modified.
 The host code owns the structured advisory payload. The model supplies a short
 cited note; it cannot supply or overwrite a grade field. Known citations,
 length, uncertainty, a review/check step and restricted source vocabulary are
-checked. An unsupported or malformed answer stays **ADVICE_UNAVAILABLE**, with
+checked. Stage 9.2 additionally requires one of two reviewed complete statement
+forms, closing a demonstrated word-rearrangement weakness described below.
+An unsupported or malformed answer stays **ADVICE_UNAVAILABLE**, with
 raw output retained for inspection. Accepted text is still marked
-**GENERATED_REQUIRES_HUMAN_REVIEW**. Vocabulary checks do not prove semantic
-correctness: different word order can change meaning, so human review and
-broader evaluation are still required.
+**GENERATED_REQUIRES_HUMAN_REVIEW**. The current profile is intentionally limited
+to copying/rephrasing the supplied checklist. Broader usefulness, diagnosis and
+operator acceptance remain unverified.
 
 The host explicitly withholds `possible_explanation` as null because no causal
 evidence was supplied. That null is a host policy decision, not a claim that
@@ -97,7 +99,7 @@ resident model lifetime, thread contention and queue behavior remain future work
 
 ## Verification and files
 
-All **128 tests pass**. New tests cover deterministic context, excluding prompt
+At the Stage 9.1 checkpoint, all **128 tests passed**. New tests covered deterministic context, excluding prompt
 injection through free-text metadata, invalid/incomplete evidence, labelled
 guidance, cited output, rejection of unsupported actions/causes/measurements,
 real child-process timeout and unavailable runtime. Output strings in unit
@@ -143,9 +145,99 @@ The operator UI correctly still says Llama advice is not connected. No advisory
 table/migration, background queue, automatic delivery or UI generation state
 was added. Stage 9 is **not DONE**.
 
-Next PC substep: predeclare advisory scenarios and evaluate/extend the contract
-for normal, anomalous and failed inspections, including refusal behavior. Then
-add the bounded background worker and separately persisted/UI advice states
-without changing original grades. Approved factory procedures are needed before
-expanding beyond prototype image checks. Stage 8 and on-device/offline gates
-remain BLOCKED - NOT VERIFIED. Stop for review after this substep.
+## Stage 9.2: declared refusal scenarios and a narrower output contract
+
+The PC-only follow-up has now tested the contract before UI integration.
+`configs/forgeassist_scenarios_v1.json` declares 12 input cases, 15 handwritten
+output fixtures and five runtime checks. Its original bytes/hash and source
+fingerprints were saved before execution. Cases reuse existing real normal,
+anomaly and failed-input records. Tampered records and generated-output examples
+are explicitly test fixtures, not new model predictions or factory evidence.
+
+The old vocabulary-only guard accepted this handwritten unsupported statement:
+"The cause is lighting; type unknown. Hold for human review and check image
+clarity [E1][G1]." It contained only allowed words. The baseline acceptance is
+retained under `artifacts/assist_stage9_2/baseline_weakness.json`; this was not
+an observed Llama answer. A word list cannot preserve meaning.
+
+Output policy `forgeassist-reviewed-note-forms-v2` now permits only two reviewed
+complete notes: the source-copy form shown above and a fixed paraphrase stating
+unknown type/cause and human review/clarity/lighting checks. Only case,
+whitespace and evidence-tag placement may vary. Other text is withheld even if
+its individual words were supplied. This intentionally sacrifices wording
+flexibility. A general semantic judge or second LLM would add complexity and
+compute without established quality or Jetson budgets. This narrow contract
+does not establish independent reasoning, novel recommendations or root causes;
+a deterministic template would suffice for its present contents. The actual
+Llama/ExecuTorch execution remains mandatory and is preserved, while useful
+domain-specific guidance needs approved source material and separate evaluation.
+
+Guidance is checked against its reviewed canonical JSON SHA-256, not just a
+document ID or an approval label. Modified text under the same identity is
+refused. Updating legitimate guidance requires deliberate version/hash and
+statement-policy review. The checklist remains **PROTOTYPE_NOT_FACTORY_APPROVED**.
+
+`AdvisoryRefusal` provides a stable reason code. `advise_once` now saves an
+input snapshot and **ADVICE_UNAVAILABLE** report for refused inputs, with
+`runtime_requested=false`, `process=null`, and no generated note. Normal
+results keep their original provisional action; failed inspections keep their
+original error/REVIEW. Neither needs a Llama call in this profile. Invalid grades,
+unsupported defect names, incomplete geometry and altered guidance are refused.
+This saves unnecessary compute and keeps the original records unchanged.
+
+### Actual checks and their limits
+
+- All **27 contract checks** matched: 12 eligibility cases (including ten
+  refusals before runtime) and 15 output fixtures (two accepted, 13 withheld).
+- Two normal-length native Llama runs generated the same source-linked note,
+  using 82 prompt tokens and reporting 33 generated tokens each. Adding malicious
+  part-ID/path/note metadata changed neither prompt nor generated note because
+  those fields never enter model input. This is exclusion, not a test of Llama
+  resisting an injected prompt. Both runs have the **same single prompt** and
+  are not independent advice-quality scenarios.
+- Timeout and missing-runtime probes saved unavailable reports without advice.
+- The one-token probe was also safely unavailable, but the native statistics
+  guard rejected it before the expected text-parser layer: native statistics
+  reported zero generated tokens. Therefore the original full protocol report
+  remains **31/32 matching expectations, `passed=false`**. It is not rewritten
+  or presented as a fully passing predeclared experiment.
+- A separate prospective eight-token follow-up was declared before execution.
+  It generated `[E1] Anomaly flagged; grade`, which the text parser withheld for
+  missing evidence. This verifies the additional intended failure path; it does
+  not retroactively change the original experiment.
+- All **132 software tests passed** in 8.325 seconds. The five environment
+  inventories and 13 protected file hashes stayed unchanged. No dependency
+  installation, new vision/holdout inference, retraining or score/policy tuning
+  occurred. No UI, database migration or queue was added.
+
+The two successful desktop native inference intervals were 1.361/1.362 seconds;
+whole child-process times were 9.115/8.602 seconds, including imports, hashing
+and cold model load. Sampled child peak RSS was 1,219,960/1,219,204 KiB. These
+exclude parent/vision/UI memory, may miss peaks, and are not percentiles or
+Jetson performance claims. The existing 1B quantized artifact, tokenizer,
+128-token prefill bound and 512-token context were unchanged.
+
+Saved outputs, initial mismatch and follow-up are under
+`artifacts/assist_stage9_2/`. The committed summary is
+`manifests/forgeassist_refusal_verification_v1.json`. Reproduce contract-only
+checks without loading Llama, using a fresh output directory:
+
+```powershell
+wsl -d Ubuntu --exec /root/.cache/forgesight/app-v1/venv/bin/python -B -m forgesight.assist_evaluate --output artifacts/assist/manual-contract-001
+```
+
+Adding `--run-native` runs the original five PC probes too, including the
+documented one-token failure-layer mismatch; expect that original protocol to
+exit 1. The eight-token follow-up is reproduced by calling
+`advise_once(record_path, fresh_output, max_new_tokens=8)` on the saved anomaly.
+Contract/fixture checks are standard-library Python and device-neutral; the
+actual runner remains explicitly desktop x86_64 only. A native ARM adapter,
+target-compatible dependencies, hardware inventory and memory/thread measurements
+must be verified on Jetson. CPU thread counts are not target recommendations.
+
+**Next exact PC task, Substep 9.3:** implement a bounded, single-worker advisory
+queue with immediate busy refusal and timeout/failure isolation, proving that
+inspection results remain available while advice is pending. Persisted advisory
+state and UI delivery follow as separate substeps. Approved factory procedures
+are needed before expanding beyond prototype image checks. Stage 8 and all
+on-device/offline gates remain BLOCKED - NOT VERIFIED. Stop for review here.

@@ -66,6 +66,19 @@ accepts the Jetson Orin platform family for PS5, subject to the mandatory
 technologies. It clears the platform-eligibility question; actual device
 inventory, runtime, and offline compliance still require measured evidence.
 
+Stage 9.2 adds explicit input-refusal reports without Llama calls, canonical
+guidance identity checks and two reviewed output statement forms. A handwritten
+false-cause fixture exposed the previous vocabulary-only weakness; it is now
+withheld. All 27 input/output contract checks matched and 132 software tests
+passed. Two actual PC native runs produced the same source-linked note from one
+unique prompt. Timeout, missing runtime and incomplete generation kept advice
+unavailable. The original protocol remains 31/32 matching expectations because
+one-token failure happened at native validation before the anticipated parser;
+a separately declared eight-token probe verified parser refusal. No independent
+general advice-quality, causal diagnosis, approved factory SOP, ARM deployment,
+background/UI responsiveness or offline edge claim follows. See
+`manifests/forgeassist_refusal_verification_v1.json` and `docs/FORGEASSIST.md`.
+
 | Requirement | Status | Acceptance evidence needed |
 | --- | --- | --- |
 | Jetson Orin platform-family eligibility for PS5 | CONFIRMED in organizer reply shared by user | Recorded clarification; exact device inventory and deployment remain separate gates |

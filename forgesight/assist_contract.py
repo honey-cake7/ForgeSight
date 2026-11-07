@@ -12,6 +12,18 @@ from forgesight.grade import grade_record
 
 DEFAULT_GUIDANCE = Path('guidance/prototype_inspection_v1.json')
 PROMPT_VERSION = 'forgeassist-system-cited-note-v1'
+OUTPUT_POLICY_VERSION = 'forgeassist-reviewed-note-forms-v2'
+# Canonical document hash, independent of JSON whitespace/Windows line endings.
+# A changed procedure requires deliberate review/versioning, not just the same ID.
+GUIDANCE_DOCUMENT_SHA256 = '60238ff09a2453786e81e1a9fd1e905d53ca3b5c5ad7c368c8a2972fe31c7825'
+
+
+class AdvisoryRefusal(ValueError):
+    """An explicit host refusal before requesting any language-model execution."""
+
+    def __init__(self, code: str, message: str):
+        super().__init__(message)
+        self.code = code
 
 
 def canonical_hash(document):
@@ -19,18 +31,35 @@ def canonical_hash(document):
 
 
 def prepare_advisory(record: dict, guidance: dict) -> dict:
+    try:
+        return _prepare_advisory(record, guidance)
+    except AdvisoryRefusal:
+        raise
+    except (KeyError, TypeError, ValueError, OverflowError) as exc:
+        raise AdvisoryRefusal('INVALID_OR_INCOMPLETE_EVIDENCE',
+                              'Inspection or guidance metadata is invalid or incomplete.') from exc
+
+
+def _prepare_advisory(record: dict, guidance: dict) -> dict:
     """Only trusted numerical/enumerated facts enter the prompt; free-text IDs/notes do not."""
-    if record.get('status') != 'ANALYZED' or record.get('candidate') != 'ANOMALY_CANDIDATE':
-        raise ValueError('This first advisory step requires an analyzed anomaly; no inference is requested for incomplete evidence.')
+    if not isinstance(record, dict) or not record or not isinstance(guidance, dict):
+        raise AdvisoryRefusal('INVALID_OR_INCOMPLETE_EVIDENCE', 'Expected inspection and guidance objects.')
+    if record.get('status') != 'ANALYZED':
+        raise AdvisoryRefusal('INSPECTION_NOT_ANALYZED', 'No defect advice is requested for a failed or incomplete inspection.')
+    if record.get('candidate') == 'NORMAL_CANDIDATE':
+        raise AdvisoryRefusal('UNSUPPORTED_NORMAL_CANDIDATE', 'The normal result keeps its deterministic action; no Llama call is needed.')
+    if record.get('candidate') != 'ANOMALY_CANDIDATE':
+        raise AdvisoryRefusal('UNSUPPORTED_CANDIDATE', 'Unrecognized anomaly evidence; advice is withheld.')
     decision = record['decision']
     if (decision['grade'] != 'REVIEW' or record['predicted_defect_type'] != 'unknown'
             or record['type_status'] != 'NO_VALIDATED_SUBTYPE_CLASSIFIER'):
-        raise ValueError('Expected the current unknown-type REVIEW prototype, not a different grading/type policy.')
+        raise AdvisoryRefusal('UNSUPPORTED_TYPE_OR_GRADE', 'Expected the current unknown-type REVIEW prototype, not a different grading/type policy.')
     if grade_record(record, decision['policy_snapshot']) != decision:
-        raise ValueError('Decision does not match its recorded deterministic evidence/policy.')
-    if (guidance.get('schema_version') != 1 or guidance.get('approval_status') != 'PROTOTYPE_NOT_FACTORY_APPROVED'
-            or guidance.get('document_id') != 'forgesight-prototype-image-review-v1'):
-        raise ValueError('Expected explicitly labelled, versioned prototype guidance.')
+        raise AdvisoryRefusal('INCONSISTENT_DECISION', 'Decision does not match its recorded deterministic evidence/policy.')
+    if decision['reason'] != 'UNKNOWN_UNSEEN_OR_UNRELIABLE_TYPE':
+        raise AdvisoryRefusal('INVALID_EVIDENCE_FOR_ADVICE', 'Invalid evidence cannot be presented as an analyzed defect event.')
+    if canonical_hash(guidance) != GUIDANCE_DOCUMENT_SHA256:
+        raise AdvisoryRefusal('UNRECOGNIZED_GUIDANCE', 'Guidance content differs from the reviewed prototype document; advice is withheld.')
     entries = [entry for entry in guidance['entries'] if entry['candidate'] == record['candidate'] and entry['grade'] == decision['grade']]
     if len(entries) != 1 or entries[0]['id'] != 'G1':
         raise ValueError('No single permitted guidance entry matches this inspection.')
@@ -47,7 +76,7 @@ def prepare_advisory(record: dict, guidance: dict) -> dict:
         '[E1] Anomaly flagged; grade REVIEW; defect type and cause unknown.\n'
         f'[G1] Prototype checklist: {entry["text"]}'
     )
-    return {'schema_version': 1, 'prompt_version': PROMPT_VERSION,
+    return {'schema_version': 1, 'prompt_version': PROMPT_VERSION, 'output_policy_version': OUTPUT_POLICY_VERSION,
             'inspection_id': record['inspection_id'], 'inspection_sha256': canonical_hash(record),
             'authoritative_decision': deepcopy(decision), 'decision_sha256': canonical_hash(decision),
             'evidence': {'E1': {'inspection_id': record['inspection_id'], 'record_sha256': canonical_hash(record),
@@ -91,6 +120,21 @@ def parse_advisory(raw: str, context: dict) -> dict:
         raise ValueError('Generated note includes words/facts outside the permitted evidence/checklist.')
     if not {'unknown', 'type', 'cause', 'review'} <= set(words) or not set(words) & {'clarity', 'lighting'}:
         raise ValueError('Required uncertainty, fixed review or image-verification step is missing.')
+    # Vocabulary alone accepts "the cause is lighting" using only source words.
+    # This deliberately narrow profile admits two reviewed complete statements,
+    # allowing whitespace/case/citation placement only, rather than arbitrary
+    # recombinations. A new wording/procedure needs a separately reviewed policy.
+    normalized = ' '.join(text.lower().split())
+    reviewed_forms = {
+        'anomaly flagged; grade review; defect type and cause unknown. '
+        'prototype checklist: hold for human review; check image clarity and lighting.',
+        'an anomaly is flagged; type and cause are unknown. '
+        'hold for human review and check image clarity and lighting.',
+    }
+    # Citations may precede a final period or follow it.
+    normalized = normalized.replace(' .', '.')
+    if normalized not in reviewed_forms:
+        raise ValueError('Generated note is outside the reviewed statement forms; advice is withheld.')
     return {'schema_version': 1, 'status': 'GENERATED_REQUIRES_HUMAN_REVIEW',
             'inspection_id': context['inspection_id'], 'inspection_sha256': context['inspection_sha256'],
             'authoritative_grade': context['authoritative_decision']['grade'],
@@ -99,6 +143,7 @@ def parse_advisory(raw: str, context: dict) -> dict:
                          'possible_explanation': None,
                          'possible_explanation_origin': 'HOST_WITHHELD_NO_CAUSAL_EVIDENCE'},
             'guidance_approval': 'PROTOTYPE_NOT_FACTORY_APPROVED',
-            'validation_scope': 'HOST_SCHEMA_CITATION_AND_RESTRICTED_VOCABULARY_NOT_SEMANTIC_PROOF',
+            'output_policy_version': OUTPUT_POLICY_VERSION,
+            'validation_scope': 'HOST_REVIEWED_STATEMENT_FORMS_NOT_GENERAL_REASONING_OR_DIAGNOSIS',
             'quality_grade_authority': 'DETERMINISTIC_RULES_ONLY',
             'model_saw_image': False, 'jetson_verified': False}

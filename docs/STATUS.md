@@ -2,20 +2,29 @@
 
 ## Current stage
 
-Stage 9.1 PC-only component: one existing real anomaly/REVIEW inspection now
-passes through the actual ExecuTorch Llama runner into a separate source-linked
-note. The final text faithfully repeats the unknown type/cause, fixed REVIEW
-and prototype human-review/clarity/lighting checks, citing E1/G1. It is not
-factory diagnosis or broad usefulness proof. All 128 tests pass.
+Stage 9.2 PC-only advisory/refusal checks are observed. All 27 declared contract
+checks matched and all 132 software tests passed. Normal/error/inconsistent
+inputs now save unavailable reports without requesting a Llama process. Guidance
+content must match the reviewed prototype hash. A handwritten false-cause
+fixture exposed the old vocabulary guard; two reviewed complete statement forms
+now prevent that recombination. Notes still repeat supplied facts/checks, with
+type/cause unknown and REVIEW unchanged; broad usefulness remains unverified.
 
-Eight development attempts are retained. Six had formatting/content failures;
-the seventh source-faithful output hit a validator false positive. Correcting
-source vocabulary allowed the identical eighth output. Earlier outputs remain
-unavailable. The final system/evidence prompt is 82 tokens; native generation
-reports 33 tokens within a 96-token output cap, unchanged 128/512 export bounds.
-All five environments, vision model/policy, original inspection and SQLite
-proof hashes are unchanged. No new vision/holdout inference or package installs.
-See `docs/FORGEASSIST.md` and `manifests/forgeassist_pc_note_v1.json`.
+Two actual ExecuTorch generations produced the same source-linked note, with
+82 prompt and 33 generated tokens each, using the unchanged small Llama/context.
+Metadata injection was excluded before generation. These share one prompt and
+are not independent advice scenarios. Timeout, missing runtime and truncated
+generation all kept advice unavailable. The original runtime-inclusive protocol
+remains 31/32 matching expectations, passed=false: a one-token probe was rejected
+at native statistics validation before the anticipated text parser. A separately
+declared eight-token follow-up generated an incomplete note and proved parser
+refusal. The initial mismatch is preserved, not retrospectively passed.
+
+All five environments and 13 protected source/model/policy/inspection/database
+hashes remain unchanged. No new vision/holdout inference or package installs.
+Earlier Stage 9.1 attempts remain preserved. See `docs/FORGEASSIST.md`,
+`manifests/forgeassist_pc_note_v1.json` and
+`manifests/forgeassist_refusal_verification_v1.json`.
 
 Stage 7 UI remains verified; About this prototype explains advice is not connected.
 Per the user's request, the main view is simplified to photo/highlight, result,
@@ -23,10 +32,10 @@ type and one short next action. History, full record details and prototype
 limitations are expandable. Browser checks passed on desktop/mobile using
 stored-record replay only; no backend, grade or model changes occurred. See
 `docs/OPERATOR_APP.md` and `manifests/operator_ui_simplification_v1.json`.
-This substep is a CLI component only: no background queue, advisory DB migration
+This substep remains a CLI component only: no background queue, advisory DB migration
 or UI advice states were added. Stage 9 is NOT DONE. Guidance is explicitly
 PROTOTYPE_NOT_FACTORY_APPROVED; possible causes are withheld. Human review and
-broader scenario testing remain required before integrating advice.
+broader domain/usefulness testing remain required for richer advice.
 
 Stage 8 remains BLOCKED - NOT VERIFIED: the user reconfirmed Jetson unavailable.
 Independent PC advisory work proceeds under the hardware-blocker rule; no
@@ -34,9 +43,9 @@ physical-camera/device command or on-device/offline proof occurred. The current
 native wrapper is desktop x86_64 guarded and requires a verified ARM adapter
 before Jetson deployment. Desktop CPU threads/timing/memory are not target claims.
 
-STOPPED FOR REVIEW after Substep 9.1. Next PC action: predeclare scenarios and
-evaluate/extend the advisory contract across normal/anomaly/error/refusal cases,
-then implement bounded background execution and separate stored/UI advice states.
+STOPPED FOR REVIEW after Substep 9.2. Next PC action: implement bounded,
+single-worker background execution with busy refusal and timeout/failure isolation.
+Separate stored/UI advice states follow in subsequent substeps.
 Exact Jetson audit/camera validation remains the next physical-device action.
 Reliable defect names, approved industrial limits, the two missed scratches and
 mandatory Jetson Llama/ExecuTorch/offline proof remain open.
@@ -273,8 +282,9 @@ proof and do not establish a defect-inspection application.
 
 ## Next exact task
 
-Substep 9.2 PC: predeclare advisory scenarios and evaluate/extend the final
-contract for normal, anomaly, failed-input and refusal cases. Keep generated
-text separate from deterministic grades and require evidence/uncertainty checks.
-After that proof, add bounded background execution, persisted advisory state
-and UI delivery. Stage 8 is blocked until the Jetson is physically available.
+Substep 9.3 PC: implement a bounded single-worker advisory queue. Verify immediate
+busy refusal and that slow, failed or timed-out advice cannot change or block
+inspection results. Persisted advisory state and UI delivery follow separately.
+The original 9.2 failure-layer expectation mismatch remains explicitly documented;
+this is no claim of general advisory quality. Stage 8 is blocked until the Jetson
+is physically available, and all mandatory ARM ExecuTorch/offline gates stay open.

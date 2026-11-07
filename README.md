@@ -4,7 +4,7 @@ An incremental project for offline industrial surface-defect inspection on an
 NVIDIA Jetson Orin Nano, with deterministic grading, local inspection history,
 and a Llama-family advisory model running on the device through ExecuTorch.
 
-**Current state: Stage 7 UI verified; Stage 9.1 PC advisory component verified.** The system
+**Current state: Stage 7 UI verified; Stage 9.2 PC advisory/refusal checks observed.** The system
 runs a real trained EfficientAD-S model, highlights response regions, saves one
 record per declared part, adds deterministic pixel-only decisions and saves
 local SQLite history. A local screen runs real inspection and browses saved
@@ -43,12 +43,17 @@ results. Jetson/camera deployment and complete offline edge operation remain ope
   note repeats supplied facts/checks; six content/format failures and a validator
   false positive are retained. No factory diagnosis or general reliability is
   claimed. Advice is not yet connected to the UI; Stage 9 remains incomplete.
+  Input refusal and narrow reviewed-statement checks are now tested: 27 contract
+  checks matched; two real native generations retained the source-linked note.
+  The original full protocol matched 31/32 expectations because a one-token
+  failure occurred earlier than expected; a declared eight-token follow-up
+  verified text-parser refusal. All evidence, including that mismatch, is saved.
 
-All **128 tests pass** in the new locked app environment. All four earlier
+All **132 tests pass** in the locked app environment. All four earlier
 environments are unchanged; the app preserves all 89 vision package versions. The Jetson remains unavailable; exact
 hardware, camera performance and disconnected edge operation are unverified.
 **Stage 8 remains blocked** because Jetson is unavailable. Next PC substep is
-advisory scenario/contract evaluation before background/UI integration; actual
+the bounded background advisory worker before storage/UI integration; actual
 Jetson/camera validation is still required.
 
 ## Open the local operator screen

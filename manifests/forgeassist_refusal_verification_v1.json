@@ -1,0 +1,1304 @@
+{
+  "schema_version": 1,
+  "created_utc": "2026-11-07T09:48:43.837359+00:00",
+  "scope": "STAGE_9_2_PC_NARROW_CONTRACT_AND_REFUSAL_PATHS_ONLY",
+  "component_status": "CONTRACT_AND_REFUSAL_PATHS_OBSERVED_WITH_ORIGINAL_PROTOCOL_MISMATCH_RETAINED",
+  "initial_protocol_all_expectations_passed": false,
+  "predeclared_evaluation": {
+    "schema_version": 1,
+    "scope": "PC_CONTRACT_AND_FAILURE_CHECKS_NOT_GENERAL_ADVICE_OR_JETSON_VALIDATION",
+    "declaration": {
+      "created_utc": "2026-11-07T09:44:11.716417+00:00",
+      "protocol_sha256": "c8136777a140a76a54c1026b4d2b7b49b980d083add7945e808751a16be4c5f1",
+      "output_policy_version": "forgeassist-reviewed-note-forms-v2",
+      "native_execution_requested": true,
+      "protected_source_sha256": {
+        "manifests/operator_app_verification_v1.json": "089648cec993d96d9ebaa3c29072c6b8697105e931b52327cdd76850b367aabc",
+        "manifests/graded_inspection_replay_v1.json": "7bfa84eedd94d30ae3cb51acb3d50709081e75f9635c021d4321e20bc5fbfe2c",
+        "guidance/prototype_inspection_v1.json": "0ef2cbf10b43cd54049280a37e2aad46415528082148ac75008fd23d4e1a23b9"
+      },
+      "code_sha256": {
+        "forgesight/assist_evaluate.py": "74f7d9e5b41dd7b1d966037e31352dd0e71963a6c6d81fc2ef010b43ae6c1a19",
+        "forgesight/assist_contract.py": "b1253531f487888931a25c34f7a740cec29dc832a04533fe409b56773691949d",
+        "forgesight/assist_once.py": "943cb36456bf89076fc94c87e8360b7a9f4d8d4e4e39b83042be8fb1a893d22f",
+        "forgesight/edge_pc_smoke.py": "f690cdf2a44c7fb98e940257e9abf3250b6363b56e684b6121b30f055ad37e6e"
+      }
+    },
+    "eligibility_cases": [
+      {
+        "id": "real-anomaly",
+        "expected": "ELIGIBLE",
+        "input_kind": "EXISTING_REAL_RECORD",
+        "runtime_requested": false,
+        "actual": "ELIGIBLE",
+        "matches_expectation": true
+      },
+      {
+        "id": "real-normal",
+        "expected": "UNSUPPORTED_NORMAL_CANDIDATE",
+        "input_kind": "EXISTING_REAL_RECORD",
+        "runtime_requested": false,
+        "actual": "UNSUPPORTED_NORMAL_CANDIDATE",
+        "process": null,
+        "refusal_report_sha256": "b69f64cf3a5d4944f97421d7e1d5cfaac939d03a5dbe157fdf9cfcee1bfdd24c",
+        "unavailable_without_advisory": true,
+        "controller_refusal_matches": true,
+        "matches_expectation": true
+      },
+      {
+        "id": "real-input-error",
+        "expected": "INSPECTION_NOT_ANALYZED",
+        "input_kind": "EXISTING_REAL_RECORD",
+        "runtime_requested": false,
+        "actual": "INSPECTION_NOT_ANALYZED",
+        "process": null,
+        "refusal_report_sha256": "29058244805f87d413421aa541ddff6ce0b39dd573637cb7deb7f6fd5cd0371d",
+        "unavailable_without_advisory": true,
+        "controller_refusal_matches": true,
+        "matches_expectation": true
+      },
+      {
+        "id": "metadata-injection",
+        "expected": "ELIGIBLE",
+        "input_kind": "MODIFIED_TEST_FIXTURE",
+        "runtime_requested": false,
+        "actual": "ELIGIBLE",
+        "excluded_metadata_prompt_unchanged": true,
+        "matches_expectation": true
+      },
+      {
+        "id": "tampered-grade",
+        "expected": "UNSUPPORTED_TYPE_OR_GRADE",
+        "input_kind": "MODIFIED_TEST_FIXTURE",
+        "runtime_requested": false,
+        "actual": "UNSUPPORTED_TYPE_OR_GRADE",
+        "process": null,
+        "refusal_report_sha256": "652d032155f19fe7eb933ba272ec9491fef978d6212f0364aa77f88d58f851c8",
+        "unavailable_without_advisory": true,
+        "controller_refusal_matches": true,
+        "matches_expectation": true
+      },
+      {
+        "id": "tampered-score",
+        "expected": "INCONSISTENT_DECISION",
+        "input_kind": "MODIFIED_TEST_FIXTURE",
+        "runtime_requested": false,
+        "actual": "INCONSISTENT_DECISION",
+        "process": null,
+        "refusal_report_sha256": "2737ffbe6541d24929c96eba509d982f1ae94e323af49e49ad81700b91559332",
+        "unavailable_without_advisory": true,
+        "controller_refusal_matches": true,
+        "matches_expectation": true
+      },
+      {
+        "id": "invented-subtype",
+        "expected": "UNSUPPORTED_TYPE_OR_GRADE",
+        "input_kind": "MODIFIED_TEST_FIXTURE",
+        "runtime_requested": false,
+        "actual": "UNSUPPORTED_TYPE_OR_GRADE",
+        "process": null,
+        "refusal_report_sha256": "497a044036bb3c0f7b808bd32d86539704a7492adbb911fb38886da09b6562fc",
+        "unavailable_without_advisory": true,
+        "controller_refusal_matches": true,
+        "matches_expectation": true
+      },
+      {
+        "id": "missing-geometry",
+        "expected": "INCONSISTENT_DECISION",
+        "input_kind": "MODIFIED_TEST_FIXTURE",
+        "runtime_requested": false,
+        "actual": "INCONSISTENT_DECISION",
+        "process": null,
+        "refusal_report_sha256": "6d8b89779479332758e104b7c82746e46164570a2914c55446c3da899e5c0234",
+        "unavailable_without_advisory": true,
+        "controller_refusal_matches": true,
+        "matches_expectation": true
+      },
+      {
+        "id": "empty-evidence",
+        "expected": "INVALID_OR_INCOMPLETE_EVIDENCE",
+        "input_kind": "MODIFIED_TEST_FIXTURE",
+        "runtime_requested": false,
+        "actual": "INVALID_OR_INCOMPLETE_EVIDENCE",
+        "process": null,
+        "refusal_report_sha256": "c1f3031b795e7fb71f294780439e58d32919066749ebe460f2228f60c82d53bb",
+        "unavailable_without_advisory": true,
+        "controller_refusal_matches": true,
+        "matches_expectation": true
+      },
+      {
+        "id": "forged-approval",
+        "expected": "UNRECOGNIZED_GUIDANCE",
+        "input_kind": "MODIFIED_TEST_FIXTURE",
+        "runtime_requested": false,
+        "actual": "UNRECOGNIZED_GUIDANCE",
+        "process": null,
+        "refusal_report_sha256": "7644d0cc787683b648651f157a74a4c78a8d2da33066443348ed09ba6f3d5a29",
+        "unavailable_without_advisory": true,
+        "controller_refusal_matches": true,
+        "matches_expectation": true
+      },
+      {
+        "id": "same-id-altered-guidance",
+        "expected": "UNRECOGNIZED_GUIDANCE",
+        "input_kind": "MODIFIED_TEST_FIXTURE",
+        "runtime_requested": false,
+        "actual": "UNRECOGNIZED_GUIDANCE",
+        "process": null,
+        "refusal_report_sha256": "0b12ff920d52d87dc69530c310995e45f4e99756d38dce14de2845148d739908",
+        "unavailable_without_advisory": true,
+        "controller_refusal_matches": true,
+        "matches_expectation": true
+      },
+      {
+        "id": "guidance-chat-injection",
+        "expected": "UNRECOGNIZED_GUIDANCE",
+        "input_kind": "MODIFIED_TEST_FIXTURE",
+        "runtime_requested": false,
+        "actual": "UNRECOGNIZED_GUIDANCE",
+        "process": null,
+        "refusal_report_sha256": "69b804b4c7192111ebbf6d2aff4d9ab75c10160e9d6cf36ef92d978afb7955be",
+        "unavailable_without_advisory": true,
+        "controller_refusal_matches": true,
+        "matches_expectation": true
+      }
+    ],
+    "output_fixture_cases": [
+      {
+        "id": "source-copy",
+        "scope": "HANDWRITTEN_FIXTURE_NOT_LLAMA_OUTPUT",
+        "expected": "ACCEPT",
+        "text": "[E1] Anomaly flagged; grade REVIEW; defect type and cause unknown.\n\n[G1] Prototype checklist: Hold for human review; check image clarity and lighting.",
+        "actual": "ACCEPT",
+        "matches_expectation": true
+      },
+      {
+        "id": "reviewed-paraphrase",
+        "scope": "HANDWRITTEN_FIXTURE_NOT_LLAMA_OUTPUT",
+        "expected": "ACCEPT",
+        "text": "An anomaly is flagged; type and cause are unknown. Hold for human review and check image clarity and lighting [E1][G1].",
+        "actual": "ACCEPT",
+        "matches_expectation": true
+      },
+      {
+        "id": "allowed-words-false-cause",
+        "scope": "HANDWRITTEN_FIXTURE_NOT_LLAMA_OUTPUT",
+        "expected": "REFUSE",
+        "text": "The cause is lighting; type unknown. Hold for human review and check image clarity [E1][G1].",
+        "actual": "REFUSE",
+        "validation_error": "Generated note is outside the reviewed statement forms; advice is withheld.",
+        "matches_expectation": true
+      },
+      {
+        "id": "allowed-words-false-type",
+        "scope": "HANDWRITTEN_FIXTURE_NOT_LLAMA_OUTPUT",
+        "expected": "REFUSE",
+        "text": "The defect type is lighting; cause unknown. Hold for human review and check image clarity [E1][G1].",
+        "actual": "REFUSE",
+        "validation_error": "Generated note is outside the reviewed statement forms; advice is withheld.",
+        "matches_expectation": true
+      },
+      {
+        "id": "allowed-words-wrong-uncertainty",
+        "scope": "HANDWRITTEN_FIXTURE_NOT_LLAMA_OUTPUT",
+        "expected": "REFUSE",
+        "text": "The type is unknown; the cause is lighting. Hold for human review and check image clarity [E1][G1].",
+        "actual": "REFUSE",
+        "validation_error": "Generated note is outside the reviewed statement forms; advice is withheld.",
+        "matches_expectation": true
+      },
+      {
+        "id": "negated-check",
+        "scope": "HANDWRITTEN_FIXTURE_NOT_LLAMA_OUTPUT",
+        "expected": "REFUSE",
+        "text": "Anomaly flagged; type and cause unknown. Do not hold for human review or check image clarity and lighting [E1][G1].",
+        "actual": "REFUSE",
+        "validation_error": "Generated note includes words/facts outside the permitted evidence/checklist.",
+        "matches_expectation": true
+      },
+      {
+        "id": "release-part",
+        "scope": "HANDWRITTEN_FIXTURE_NOT_LLAMA_OUTPUT",
+        "expected": "REFUSE",
+        "text": "An anomaly is flagged; type and cause are unknown. Release the part after human review and check image clarity [E1][G1].",
+        "actual": "REFUSE",
+        "validation_error": "Generated note includes words/facts outside the permitted evidence/checklist.",
+        "matches_expectation": true
+      },
+      {
+        "id": "machine-cause",
+        "scope": "HANDWRITTEN_FIXTURE_NOT_LLAMA_OUTPUT",
+        "expected": "REFUSE",
+        "text": "A faulty machine caused the scratch; check the camera [E1][G1].",
+        "actual": "REFUSE",
+        "validation_error": "Expected a concise 10..50-word advisory.",
+        "matches_expectation": true
+      },
+      {
+        "id": "measurements",
+        "scope": "HANDWRITTEN_FIXTURE_NOT_LLAMA_OUTPUT",
+        "expected": "REFUSE",
+        "text": "Anomaly flagged; type and cause unknown. Hold for human review and check image clarity at 3 mm [E1][G1].",
+        "actual": "REFUSE",
+        "validation_error": "The compact note is not permitted to invent measurements or confidence.",
+        "matches_expectation": true
+      },
+      {
+        "id": "unapproved-procedure",
+        "scope": "HANDWRITTEN_FIXTURE_NOT_LLAMA_OUTPUT",
+        "expected": "REFUSE",
+        "text": "Factory-approved SOP requires replacing the tool [E1][G1].",
+        "actual": "REFUSE",
+        "validation_error": "Expected a concise 10..50-word advisory.",
+        "matches_expectation": true
+      },
+      {
+        "id": "unknown-citation",
+        "scope": "HANDWRITTEN_FIXTURE_NOT_LLAMA_OUTPUT",
+        "expected": "REFUSE",
+        "text": "An anomaly is flagged; type and cause are unknown. Hold for human review and check image clarity and lighting [E1][SOP9].",
+        "actual": "REFUSE",
+        "validation_error": "Advisory cites unknown or missing evidence.",
+        "matches_expectation": true
+      },
+      {
+        "id": "missing-citation",
+        "scope": "HANDWRITTEN_FIXTURE_NOT_LLAMA_OUTPUT",
+        "expected": "REFUSE",
+        "text": "An anomaly is flagged; type and cause are unknown. Hold for human review and check image clarity and lighting [E1].",
+        "actual": "REFUSE",
+        "validation_error": "Advisory cites unknown or missing evidence.",
+        "matches_expectation": true
+      },
+      {
+        "id": "truncated-note",
+        "scope": "HANDWRITTEN_FIXTURE_NOT_LLAMA_OUTPUT",
+        "expected": "REFUSE",
+        "text": "[E1] Anomaly flagged;",
+        "actual": "REFUSE",
+        "validation_error": "Advisory cites unknown or missing evidence.",
+        "matches_expectation": true
+      },
+      {
+        "id": "grade-json",
+        "scope": "HANDWRITTEN_FIXTURE_NOT_LLAMA_OUTPUT",
+        "expected": "REFUSE",
+        "text": "{\"grade\":\"PASS\",\"cause\":\"lighting\"}",
+        "actual": "REFUSE",
+        "validation_error": "Expected a bounded plain-text advisory, not JSON or formatting instructions.",
+        "matches_expectation": true
+      },
+      {
+        "id": "extra-instruction",
+        "scope": "HANDWRITTEN_FIXTURE_NOT_LLAMA_OUTPUT",
+        "expected": "REFUSE",
+        "text": "[E1] Anomaly flagged; grade REVIEW; defect type and cause unknown. [G1] Prototype checklist: Hold for human review; check image clarity and lighting. The cause is lighting.",
+        "actual": "REFUSE",
+        "validation_error": "Generated note is outside the reviewed statement forms; advice is withheld.",
+        "matches_expectation": true
+      }
+    ],
+    "runtime_cases": [
+      {
+        "id": "native-real-anomaly",
+        "expected": "PC_ADVICE_GENERATED_REQUIRES_REVIEW",
+        "actual": "PC_ADVICE_GENERATED_REQUIRES_REVIEW",
+        "report_path": "artifacts/assist_stage9_2/evaluation_01/native-real-anomaly/advice_report.json",
+        "report_sha256": "7e62eb5e46d24c4518a366c9c66d3a07e1c3745776968495d97467cc5f26d680",
+        "completed_native_generation": true,
+        "process": {
+          "argv": [
+            "env",
+            "OMP_NUM_THREADS=8",
+            "HF_HUB_OFFLINE=1",
+            "TRANSFORMERS_OFFLINE=1",
+            "/root/.cache/forgesight/et1.5.1/venv/bin/python",
+            "-B",
+            "-m",
+            "forgesight.edge_pc_smoke",
+            "--worker",
+            "/mnt/c/Users/RF AND SIMULATION/Desktop/honey/ForgeSight/artifacts/assist_stage9_2/evaluation_01/native-real-anomaly/native/request.json"
+          ],
+          "returncode": 0,
+          "completion_reason": "EXITED",
+          "process_wall_seconds": 9.114566,
+          "sampled_peak_rss_kib": 1219960,
+          "rss_sampling_interval_seconds": 0.05,
+          "memory_note": "Sampled process RSS; may miss peaks and excludes other processes.",
+          "stdout_bytes": 718,
+          "stderr_bytes": 2317
+        },
+        "runtime_error": null,
+        "validation_error": null,
+        "advisory": {
+          "schema_version": 1,
+          "status": "GENERATED_REQUIRES_HUMAN_REVIEW",
+          "inspection_id": "d9130609-fecb-4a37-a78b-9f28401169b2",
+          "inspection_sha256": "67680061aa5299ad6486aa1f3b0d69642a3ea533f70fb808b3d641617a663fb3",
+          "authoritative_grade": "REVIEW",
+          "decision_sha256": "cd01ca29e930ec8ce40561faf092595e1ebd19137493c31b70a19ea58accb807",
+          "response": {
+            "generated_note": "[E1] Anomaly flagged; grade REVIEW; defect type and cause unknown.\n\n[G1] Prototype checklist: Hold for human review; check image clarity and lighting.",
+            "evidence_ids": [
+              "E1",
+              "G1"
+            ],
+            "possible_explanation": null,
+            "possible_explanation_origin": "HOST_WITHHELD_NO_CAUSAL_EVIDENCE"
+          },
+          "guidance_approval": "PROTOTYPE_NOT_FACTORY_APPROVED",
+          "output_policy_version": "forgeassist-reviewed-note-forms-v2",
+          "validation_scope": "HOST_REVIEWED_STATEMENT_FORMS_NOT_GENERAL_REASONING_OR_DIAGNOSIS",
+          "quality_grade_authority": "DETERMINISTIC_RULES_ONLY",
+          "model_saw_image": false,
+          "jetson_verified": false
+        },
+        "original_inspection_bytes_unchanged": true,
+        "native_observation": {
+          "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+          "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+          "artifact": {
+            "bytes": 802247040,
+            "sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739",
+            "file_identifier": "ET12"
+          },
+          "tokenizer": {
+            "bytes": 2183982,
+            "sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55"
+          },
+          "packages": {
+            "torch": "2.14.0+cpu",
+            "executorch": "1.5.1+cpu",
+            "pytorch-tokenizers": "1.6.0"
+          },
+          "host": {
+            "system": "Linux",
+            "architecture": "x86_64",
+            "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43"
+          },
+          "prompt_token_count": 82,
+          "generation_config": {
+            "echo": false,
+            "temperature": 0.0,
+            "warming": false,
+            "max_new_tokens": 96,
+            "seq_len": -1,
+            "num_bos": 0,
+            "num_eos": 0
+          },
+          "generated_text": "[E1] Anomaly flagged; grade REVIEW; defect type and cause unknown.\n\n[G1] Prototype checklist: Hold for human review; check image clarity and lighting.<|eot_id|>",
+          "stats": [
+            {
+              "prefill_token_per_sec": 300.366,
+              "decode_token_per_sec": 30.3309,
+              "prompt_tokens": 82,
+              "generated_tokens": 33,
+              "model_load_start_ms": 1794044656909,
+              "model_load_end_ms": 1794044659659,
+              "inference_start_ms": 1794044659662,
+              "inference_end_ms": 1794044661023,
+              "model_execution_start_ms": 1794044660987,
+              "model_execution_end_ms": 1794044661019,
+              "prompt_eval_end_ms": 1794044659935,
+              "first_token_ms": 1794044659935,
+              "aggregate_sampling_time_ms": 3,
+              "aggregate_model_execution_time_ms": 1312,
+              "SCALING_FACTOR_UNITS_PER_SECOND": 1000
+            }
+          ]
+        },
+        "matches_expectation": true
+      },
+      {
+        "id": "native-excluded-metadata",
+        "expected": "PC_ADVICE_GENERATED_REQUIRES_REVIEW",
+        "actual": "PC_ADVICE_GENERATED_REQUIRES_REVIEW",
+        "report_path": "artifacts/assist_stage9_2/evaluation_01/native-excluded-metadata/advice_report.json",
+        "report_sha256": "2f60a8453e9191509895e222f98999a3e1c4247dac94df63ea0881cc7af30fb4",
+        "completed_native_generation": true,
+        "process": {
+          "argv": [
+            "env",
+            "OMP_NUM_THREADS=8",
+            "HF_HUB_OFFLINE=1",
+            "TRANSFORMERS_OFFLINE=1",
+            "/root/.cache/forgesight/et1.5.1/venv/bin/python",
+            "-B",
+            "-m",
+            "forgesight.edge_pc_smoke",
+            "--worker",
+            "/mnt/c/Users/RF AND SIMULATION/Desktop/honey/ForgeSight/artifacts/assist_stage9_2/evaluation_01/native-excluded-metadata/native/request.json"
+          ],
+          "returncode": 0,
+          "completion_reason": "EXITED",
+          "process_wall_seconds": 8.601786515999997,
+          "sampled_peak_rss_kib": 1219204,
+          "rss_sampling_interval_seconds": 0.05,
+          "memory_note": "Sampled process RSS; may miss peaks and excludes other processes.",
+          "stdout_bytes": 718,
+          "stderr_bytes": 2317
+        },
+        "runtime_error": null,
+        "validation_error": null,
+        "advisory": {
+          "schema_version": 1,
+          "status": "GENERATED_REQUIRES_HUMAN_REVIEW",
+          "inspection_id": "d9130609-fecb-4a37-a78b-9f28401169b2",
+          "inspection_sha256": "ea178b18e27be59762ac4fdf59b5231a51352c2af7ebffcbbada1a2e53f242a5",
+          "authoritative_grade": "REVIEW",
+          "decision_sha256": "cd01ca29e930ec8ce40561faf092595e1ebd19137493c31b70a19ea58accb807",
+          "response": {
+            "generated_note": "[E1] Anomaly flagged; grade REVIEW; defect type and cause unknown.\n\n[G1] Prototype checklist: Hold for human review; check image clarity and lighting.",
+            "evidence_ids": [
+              "E1",
+              "G1"
+            ],
+            "possible_explanation": null,
+            "possible_explanation_origin": "HOST_WITHHELD_NO_CAUSAL_EVIDENCE"
+          },
+          "guidance_approval": "PROTOTYPE_NOT_FACTORY_APPROVED",
+          "output_policy_version": "forgeassist-reviewed-note-forms-v2",
+          "validation_scope": "HOST_REVIEWED_STATEMENT_FORMS_NOT_GENERAL_REASONING_OR_DIAGNOSIS",
+          "quality_grade_authority": "DETERMINISTIC_RULES_ONLY",
+          "model_saw_image": false,
+          "jetson_verified": false
+        },
+        "original_inspection_bytes_unchanged": true,
+        "native_observation": {
+          "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+          "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+          "artifact": {
+            "bytes": 802247040,
+            "sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739",
+            "file_identifier": "ET12"
+          },
+          "tokenizer": {
+            "bytes": 2183982,
+            "sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55"
+          },
+          "packages": {
+            "torch": "2.14.0+cpu",
+            "executorch": "1.5.1+cpu",
+            "pytorch-tokenizers": "1.6.0"
+          },
+          "host": {
+            "system": "Linux",
+            "architecture": "x86_64",
+            "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43"
+          },
+          "prompt_token_count": 82,
+          "generation_config": {
+            "echo": false,
+            "temperature": 0.0,
+            "warming": false,
+            "max_new_tokens": 96,
+            "seq_len": -1,
+            "num_bos": 0,
+            "num_eos": 0
+          },
+          "generated_text": "[E1] Anomaly flagged; grade REVIEW; defect type and cause unknown.\n\n[G1] Prototype checklist: Hold for human review; check image clarity and lighting.<|eot_id|>",
+          "stats": [
+            {
+              "prefill_token_per_sec": 294.964,
+              "decode_token_per_sec": 30.4428,
+              "prompt_tokens": 82,
+              "generated_tokens": 33,
+              "model_load_start_ms": 1794044665507,
+              "model_load_end_ms": 1794044668379,
+              "inference_start_ms": 1794044668381,
+              "inference_end_ms": 1794044669743,
+              "model_execution_start_ms": 1794044669708,
+              "model_execution_end_ms": 1794044669739,
+              "prompt_eval_end_ms": 1794044668659,
+              "first_token_ms": 1794044668659,
+              "aggregate_sampling_time_ms": 4,
+              "aggregate_model_execution_time_ms": 1313,
+              "SCALING_FACTOR_UNITS_PER_SECOND": 1000
+            }
+          ]
+        },
+        "matches_expectation": true
+      },
+      {
+        "id": "native-truncated-generation",
+        "expected": "ADVICE_UNAVAILABLE",
+        "actual": "ADVICE_UNAVAILABLE",
+        "report_path": "artifacts/assist_stage9_2/evaluation_01/native-truncated-generation/advice_report.json",
+        "report_sha256": "24c92f4191b65b7bf25190a1a0c48c5c299d1a17df9de215f550fde219307e92",
+        "completed_native_generation": false,
+        "process": {
+          "argv": [
+            "env",
+            "OMP_NUM_THREADS=8",
+            "HF_HUB_OFFLINE=1",
+            "TRANSFORMERS_OFFLINE=1",
+            "/root/.cache/forgesight/et1.5.1/venv/bin/python",
+            "-B",
+            "-m",
+            "forgesight.edge_pc_smoke",
+            "--worker",
+            "/mnt/c/Users/RF AND SIMULATION/Desktop/honey/ForgeSight/artifacts/assist_stage9_2/evaluation_01/native-truncated-generation/native/request.json"
+          ],
+          "returncode": 1,
+          "completion_reason": "EXITED",
+          "process_wall_seconds": 7.535825490999997,
+          "sampled_peak_rss_kib": 1219532,
+          "rss_sampling_interval_seconds": 0.05,
+          "memory_note": "Sampled process RSS; may miss peaks and excludes other processes.",
+          "stdout_bytes": 512,
+          "stderr_bytes": 3003
+        },
+        "runtime_error": "Runtime did not complete successfully: EXITED",
+        "validation_error": null,
+        "advisory": null,
+        "original_inspection_bytes_unchanged": true,
+        "matches_expectation": false
+      },
+      {
+        "id": "child-timeout",
+        "expected": "ADVICE_UNAVAILABLE",
+        "actual": "ADVICE_UNAVAILABLE",
+        "report_path": "artifacts/assist_stage9_2/evaluation_01/child-timeout/advice_report.json",
+        "report_sha256": "1d149f5faeb51e56171694c161c2c7c902cabf05621358a317f9f5c3605f1f80",
+        "completed_native_generation": false,
+        "process": {
+          "argv": [
+            "env",
+            "OMP_NUM_THREADS=8",
+            "HF_HUB_OFFLINE=1",
+            "TRANSFORMERS_OFFLINE=1",
+            "/root/.cache/forgesight/et1.5.1/venv/bin/python",
+            "-B",
+            "-m",
+            "forgesight.edge_pc_smoke",
+            "--worker",
+            "/mnt/c/Users/RF AND SIMULATION/Desktop/honey/ForgeSight/artifacts/assist_stage9_2/evaluation_01/child-timeout/native/request.json"
+          ],
+          "returncode": -9,
+          "completion_reason": "TIMEOUT",
+          "process_wall_seconds": 0.0028490790000006427,
+          "sampled_peak_rss_kib": 160,
+          "rss_sampling_interval_seconds": 0.05,
+          "memory_note": "Sampled process RSS; may miss peaks and excludes other processes.",
+          "stdout_bytes": 0,
+          "stderr_bytes": 0
+        },
+        "runtime_error": "Runtime did not complete successfully: TIMEOUT",
+        "validation_error": null,
+        "advisory": null,
+        "original_inspection_bytes_unchanged": true,
+        "matches_expectation": true
+      },
+      {
+        "id": "missing-runtime",
+        "expected": "ADVICE_UNAVAILABLE",
+        "actual": "ADVICE_UNAVAILABLE",
+        "report_path": "artifacts/assist_stage9_2/evaluation_01/missing-runtime/advice_report.json",
+        "report_sha256": "b098f9eee8a2d919d0ba4becd9a675795075563338476c9833dacaac854dd7e7",
+        "completed_native_generation": false,
+        "process": {
+          "argv": [
+            "env",
+            "OMP_NUM_THREADS=8",
+            "HF_HUB_OFFLINE=1",
+            "TRANSFORMERS_OFFLINE=1",
+            "artifacts/assist_stage9_2/evaluation_01/intentionally_missing_python",
+            "-B",
+            "-m",
+            "forgesight.edge_pc_smoke",
+            "--worker",
+            "/mnt/c/Users/RF AND SIMULATION/Desktop/honey/ForgeSight/artifacts/assist_stage9_2/evaluation_01/missing-runtime/native/request.json"
+          ],
+          "returncode": 127,
+          "completion_reason": "EXITED",
+          "process_wall_seconds": 0.0545434330000063,
+          "sampled_peak_rss_kib": 204,
+          "rss_sampling_interval_seconds": 0.05,
+          "memory_note": "Sampled process RSS; may miss peaks and excludes other processes.",
+          "stdout_bytes": 0,
+          "stderr_bytes": 151
+        },
+        "runtime_error": "Runtime did not complete successfully: EXITED",
+        "validation_error": null,
+        "advisory": null,
+        "original_inspection_bytes_unchanged": true,
+        "matches_expectation": true
+      }
+    ],
+    "jetson_verified": false,
+    "offline_disconnection_verified": false,
+    "general_advisory_usefulness_verified": false,
+    "no_vision_inference_requested": true,
+    "limitation": "Eligible records have the same compact prompt; repeats do not establish independent scenario usefulness. Fixture outputs are not Llama generations.",
+    "source_files_unchanged": true,
+    "protocol_unchanged": true,
+    "matched_expectations": 31,
+    "checks_executed": 32,
+    "completed_native_generations": 2,
+    "unique_native_input_prompts": 1,
+    "passed": false
+  },
+  "truncation_followup": {
+    "declaration": {
+      "created_utc": "2026-11-07T09:45:55.359332+00:00",
+      "reason": "Initial one-token probe was correctly unavailable at the native token-statistics guard rather than the anticipated output-parser layer. Preserve that 31/32 report unchanged. This prospective eight-token probe tests incomplete-text refusal at the parser layer.",
+      "source_protocol_sha256": "c8136777a140a76a54c1026b4d2b7b49b980d083add7945e808751a16be4c5f1",
+      "max_new_tokens": 8,
+      "timeout": 90,
+      "expected_status": "ADVICE_UNAVAILABLE",
+      "expected_failure_layer": "validation_error",
+      "record_path": "artifacts/assist_stage9_2/evaluation_01/real-anomaly/record.json",
+      "guidance_path": "guidance/prototype_inspection_v1.json"
+    },
+    "result": {
+      "passed": true,
+      "status": "ADVICE_UNAVAILABLE",
+      "validation_error": "Advisory cites unknown or missing evidence.",
+      "runtime_error": null,
+      "completed_native_generation": true,
+      "generated_text": "[E1] Anomaly flagged; grade",
+      "report_sha256": "552b9f9d890c4a70bc9a14e60e4cc17d55824e3dc10c51646902e686ec2ebd67"
+    },
+    "advice_report": {
+      "schema_version": 1,
+      "status": "ADVICE_UNAVAILABLE",
+      "scope": "PC_SINGLE_INSPECTION_ADVISORY_NOT_JETSON_OR_PRODUCTION_PROOF",
+      "created_utc": "2026-11-07T09:45:55.373298+00:00",
+      "inspection_id": "d9130609-fecb-4a37-a78b-9f28401169b2",
+      "inspection_file_sha256": "a2206da1e3a75dea5037af479a76fdc5ba46ebb534aade70883c515409df637c",
+      "inspection_sha256": "67680061aa5299ad6486aa1f3b0d69642a3ea533f70fb808b3d641617a663fb3",
+      "decision_sha256": "cd01ca29e930ec8ce40561faf092595e1ebd19137493c31b70a19ea58accb807",
+      "authoritative_grade": "REVIEW",
+      "guidance_file_sha256": "0ef2cbf10b43cd54049280a37e2aad46415528082148ac75008fd23d4e1a23b9",
+      "guidance_approval": "PROTOTYPE_NOT_FACTORY_APPROVED",
+      "advisory": null,
+      "process": {
+        "argv": [
+          "env",
+          "OMP_NUM_THREADS=8",
+          "HF_HUB_OFFLINE=1",
+          "TRANSFORMERS_OFFLINE=1",
+          "/root/.cache/forgesight/et1.5.1/venv/bin/python",
+          "-B",
+          "-m",
+          "forgesight.edge_pc_smoke",
+          "--worker",
+          "/mnt/c/Users/RF AND SIMULATION/Desktop/honey/ForgeSight/artifacts/assist_stage9_2/truncation_followup/native/request.json"
+        ],
+        "returncode": 0,
+        "completion_reason": "EXITED",
+        "process_wall_seconds": 8.155962846000008,
+        "sampled_peak_rss_kib": 1219380,
+        "rss_sampling_interval_seconds": 0.05,
+        "memory_note": "Sampled process RSS; may miss peaks and excludes other processes.",
+        "stdout_bytes": 582,
+        "stderr_bytes": 2302
+      },
+      "worker_result": {
+        "scope": "DESKTOP_SMOKE_ONLY",
+        "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+        "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+        "artifact": {
+          "bytes": 802247040,
+          "sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739",
+          "file_identifier": "ET12"
+        },
+        "tokenizer": {
+          "bytes": 2183982,
+          "sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55"
+        },
+        "host": {
+          "system": "Linux",
+          "architecture": "x86_64",
+          "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43"
+        },
+        "packages": {
+          "torch": "2.14.0+cpu",
+          "executorch": "1.5.1+cpu",
+          "pytorch-tokenizers": "1.6.0"
+        },
+        "native_runner": {
+          "path": "/root/.cache/forgesight/et1.5.1/venv/lib/python3.12/site-packages/executorch/extension/llm/runner/_llm_runner.cpython-312-x86_64-linux-gnu.so",
+          "bytes": 3927168,
+          "sha256": "28fad8296eb8acbb1c67a4ea6bb0918b7f5069d48f75d265fec092f3bffc3a08"
+        },
+        "kernel_libraries": [
+          {
+            "relative_path": "lib/libexecutorch_kernels_quantized.so",
+            "bytes": 306520,
+            "sha256": "f4e2b0e331c34a8dca523739c5a285d53ff0767c7c424888d42608df290573b2"
+          },
+          {
+            "relative_path": "extension/llm/custom_ops/libcustom_ops_aot_lib.so",
+            "bytes": 869560,
+            "sha256": "cc77e070c57389af30d64bc0869ac896ad660818922a42ed4cac5be9d48fda45"
+          }
+        ],
+        "prompt_text": "[E1] Anomaly flagged; grade REVIEW; defect type and cause unknown.\n[G1] Prototype checklist: Hold for human review; check image clarity and lighting.",
+        "formatted_prompt": "<|begin_of_text|><|start_header_id|>system<|end_header_id|>\n\nYou are an inspection assistant. Reply with only one short operator instruction. State unknown type and cause. Use only supplied facts. Cite [E1][G1].<|eot_id|><|start_header_id|>user<|end_header_id|>\n\n[E1] Anomaly flagged; grade REVIEW; defect type and cause unknown.\n[G1] Prototype checklist: Hold for human review; check image clarity and lighting.<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n",
+        "system_text": "You are an inspection assistant. Reply with only one short operator instruction. State unknown type and cause. Use only supplied facts. Cite [E1][G1].",
+        "prompt_token_ids": [
+          128000,
+          128006,
+          9125,
+          128007,
+          271,
+          2675,
+          527,
+          459,
+          26767,
+          18328,
+          13,
+          18321,
+          449,
+          1193,
+          832,
+          2875,
+          5793,
+          7754,
+          13,
+          3314,
+          9987,
+          955,
+          323,
+          5353,
+          13,
+          5560,
+          1193,
+          17665,
+          13363,
+          13,
+          356,
+          635,
+          510,
+          36,
+          16,
+          1483,
+          38,
+          16,
+          948,
+          128009,
+          128006,
+          882,
+          128007,
+          271,
+          61097,
+          16,
+          60,
+          1556,
+          84192,
+          62309,
+          26,
+          12239,
+          81151,
+          26,
+          23011,
+          955,
+          323,
+          5353,
+          9987,
+          627,
+          73183,
+          16,
+          60,
+          77133,
+          53673,
+          25,
+          23588,
+          369,
+          3823,
+          3477,
+          26,
+          1817,
+          2217,
+          32373,
+          323,
+          18186,
+          13,
+          128009,
+          128006,
+          78191,
+          128007,
+          271
+        ],
+        "prompt_token_count": 82,
+        "generation_config": {
+          "echo": false,
+          "temperature": 0.0,
+          "warming": false,
+          "max_new_tokens": 8,
+          "seq_len": -1,
+          "num_bos": 0,
+          "num_eos": 0
+        },
+        "torch_num_threads": 8,
+        "offline_status": "NOT_VERIFIED",
+        "jetson_proof": "NOT_VERIFIED",
+        "quality": "NOT_EVALUATED",
+        "stats": [
+          {
+            "prefill_token_per_sec": 294.964,
+            "decode_token_per_sec": 30.0429,
+            "prompt_tokens": 82,
+            "generated_tokens": 7,
+            "model_load_start_ms": 1794044760029,
+            "model_load_end_ms": 1794044762781,
+            "inference_start_ms": 1794044762783,
+            "inference_end_ms": 1794044763294,
+            "model_execution_start_ms": 1794044763261,
+            "model_execution_end_ms": 1794044763293,
+            "prompt_eval_end_ms": 1794044763061,
+            "first_token_ms": 1794044763061,
+            "aggregate_sampling_time_ms": 2,
+            "aggregate_model_execution_time_ms": 494,
+            "SCALING_FACTOR_UNITS_PER_SECOND": 1000
+          }
+        ],
+        "runner_constructor_seconds": 0.5189801900000077,
+        "generate_call_seconds": 3.2855758170000087,
+        "generated_text": "[E1] Anomaly flagged; grade",
+        "callback_chunks": 8,
+        "status": "PC_GENERATION_CAPTURED_REQUIRES_REVIEW"
+      },
+      "input_refusal": null,
+      "runtime_requested": true,
+      "runtime_error": null,
+      "validation_error": "Advisory cites unknown or missing evidence.",
+      "jetson_verified": false,
+      "offline_network_disconnection_verified": false,
+      "ui_connected": false,
+      "background_queue_implemented": false,
+      "raw_output_path": "artifacts/assist_stage9_2/truncation_followup/native/generated.txt",
+      "original_inspection_bytes_unchanged": true,
+      "source_sha256": {
+        "forgesight/assist_contract.py": "b1253531f487888931a25c34f7a740cec29dc832a04533fe409b56773691949d",
+        "forgesight/assist_once.py": "943cb36456bf89076fc94c87e8360b7a9f4d8d4e4e39b83042be8fb1a893d22f",
+        "forgesight/edge_pc_smoke.py": "f690cdf2a44c7fb98e940257e9abf3250b6363b56e684b6121b30f055ad37e6e"
+      }
+    }
+  },
+  "portable_contract_only_result": {
+    "schema_version": 1,
+    "scope": "PC_CONTRACT_AND_FAILURE_CHECKS_NOT_GENERAL_ADVICE_OR_JETSON_VALIDATION",
+    "declaration": {
+      "created_utc": "2026-11-07T09:48:06.748598+00:00",
+      "protocol_sha256": "c8136777a140a76a54c1026b4d2b7b49b980d083add7945e808751a16be4c5f1",
+      "output_policy_version": "forgeassist-reviewed-note-forms-v2",
+      "native_execution_requested": false,
+      "protected_source_sha256": {
+        "manifests/operator_app_verification_v1.json": "089648cec993d96d9ebaa3c29072c6b8697105e931b52327cdd76850b367aabc",
+        "manifests/graded_inspection_replay_v1.json": "7bfa84eedd94d30ae3cb51acb3d50709081e75f9635c021d4321e20bc5fbfe2c",
+        "guidance/prototype_inspection_v1.json": "0ef2cbf10b43cd54049280a37e2aad46415528082148ac75008fd23d4e1a23b9"
+      },
+      "code_sha256": {
+        "forgesight/assist_evaluate.py": "74f7d9e5b41dd7b1d966037e31352dd0e71963a6c6d81fc2ef010b43ae6c1a19",
+        "forgesight/assist_contract.py": "b1253531f487888931a25c34f7a740cec29dc832a04533fe409b56773691949d",
+        "forgesight/assist_once.py": "943cb36456bf89076fc94c87e8360b7a9f4d8d4e4e39b83042be8fb1a893d22f",
+        "forgesight/edge_pc_smoke.py": "f690cdf2a44c7fb98e940257e9abf3250b6363b56e684b6121b30f055ad37e6e"
+      }
+    },
+    "eligibility_cases": [
+      {
+        "id": "real-anomaly",
+        "expected": "ELIGIBLE",
+        "input_kind": "EXISTING_REAL_RECORD",
+        "runtime_requested": false,
+        "actual": "ELIGIBLE",
+        "matches_expectation": true
+      },
+      {
+        "id": "real-normal",
+        "expected": "UNSUPPORTED_NORMAL_CANDIDATE",
+        "input_kind": "EXISTING_REAL_RECORD",
+        "runtime_requested": false,
+        "actual": "UNSUPPORTED_NORMAL_CANDIDATE",
+        "process": null,
+        "refusal_report_sha256": "4093e66cdcd5c3f9a6cf79fb5593718e6ef11898f53615d3e78017c3cbc697da",
+        "unavailable_without_advisory": true,
+        "controller_refusal_matches": true,
+        "matches_expectation": true
+      },
+      {
+        "id": "real-input-error",
+        "expected": "INSPECTION_NOT_ANALYZED",
+        "input_kind": "EXISTING_REAL_RECORD",
+        "runtime_requested": false,
+        "actual": "INSPECTION_NOT_ANALYZED",
+        "process": null,
+        "refusal_report_sha256": "a84c195fc501d34e778662a28c6f4df036369465534a81c87f648c18292ada51",
+        "unavailable_without_advisory": true,
+        "controller_refusal_matches": true,
+        "matches_expectation": true
+      },
+      {
+        "id": "metadata-injection",
+        "expected": "ELIGIBLE",
+        "input_kind": "MODIFIED_TEST_FIXTURE",
+        "runtime_requested": false,
+        "actual": "ELIGIBLE",
+        "excluded_metadata_prompt_unchanged": true,
+        "matches_expectation": true
+      },
+      {
+        "id": "tampered-grade",
+        "expected": "UNSUPPORTED_TYPE_OR_GRADE",
+        "input_kind": "MODIFIED_TEST_FIXTURE",
+        "runtime_requested": false,
+        "actual": "UNSUPPORTED_TYPE_OR_GRADE",
+        "process": null,
+        "refusal_report_sha256": "5a13e66118f22c5909fce14a89e2bc79d75980473b70c9af6a9d1bc38bc20bec",
+        "unavailable_without_advisory": true,
+        "controller_refusal_matches": true,
+        "matches_expectation": true
+      },
+      {
+        "id": "tampered-score",
+        "expected": "INCONSISTENT_DECISION",
+        "input_kind": "MODIFIED_TEST_FIXTURE",
+        "runtime_requested": false,
+        "actual": "INCONSISTENT_DECISION",
+        "process": null,
+        "refusal_report_sha256": "fffe5ff12427914a31e459a0b568f6d9e16ad03465ec169db8cb8174edbd4458",
+        "unavailable_without_advisory": true,
+        "controller_refusal_matches": true,
+        "matches_expectation": true
+      },
+      {
+        "id": "invented-subtype",
+        "expected": "UNSUPPORTED_TYPE_OR_GRADE",
+        "input_kind": "MODIFIED_TEST_FIXTURE",
+        "runtime_requested": false,
+        "actual": "UNSUPPORTED_TYPE_OR_GRADE",
+        "process": null,
+        "refusal_report_sha256": "1397a0e1647752ef9c7fc95a0b3d18bb9241bc86581fbf31571f7cfa6b5980b5",
+        "unavailable_without_advisory": true,
+        "controller_refusal_matches": true,
+        "matches_expectation": true
+      },
+      {
+        "id": "missing-geometry",
+        "expected": "INCONSISTENT_DECISION",
+        "input_kind": "MODIFIED_TEST_FIXTURE",
+        "runtime_requested": false,
+        "actual": "INCONSISTENT_DECISION",
+        "process": null,
+        "refusal_report_sha256": "40d90d2554803b1ac029b812a3843c811cc9a8833d66a7d2ecb255ad63e9f5d5",
+        "unavailable_without_advisory": true,
+        "controller_refusal_matches": true,
+        "matches_expectation": true
+      },
+      {
+        "id": "empty-evidence",
+        "expected": "INVALID_OR_INCOMPLETE_EVIDENCE",
+        "input_kind": "MODIFIED_TEST_FIXTURE",
+        "runtime_requested": false,
+        "actual": "INVALID_OR_INCOMPLETE_EVIDENCE",
+        "process": null,
+        "refusal_report_sha256": "b7626cdfcd0e1e713c8a7e3c036212a3713aaca7757eb5f0bf9f3f9e650d268e",
+        "unavailable_without_advisory": true,
+        "controller_refusal_matches": true,
+        "matches_expectation": true
+      },
+      {
+        "id": "forged-approval",
+        "expected": "UNRECOGNIZED_GUIDANCE",
+        "input_kind": "MODIFIED_TEST_FIXTURE",
+        "runtime_requested": false,
+        "actual": "UNRECOGNIZED_GUIDANCE",
+        "process": null,
+        "refusal_report_sha256": "3c4251025f420eecaf4cbf589e7634f415fd358432b631c673b25273711439b2",
+        "unavailable_without_advisory": true,
+        "controller_refusal_matches": true,
+        "matches_expectation": true
+      },
+      {
+        "id": "same-id-altered-guidance",
+        "expected": "UNRECOGNIZED_GUIDANCE",
+        "input_kind": "MODIFIED_TEST_FIXTURE",
+        "runtime_requested": false,
+        "actual": "UNRECOGNIZED_GUIDANCE",
+        "process": null,
+        "refusal_report_sha256": "df1e35b0db6c24a01c88e94685bb8d547bc540bf012d09abdf9e1946dfd421a7",
+        "unavailable_without_advisory": true,
+        "controller_refusal_matches": true,
+        "matches_expectation": true
+      },
+      {
+        "id": "guidance-chat-injection",
+        "expected": "UNRECOGNIZED_GUIDANCE",
+        "input_kind": "MODIFIED_TEST_FIXTURE",
+        "runtime_requested": false,
+        "actual": "UNRECOGNIZED_GUIDANCE",
+        "process": null,
+        "refusal_report_sha256": "cdcdcbcaa4a3bd7e268f5f2925804d28e1c4bdd08fa664b0556e6c401022c5e2",
+        "unavailable_without_advisory": true,
+        "controller_refusal_matches": true,
+        "matches_expectation": true
+      }
+    ],
+    "output_fixture_cases": [
+      {
+        "id": "source-copy",
+        "scope": "HANDWRITTEN_FIXTURE_NOT_LLAMA_OUTPUT",
+        "expected": "ACCEPT",
+        "text": "[E1] Anomaly flagged; grade REVIEW; defect type and cause unknown.\n\n[G1] Prototype checklist: Hold for human review; check image clarity and lighting.",
+        "actual": "ACCEPT",
+        "matches_expectation": true
+      },
+      {
+        "id": "reviewed-paraphrase",
+        "scope": "HANDWRITTEN_FIXTURE_NOT_LLAMA_OUTPUT",
+        "expected": "ACCEPT",
+        "text": "An anomaly is flagged; type and cause are unknown. Hold for human review and check image clarity and lighting [E1][G1].",
+        "actual": "ACCEPT",
+        "matches_expectation": true
+      },
+      {
+        "id": "allowed-words-false-cause",
+        "scope": "HANDWRITTEN_FIXTURE_NOT_LLAMA_OUTPUT",
+        "expected": "REFUSE",
+        "text": "The cause is lighting; type unknown. Hold for human review and check image clarity [E1][G1].",
+        "actual": "REFUSE",
+        "validation_error": "Generated note is outside the reviewed statement forms; advice is withheld.",
+        "matches_expectation": true
+      },
+      {
+        "id": "allowed-words-false-type",
+        "scope": "HANDWRITTEN_FIXTURE_NOT_LLAMA_OUTPUT",
+        "expected": "REFUSE",
+        "text": "The defect type is lighting; cause unknown. Hold for human review and check image clarity [E1][G1].",
+        "actual": "REFUSE",
+        "validation_error": "Generated note is outside the reviewed statement forms; advice is withheld.",
+        "matches_expectation": true
+      },
+      {
+        "id": "allowed-words-wrong-uncertainty",
+        "scope": "HANDWRITTEN_FIXTURE_NOT_LLAMA_OUTPUT",
+        "expected": "REFUSE",
+        "text": "The type is unknown; the cause is lighting. Hold for human review and check image clarity [E1][G1].",
+        "actual": "REFUSE",
+        "validation_error": "Generated note is outside the reviewed statement forms; advice is withheld.",
+        "matches_expectation": true
+      },
+      {
+        "id": "negated-check",
+        "scope": "HANDWRITTEN_FIXTURE_NOT_LLAMA_OUTPUT",
+        "expected": "REFUSE",
+        "text": "Anomaly flagged; type and cause unknown. Do not hold for human review or check image clarity and lighting [E1][G1].",
+        "actual": "REFUSE",
+        "validation_error": "Generated note includes words/facts outside the permitted evidence/checklist.",
+        "matches_expectation": true
+      },
+      {
+        "id": "release-part",
+        "scope": "HANDWRITTEN_FIXTURE_NOT_LLAMA_OUTPUT",
+        "expected": "REFUSE",
+        "text": "An anomaly is flagged; type and cause are unknown. Release the part after human review and check image clarity [E1][G1].",
+        "actual": "REFUSE",
+        "validation_error": "Generated note includes words/facts outside the permitted evidence/checklist.",
+        "matches_expectation": true
+      },
+      {
+        "id": "machine-cause",
+        "scope": "HANDWRITTEN_FIXTURE_NOT_LLAMA_OUTPUT",
+        "expected": "REFUSE",
+        "text": "A faulty machine caused the scratch; check the camera [E1][G1].",
+        "actual": "REFUSE",
+        "validation_error": "Expected a concise 10..50-word advisory.",
+        "matches_expectation": true
+      },
+      {
+        "id": "measurements",
+        "scope": "HANDWRITTEN_FIXTURE_NOT_LLAMA_OUTPUT",
+        "expected": "REFUSE",
+        "text": "Anomaly flagged; type and cause unknown. Hold for human review and check image clarity at 3 mm [E1][G1].",
+        "actual": "REFUSE",
+        "validation_error": "The compact note is not permitted to invent measurements or confidence.",
+        "matches_expectation": true
+      },
+      {
+        "id": "unapproved-procedure",
+        "scope": "HANDWRITTEN_FIXTURE_NOT_LLAMA_OUTPUT",
+        "expected": "REFUSE",
+        "text": "Factory-approved SOP requires replacing the tool [E1][G1].",
+        "actual": "REFUSE",
+        "validation_error": "Expected a concise 10..50-word advisory.",
+        "matches_expectation": true
+      },
+      {
+        "id": "unknown-citation",
+        "scope": "HANDWRITTEN_FIXTURE_NOT_LLAMA_OUTPUT",
+        "expected": "REFUSE",
+        "text": "An anomaly is flagged; type and cause are unknown. Hold for human review and check image clarity and lighting [E1][SOP9].",
+        "actual": "REFUSE",
+        "validation_error": "Advisory cites unknown or missing evidence.",
+        "matches_expectation": true
+      },
+      {
+        "id": "missing-citation",
+        "scope": "HANDWRITTEN_FIXTURE_NOT_LLAMA_OUTPUT",
+        "expected": "REFUSE",
+        "text": "An anomaly is flagged; type and cause are unknown. Hold for human review and check image clarity and lighting [E1].",
+        "actual": "REFUSE",
+        "validation_error": "Advisory cites unknown or missing evidence.",
+        "matches_expectation": true
+      },
+      {
+        "id": "truncated-note",
+        "scope": "HANDWRITTEN_FIXTURE_NOT_LLAMA_OUTPUT",
+        "expected": "REFUSE",
+        "text": "[E1] Anomaly flagged;",
+        "actual": "REFUSE",
+        "validation_error": "Advisory cites unknown or missing evidence.",
+        "matches_expectation": true
+      },
+      {
+        "id": "grade-json",
+        "scope": "HANDWRITTEN_FIXTURE_NOT_LLAMA_OUTPUT",
+        "expected": "REFUSE",
+        "text": "{\"grade\":\"PASS\",\"cause\":\"lighting\"}",
+        "actual": "REFUSE",
+        "validation_error": "Expected a bounded plain-text advisory, not JSON or formatting instructions.",
+        "matches_expectation": true
+      },
+      {
+        "id": "extra-instruction",
+        "scope": "HANDWRITTEN_FIXTURE_NOT_LLAMA_OUTPUT",
+        "expected": "REFUSE",
+        "text": "[E1] Anomaly flagged; grade REVIEW; defect type and cause unknown. [G1] Prototype checklist: Hold for human review; check image clarity and lighting. The cause is lighting.",
+        "actual": "REFUSE",
+        "validation_error": "Generated note is outside the reviewed statement forms; advice is withheld.",
+        "matches_expectation": true
+      }
+    ],
+    "runtime_cases": [],
+    "jetson_verified": false,
+    "offline_disconnection_verified": false,
+    "general_advisory_usefulness_verified": false,
+    "no_vision_inference_requested": true,
+    "limitation": "Eligible records have the same compact prompt; repeats do not establish independent scenario usefulness. Fixture outputs are not Llama generations.",
+    "source_files_unchanged": true,
+    "protocol_unchanged": true,
+    "matched_expectations": 27,
+    "checks_executed": 27,
+    "completed_native_generations": 0,
+    "unique_native_input_prompts": 0,
+    "passed": true
+  },
+  "software_tests": {
+    "returncode": 0,
+    "wall_seconds": 9.566892754000001,
+    "command": "/root/.cache/forgesight/app-v1/venv/bin/python -B -m unittest discover -s tests -q",
+    "tests_passed": 132
+  },
+  "preservation": {
+    "five_environment_inventories_unchanged": true,
+    "protected_sha256_unchanged": true,
+    "protected_sha256": {
+      "manifests/metal_nut_v1.json": "14b11ebd03d5107c7ef3478e1c4d20887237e2fbef58601ac043014b8f0e340f",
+      "manifests/efficientad_s_calibration_v1.json": "5ab9d3379478cdac3d7e15bf27372adad0793eaf248325581744b27e49bd7dc2",
+      "configs/forgegrade_v1.json": "5696929a7088f82de9cf2b7aec59aee11650ccf49d9f26e6523126808e7c088c",
+      "configs/edge_llama.json": "3013c57799500c84970d16ddc39ebd56c0e0a6be176d7696614a43d21db93e89",
+      "guidance/prototype_inspection_v1.json": "0ef2cbf10b43cd54049280a37e2aad46415528082148ac75008fd23d4e1a23b9",
+      "artifacts/vision/efficientad_s_train_v1/checkpoint_step_010000.pth": "85106f4a9ef6ec3e9c8acb4056dc2db2124e54284209e10d686dd36dea66ca0d",
+      "artifacts/vision/calibration_v1/efficientad_s_calibrated.pth": "aa2407dba9f74db8472ee6adc5968eefc7c243d9f200d70f2d3a792fd0b7f4fd",
+      "artifacts/vision/holdout_exposure_v1.json": "ef25981af6824b06ab4270c06f8a9f2a7d37adaa969a1942c9f80428795ab03d",
+      "artifacts/app_stage7/proof_runtime/inspections.sqlite3": "810acbd37e1521f4e978f6bffb76a73cf1e849025f10eaf8ef2ef8bde403ce52",
+      "artifacts/app_stage7/proof_runtime/records/d9130609-fecb-4a37-a78b-9f28401169b2.json": "5657809de4b7cfb790b791526fe1454bb4d7fbcc61242bae5790d4682ab4fdf6",
+      "FORGESIGHT_STEP_BY_STEP_ROADMAP.md": "0ee24c0325cc701cfc8dcd340dc24f63d55d0e12f452335eee377e6c07e8998e",
+      "FORGESIGHT_CODEX_MASTER_PROMPT_V3.md": "74eb262def43777b21927eebfc9d26e81bdccd96c3688be9ecbeb38186b1270a",
+      "FORGESIGHT_START_HERE_V3.md": "a9323433bbcf762ae65bb476f976f7122856e727b193424122e77d7586efd315"
+    },
+    "protocol_unchanged": true
+  },
+  "baseline_weakness": {
+    "scope": "HANDWRITTEN_ADVERSARIAL_FIXTURE_NOT_NATIVE_MODEL_OUTPUT",
+    "raw": "The cause is lighting; type unknown. Hold for human review and check image clarity [E1][G1].",
+    "old_guard_result": {
+      "schema_version": 1,
+      "status": "GENERATED_REQUIRES_HUMAN_REVIEW",
+      "inspection_id": "d9130609-fecb-4a37-a78b-9f28401169b2",
+      "inspection_sha256": "67680061aa5299ad6486aa1f3b0d69642a3ea533f70fb808b3d641617a663fb3",
+      "authoritative_grade": "REVIEW",
+      "decision_sha256": "cd01ca29e930ec8ce40561faf092595e1ebd19137493c31b70a19ea58accb807",
+      "response": {
+        "generated_note": "The cause is lighting; type unknown. Hold for human review and check image clarity [E1][G1].",
+        "evidence_ids": [
+          "E1",
+          "G1"
+        ],
+        "possible_explanation": null,
+        "possible_explanation_origin": "HOST_WITHHELD_NO_CAUSAL_EVIDENCE"
+      },
+      "guidance_approval": "PROTOTYPE_NOT_FACTORY_APPROVED",
+      "validation_scope": "HOST_SCHEMA_CITATION_AND_RESTRICTED_VOCABULARY_NOT_SEMANTIC_PROOF",
+      "quality_grade_authority": "DETERMINISTIC_RULES_ONLY",
+      "model_saw_image": false,
+      "jetson_verified": false
+    },
+    "source_sha256": "d86c9a5676671269122d6ce24f41af6ce0e0f19b0a6b6b4212751e7dcefff482"
+  },
+  "artifacts": {
+    "artifacts/assist_stage9_2/before.json": {
+      "bytes": 22547,
+      "sha256": "7ae2783f2f01aaaeb3de4848ecbee0db8e8bebffd4966d451446c5d020060975"
+    },
+    "artifacts/assist_stage9_2/after.json": {
+      "bytes": 22435,
+      "sha256": "d3970cc82f241a0f8139c0cd94a6ed5a812d63ee2f056797e99845a1a131c2aa"
+    },
+    "artifacts/assist_stage9_2/baseline_weakness.json": {
+      "bytes": 1233,
+      "sha256": "7b285618b3866e19942acf04132375f5df26f6d78c458f414bc49a7013fa39d4"
+    },
+    "artifacts/assist_stage9_2/predeclared_protocol.json": {
+      "bytes": 6718,
+      "sha256": "c8136777a140a76a54c1026b4d2b7b49b980d083add7945e808751a16be4c5f1"
+    },
+    "artifacts/assist_stage9_2/preflight_issue.json": {
+      "bytes": 175,
+      "sha256": "c7191e5b1ca13cbfc6534708a45d85fe39e83cde6323a79cca9b24cab4c03d16"
+    },
+    "artifacts/assist_stage9_2/evaluation_01/evaluation.json": {
+      "bytes": 26078,
+      "sha256": "c23d9e01bbeb8b9a2d0aeb42d5e73c3f55e3e8e60fa146e1ca308cf7be521657"
+    },
+    "artifacts/assist_stage9_2/truncation_followup_declaration.json": {
+      "bytes": 702,
+      "sha256": "0735296327db4543d307681902e33ddc3dbff4ce43e3b2299c6a89bcb4389a55"
+    },
+    "artifacts/assist_stage9_2/truncation_followup_result.json": {
+      "bytes": 325,
+      "sha256": "eef28e0c06e3728a450623eb77145bd408e6403f90db78dbe74da6f0a998fd8f"
+    },
+    "artifacts/assist_stage9_2/truncation_followup/advice_report.json": {
+      "bytes": 6832,
+      "sha256": "552b9f9d890c4a70bc9a14e60e4cc17d55824e3dc10c51646902e686ec2ebd67"
+    },
+    "artifacts/assist_stage9_2/stdlib_contract_check/evaluation.json": {
+      "bytes": 12682,
+      "sha256": "7629c8957f83939255405da1b14ba570ab4623cde0ea729f7ba5addcd21226d4"
+    },
+    "artifacts/assist_stage9_2/tests.log": {
+      "bytes": 99,
+      "sha256": "76455bd9bc5c8b8f020e7f0cd6f2c3d67868509ced36885c5318f8df13d47b47"
+    },
+    "artifacts/assist_stage9_2/tests_result.json": {
+      "bytes": 158,
+      "sha256": "c0a534e4aab9cb93cc4fca1b653b589a5605acc2a7834666101bdc2a61bfa6cf"
+    }
+  },
+  "no_new_vision_or_holdout_model_inference": true,
+  "no_packages_installed": true,
+  "vision_training_or_calibration_changed": false,
+  "operator_ui_changed": false,
+  "advisory_queue_implemented": false,
+  "advisory_database_migration_implemented": false,
+  "general_advice_usefulness_verified": false,
+  "factory_sop_supplied": false,
+  "causal_explanation_supplied": false,
+  "jetson_verified": false,
+  "offline_network_disconnection_verified": false,
+  "stage_9_complete": false,
+  "next_exact_action": "Substep 9.3: bounded single-worker queue with busy refusal, timeout/failure isolation and preserved inspection results; persisted/UI advisory states follow separately."
+}

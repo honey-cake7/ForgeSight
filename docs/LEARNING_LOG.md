@@ -497,3 +497,29 @@ The small exported model and memory/context limits stayed unchanged, with no
 package installation. The screen still says advice is not connected. Next we
 will evaluate the advisory contract on declared scenarios before adding its
 background worker and UI delivery. Jetson and camera proof remain blocked.
+
+## Stage 9.2: Checking words is not enough to check meaning
+
+"Cause unknown" and "the cause is lighting" can use the same small word list
+while saying very different things. A handwritten example exposed that gap in
+our old check. The first prototype now accepts only two reviewed ways to state
+the recorded facts and checklist. That is less flexible, but it prevents this
+particular unsupported claim. It does not prove general reasoning or diagnosis.
+
+Normal and failed inspections do not need this anomaly-note generator. They
+now get a saved refusal reason without loading Llama. Changed procedures, fake
+defect names and inconsistent evidence are refused too. The normal inspection
+and failure still keep their original decisions and history.
+
+All 27 contract checks matched; 132 software tests passed. Two actual Llama runs
+gave the supported note using the same prompt. An intentionally tiny output
+budget was safely refused, but by an earlier runtime check than we predicted;
+that initial experiment remains 31/32, not a claimed perfect score. A separately
+declared slightly longer incomplete answer reached the text checker and was
+refused there too. Keeping unexpected results helps us understand the system.
+
+The model, compact prompt, package environments and vision evidence stayed
+unchanged. We still need verified industrial procedures for specific precautions
+and confirmed process evidence for causes. The next task is a small background
+queue so slow advice cannot hold up inspection; actual Jetson behavior requires
+device-side tests when hardware arrives.

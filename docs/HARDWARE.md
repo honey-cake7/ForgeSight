@@ -104,3 +104,14 @@ These exclude parent/UI/vision memory and are not Jetson limits or benchmarks.
 The 1B artifact, 128/512 prefill/context limits and 96-token generation bound
 were retained. The worker explicitly rejects unverified ARM use; actual native
 Jetson execution/compatibility and camera validation remain BLOCKED.
+
+## Stage 9.2 refusal-check boundary
+
+Input/output contract checks also passed in the minimal image environment,
+without Torch or Llama imports. This supports a lightweight host contract, not
+ARM execution proof. Two normal-length native PC runs used the same quantized
+1B artifact and 82-token prompt, with native inference intervals 1.361/1.362
+seconds and sampled child RSS 1,219,960/1,219,204 KiB. Truncation, timeout and
+missing-runtime checks kept advice unavailable. Whole-process load costs and
+CPU contention still need target measurements. No Jetson or camera was used;
+native ARM ExecuTorch execution and disconnected operation remain unverified.

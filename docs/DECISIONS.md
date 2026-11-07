@@ -491,3 +491,30 @@ Validate the presentation on desktop/mobile using two previously verified
 records copied to a separate test database. Leave the user's live default-port
 app running; stop only the owned isolated preview. No new model inference or
 project-stage advancement is claimed by this UI maintenance change.
+
+## 029: Validate reviewed statement forms and refuse before model execution
+
+The vocabulary-only guard accepted a handwritten causal claim assembled from
+permitted words. Retain that baseline failure. For this narrow prototype, accept
+two reviewed complete note forms with whitespace/case/citation variation only.
+Do not add a second model, larger context or open paraphrase judge without quality
+and target-resource evidence. Present contents are checklist repetition, not
+demonstrated reasoning; deterministic templates could express the same facts.
+Llama-family generation through ExecuTorch remains mandatory and actually runs.
+
+Pin the canonical prototype guidance content, not merely its ID/approval field.
+Save refusal reasons/snapshots for normal, failed or inconsistent inputs without
+requesting a language-model process. Keep all original grades and records intact.
+No factory procedure, defect subtype or cause is invented. Guidance expansion
+requires new source/content-policy review and real operator evaluation.
+
+Freeze input/output/runtime scenarios before execution. All 27 contract checks
+match. Preserve the original 31/32 runtime-inclusive report: one-token generation
+was safely rejected by the native token-statistics guard, not the expected text
+parser. Declare a separate eight-token follow-up and observe parser refusal,
+without rewriting the first report. Two normal-length native outputs share one
+prompt, so do not claim independent scenario quality or prompt-injection resistance.
+132 tests pass; no installations, new vision/holdout work or model/policy changes.
+The standard-library contract/evaluation code is portable; the current native
+worker still requires a separate verified ARM implementation and device budgets.
+Stop after Substep 9.2; bounded background execution is the next PC task.

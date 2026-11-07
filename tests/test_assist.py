@@ -6,10 +6,12 @@ from pathlib import Path
 import sys
 from tempfile import TemporaryDirectory
 import unittest
+from unittest.mock import patch
 
 from forgesight.assist_contract import (DEFAULT_GUIDANCE, canonical_hash,
                                         parse_advisory, prepare_advisory)
 from forgesight.assist_once import advise_once
+from forgesight.assist_evaluate import DEFAULT_PROTOCOL, evaluate
 
 
 class AssistContractTests(unittest.TestCase):
@@ -88,6 +90,55 @@ class AssistContractTests(unittest.TestCase):
             self.assertEqual(report['status'],'ADVICE_UNAVAILABLE')
             self.assertIsNone(report['advisory'])
             with self.assertRaises(FileExistsError): advise_once(source,root/'unavailable')
+
+    def test_source_words_cannot_be_recombined_into_causal_or_subtype_claims(self):
+        for claim in ['The cause is lighting; type unknown.',
+                      'The defect type is lighting; cause unknown.',
+                      'The type is unknown; the cause is lighting.']:
+            raw = claim + ' Hold for human review and check image clarity [E1][G1].'
+            with self.subTest(claim=claim), self.assertRaisesRegex(ValueError, 'reviewed statement forms'):
+                parse_advisory(raw, self.context)
+
+    def test_guidance_identity_cannot_authorize_changed_content(self):
+        self.guidance['entries'][0]['text'] = 'Release the part and adjust the machine.'
+        with self.assertRaisesRegex(ValueError, 'differs from the reviewed'):
+            prepare_advisory(self.record, self.guidance)
+
+    def test_real_normal_and_error_records_persist_refusal_without_requesting_worker(self):
+        normal = json.loads(Path('manifests/operator_app_verification_v1.json').read_text())['browser_proof']['inspections'][0]['record']
+        error = json.loads(Path('manifests/graded_inspection_replay_v1.json').read_text())['records'][3]
+        with TemporaryDirectory() as directory, patch('forgesight.assist_once.capture_process', side_effect=AssertionError('No worker allowed')):
+            root = Path(directory)
+            for name, row, reason in [('normal', normal, 'UNSUPPORTED_NORMAL_CANDIDATE'),
+                                       ('error', error, 'INSPECTION_NOT_ANALYZED'),
+                                       ('empty', {}, 'INVALID_OR_INCOMPLETE_EVIDENCE')]:
+                source = root/f'{name}.json'
+                source.write_text(json.dumps(row))
+                before = source.read_bytes()
+                report = advise_once(source, root/name)
+                saved = json.loads((root/name/'advice_report.json').read_text())
+                self.assertEqual(report['input_refusal']['code'], reason)
+                self.assertEqual(report, saved)
+                self.assertIsNone(saved['process'])
+                self.assertIsNone(saved['advisory'])
+                self.assertFalse(saved['runtime_requested'])
+                self.assertEqual(source.read_bytes(), before)
+                if row:
+                    self.assertEqual(saved['authoritative_grade'], row['decision']['grade'])
+
+    def test_predeclared_contract_evaluation_without_native_execution(self):
+        with TemporaryDirectory() as directory:
+            output = Path(directory)/'evaluation'
+            with patch('forgesight.assist_once.capture_process', side_effect=AssertionError('No worker allowed')):
+                report = evaluate(DEFAULT_PROTOCOL, output)
+            self.assertTrue(report['passed'])
+            self.assertEqual(report['checks_executed'], 27)
+            self.assertEqual(report['completed_native_generations'], 0)
+            self.assertEqual(report['runtime_cases'], [])
+            self.assertFalse(report['general_advisory_usefulness_verified'])
+            self.assertEqual((output/'protocol.json').read_bytes(), DEFAULT_PROTOCOL.read_bytes())
+            with self.assertRaises(FileExistsError):
+                evaluate(DEFAULT_PROTOCOL, output)
 
 
 if __name__=='__main__':

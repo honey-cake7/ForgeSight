@@ -269,3 +269,15 @@ The native smoke worker now supports an optional bounded system message;
 default historical chat formatting is unchanged and regression-tested. The
 current child remains x86_64-only: this is not a Jetson installation recipe.
 See [the advisory component and recorded limitations](FORGEASSIST.md).
+
+## Stage 9.2: contract checks without additional dependencies
+
+The 132-test suite passed in the existing app environment. A separate 27-case
+contract-only evaluation passed in the minimal image `.venv`, without importing
+Torch/Llama or requesting a native worker. Actual Llama probes reused the same
+isolated desktop ExecuTorch environment. All five before/after package
+inventories match and no installation occurred. The initial inventory attempt
+found that the app environment has no pip module; read-only inventory used
+standard-library `importlib.metadata` instead, with the issue retained locally.
+This is PC portability evidence only; do not copy x86_64 environments to Jetson.
+See `artifacts/assist_stage9_2/` and the committed refusal-verification manifest.
