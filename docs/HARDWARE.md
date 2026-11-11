@@ -63,11 +63,22 @@ does not establish reachability. Network isolation, endpoint configuration and
 address changes are possibilities, not confirmed causes. No host-key bypass,
 firewall change, installation or Jetson command was performed.
 
-Raw connection results and local route/interface/neighbor snapshots are saved
-in `artifacts/hardware/connection_attempt_2026_11_11_01/connection_report.json`.
-Next: obtain the Jetson's `ip -br -4 addr` and `ss -ltn 'sport = :22'` output
-and identify the shared network. Resolve reachability before retrying SSH.
-Then run the read-only inventory below before choosing target packages
+The user then pasted Jetson terminal output: `wlan0` is UP with the supplied
+LAN address and /23 prefix; `docker0` is DOWN with the second address. SSH
+listens on IPv4 `0.0.0.0:22` and IPv6 `[::]:22`. A subsequent strict Windows
+SSH retry reached a server at the expected address, but stopped because no
+ED25519 host key is trusted yet. A read-only key scan captured the advertised
+public key and its SHA-256 fingerprint. Its identity is NOT VERIFIED until
+compared with the fingerprint read directly on the Jetson. No host-key check
+was bypassed, no known_hosts entry was added and no login was attempted.
+
+Raw initial results are in
+`artifacts/hardware/connection_attempt_2026_11_11_01/connection_report.json`;
+the reachable-server/candidate-key evidence is in
+`artifacts/hardware/connection_attempt_2026_11_11_02/`.
+Next: obtain `ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub` directly from
+the Jetson and compare fingerprints, then establish authentication. Run the
+read-only inventory below before choosing target packages
 or adapting the desktop runner. Then resume the earliest open Stage 2 mandatory
 Llama/ExecuTorch proof, followed by the Stage 8 vision/camera deployment gate.
 PC Substep 9.3 is secondary while hardware access is being established.

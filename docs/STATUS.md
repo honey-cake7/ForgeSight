@@ -39,18 +39,22 @@ broader domain/usefulness testing remain required for richer advice.
 
 On 2026-11-11 the user reported receiving a Jetson Orin Nano 8GB and a Logitech
 USB webcam. The user also reports Ubuntu booted, webcam preview working and SSH
-service active, and supplied a login/address. A Windows SSH attempt timed out
-before authentication; a WSL TCP check returned no route to host. Windows has an
-on-link Wi-Fi route for the supplied address, but the connection cause remains
-unknown. Device-side verification and authenticated access are pending. Stage 8
+service active, and supplied a login/address. Initial Windows/WSL connections
+failed. The user subsequently supplied terminal output confirming `wlan0` UP,
+the LAN address, a separate Docker bridge, and SSH listening on all interfaces.
+A fresh Windows retry now reaches an SSH server at the expected address but
+stops on first-use host-key verification. Its advertised public-key fingerprint
+is saved locally and awaits comparison with output read directly on the Jetson.
+No host-key bypass, known_hosts modification or login occurred. Authenticated
+device verification remains pending. Stage 8
 remains NOT VERIFIED: no project camera/device commands or on-device/offline
 proof have been observed. The current
 native wrapper is desktop x86_64 guarded and requires a verified ARM adapter
 before Jetson deployment. Desktop CPU threads/timing/memory are not target claims.
 
 PC work stopped for review after Substep 9.2. The next action now prioritizes a
-read-only Jetson hardware/software/webcam inventory, once network reachability
-is resolved. Resolve the earliest open Stage 2 device Llama/ExecuTorch
+read-only Jetson hardware/software/webcam inventory, once server identity and
+authentication are established. Resolve the earliest open Stage 2 device Llama/ExecuTorch
 gate before claiming edge readiness. PC Substep 9.3 (bounded background worker)
 and separate stored/UI advice states remain pending.
 Reliable defect names, approved industrial limits, the two missed scratches and
@@ -290,12 +294,14 @@ proof and do not establish a defect-inspection application.
 
 ## Next exact task
 
-First resolve the SSH reachability blocker. The supplied login/address and
-reported active SSH service did not establish a connection: Windows timed out
-and WSL returned no route to host. Obtain `ip -br -4 addr` and
-`ss -ltn 'sport = :22'` from the Jetson, plus the shared network type, before
-retrying. Raw PC-only checks are in
-`artifacts/hardware/connection_attempt_2026_11_11_01/connection_report.json`.
+First compare the advertised SSH host key with
+`ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub` run directly on the Jetson.
+The latest Windows retry reaches a server at the expected address; authentication
+has not been attempted because its first-use identity is not yet verified.
+Do not repeat the already supplied interface/listener checks or bypass host-key
+verification. Candidate-key evidence is saved under
+`artifacts/hardware/connection_attempt_2026_11_11_02/`; the initial failed
+connection evidence remains in the `_01` directory.
 Then resume the device audit and read its actual module, ARM architecture,
 memory, OS/JetPack/L4T, storage, existing packages and USB/video nodes. Preserve
 existing device work; no install or flashing before inspection. Next address
