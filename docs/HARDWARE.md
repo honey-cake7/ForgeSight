@@ -1,8 +1,8 @@
 # Hardware evidence
 
-Latest runtime checkpoint: Substep 2.9 verified a separate ARM64 CPU environment
-on this Jetson. System Python/checked configuration remain unchanged. This adds
-native imports and CPU arithmetic proof; model execution/camera inspection remain open.
+Latest runtime checkpoint: Substep 2.10 generated 40 Llama tokens through
+ExecuTorch on this Orin Nano. The separate ARM64 CPU environment remains in use;
+system Python is still 3.8.10. Camera inspection remains open.
 
 Observed during Stage 0.1 on 2026-11-05 (Asia/Calcutta). Memory availability and
 free disk space are snapshots, not reserved resources.
@@ -248,3 +248,14 @@ These exclude a loaded model and future vision/UI work; they are not inference
 benchmarks or proof of combined memory fit. The one-thread probe setting is not
 a model thread-budget decision. No PTE/tokenizer weights were copied and no
 Llama-generated response was produced. See `manifests/jetson_runtime_installation_v1.json`.
+
+## Substep 2.10 actual Llama model run
+
+The identified Orin Nano, reached at its new Wi-Fi address after matching the
+previously confirmed SSH host fingerprint, ran the 802,247,040-byte quantized
+Llama 3.2 1B PTE with the checked tokenizer. Two CPU threads produced 40 tokens.
+Native model load was 3.087 s; native inference 2.129 s; whole child process
+30.856 s. Sampled peak child RSS was 1,189,184 KiB. These are one-run values
+with no concurrent camera/vision/UI and no p50/p95 meaning. Full hashes, output
+and limits are in `manifests/jetson_llama_generation_v1.json`. No camera frame
+was captured, no physical part inspected and no disconnected test was run.

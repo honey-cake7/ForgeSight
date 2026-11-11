@@ -1,8 +1,9 @@
 # Development environment and audit
 
-Latest device state: Substep 2.9 installed a separate ARM64 Python 3.12.14 CPU
-runtime at `/home/nvidia/.local/share/forgesight/llama_cpu_v1`; system Python is
-still 3.8.10. The earlier audit/setup entries below are historical checkpoints.
+Latest device state: Substep 2.10 ran Llama 3.2 1B through the separate ARM64
+Python 3.12.14 CPU ExecuTorch runtime at
+`/home/nvidia/.local/share/forgesight/llama_cpu_v1`; system Python is still
+3.8.10. The earlier audit/setup entries below are historical checkpoints.
 
 The Windows and shared WSL observations below are audit records, not a full
 project dependency lock. No packages were installed during Stage 0.1 or Substep
@@ -367,3 +368,17 @@ new installer guard tests. Full arguments/results/source hashes are recorded in
 `manifests/jetson_runtime_installation_v1.json`; version/probe commands are in
 `docs/JETSON_RUNTIME.md`. Llama generation and actual disconnected operation
 are still unverified.
+
+## Substep 2.10: actual native Llama generation on Jetson
+
+The existing private venv ran Torch 2.14.0+cpu, ExecuTorch 1.5.1+cpu and
+pytorch-tokenizers 1.6.0. The separate ARM runner checked hashes, platform and
+chat-token bounds, loaded the native operator libraries, then generated 40 real
+tokens from the quantized Llama 3.2 1B PTE. It used two CPU threads. No new
+packages, system interpreter switch or CUDA stack changes were needed. The
+connected-Wi-Fi run and full evidence are in
+`manifests/jetson_llama_generation_v1.json`. All 151 software tests pass.
+The immutable export profile retains its original pre-device status because it
+is hashed into the PTE provenance; the active target status lives in
+`configs/jetson_llama_runtime_v1.json`. Disconnected operation, combined memory
+fit and the Jetson vision environment remain separate checks.

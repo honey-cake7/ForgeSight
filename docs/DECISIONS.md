@@ -619,3 +619,22 @@ probe is not generation. Substep 2.10 needs an explicit ARM adapter and real
 bounded Llama output with hashes/timing/RAM/thread/network evidence. The setup
 probe's 12.284 seconds/388,604 KiB describes imports/tensor work only. No model
 latency, combined memory fit or offline compliance is established.
+
+## 035: Use the verified 1B PTE in an explicit ARM smoke runner
+
+Transfer only the existing publisher-linked Llama 3.2 1B tokenizer and checked
+802 MB ExecuTorch PTE to the working private Jetson runtime. Match both hashes
+after transfer. Keep the frozen export profile untouched so its hash remains
+consistent with the model record; update the active Jetson status separately.
+
+Use a dedicated ARM runner rather than disabling the desktop x86 guard. Require
+the actual Orin Nano/isolated Python, exact package and asset versions, bounded
+Llama chat tokens, a fresh output directory, two CPU threads and a child-process
+timeout. This first run returned 40 tokens with native statistics and exit 0.
+The model load/inference/whole-process times and sampled RSS are one observation
+under connected Wi-Fi. Do not infer p50/p95 or combined camera throughput.
+
+This closes the Stage 2 functional device-generation proof. Stage 8.1 next checks
+Logitech capture formats and a compatible Jetson vision path before deploying
+the frozen EfficientAD model. Async advice, physical samples and disconnected
+full-system operation remain later gates.

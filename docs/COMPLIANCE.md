@@ -2,6 +2,16 @@
 
 No challenge requirement is marked satisfied by repository setup alone.
 
+Substep 2.10 adds the required **actual on-device Llama-family execution through
+ExecuTorch** for one connected Jetson smoke prompt. The 802 MB PTE/tokenizer
+matched pinned hashes after transfer; the ARM64 native runner returned 40 new
+tokens with matching ExecuTorch statistics. Device model load, inference, total
+process time, sampled memory and two-thread setting are recorded in
+`manifests/jetson_llama_generation_v1.json`. This meets the Stage 2 functional
+generation gate for one prompt. It does not establish useful industrial advice,
+camera/vision integration, a latency distribution or disconnected operation.
+The prior checkpoint descriptions below are historical.
+
 Latest device checkpoint, Substep 2.9: isolated ARM64 Python/CPU Torch/ExecuTorch
 installation, dependency checks, native imports and operator registration passed
 on the actual Jetson. System Python is unchanged. No model was loaded or run;
@@ -96,7 +106,7 @@ background/UI responsiveness or offline edge claim follows. See
 | Every-inspection history | PC SQLITE REPLAY VERIFIED; edge/failure recovery open | Original graded/error records survive writer exit and fresh-process queries; 4 retries add no rows; see STORAGE.md |
 | One event per physical part | REPLAY + PERSISTENT ID GATE VERIFIED; physical proof open | 9 frames -> 4 declared-part records; known IDs blocked after restart; actual physical identity/camera unverified |
 | Exact eligible edge hardware | AUTHENTICATED INVENTORY VERIFIED | Orin Nano 8GB module identifiers, ARM64, RAM, Ubuntu/L4T, SD storage and Logitech C270 USB/video nodes recorded; capture/inference are separate open gates |
-| Llama-family inference via ExecuTorch on Jetson | GENERATION NOT VERIFIED; isolated runtime/native setup verified | Actual locally generated text plus model/runtime/artifact provenance and measurements; imports/registration alone do not satisfy it |
+| Llama-family inference via ExecuTorch on Jetson | VERIFIED for one connected-device prompt | Llama 3.2 1B generated 40 real tokens through native ExecuTorch; hashes, statistics and single-run timing/RSS saved in jetson_llama_generation_v1.json. Advisory integration and offline run are separate gates |
 | Physical camera validation | BLOCKED - NOT VERIFIED | Controlled real samples captured and inspected on Jetson |
 | Offline edge operation | BLOCKED - NOT VERIFIED | Disconnected cold start and real end-to-end device run |
 | Real-time performance | NOT VERIFIED | Device vision/advice latency, distinct parts/minute, RAM and thermal observations |

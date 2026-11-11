@@ -2,6 +2,28 @@
 
 ## Current stage
 
+**Substep 2.10 VERIFIED for one connected-device Llama prompt.** The exact
+802,247,040-byte PTE and 2,183,982-byte tokenizer matched their pinned hashes
+after transfer to the actual Orin Nano. The explicit ARM runner used the isolated
+ExecuTorch 1.5.1+cpu environment, two CPU threads and a 64-token cap. It produced
+40 tokens of non-placeholder text, with matching native token statistics and
+exit code zero. The native model load took 3.087 s, native inference 2.129 s,
+whole child process 30.856 s, and sampled peak child RSS 1,189,184 KiB. These
+are one-run measurements, not p50/p95 or combined camera/vision/UI performance.
+The device was connected to Wi-Fi; disconnected operation remains unverified.
+
+The text, logs, hashes and exact command are in
+`manifests/jetson_llama_generation_v1.json`, with raw target output retained on
+Jetson and an ignored local copy under `artifacts/edge/jetson_llama_v1/`. All
+**151 software tests pass**, including four new ARM runner safeguards. The
+desktop x86_64 worker guard and system Python 3.8.10 remain intact. The Stage 2
+on-device Llama generation proof is met for this one prompt; next is **Stage 8.1**:
+check the Logitech camera's actual formats and Jetson vision dependencies before
+moving the frozen EfficientAD model. Physical nut inspection, generated advice
+from real records, and a disconnected full-system run remain open.
+
+### Earlier checkpoints
+
 **Substep 2.9 VERIFIED: the isolated CPU runtime is installed on the actual
 Jetson, and its native imports/registration probe passed.** System Python is
 still 3.8.10. The separate interpreter/venv uses ARM64 Python 3.12.14, Torch
@@ -329,7 +351,7 @@ device-only operation correctly exited 2. See `docs/EDGE_RUNTIME.md`.
 | --- | --- | --- |
 | Repeatable minimal PC image environment | DONE on tested host | Pinned install and smoke check reproduced in two isolated environments |
 | Exact Jetson hardware and camera inventory | VERIFIED by authenticated audit | Orin Nano 8GB identifiers, ARM64, OS/RAM/storage and Logitech C270 USB/video nodes recorded; controlled capture remains separate |
-| Llama through ExecuTorch on Jetson | BLOCKED - NOT VERIFIED | Actual device-generated text, runner/version/hash, memory and timing |
+| Llama through ExecuTorch on Jetson | VERIFIED for one connected-device smoke | 40 real tokens; model/tokenizer/runner hashes, native statistics, timing and memory in jetson_llama_generation_v1.json; offline/advice integration separate |
 | Meta Llama access and local source assets | VERIFIED | User-confirmed access; five files match pinned publisher metadata |
 | Desktop Llama export and artifact metadata | VERIFIED, not inference | Recorded PTE hash and program metadata; generation has separate evidence and quality remains open |
 | Desktop Llama generation via ExecuTorch | VERIFIED, PC-only smoke | Real native runner output and provenance; no device or advice-quality claim |
@@ -339,18 +361,16 @@ device-only operation correctly exited 2. See `docs/EDGE_RUNTIME.md`.
 | Local history and duplicates after restart | PC SQLITE REPLAY VERIFIED | Four original records survive writer exit, exact retries add zero rows; no physical identity or power-loss claim |
 | Offline end-to-end inspection | NOT VERIFIED | Actual disconnected Jetson run |
 
-Stage 1 input preparation is verified and its review gate was accepted. Stage 2
-is not DONE. Desktop data preparation and GPU availability are not Jetson
-proof and do not establish a defect-inspection application.
+Stage 1 input preparation is verified and its review gate was accepted. The
+Stage 2 device-generation gate is verified for one prompt. Desktop data work
+and GPU availability still do not establish a Jetson camera-inspection system.
 
 ## Next exact task
 
-STOPPED FOR REVIEW after Substep 2.9. Isolated installation, dependencies,
-CPU arithmetic, native imports and operator registration passed on Jetson.
-Next is **2.10**: implement an explicit ARM adapter, transfer only the verified
-PTE/tokenizer, and record one bounded actual Llama response through ExecuTorch,
-with hashes, thread count, timing, memory and network state. Preserve the desktop
-x86_64 guard and system Python/JetPack/CUDA. See `docs/JETSON_RUNTIME.md`.
-Then proceed to Stage 8 camera/vision. PC Substep 9.3's queue remains pending.
-The original 9.2 failure-layer mismatch stays documented. Mandatory ARM Llama
-generation, real-camera and disconnected-operation gates remain NOT VERIFIED.
+STOPPED FOR REVIEW after Substep 2.10. The actual Orin Nano generated 40 Llama
+tokens through ExecuTorch, and model/runner hashes, native statistics, timing,
+memory and connected Wi-Fi state are recorded. The next exact task is **Stage 8.1**:
+read the Logitech webcam's real capture formats and check a compatible Jetson
+vision path for the frozen EfficientAD model. PC Substep 9.3's queue remains
+pending. The original 9.2 failure-layer mismatch stays documented. Physical
+camera inspection, integrated advisory and disconnected operation remain open.

@@ -1,8 +1,48 @@
 # Jetson Llama runtime — Substeps 2.8 and 2.9
 
-Status: **isolated ARM64 runtime installed; native imports, CPU arithmetic and
-required operator registration verified on Jetson**. Llama generation, model
-performance, camera inspection and disconnected operation remain NOT VERIFIED.
+Status: **Llama 3.2 1B generated real text through native ExecuTorch on the
+actual Orin Nano** in Substep 2.10. This is one connected-device functional run;
+camera inspection, integrated advice and disconnected operation remain open.
+
+## Actual Llama generation: Substep 2.10
+
+The ARM runner `forgesight/edge_jetson_smoke.py` checks the physical device,
+private Python environment, package versions, model/export/tokenizer hashes,
+chat tokens and generation bounds before calling `TextLLMRunner`. A separate
+child process enforces a 240-second timeout and saves native stdout/stderr,
+actual generated text, native token statistics and sampled process memory.
+The existing desktop worker still rejects ARM use.
+
+The verified PTE/tokenizer live in the existing private prefix's `model/`
+directory. After `cd /home/nvidia/.local/share/forgesight/llama_cpu_v1/model`,
+the actual command was:
+
+```sh
+../venv/bin/python -B edge_jetson_smoke.py --root .. --model llama3_2_1b_xnnpack.pte --tokenizer tokenizer.model --profile edge_llama.json --export llama3_2_1b_export.json --assets llama3_2_1b_assets.json --prompt edge_smoke_prompt.txt --output ../runs/llama_probe_01 --threads 2 --max-new-tokens 64 --timeout 240
+```
+
+The output directory must be fresh for another run. The prompt asked for one
+sentence explaining stable lighting in image comparison. The Jetson generated:
+
+> Stable lighting helps compare two inspection images by ensuring that the lighting conditions are consistent across both images, which helps to eliminate any potential differences in illumination that may be contributing to discrepancies in the inspection results.
+
+Native statistics: 33 prompt tokens, 40 generated tokens, 3.087 s model load,
+2.129 s inference (0.472 s prefill and 1.657 s decode), with 24.14 decode
+tokens/s in this single run. Full child process wall time was 30.856 s, which
+includes Python imports and startup. Sampled peak child RSS was 1,189,184 KiB;
+the sample can miss a higher peak and excludes concurrent vision/UI memory.
+The process exited 0. PTE, tokenizer and executed runner hashes matched both
+the pinned records and the transferred files. The device stayed on Wi-Fi, so
+disconnected cold-start operation is not yet verified. The generated sentence
+is a smoke output, not an industrial cause or approved precaution.
+
+The reviewable record is `manifests/jetson_llama_generation_v1.json`; full raw
+logs and text are kept on Jetson in `runs/llama_probe_01/` and copied to the
+ignored PC path `artifacts/edge/jetson_llama_v1/llama_probe_01/`. The three
+principal output hashes matched between device and copy. All 151 PC tests pass.
+Next: Stage 8.1, inspect the camera formats and Jetson vision dependencies.
+
+## Earlier setup evidence
 
 ## Actual installation: Substep 2.9
 
@@ -214,11 +254,9 @@ forgesight_runtime="$HOME/.local/share/forgesight/llama_cpu_v1"
 "$forgesight_runtime/venv/bin/python" -B "$forgesight_runtime/stage/edge_runtime_probe.py" --prefix "$forgesight_runtime" --output "$forgesight_runtime/native_probe_repeat_001.json"
 ```
 
-Next exact action, **Substep 2.10**: add an explicit ARM/device adapter with
-provenance, timeout and limits. Keep the desktop worker's x86 guard intact.
-Transfer the verified PTE/tokenizer and test bounded actual Llama generation
-through native ExecuTorch. Save the output, hashes, threads, latency, memory and
-network state. Stop for review after 2.9; Stage 2 remains incomplete.
+This was the completed 2.9 setup sequence. Substep 2.10 subsequently transferred
+the verified assets and ran the bounded generation above. The next action is
+Stage 8.1 camera and vision compatibility work.
 
 ## Primary sources
 
@@ -229,6 +267,6 @@ network state. Stop for review after 2.9; Stage 2 remains incomplete.
 - [Python standalone release](https://github.com/astral-sh/python-build-standalone/releases/tag/20260901)
 - [Release asset metadata](https://api.github.com/repos/astral-sh/python-build-standalone/releases/tags/20260901)
 
-The Raspberry Pi tutorial is an ARM reference, not Jetson proof; its system-
-library replacement instructions are not adopted. No on-device generation,
-latency, camera inference or disconnected operation is established by this recipe.
+The Raspberry Pi tutorial is an ARM reference; its system-library replacement
+instructions are not adopted. The on-device generation proof is the new 2.10
+record above. Camera inference and disconnected operation remain unverified.

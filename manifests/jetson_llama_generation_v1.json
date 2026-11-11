@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "substep": "2.10",
+  "scope": "ONE_REAL_JETSON_LLAMA_EXECUTORCH_SMOKE_ON_CONNECTED_WIFI",
+  "status": "JETSON_EXECUTORCH_LLAMA_GENERATION_VERIFIED",
+  "hardware": {
+    "device": "NVIDIA Jetson Orin Nano Engineering Reference Developer Kit Super",
+    "module": "p3767-0003 (Orin Nano 8GB)",
+    "architecture": "aarch64",
+    "system_python": "3.8.10",
+    "private_python": "3.12.14",
+    "runtime_prefix": "/home/nvidia/.local/share/forgesight/llama_cpu_v1",
+    "ssh_host_ed25519_fingerprint": "SHA256:b0qk5CKLppVHIis0Wc0LkiOz8l/QMKvAAfQAM8UyI6c",
+    "host_key_matched_prior_console_confirmation": true
+  },
+  "model": {
+    "id": "meta-llama/Llama-3.2-1B-Instruct",
+    "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "artifact_format": "ExecuTorch PTE",
+    "artifact_bytes": 802247040,
+    "artifact_sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739",
+    "tokenizer_bytes": 2183982,
+    "tokenizer_sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55",
+    "backend_requested_at_export": "xnnpack",
+    "quantization": "8da4w, group size 128, embedding 4/32"
+  },
+  "runtime": {
+    "executorch": "1.5.1+cpu",
+    "torch": "2.14.0+cpu",
+    "pytorch_tokenizers": "1.6.0",
+    "executorch_export_source_commit": "3b60683923245cf472b7323426920e15623ba361",
+    "native_runner_sha256": "cef6d7858872c1a7681e9ff1aa1ba622cce4f207e674c17a84aafbebaafdd19e",
+    "runner": "TextLLMRunner via ARM64 native Python binding",
+    "threads": 2,
+    "temperature": 0.0,
+    "max_new_tokens": 64,
+    "timeout_seconds": 240,
+    "adapter_source": "forgesight/edge_jetson_smoke.py",
+    "executed_adapter_sha256": "88b6819e6c089b12cf4f3824eb45f5dc34eeba466bc1622aed00a0d78cc2a025",
+    "desktop_x86_64_worker_guard_preserved": true
+  },
+  "run": {
+    "device_directory": "/home/nvidia/.local/share/forgesight/llama_cpu_v1/model",
+    "device_output_directory": "/home/nvidia/.local/share/forgesight/llama_cpu_v1/runs/llama_probe_01",
+    "command": "../venv/bin/python -B edge_jetson_smoke.py --root .. --model llama3_2_1b_xnnpack.pte --tokenizer tokenizer.model --profile edge_llama.json --export llama3_2_1b_export.json --assets llama3_2_1b_assets.json --prompt edge_smoke_prompt.txt --output ../runs/llama_probe_01 --threads 2 --max-new-tokens 64 --timeout 240",
+    "prompt": "In one sentence, explain why stable lighting helps compare two inspection images. Do not claim that you inspected a part.",
+    "prompt_tokens": 33,
+    "generated_tokens": 40,
+    "generated_text": "Stable lighting helps compare two inspection images by ensuring that the lighting conditions are consistent across both images, which helps to eliminate any potential differences in illumination that may be contributing to discrepancies in the inspection results.",
+    "raw_generated_output_sha256": "5dbc04b46e6601f56fca0f5fb7d9d304f3d3e9ac7f6651be14e5d268f29d1d28",
+    "native_model_load_seconds": 3.087,
+    "native_inference_seconds": 2.129,
+    "native_prefill_seconds": 0.472,
+    "native_decode_seconds": 1.657,
+    "native_decode_tokens_per_second": 24.14,
+    "python_generate_call_seconds": 5.216527204000158,
+    "whole_child_process_wall_seconds": 30.85645218600257,
+    "sampled_peak_child_rss_kib": 1189184,
+    "rss_sampling_interval_seconds": 0.1,
+    "process_returncode": 0,
+    "completion_reason": "EXITED",
+    "wifi_state": "CONNECTED",
+    "offline_disconnection_tested": false
+  },
+  "evidence": {
+    "device_output_retained": true,
+    "pc_copy_relative_directory": "artifacts/edge/jetson_llama_v1/llama_probe_01",
+    "copy_hashes_matched_device_for_run_result_and_generated_text": true,
+    "files_sha256": {
+      "generated.txt": "5dbc04b46e6601f56fca0f5fb7d9d304f3d3e9ac7f6651be14e5d268f29d1d28",
+      "inputs.json": "48c0be7a8a2336c336ad41d66d003fcd63be2a58fe0b7bbb9ac795d8909d8c2b",
+      "request.json": "6177fa7478adc7ff407b3069f03452ce2ec4a25fe85bc4cd5cd1a35474f8df67",
+      "run.json": "aa0f5dd747c56ec8631d5119e4d249bcd29ea66108b666c95647e6ae546dcf16",
+      "stderr.log": "f81a73a5c432433579347509d57169e8ec351856fbe413c3f2d7b755297e51eb",
+      "stdout.log": "18764a64172d851454e884cf296d0db880a13fe029f19adec21954ecaf047aab",
+      "worker_result.json": "e3b6ad3cad79c94e4798b854a6dc6a2e329e550dac98c1341feac0b072c7f1e9"
+    }
+  },
+  "software_tests": {
+    "command": "wsl -d Ubuntu --exec /root/.cache/forgesight/app-v1/venv/bin/python -B -m unittest discover -s tests -q",
+    "passed": 151,
+    "new_arm_guard_tests": 4,
+    "returncode": 0
+  },
+  "limitations": [
+    "One prompt is a functional proof, not a latency distribution or advice quality evaluation.",
+    "The device remained connected to Wi-Fi; disconnected offline operation is not verified.",
+    "Peak RSS is sampled for one child process and may miss a higher peak; concurrent vision/UI memory is not included.",
+    "No Logitech camera frame, physical nut or Jetson vision inference was used.",
+    "This answer is a generic smoke prompt, not a generated industrial cause or approved procedure."
+  ],
+  "stage_2_llama_generation_gate": "VERIFIED_FOR_ONE_CONNECTED_DEVICE_SMOKE",
+  "stage_8_camera_vision_gate": "NOT_VERIFIED",
+  "stage_9_integrated_advice_gate": "NOT_VERIFIED",
+  "stage_10_offline_gate": "NOT_VERIFIED",
+  "next_exact_action": "Stage 8.1: inspect Logitech camera capture formats and Jetson vision-runtime compatibility before deploying the frozen EfficientAD model."
+}

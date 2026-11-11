@@ -4,8 +4,8 @@ An incremental project for offline industrial surface-defect inspection on an
 NVIDIA Jetson Orin Nano, with deterministic grading, local inspection history,
 and a Llama-family advisory model running on the device through ExecuTorch.
 
-**Current state: Jetson SDK setup verified (2.9); PC Stage 7 UI verified;
-Stage 9.2 advisory/refusal checks observed.** The PC system
+**Current state: Llama 3.2 1B generated real text through ExecuTorch on Jetson
+(2.10); PC Stage 7 UI and Stage 9.2 advisory checks observed.** The PC system
 runs a real trained EfficientAD-S model, highlights response regions, saves one
 record per declared part, adds deterministic pixel-only decisions and saves
 local SQLite history. A local screen runs real inspection and browses saved
@@ -50,7 +50,7 @@ results. Jetson/camera deployment and complete offline edge operation remain ope
   failure occurred earlier than expected; a declared eight-token follow-up
   verified text-parser refusal. All evidence, including that mismatch, is saved.
 
-All **147 tests pass** in the locked app environment. All four earlier
+All **151 tests pass** in the locked app environment. All four earlier
 environments are unchanged; the app preserves all 89 vision package versions.
 On 2026-11-11 an **authenticated read-only Jetson audit completed**: Orin Nano
 8GB identifiers, ARM64, Ubuntu 20.04.6/L4T 35.6.1, Python 3.8.10, CUDA 11.4,
@@ -67,8 +67,14 @@ arithmetic, native imports and required operator registration passed. System
 Python 3.8.10 and checked system files/packages are unchanged. No model was loaded.
 See [setup, commands and limits](docs/JETSON_RUNTIME.md) and the
 [actual device setup evidence](manifests/jetson_runtime_installation_v1.json).
-Actual Jetson Llama generation, camera inspection and disconnected execution
-remain unverified. The PC background worker (9.3) remains pending.
+**Substep 2.10 ran the actual Llama model on the Orin Nano:** one short prompt
+produced 40 tokens through native ExecuTorch. The PTE/tokenizer hashes were
+checked on both machines. The connected-device run used two CPU threads, took
+30.856 s end to end (2.129 s native inference), and sampled 1,189,184 KiB peak
+child RSS. See [actual text and evidence](manifests/jetson_llama_generation_v1.json).
+This is one smoke result, not a throughput benchmark. Jetson camera inspection,
+integrated advice and disconnected operation remain unverified. The PC background
+worker (9.3) remains pending.
 
 ## Open the local operator screen
 

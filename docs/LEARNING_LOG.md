@@ -614,3 +614,22 @@ Camera inspection and a disconnected full-system demonstration come later.
 
 Knowledge check: why does successfully loading the runtime still fall short of
 proving that Llama generates text on this Jetson?
+
+## Substep 2.10: Llama answered on the actual Jetson
+
+We copied the already prepared Llama 3.2 1B model and its tokenizer into the
+Jetson's private ForgeSight folder. Their fingerprints matched the PC copies.
+The Jetson then answered a short question about steady lighting. ExecuTorch
+reported 33 input tokens and 40 new answer tokens, so we now have actual
+on-device generation rather than only a ready runtime.
+
+One run used two CPU threads. Loading the model took 3.087 seconds and native
+inference 2.129 seconds; the full program took 30.856 seconds including startup.
+Its sampled peak process memory was about 1.13 GiB. Logs, text and hashes are
+saved on both machines; 151 software tests pass. The answer was a simple smoke
+test while Wi-Fi was connected. It does not tell us how well the full inspection
+system works or how it behaves without internet.
+
+Next we inspect the Logitech camera's real image formats and determine how to
+run the already trained vision model on the Jetson. Later we connect each real
+inspection to the Llama advisory and test the whole system disconnected.
