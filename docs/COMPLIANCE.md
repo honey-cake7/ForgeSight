@@ -114,9 +114,13 @@ runtime proof. The core wheels' 33 ELF files match ten authenticated target
 library/version inventories. The target-specific lock resolves 49 packages;
 the sole source-only package built as a pure-Python wheel on the PC. All 140
 software tests pass. No environment/package/model was installed on Jetson.
-The pinned interpreter archive download failed and remains unverified; no
-claim of installation readiness, native imports, Llama execution, memory fit or
-offline compliance follows. See `docs/JETSON_RUNTIME.md` and
+The pinned interpreter archive initially failed to download. A later authorized
+retry passed its SHA-256/size check and statically inspected its ten ARM64 native
+files. The combined 43 files match 12 observed target system libraries. This
+closes the static-preparation prerequisite only; no new interpreter was executed
+or installed on Jetson, and no claim of native imports, Llama execution, memory
+fit or offline compliance follows. See `docs/JETSON_RUNTIME.md`,
+`manifests/jetson_python_archive_v1.json` and
 `manifests/jetson_runtime_compatibility_v1.json`.
 No calibrated millimeters, certified industrial grades, PDF performance,
 factory root causes, or actual offline compliance are claimed.

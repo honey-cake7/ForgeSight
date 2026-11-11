@@ -12,12 +12,20 @@ execution occurred; system Python remains 3.8.10. The deleted manual audit folde
 was not recreated. See `docs/JETSON_RUNTIME.md` and
 `manifests/jetson_runtime_compatibility_v1.json`.
 
-The standalone Python archive's official URL/digest is pinned, but download
-attempts returned HTTP 403/timeouts. Its bytes and ELF requirements remain
-unverified. Thus the candidate is NOT READY FOR INSTALLATION until that archive
-is acquired/verified. Static library matching is not Python import, kernel,
-Llama generation, performance or offline proof. The selected route uses isolated
-CPU wheels; a native C++ runner remains a fallback, and no OS change is selected.
+The user reported restored internet and authorized another download attempt.
+The exact 29,199,399-byte standalone interpreter archive now matches its pinned
+SHA-256. PC inspection checked 4,533 paths, 1,048 contained links and ten ARM64
+ELF files. A further authenticated read-only target probe confirmed libcrypt and
+libutil: all 43 interpreter/core native files match the checked definitions in
+12 target libraries. The existing target Python-package inventory and previous
+ten library hashes are unchanged. See `manifests/jetson_python_archive_v1.json`.
+
+Static preparation is now VERIFIED; no isolated interpreter was installed or
+executed, and package imports/kernel/model behavior remain unverified. The
+current code and 140-test result are unchanged; this follow-up used archive/hash
+and native-library checks rather than repeating the broad PC suite. The first
+download failures remain retained. CPU wheels are the first candidate; native
+C++ remains a fallback, with no OS change selected.
 
 Stage 9.2 PC-only advisory/refusal checks are observed. All 27 declared contract
 checks matched and all 132 software tests passed. Normal/error/inconsistent
@@ -311,9 +319,9 @@ proof and do not establish a defect-inspection application.
 
 ## Next exact task
 
-STOPPED FOR REVIEW after Substep 2.8. Next is 2.9: first resolve the official
-interpreter archive download and verify SHA-256/ELF requirements. Then prepare
-a fresh isolated user prefix/venv with the committed hash locks, preserve system
+STOPPED FOR REVIEW after the Substep 2.8 interpreter follow-up. Download/hash
+and checked ELF/library prerequisites are verified. Next is 2.9: prepare a
+fresh isolated user prefix/venv with the verified archive and committed hash locks, preserve system
 Python/JetPack/CUDA, and test dependencies/native imports/registration on the
 actual Jetson. See `docs/JETSON_RUNTIME.md`; no installation is yet verified.
 An explicit ARM adapter and actual Llama generation follow as separate proof

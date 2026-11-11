@@ -572,3 +572,20 @@ source-only dependency built with pinned tools in a fresh PC environment; use
 locked tools and controlled build isolation in the future target setup. Existing
 environments/assets remain unchanged; 140 tests pass. Stop after the recipe and
 static checks; interpreter acquisition and isolated setup are Substep 2.9.
+
+## 033: Verify the acquired interpreter before isolated setup
+
+After the user reported restored internet, retry the exact official standalone
+archive and retain the prior failures. The acquired size and SHA-256 match the
+pinned release metadata. Inspect paths/links and native files on the PC without
+executing the ARM interpreter. Normalize the archive's internal $ORIGIN library
+reference against the actual included member rather than treating it as a system
+library. Ten interpreter ELF files plus 33 core files match exact definitions in
+12 real target libraries, including freshly observed libcrypt and libutil.
+
+Preserve system Python 3.8.10, package inventory, library hashes and the deleted
+manual-audit folder. No target prefix, interpreter or package is installed in
+this follow-up. Code/lock files are unchanged, so validate the actual archive and
+library data without rerunning the broad 140-test PC suite. Update the active
+recipe, leave earlier failure manifests as historical snapshots, and stop for
+review before the isolated-environment setup in Substep 2.9.

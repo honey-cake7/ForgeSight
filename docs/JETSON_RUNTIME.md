@@ -1,7 +1,7 @@
 # Jetson Llama runtime recipe — Substep 2.8
 
-Status: **core static checks match; interpreter download pending; nothing
-installed on Jetson**. This is a recipe and dependency investigation, not proof
+Status: **interpreter archive and core static checks match; nothing installed
+on Jetson**. This is a recipe and dependency investigation, not proof
 of imports, generation, performance or offline operation.
 
 ## Selected first route
@@ -48,7 +48,8 @@ CPU-instruction compatibility, Python imports, operator registration, model
 execution, combined memory fit or performance. Other resolved dependencies
 have compatible wheel tags according to the target resolver, but their complete
 ELF/runtime behavior was not checked by this core probe. The interpreter archive
-has not been inspected or run either.
+was subsequently acquired and inspected as described below; its executable has
+not been run.
 
 `requirements/pylock.jetson_llama.toml` records **49 resolved packages** for
 CPython 3.12.14 and `aarch64-manylinux_2_31`. The hash-locked requirements file
@@ -64,13 +65,30 @@ locked build tools and `--no-build-isolation`, so build-tool selection is contro
 
 The interpreter asset is pinned to CPython 3.12.14, standalone build 20260901,
 SHA-256 `577b4bec0793ad1ff0cbff9adbd0df078eddde38a4c41bf5d83ad381a85ee39d`.
-Official release metadata confirms its name and 29,199,399-byte size. The Astral
-download URL returned HTTP 403; canonical GitHub attempts timed out. **The
-archive has not been acquired or checksum-verified.** Do not mark this recipe
-ready for installation until it is retrieved and checked. These failures and
-the initial SSH banner timeout are retained, not counted as successful checks.
+Official release metadata confirms its name and 29,199,399-byte size. The initial
+Astral URL returned HTTP 403 and canonical GitHub attempts timed out. Those
+failures and the initial SSH banner timeout remain retained, not counted as
+successful checks. After the user restored network connectivity, the canonical
+GitHub download completed and matched the exact size and pinned SHA-256.
 An initial CPU-wheel URL encoding error was corrected; all four wheel hashes
 then passed.
+
+The interpreter follow-up checked all 4,533 archive paths and 1,048 links for
+prefix containment. Its ten ELF files are ARM64; `venv` and `ensurepip` source
+files are present. The extra required `libcrypt.so.1` and `libutil.so.1` were
+read from the actual Jetson after SSH connectivity was restored. Their required
+GLIBC_2.17 definitions are present. Combined with the original core probe, all
+43 checked native files match 12 system-library inventories. The archive's
+literal `$ORIGIN/../lib/libpython3.12.so.1.0` dependency resolves to the included
+library within the archive. This is static resolution, not a loader execution test.
+
+The target still reports Python 3.8.10. Its package inventory and the hashes of
+the previous ten system libraries match the earlier read-only probe. No new
+interpreter/package/model was installed, executed or copied to the Jetson; only
+in-memory system-Python queries ran. `manifests/jetson_python_archive_v1.json`
+records this follow-up. Old failure evidence and the initial compatibility
+manifest remain historical snapshots. The broad PC tests were not rerun because
+runtime code is unchanged; the last full suite result is 140 passing tests.
 
 ## Files and reproducible PC checks
 
@@ -102,8 +120,8 @@ outside Git; no model/data or credential values are committed.
 
 ## Planned installation sequence — not executed
 
-The next substep first retrieves the exact Python archive and checks SHA-256,
-then inspects its executable/libraries. Only after that check:
+The exact Python archive and checked native requirements are now verified.
+The next substep can prepare the isolated environment in this sequence:
 
 1. Use a **fresh** user-owned prefix beneath `~/.local/share/forgesight/`.
    Refuse an existing prefix; never overwrite it or change `/usr/bin/python3`.
@@ -127,8 +145,7 @@ then inspects its executable/libraries. Only after that check:
    desktop worker's x86 guard intact. Only then transfer the verified PTE and
    tokenizer and test bounded Llama generation through native ExecuTorch.
 
-Next exact action, **Substep 2.9**: resolve the interpreter download, verify its
-archive and executable requirements, then create/check only the isolated CPU
+Next exact action, **Substep 2.9**: create/check only the isolated CPU
 runtime. Full model generation is its own proof gate. Stop for review after
 this compatibility substep. Stage 2 remains incomplete.
 

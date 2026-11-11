@@ -572,3 +572,18 @@ The official interpreter download has failed so far. Its expected hash is saved,
 but we cannot call the file verified without its bytes. Next obtain/check that
 file, then create the separate environment. All 140 software tests pass; no
 Jetson model execution or offline proof is claimed.
+
+## Interpreter download follow-up: verified file, still no installation
+
+The official interpreter download now works and matches its expected size and
+SHA-256. We inspected its contents on the PC: the archive stays inside its own
+prefix, contains ARM64 binaries, and includes the files needed for virtual
+environments. We also checked the two extra system libraries on the actual
+Jetson. All 43 checked interpreter/runtime native files match 12 system-library
+inventories. This still does not prove that imports or Llama generation work.
+
+Downloading and inspecting an interpreter does not replace system Python.
+The Jetson still reports Python 3.8.10, with unchanged package/library snapshots.
+Next create a separate user-owned interpreter/environment and test it directly.
+The prior 140-test PC result remains valid history; this follow-up verified the
+new artifact and target-library evidence without a broad software-test rerun.

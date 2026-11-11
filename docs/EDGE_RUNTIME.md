@@ -18,10 +18,13 @@ The existing system Python/CUDA are preserved; no target installation occurred.
 See [the complete recipe and trade-offs](JETSON_RUNTIME.md) and
 `manifests/jetson_runtime_compatibility_v1.json`.
 
-The separate Python interpreter archive has a pinned official name/digest, but
-downloads returned HTTP 403/timeouts. Its contents/ABI remain unverified, so
-installation readiness remains pending. Next Substep 2.9 must retrieve/verify
-that archive before creating an isolated runtime and testing imports/operators.
+The separate Python interpreter archive initially failed to download. A later
+authorized retry acquired the exact pinned bytes and passed SHA-256 verification.
+Its ten ARM64 ELF files and the original 33 core binaries match the checked
+definitions from 12 actual target libraries. See
+`manifests/jetson_python_archive_v1.json`. This clears static preparation, not
+execution: no new interpreter was run or installed on Jetson. Next Substep 2.9
+creates the isolated runtime and tests its interpreter/dependencies/imports.
 The [pinned package's Python floor](https://pypi.org/pypi/executorch/1.5.1/json)
 still excludes system Python 3.8. A native C++ build remains a fallback; its
 [CMake minimum](https://github.com/pytorch/executorch/blob/3b60683923245cf472b7323426920e15623ba361/CMakeLists.txt)

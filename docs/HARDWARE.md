@@ -91,8 +91,13 @@ package, model or manual-audit folder was created. The user reports removing the
 manual-audit copy after running it; that folder was not recreated or relied on.
 See `docs/JETSON_RUNTIME.md` and the compatibility manifest.
 
-The candidate uses separate CPython 3.12.14 and CPU wheels; the interpreter asset
-download is not yet verified. A native build remains a fallback and would need
+The candidate uses separate CPython 3.12.14 and CPU wheels. The interpreter asset
+was subsequently downloaded/hash-verified on the PC; its ten ARM native files
+bring the checked total to 43. A fresh read-only SSH probe confirmed the two
+additional libraries, libcrypt and libutil, for a total of 12 system libraries.
+System Python is still 3.8.10, the package inventory and previous ten library
+hashes are unchanged, and no interpreter/package/files were installed on target.
+The deleted manual-audit folder was not recreated. A native build remains a fallback and would need
 newer CMake. No OS change or source build on Jetson is selected. Llama generation,
 GPU vision, camera capture, latency/memory and offline operation remain unverified.
 

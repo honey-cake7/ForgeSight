@@ -317,11 +317,20 @@ Four publisher-hashed ARM wheels were downloaded to ignored PC artifacts;
 `readelf` inspected the selected core wheels without executing them. Their
 33 ELF files match exact GNU version definitions from ten actual Jetson system
 libraries. Other dependency/interpreter runtime behavior remains unverified.
-The official standalone interpreter archive has pinned metadata/hash, but its
-download failed, so it has not been inspected, extracted or executed.
+The official standalone interpreter archive initially failed to download. A
+later retry acquired 29,199,399 bytes matching the pinned publisher SHA-256.
+Inspection on the PC found ten ARM64 ELF files and checked all 4,533 paths and
+1,048 contained links. The interpreter and core runtime's 43 native files match
+the checked definitions in 12 actual target libraries. No interpreter was run
+or installed on target; Python 3.8.10 and its package inventory remain unchanged.
 
 The source-only antlr4 dependency successfully built into a pure-Python wheel in
 a fresh PC-only cache venv, using the committed build-tool hash lock. No existing
 environment was modified. The 140-test suite passes in the unchanged app env,
 including eight static-guard tests. No model/holdout inference was requested.
 Full target import/dependency checks and real Llama execution remain future work.
+
+The archive follow-up changed recipe metadata/documentation only; the last full
+140-test suite result is retained without a repeat. Fresh verification covers
+the archive checksum, native metadata, actual extra target-library definitions
+and preserved target state. See `manifests/jetson_python_archive_v1.json`.

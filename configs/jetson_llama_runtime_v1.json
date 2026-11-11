@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "PREPARATION_ONLY_NOT_INSTALLED",
-  "readiness": "CORE_STATIC_CHECKS_MATCH_INTERPRETER_DOWNLOAD_PENDING",
+  "readiness": "STATIC_PREPARATION_VERIFIED_AWAITING_ISOLATED_SETUP",
   "selected_route": "ISOLATED_ARM64_CPYTHON_AND_CPU_EXECUTORCH_WHEELS",
   "target": {
     "architecture": "aarch64",
@@ -17,8 +17,10 @@
     "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20260901/cpython-3.12.14%2B20260901-aarch64-unknown-linux-gnu-install_only_stripped.tar.gz",
     "bytes": 29199399,
     "sha256": "577b4bec0793ad1ff0cbff9adbd0df078eddde38a4c41bf5d83ad381a85ee39d",
-    "download_verified": false,
-    "prefix_policy": "A fresh user-owned directory beneath ~/.local/share/forgesight; never replace an existing directory or /usr/bin/python3."
+    "download_verified": true,
+    "prefix_policy": "A fresh user-owned directory beneath ~/.local/share/forgesight; never replace an existing directory or /usr/bin/python3.",
+    "archive_static_checked": true,
+    "archive_native_files_checked": 10
   },
   "packages": {
     "executorch": "1.5.1+cpu",
@@ -66,9 +68,9 @@
     "limitation": "Library/version presence is necessary only. Loader search paths, CPU instructions, Python imports, operator registration and the full model must be tested on the real target."
   },
   "installation_prerequisites": [
-    "Retrieve the exact interpreter archive and verify SHA-256 before extraction.",
-    "Inspect interpreter ELF/library requirements against this target; none have been executed yet.",
-    "Stage locks and files into a new isolated user prefix, preserving existing work."
+    "Archive integrity, contained paths and checked native requirements are now verified; no target execution yet.",
+    "Stage locks and verified files into a fresh isolated user prefix, preserving all existing work.",
+    "Verify new interpreter identity/isolation on-device before installing the CPU-only package locks."
   ],
   "next_substep_checks": [
     "Create only the isolated interpreter/environment; preserve system Python, JetPack and CUDA.",
@@ -93,5 +95,29 @@
     "llama_generation_verified": false,
     "offline_operation_verified": false,
     "model_latency_or_memory_verified": false
+  },
+  "interpreter_and_core_assessment": {
+    "status": "STATIC_CHECKS_MATCH_NOT_RUNTIME_PROOF",
+    "errors": [],
+    "elf_files_checked": 43,
+    "system_libraries_required": [
+      "ld-linux-aarch64.so.1",
+      "libatomic.so.1",
+      "libc.so.6",
+      "libcrypt.so.1",
+      "libdl.so.2",
+      "libgcc_s.so.1",
+      "libm.so.6",
+      "libpthread.so.0",
+      "librt.so.1",
+      "libstdc++.so.6",
+      "libutil.so.1",
+      "libz.so.1"
+    ],
+    "imports_verified": false,
+    "kernel_execution_verified": false,
+    "llama_generation_verified": false,
+    "memory_or_latency_verified": false,
+    "limitation": "Library/version presence is necessary only. Loader search paths, CPU instructions, Python imports, operator registration and the full model must be tested on the real target."
   }
 }

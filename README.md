@@ -57,9 +57,10 @@ SD storage and a Logitech C270 webcam. No packages were installed and no models
 ran on the device. See [hardware facts and limits](docs/HARDWARE.md).
 **Substep 2.8 prepared a candidate isolated CPU runtime recipe:** 33 core ARM
 ELF binaries match ten real Jetson system libraries, and 49 dependencies are
-locked for Python 3.12.14/ARM64. No target installation occurred. The separate
-Python archive download is still pending after official endpoints failed;
-its integrity must be verified before setup. See [the recipe and limits](docs/JETSON_RUNTIME.md).
+locked for Python 3.12.14/ARM64. The separate interpreter archive is now downloaded
+and checksum-verified. Its ten native files bring the checked total to 43, matching
+12 actual Jetson system libraries. No target installation or interpreter execution
+occurred. See [the recipe and limits](docs/JETSON_RUNTIME.md).
 Actual Jetson Llama generation, camera inspection and disconnected execution
 remain unverified. The PC background worker (9.3) remains pending.
 

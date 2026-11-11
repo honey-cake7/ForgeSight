@@ -1,0 +1,620 @@
+{
+  "schema_version": 1,
+  "recorded_utc": "2026-11-11T17:28:01.929944+00:00",
+  "scope": "PINNED_INTERPRETER_DOWNLOAD_AND_STATIC_NATIVE_INSPECTION_ONLY",
+  "status": "ARCHIVE_VERIFIED_STATIC_REQUIREMENTS_MATCH_NOT_EXECUTED",
+  "archive": {
+    "source": "https://github.com/astral-sh/python-build-standalone/releases/download/20260901/cpython-3.12.14%2B20260901-aarch64-unknown-linux-gnu-install_only_stripped.tar.gz",
+    "local_relative_path": "artifacts/edge/jetson_compatibility_v1/interpreter_download_retry_03/cpython-3.12.14+20260901-aarch64-unknown-linux-gnu-install_only_stripped.tar.gz",
+    "bytes": 29199399,
+    "sha256": "577b4bec0793ad1ff0cbff9adbd0df078eddde38a4c41bf5d83ad381a85ee39d",
+    "publisher_metadata_reference": "artifacts/edge/jetson_compatibility_v1/python_release_asset.json"
+  },
+  "archive_inspection": {
+    "members_checked": 4533,
+    "links_checked": 1048,
+    "elf_files_checked": 10,
+    "venv_and_ensurepip_present": true,
+    "probes": [
+      {
+        "member": "python/bin/python3.12",
+        "sha256": "8f7e5df472f8db8bc5ebb7cb888199365c6443f7af1788240885da075cd40415",
+        "machine": 183,
+        "needed": [
+          "libpthread.so.0",
+          "libdl.so.2",
+          "libutil.so.1",
+          "libm.so.6",
+          "librt.so.1",
+          "libc.so.6",
+          "ld-linux-aarch64.so.1"
+        ],
+        "soname": [],
+        "required_versions": {
+          "libutil.so.1": [
+            "GLIBC_2.17"
+          ],
+          "ld-linux-aarch64.so.1": [
+            "GLIBC_2.17"
+          ],
+          "libdl.so.2": [
+            "GLIBC_2.17"
+          ],
+          "librt.so.1": [
+            "GLIBC_2.17"
+          ],
+          "libpthread.so.0": [
+            "GLIBC_2.17"
+          ],
+          "libm.so.6": [
+            "GLIBC_2.17"
+          ],
+          "libc.so.6": [
+            "GLIBC_2.17"
+          ]
+        },
+        "provided_versions": [],
+        "rpath": [
+          "$ORIGIN/../lib"
+        ]
+      },
+      {
+        "member": "python/lib/itcl4.3.8/libtcl9itcl4.3.8.so",
+        "sha256": "cf2c204c54ab3abf03563b1d0471b5e495bf91433ec0bfce0fbbfcbbf33621b7",
+        "machine": 183,
+        "needed": [
+          "libc.so.6",
+          "ld-linux-aarch64.so.1"
+        ],
+        "soname": [],
+        "required_versions": {
+          "ld-linux-aarch64.so.1": [
+            "GLIBC_2.17"
+          ],
+          "libc.so.6": [
+            "GLIBC_2.17"
+          ]
+        },
+        "provided_versions": [],
+        "rpath": []
+      },
+      {
+        "member": "python/lib/libpython3.12.so.1.0",
+        "sha256": "360962e224491e55d1ad2be1333fffc5ee9a9207cc1cd60553cf62757f1e7b6b",
+        "machine": 183,
+        "needed": [
+          "libm.so.6",
+          "libpthread.so.0",
+          "librt.so.1",
+          "libdl.so.2",
+          "libutil.so.1",
+          "libc.so.6",
+          "ld-linux-aarch64.so.1"
+        ],
+        "soname": [
+          "libpython3.12.so.1.0"
+        ],
+        "required_versions": {
+          "libutil.so.1": [
+            "GLIBC_2.17"
+          ],
+          "ld-linux-aarch64.so.1": [
+            "GLIBC_2.17"
+          ],
+          "libdl.so.2": [
+            "GLIBC_2.17"
+          ],
+          "librt.so.1": [
+            "GLIBC_2.17"
+          ],
+          "libpthread.so.0": [
+            "GLIBC_2.17"
+          ],
+          "libm.so.6": [
+            "GLIBC_2.17"
+          ],
+          "libc.so.6": [
+            "GLIBC_2.17"
+          ]
+        },
+        "provided_versions": [],
+        "rpath": []
+      },
+      {
+        "member": "python/lib/libpython3.so",
+        "sha256": "134ff9e6a673c06bc2d596c809fcac588db41bb0c7b8112a4b1967ffae3c4309",
+        "machine": 183,
+        "needed": [
+          "$ORIGIN/../lib/libpython3.12.so.1.0",
+          "libpthread.so.0",
+          "libc.so.6"
+        ],
+        "soname": [
+          "libpython3.so"
+        ],
+        "required_versions": {
+          "libc.so.6": [
+            "GLIBC_2.17"
+          ]
+        },
+        "provided_versions": [],
+        "rpath": []
+      },
+      {
+        "member": "python/lib/libtcl9.0.so",
+        "sha256": "73a4ffa571e5359e58191b10e0ee741366cd5e9171361da52bf5622dcecac75e",
+        "machine": 183,
+        "needed": [
+          "libdl.so.2",
+          "libpthread.so.0",
+          "libm.so.6",
+          "libc.so.6",
+          "ld-linux-aarch64.so.1"
+        ],
+        "soname": [],
+        "required_versions": {
+          "ld-linux-aarch64.so.1": [
+            "GLIBC_2.17"
+          ],
+          "libpthread.so.0": [
+            "GLIBC_2.17"
+          ],
+          "libdl.so.2": [
+            "GLIBC_2.17"
+          ],
+          "libm.so.6": [
+            "GLIBC_2.17"
+          ],
+          "libc.so.6": [
+            "GLIBC_2.17"
+          ]
+        },
+        "provided_versions": [],
+        "rpath": [
+          "/tools/deps/lib"
+        ]
+      },
+      {
+        "member": "python/lib/libtcl9tk9.0.so",
+        "sha256": "6658e7133638e0cca0c61de846d5b0b09beda4b7dc6e7157bd9162081514744b",
+        "machine": 183,
+        "needed": [
+          "libdl.so.2",
+          "libpthread.so.0",
+          "libm.so.6",
+          "libc.so.6",
+          "ld-linux-aarch64.so.1"
+        ],
+        "soname": [],
+        "required_versions": {
+          "ld-linux-aarch64.so.1": [
+            "GLIBC_2.17"
+          ],
+          "libpthread.so.0": [
+            "GLIBC_2.17"
+          ],
+          "libm.so.6": [
+            "GLIBC_2.17"
+          ],
+          "libc.so.6": [
+            "GLIBC_2.17"
+          ]
+        },
+        "provided_versions": [],
+        "rpath": [
+          "/tools/deps/lib:/tools/deps/lib"
+        ]
+      },
+      {
+        "member": "python/lib/python3.12/lib-dynload/_crypt.cpython-312-aarch64-linux-gnu.so",
+        "sha256": "5ff795626b59fe087f17bff87acd55fb66f0dc3153b173c85e9d5cf3b1aec657",
+        "machine": 183,
+        "needed": [
+          "libcrypt.so.1",
+          "libpthread.so.0",
+          "libc.so.6",
+          "ld-linux-aarch64.so.1"
+        ],
+        "soname": [],
+        "required_versions": {
+          "libcrypt.so.1": [
+            "GLIBC_2.17"
+          ],
+          "ld-linux-aarch64.so.1": [
+            "GLIBC_2.17"
+          ],
+          "libc.so.6": [
+            "GLIBC_2.17"
+          ]
+        },
+        "provided_versions": [],
+        "rpath": []
+      },
+      {
+        "member": "python/lib/python3.12/lib-dynload/_dbm.cpython-312-aarch64-linux-gnu.so",
+        "sha256": "77f78090a94e7071f122b954bd2a04ef46f97f5d123a6129c54b117742b78838",
+        "machine": 183,
+        "needed": [
+          "libpthread.so.0",
+          "libc.so.6",
+          "ld-linux-aarch64.so.1"
+        ],
+        "soname": [],
+        "required_versions": {
+          "ld-linux-aarch64.so.1": [
+            "GLIBC_2.17"
+          ],
+          "libpthread.so.0": [
+            "GLIBC_2.17"
+          ],
+          "libc.so.6": [
+            "GLIBC_2.17"
+          ]
+        },
+        "provided_versions": [],
+        "rpath": []
+      },
+      {
+        "member": "python/lib/python3.12/lib-dynload/_tkinter.cpython-312-aarch64-linux-gnu.so",
+        "sha256": "f52a83f202c85b28ff47b23b39ae8166f9bd261594c9f3730f946ddad349395c",
+        "machine": 183,
+        "needed": [
+          "libtcl9tk9.0.so",
+          "libpthread.so.0",
+          "libtcl9.0.so",
+          "libdl.so.2",
+          "libm.so.6",
+          "libc.so.6"
+        ],
+        "soname": [],
+        "required_versions": {
+          "libpthread.so.0": [
+            "GLIBC_2.17"
+          ],
+          "libc.so.6": [
+            "GLIBC_2.17"
+          ]
+        },
+        "provided_versions": [],
+        "rpath": []
+      },
+      {
+        "member": "python/lib/thread3.0.6/libtcl9thread3.0.6.so",
+        "sha256": "35ad8677aa55d5ded6b2164106bc818010d2c6aa0262b04e125f66aadf212611",
+        "machine": 183,
+        "needed": [
+          "libc.so.6",
+          "ld-linux-aarch64.so.1"
+        ],
+        "soname": [],
+        "required_versions": {
+          "ld-linux-aarch64.so.1": [
+            "GLIBC_2.17"
+          ],
+          "libc.so.6": [
+            "GLIBC_2.17"
+          ]
+        },
+        "provided_versions": [],
+        "rpath": []
+      }
+    ]
+  },
+  "all_checked_paths_and_links_contained": true,
+  "combined_assessment": {
+    "status": "STATIC_CHECKS_MATCH_NOT_RUNTIME_PROOF",
+    "errors": [],
+    "elf_files_checked": 43,
+    "system_libraries_required": [
+      "ld-linux-aarch64.so.1",
+      "libatomic.so.1",
+      "libc.so.6",
+      "libcrypt.so.1",
+      "libdl.so.2",
+      "libgcc_s.so.1",
+      "libm.so.6",
+      "libpthread.so.0",
+      "librt.so.1",
+      "libstdc++.so.6",
+      "libutil.so.1",
+      "libz.so.1"
+    ],
+    "imports_verified": false,
+    "kernel_execution_verified": false,
+    "llama_generation_verified": false,
+    "memory_or_latency_verified": false,
+    "limitation": "Library/version presence is necessary only. Loader search paths, CPU instructions, Python imports, operator registration and the full model must be tested on the real target."
+  },
+  "internal_origin_dependencies_resolved": [
+    {
+      "member": "python/lib/libpython3.so",
+      "needed": "$ORIGIN/../lib/libpython3.12.so.1.0",
+      "resolved_archive_member": "python/lib/libpython3.12.so.1.0"
+    }
+  ],
+  "target": {
+    "machine": "aarch64",
+    "python": "3.8.10",
+    "libc": [
+      "glibc",
+      "2.31"
+    ],
+    "libraries": {
+      "ld-linux-aarch64.so.1": {
+        "machine": 183,
+        "path": "/usr/lib/aarch64-linux-gnu/ld-2.31.so",
+        "provided_versions": [
+          "GLIBC_2.17",
+          "GLIBC_PRIVATE",
+          "ld-linux-aarch64.so.1"
+        ],
+        "sha256": "f8adf99608ed294d9e1d5b8a8e9b9fbb4d493d25ea47b8474670d7e332042b74"
+      },
+      "libatomic.so.1": {
+        "machine": 183,
+        "path": "/usr/lib/aarch64-linux-gnu/libatomic.so.1.2.0",
+        "provided_versions": [
+          "LIBATOMIC_1.0",
+          "LIBATOMIC_1.1",
+          "LIBATOMIC_1.2",
+          "libatomic.so.1"
+        ],
+        "sha256": "7107aedf71161e1f80e26d1868a3172ede38fbb468208e594cc09e1ee276e4cd"
+      },
+      "libc.so.6": {
+        "machine": 183,
+        "path": "/usr/lib/aarch64-linux-gnu/libc-2.31.so",
+        "provided_versions": [
+          "GLIBC_2.17",
+          "GLIBC_2.18",
+          "GLIBC_2.22",
+          "GLIBC_2.23",
+          "GLIBC_2.24",
+          "GLIBC_2.25",
+          "GLIBC_2.26",
+          "GLIBC_2.27",
+          "GLIBC_2.28",
+          "GLIBC_2.29",
+          "GLIBC_2.30",
+          "GLIBC_PRIVATE",
+          "libc.so.6"
+        ],
+        "sha256": "45e721f531d445f23b56e71d75d8320bf0cc79cacbe9f8e6676a6a1b1aa6079f"
+      },
+      "libcrypt.so.1": {
+        "machine": 183,
+        "path": "/usr/lib/aarch64-linux-gnu/libcrypt.so.1.1.0",
+        "provided_versions": [
+          "GLIBC_2.17",
+          "XCRYPT_2.0",
+          "XCRYPT_4.3",
+          "XCRYPT_4.4",
+          "libcrypt.so.1"
+        ],
+        "sha256": "be793443aec05058cddc3f4ec09de4ab81e96f368926e77c1ad54354306d51c5"
+      },
+      "libdl.so.2": {
+        "machine": 183,
+        "path": "/usr/lib/aarch64-linux-gnu/libdl-2.31.so",
+        "provided_versions": [
+          "GLIBC_2.17",
+          "GLIBC_PRIVATE",
+          "libdl.so.2"
+        ],
+        "sha256": "4b711433a2ee7aacdf30283d75a5a5ebd61b066ca665734d2a5135a4717cd7ca"
+      },
+      "libgcc_s.so.1": {
+        "machine": 183,
+        "path": "/usr/lib/aarch64-linux-gnu/libgcc_s.so.1",
+        "provided_versions": [
+          "GCC_3.0",
+          "GCC_3.3",
+          "GCC_3.3.1",
+          "GCC_3.4",
+          "GCC_3.4.2",
+          "GCC_3.4.4",
+          "GCC_4.0.0",
+          "GCC_4.2.0",
+          "GCC_4.3.0",
+          "GCC_4.5.0",
+          "GCC_4.7.0",
+          "GCC_7.0.0",
+          "GLIBC_2.0",
+          "libgcc_s.so.1"
+        ],
+        "sha256": "42e40b1edf78999d41d763cb169c70b563e8b5dbc665e072380f96832ad4a407"
+      },
+      "libm.so.6": {
+        "machine": 183,
+        "path": "/usr/lib/aarch64-linux-gnu/libm-2.31.so",
+        "provided_versions": [
+          "GLIBC_2.17",
+          "GLIBC_2.18",
+          "GLIBC_2.23",
+          "GLIBC_2.24",
+          "GLIBC_2.25",
+          "GLIBC_2.27",
+          "GLIBC_2.28",
+          "GLIBC_2.29",
+          "GLIBC_2.31",
+          "libm.so.6"
+        ],
+        "sha256": "e0838e5ec9819b7ed89349f4c1778b4baccf374fb8fca5f982248f863479f370"
+      },
+      "libpthread.so.0": {
+        "machine": 183,
+        "path": "/usr/lib/aarch64-linux-gnu/libpthread-2.31.so",
+        "provided_versions": [
+          "GLIBC_2.17",
+          "GLIBC_2.18",
+          "GLIBC_2.28",
+          "GLIBC_2.30",
+          "GLIBC_2.31",
+          "GLIBC_PRIVATE",
+          "libpthread.so.0"
+        ],
+        "sha256": "612ecb3eb356eccfb4e1a334503278cd758e2eb269f432012f74c59ddf00271d"
+      },
+      "librt.so.1": {
+        "machine": 183,
+        "path": "/usr/lib/aarch64-linux-gnu/librt-2.31.so",
+        "provided_versions": [
+          "GLIBC_2.17",
+          "librt.so.1"
+        ],
+        "sha256": "ca85dd4465a9e7e346f44bbd3248f4a6499ca2c9961de1bce2c76ddd6fdc4029"
+      },
+      "libstdc++.so.6": {
+        "machine": 183,
+        "path": "/usr/lib/aarch64-linux-gnu/libstdc++.so.6.0.28",
+        "provided_versions": [
+          "CXXABI_1.3",
+          "CXXABI_1.3.1",
+          "CXXABI_1.3.10",
+          "CXXABI_1.3.11",
+          "CXXABI_1.3.12",
+          "CXXABI_1.3.2",
+          "CXXABI_1.3.3",
+          "CXXABI_1.3.4",
+          "CXXABI_1.3.5",
+          "CXXABI_1.3.6",
+          "CXXABI_1.3.7",
+          "CXXABI_1.3.8",
+          "CXXABI_1.3.9",
+          "CXXABI_TM_1",
+          "GLIBCXX_3.4",
+          "GLIBCXX_3.4.1",
+          "GLIBCXX_3.4.10",
+          "GLIBCXX_3.4.11",
+          "GLIBCXX_3.4.12",
+          "GLIBCXX_3.4.13",
+          "GLIBCXX_3.4.14",
+          "GLIBCXX_3.4.15",
+          "GLIBCXX_3.4.16",
+          "GLIBCXX_3.4.17",
+          "GLIBCXX_3.4.18",
+          "GLIBCXX_3.4.19",
+          "GLIBCXX_3.4.2",
+          "GLIBCXX_3.4.20",
+          "GLIBCXX_3.4.21",
+          "GLIBCXX_3.4.22",
+          "GLIBCXX_3.4.23",
+          "GLIBCXX_3.4.24",
+          "GLIBCXX_3.4.25",
+          "GLIBCXX_3.4.26",
+          "GLIBCXX_3.4.27",
+          "GLIBCXX_3.4.28",
+          "GLIBCXX_3.4.3",
+          "GLIBCXX_3.4.4",
+          "GLIBCXX_3.4.5",
+          "GLIBCXX_3.4.6",
+          "GLIBCXX_3.4.7",
+          "GLIBCXX_3.4.8",
+          "GLIBCXX_3.4.9",
+          "libstdc++.so.6"
+        ],
+        "sha256": "d5106b70d2682294dee634486749ee06cf24ac830190996dcab95a246ebc152b"
+      },
+      "libutil.so.1": {
+        "machine": 183,
+        "path": "/usr/lib/aarch64-linux-gnu/libutil-2.31.so",
+        "provided_versions": [
+          "GLIBC_2.17",
+          "libutil.so.1"
+        ],
+        "sha256": "0c56d9f5300651c361121319d9c184a3425ec40bd047077e6a4e00586d614ffb"
+      },
+      "libz.so.1": {
+        "machine": 183,
+        "path": "/usr/lib/aarch64-linux-gnu/libz.so.1.2.11",
+        "provided_versions": [
+          "ZLIB_1.2.0",
+          "ZLIB_1.2.0.2",
+          "ZLIB_1.2.0.8",
+          "ZLIB_1.2.2",
+          "ZLIB_1.2.2.3",
+          "ZLIB_1.2.2.4",
+          "ZLIB_1.2.3.3",
+          "ZLIB_1.2.3.4",
+          "ZLIB_1.2.3.5",
+          "ZLIB_1.2.5.1",
+          "ZLIB_1.2.5.2",
+          "ZLIB_1.2.7.1",
+          "ZLIB_1.2.9",
+          "libz.so.1"
+        ],
+        "sha256": "f7421fde8036391750dc2b1dd7299a0a3305a93cb95846fcc381590f565215c1"
+      }
+    }
+  },
+  "preservation": {
+    "target_python_package_inventory_unchanged": true,
+    "previous_ten_target_library_hashes_unchanged": true,
+    "target_files_created": false,
+    "target_packages_installed": false,
+    "interpreter_executed": false,
+    "ssh_session_closed_normally": true
+  },
+  "connection_events": [
+    "A first download retry timed out resolving GitHub; a subsequent canonical download completed.",
+    "PC network changed; initial old-address SSH timed out. After user restored the shared network, verified-host SSH authenticated and the read-only probe completed."
+  ],
+  "credential_values_recorded": false,
+  "target_system_python_changed": false,
+  "target_isolated_environment_created": false,
+  "interpreter_executed_on_pc_or_target": false,
+  "runtime_python_imports_verified": false,
+  "llama_generation_verified": false,
+  "offline_operation_verified": false,
+  "runtime_code_changed": false,
+  "broad_test_suite_rerun": false,
+  "last_pc_test_result": {
+    "tests_passed": 140,
+    "evidence": "manifests/jetson_runtime_compatibility_v1.json"
+  },
+  "active_recipe": {
+    "path": "configs/jetson_llama_runtime_v1.json",
+    "bytes": 5522,
+    "sha256": "138056dfe724bdd66d7c4040c1a791368d2f767e47ffc32b8daf8535d1497a5e"
+  },
+  "previous_core_evidence": {
+    "path": "manifests/jetson_runtime_compatibility_v1.json",
+    "bytes": 63141,
+    "sha256": "11146d4b8b8e2e9ae9e2bda80edc074b6d49039202a0aa4eb8887f3f2df059b2"
+  },
+  "local_evidence": {
+    "artifacts/edge/jetson_compatibility_v1/interpreter_download_retry_03/download_result.json": {
+      "bytes": 574,
+      "sha256": "824b3b78f9fb73fba3b24c1b42ef172a697aad2c5debaedcbe1edb0df3654562"
+    },
+    "artifacts/edge/jetson_compatibility_v1/probe_python_archive.py": {
+      "bytes": 3862,
+      "sha256": "1e28f01e6f548828f0d66c67e00eeaf69f1f8df5fdf05cb26585b8dc988a78af"
+    },
+    "artifacts/edge/jetson_compatibility_v1/python_archive_probe_01/report.json": {
+      "bytes": 171360,
+      "sha256": "0c398b1f4fcc3859d6e8aae77ffa0aa751fc50c72e2a9fa4aca22198c92428d1"
+    },
+    "artifacts/edge/jetson_compatibility_v1/python_archive_probe_01/verification.json": {
+      "bytes": 1497,
+      "sha256": "a36153ee3bdbca26600dda07fee22065fd1f651fa56376a3c8e0aedd0a93a6b1"
+    },
+    "artifacts/edge/jetson_compatibility_v1/python_archive_probe_01/target_library_probe.py": {
+      "bytes": 3027,
+      "sha256": "1ed1b74015e56272b32ac5bce6c0600b9251424238c03b2eb9b56bec7f2becc6"
+    },
+    "artifacts/edge/jetson_compatibility_v1/python_archive_probe_01/target_libraries.json": {
+      "bytes": 9709,
+      "sha256": "0ea5e00b76eb898f0d703fa32000fe77e8600a81071f6578675209af7285ef42"
+    },
+    "artifacts/edge/jetson_compatibility_v1/python_archive_probe_01/target_transport.json": {
+      "bytes": 140,
+      "sha256": "143415fce12a6b16754ee4f64e9b7c21cdcfda264fa5c91916b0bdd18a75a6bb"
+    },
+    "artifacts/edge/jetson_compatibility_v1/python_archive_probe_01/target_libraries.gz.b64": {
+      "bytes": 2901,
+      "sha256": "f556770d1db425623549f64da74fceb8c12371125717a3f626215703516ac3f2"
+    }
+  },
+  "next_exact_action": "Substep 2.9: create a fresh isolated user-owned interpreter/venv from the verified archive, stage the existing locks, then test dependency/native imports while preserving system Python/JetPack/CUDA. No model generation is claimed here."
+}
