@@ -2,6 +2,20 @@
 
 ## Current stage
 
+**Stage 8.1 camera and dependency preflight VERIFIED on the physical Jetson.**
+The Logitech C270 advertised MJPEG 1280x720/30 and 640x480/30 modes; a direct
+OpenCV V4L2 read negotiated MJPG and returned one 640x480 color frame. The
+system OpenCV is 4.5.4 under Python 3.8.10. The separate Python 3.12 Llama
+environment has CPU-only Torch 2.14.0 and lacks OpenCV, torchvision, Pillow
+and Anomalib, so the frozen EfficientAD model cannot run there yet. The 0.339 s
+first-read time and reported 30 fps are not measured inspection throughput.
+No frame was saved, no nut was inspected and no vision inference occurred.
+Evidence: `manifests/jetson_camera_vision_preflight_v1.json`. **Next: Stage 8.2**,
+prepare a separate compatible Jetson vision path, transfer the frozen model with
+hash checks and measure one image inference before using live physical parts.
+
+### Earlier checkpoints
+
 **Substep 2.10 VERIFIED for one connected-device Llama prompt.** The exact
 802,247,040-byte PTE and 2,183,982-byte tokenizer matched their pinned hashes
 after transfer to the actual Orin Nano. The explicit ARM runner used the isolated

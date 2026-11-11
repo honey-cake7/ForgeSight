@@ -2,6 +2,14 @@
 
 No challenge requirement is marked satisfied by repository setup alone.
 
+Stage 8.1 verified camera format negotiation and one live 640x480 frame read on
+the actual Jetson. The frame was not saved and no physical component or vision
+model was evaluated. The isolated Llama runtime lacks the frozen EfficientAD
+model's vision dependencies and has CPU-only Torch. Thus camera access is
+verified, while on-device defect detection, camera alerts, integrated advice
+and disconnected operation remain open. See
+`manifests/jetson_camera_vision_preflight_v1.json`.
+
 Substep 2.10 adds the required **actual on-device Llama-family execution through
 ExecuTorch** for one connected Jetson smoke prompt. The 802 MB PTE/tokenizer
 matched pinned hashes after transfer; the ARM64 native runner returned 40 new

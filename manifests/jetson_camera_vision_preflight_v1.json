@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "recorded_utc": "2026-11-11T21:06:16Z",
+  "stage": "8.1",
+  "status": "CAMERA_CAPTURE_VERIFIED_VISION_RUNTIME_INCOMPLETE",
+  "scope": "One live camera read and dependency inventory on the physical Jetson; no component inspection or model inference",
+  "device": {
+    "architecture": "aarch64",
+    "camera": "Logitech C270 HD WEBCAM (USB 046d:0825)",
+    "capture_node": "/dev/video0",
+    "second_node_from_same_usb_camera": "/dev/video1"
+  },
+  "camera_format_probe": {
+    "command": "gst-device-monitor-1.0 Video/Source",
+    "selected_advertised_caps": [
+      "image/jpeg (MJPEG), 1280x720 at up to 30/1 fps",
+      "image/jpeg (MJPEG), 640x480 at up to 30/1 fps",
+      "video/x-raw YUY2, 1280x720 at up to 10/1 fps",
+      "video/x-raw YUY2, 640x480 at up to 30/1 fps"
+    ],
+    "v4l2_ctl_available": false,
+    "ffmpeg_available": false,
+    "gstreamer_device_monitor_available": true
+  },
+  "live_read_probe": {
+    "interpreter": "/usr/bin/python3",
+    "opencv_version": "4.5.4",
+    "api": "cv2.VideoCapture(0, cv2.CAP_V4L2)",
+    "requested": "MJPG 640x480 30 fps",
+    "opened": true,
+    "read_succeeded": true,
+    "frame_shape_hwc": [480, 640, 3],
+    "negotiated_fourcc": "MJPG",
+    "reported_fps": 30.0,
+    "first_read_elapsed_s": 0.339,
+    "frame_saved": false,
+    "performance_interpretation": "First read startup time only; reported fps is a camera setting, not measured inspection throughput"
+  },
+  "vision_runtime_probe": {
+    "isolated_python": "/home/nvidia/.local/share/forgesight/llama_cpu_v1/venv/bin/python",
+    "torch": "2.14.0+cpu",
+    "torch_cuda_available": false,
+    "cv2_available": false,
+    "torchvision_available": false,
+    "anomalib_available": false,
+    "pillow_available": false,
+    "numpy_available": true,
+    "system_opencv_python": "3.8.10",
+    "system_opencv_reuse_in_python312": "NOT_VERIFIED",
+    "frozen_model_load_ready": false
+  },
+  "next_step": "Plan an isolated Jetson vision runtime compatible with the frozen EfficientAD checkpoint, then transfer and verify the model and run a measured single-image baseline before live part inspection"
+}

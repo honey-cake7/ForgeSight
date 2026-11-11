@@ -633,3 +633,16 @@ system works or how it behaves without internet.
 Next we inspect the Logitech camera's real image formats and determine how to
 run the already trained vision model on the Jetson. Later we connect each real
 inspection to the Llama advisory and test the whole system disconnected.
+
+## Stage 8.1: What the Jetson camera can deliver
+
+The Jetson recognized the Logitech C270. Its camera driver offered MJPEG and
+YUY2 video; MJPEG includes 640x480 at 30 frames per second as an advertised
+setting. We asked the Jetson's existing OpenCV to read one live frame and got a
+640x480 color image. That proves the software can access the camera. It does
+not prove a nut was inspected or that 30 complete inspections happen each second.
+
+The vision model needs extra packages unavailable in the existing private Llama
+environment. We will set up and measure the vision path in the next substep,
+keeping the working Llama setup intact. Knowledge check: why is a camera's
+advertised frame rate different from the speed of a full inspection?

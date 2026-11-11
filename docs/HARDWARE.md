@@ -1,5 +1,13 @@
 # Hardware evidence
 
+Stage 8.1 checked the C270 directly on the physical Jetson. GStreamer listed
+MJPEG 1280x720 and 640x480 at up to 30 fps, and YUY2 1280x720 at up to 10 fps.
+System OpenCV 4.5.4 opened `/dev/video0` through V4L2 and read one MJPG
+640x480 BGR frame in 0.339 s from call start. No image was saved and the
+camera's reported 30 fps was not measured throughput. The private Python 3.12
+Llama environment has CPU-only Torch and no OpenCV, torchvision, Pillow or
+Anomalib. See `manifests/jetson_camera_vision_preflight_v1.json`.
+
 Latest runtime checkpoint: Substep 2.10 generated 40 Llama tokens through
 ExecuTorch on this Orin Nano. The separate ARM64 CPU environment remains in use;
 system Python is still 3.8.10. Camera inspection remains open.

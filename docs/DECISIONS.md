@@ -638,3 +638,16 @@ This closes the Stage 2 functional device-generation proof. Stage 8.1 next check
 Logitech capture formats and a compatible Jetson vision path before deploying
 the frozen EfficientAD model. Async advice, physical samples and disconnected
 full-system operation remain later gates.
+
+## 036: Keep camera capture and vision model setup as distinct device checks
+
+The Jetson's system Python 3.8/OpenCV 4.5.4 can read the C270 using V4L2 and
+MJPEG at 640x480. The already installed Python 3.12 ExecuTorch environment has
+CPU-only Torch and no OpenCV, Pillow, torchvision or Anomalib; it cannot load
+the frozen EfficientAD checkpoint yet. Do not assume the system OpenCV extension
+works in Python 3.12 or that this Torch build uses the Jetson GPU. Preserve the
+working Llama environment. Next prepare a separate compatible vision runtime,
+measure a single-image baseline on-device and only then optimize or connect
+live camera records. MJPEG is the initial capture candidate because 1280x720
+YUY2 advertises at most 10 fps, but actual capture quality, latency, model
+accuracy and simultaneous resource use remain unmeasured.
