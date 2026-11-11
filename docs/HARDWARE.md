@@ -44,12 +44,30 @@ At the arrival check, the Windows workspace was on `main` at `461276d`, clean be
 documentation update. The read-only connection check found an SSH client, no
 configured SSH host in the user's config, and no matching present Jetson/USB
 network/serial/Logitech device through the selected Windows enumeration filter.
-This does not rule out a Jetson on the network. No connection address, login or
-authenticated device session has been established. Boot/setup state is unknown.
+This did not rule out a Jetson on the network. At that initial check, no login
+or address had been supplied and boot/setup state was unknown. No authenticated
+device session had been established.
 No installation, flashing, power-mode change or camera capture was attempted.
 
-Next: obtain the boot state and, if available, the SSH username/address. Run the
-read-only inventory below on the actual Jetson before choosing target packages
+The user subsequently reported a running Ubuntu desktop, working webcam preview
+in its camera app, login username `nvidia`, two IPv4 addresses and SSH service
+status `active`. These are supplied observations, not an authenticated audit.
+Private connection addresses stay in the ignored local evidence rather than
+the public documentation.
+
+A strict-host-key, batch-mode Windows SSH attempt to the supplied LAN address
+timed out on port 22 before authentication. A separate WSL TCP connection check
+returned `OSError: [Errno 113] No route to host`. Windows selected an on-link
+Wi-Fi route whose /23 subnet includes the supplied Jetson address. This alone
+does not establish reachability. Network isolation, endpoint configuration and
+address changes are possibilities, not confirmed causes. No host-key bypass,
+firewall change, installation or Jetson command was performed.
+
+Raw connection results and local route/interface/neighbor snapshots are saved
+in `artifacts/hardware/connection_attempt_2026_11_11_01/connection_report.json`.
+Next: obtain the Jetson's `ip -br -4 addr` and `ss -ltn 'sport = :22'` output
+and identify the shared network. Resolve reachability before retrying SSH.
+Then run the read-only inventory below before choosing target packages
 or adapting the desktop runner. Then resume the earliest open Stage 2 mandatory
 Llama/ExecuTorch proof, followed by the Stage 8 vision/camera deployment gate.
 PC Substep 9.3 is secondary while hardware access is being established.
