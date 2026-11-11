@@ -2,6 +2,14 @@
 
 No challenge requirement is marked satisfied by repository setup alone.
 
+The Jetson now has one real saved-image EfficientAD/ForgeGrade/SQLite replay
+with a stored anomaly map, overlay and exact fresh-process record readback.
+It used an already exposed development-preview nut image, so it adds no
+accuracy result. Source mode is `SAVED_IMAGE_REPLAY` and physical-part status
+is false. Live physical-nut inspection, camera alert/UI, Llama advice and
+disconnected end-to-end operation remain open. See
+`manifests/jetson_saved_nut_replay_v1.json`.
+
 The Stage 8 camera-to-model diagnostic reached the frozen EfficientAD export
 and saved its map/overlay from a live C270 frame. The view contained no
 declared nut, so it was explicitly marked `is_inspection=false`; no grade,

@@ -74,3 +74,27 @@ camera-to-report took 10,047 ms. The model score is out of domain and has no
 defect meaning. No physical nut inspection, quality grade, SQLite record,
 throughput or offline operation is proved. The frame may contain people or
 room details; keep image artifacts private and outside Git.
+
+## Saved metal-nut replay with ForgeGrade and SQLite
+
+The replay uses the already exposed `test/bent/017.png` development-preview
+image. Transfer it, the committed dataset manifest, frozen grade policy and
+the small `forgesight` replay/storage/grade/regions modules to the private
+vision directory. Verify their SHA-256 values before running. From that
+directory, with a fresh replay ID and output path:
+
+```sh
+/usr/bin/python3 -B -m forgesight.vision_edge_replay --image data/mvtec_ad/metal_nut/test/bent/017.png --image-sha256 b49cc898143c46a8c3a8697411d04a078b36f60f4798ccc68aea33ea8fcac026 --dataset-manifest manifests/metal_nut_v1.json --part-id mvtec-dev-bent-017-jetson-replay-02 --vision-python "$PWD/venv/bin/python" --model "$PWD/efficientad_s_calibrated.ts" --model-sha256 8766c41a51a5444f57f564134427bbd2d2d95dd6ec5ff08b24698f00f7f55dcd --grade-policy configs/forgegrade_v1.json --database "$PWD/inspections_replay_v2.sqlite3" --output-dir "$PWD/runs/dev_bent_017_replay_02"
+```
+
+The script checks the source's `development_preview` role and exact model
+export hash before inference. It runs the image through system-Python
+preprocessing and the separate Torch CPU venv, saves 256x256 and 700x700
+maps plus an overlay, applies the existing ForgeGrade policy, then writes JSON
+and SQLite. The actual result was score 0.682808876, `REVIEW` for unknown
+defect type, 1,618 ms first forward and 7,443 ms replay-to-SQLite commit.
+A fresh Jetson process read one identical record back. The raw files remain
+private under `runs/dev_bent_017_replay_02/`, with an ignored PC copy at
+`artifacts/edge/dev_bent_017_replay_02/`. See
+`manifests/jetson_saved_nut_replay_v1.json` for hashes and limits. This is
+neither a new accuracy test nor a physical-camera inspection.

@@ -672,3 +672,14 @@ run in sequence on the Jetson. The camera currently sees a room, and no nut
 is available, so its high anomaly score is not a defect finding. The complete
 diagnostic took about ten seconds in this one run, including two child-process
 startups. Next we need a fixed lit surface and a real distinct part.
+
+## Stage 8 saved-nut replay: a full stored result on Jetson
+
+We used one already exposed development image of a metal nut to exercise the
+Jetson model, deterministic grade and SQLite together. The record says
+`SAVED_IMAGE_REPLAY`, and a new process read the exact stored record back.
+The model response crossed the score threshold, but it does not classify
+the defect type. The provisional rule therefore said `REVIEW`, which is a
+request for human inspection, not a certified rejection. The source-grid map
+and overlay are saved privately. The next proof still requires a real nut
+in a fixed camera view; this replay cannot establish camera-domain accuracy.

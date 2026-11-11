@@ -674,3 +674,14 @@ closed if none qualifies. This is only a gross startup-darkness check, not a
 validated lighting standard for metal nuts. Save the source, raw anomaly map
 and overlay in private ignored artifacts. With no physical nut or declared
 part ID, never create a ForgeGrade decision or SQLite inspection row.
+
+## 039: Replay a development nut image before physical-part capture
+
+With no physical nut available, use `test/bent/017.png`, which is in the
+predeclared development-preview set and was already used in earlier PC replay.
+The Jetson replay checks the committed dataset manifest, source hash, exact
+model export and frozen ForgeGrade policy. It saves both native and 700x700
+maps, an overlay, a structured record and one SQLite row. The dataset path is
+source provenance, not a model-predicted subtype. Keep `unknown` type and
+the policy's `REVIEW` decision. This proves edge replay/persistence without
+reopening the 111-image final holdout or claiming live inspection.

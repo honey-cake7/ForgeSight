@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "stage": "8_saved_image_replay",
+  "status": "JETSON_SAVED_NUT_REPLAY_AND_SQLITE_PERSISTENCE_VERIFIED",
+  "scope": "One previously exposed MVTec metal_nut development-preview PNG on the physical Jetson; no live nut capture",
+  "source": {
+    "dataset_manifest_sha256": "14b11ebd03d5107c7ef3478e1c4d20887237e2fbef58601ac043014b8f0e340f",
+    "dataset_path": "test/bent/017.png",
+    "role": "development_preview",
+    "image_sha256_pc_and_jetson": "b49cc898143c46a8c3a8697411d04a078b36f60f4798ccc68aea33ea8fcac026",
+    "source_mode": "SAVED_IMAGE_REPLAY",
+    "physical_part_inspected": false,
+    "final_holdout_images_read": 0,
+    "repeat_inference_used_for_accuracy": false
+  },
+  "model_and_policy": {
+    "export_sha256": "8766c41a51a5444f57f564134427bbd2d2d95dd6ec5ff08b24698f00f7f55dcd",
+    "frozen_checkpoint_sha256": "aa2407dba9f74db8472ee6adc5968eefc7c243d9f200d70f2d3a792fd0b7f4fd",
+    "score_policy_sha256": "33a28c23328c63abf93fa0e01d270eda52f4a0195f7b8df89c14dda44e77a687",
+    "grade_policy_file_sha256": "5696929a7088f82de9cf2b7aec59aee11650ccf49d9f26e6523126808e7c088c",
+    "grade_policy_id": "forgegrade-metal-nut-pixel-prototype-v1",
+    "decision_threshold": 0.22776579856872559,
+    "runtime": "Jetson system Python 3.8 for preprocessing/ForgeGrade/SQLite; isolated Python 3.12 Torch 2.14.0+cpu for frozen model"
+  },
+  "device_result": {
+    "device_identity_checked": "NVIDIA Jetson Orin Nano Engineering Reference Developer Kit Super, aarch64",
+    "inspection_id": "be71d850-208a-4f74-acdf-d235207d54ec",
+    "replay_id": "mvtec-dev-bent-017-jetson-replay-02",
+    "status": "ANALYZED",
+    "score": 0.6828088760375977,
+    "candidate": "ANOMALY_CANDIDATE",
+    "predicted_defect_type": "unknown",
+    "source_grid_response_area_px": 9015,
+    "pc_reference_score": 0.6828088760375977,
+    "pc_reference_response_area_px": 9015,
+    "grade": "REVIEW",
+    "grade_reason": "UNKNOWN_UNSEEN_OR_UNRELIABLE_TYPE",
+    "model_first_forward_ms": 1618.4450579967233,
+    "vision_process_peak_rss_kib": 431696,
+    "replay_to_sqlite_commit_ms": 7443.111767999653,
+    "timing_scope": "Preprocess, child startup/model inference, maps, geometry, grade, overlay, JSON and SQLite commit; excludes replay launcher startup and Llama",
+    "latency_distribution": "NOT_MEASURED_ONE_RUN",
+    "jetson_gpu_used": false,
+    "offline_operation": "NOT_VERIFIED"
+  },
+  "persistence_recheck": {
+    "fresh_process_exact_record_reloaded": true,
+    "inspection_count": 1,
+    "distinct_replay_ids": 1,
+    "analyzed_count": 1,
+    "review_count": 1,
+    "database": "/home/nvidia/.local/share/forgesight/vision_cpu_v1/inspections_replay_v2.sqlite3"
+  },
+  "private_artifacts": {
+    "jetson_directory": "/home/nvidia/.local/share/forgesight/vision_cpu_v1/runs/dev_bent_017_replay_02",
+    "ignored_pc_directory": "artifacts/edge/dev_bent_017_replay_02",
+    "record_json_sha256_pc_and_jetson": "4ed43804c789e10731f2257f12664a9f340856b5b6894d1c6c454f399af312e5",
+    "model_map_npy_sha256_pc_and_jetson": "5a8d79dfa973a9d7e3dce1617859b8b82dd28ac096797795d389c3c1481fc75a",
+    "source_map_npy_sha256_pc_and_jetson": "217da635bb725d69d6c47e9169c9c008ec9fe974ae573acb05467696aa41f75b",
+    "response_overlay_png_sha256_pc_and_jetson": "a477fbe51db3e73da1a1442997ae9ff07a2568353ac0819176006b0b0e5fd981",
+    "run_report_json_sha256_pc_and_jetson": "c502168195c23e201b443bf79a10fee8895c135df350ea06a08021e530922cd3",
+    "executed_replay_script_sha256": "66866fd14dfdee2236fe5fd05d4699caaa7d3c04f6dd067fbb3dcb58ee5b4aec",
+    "raw_images_and_maps_committed": false
+  },
+  "limitations": [
+    "This development image was already used in PC replay; repeating it gives no new accuracy evidence.",
+    "Dataset path supplies ground truth but the model still predicts defect type unknown; REVIEW is an uncertified benchmark policy result.",
+    "No physical nut, live camera inspection, UI alert, concurrent Llama advice or disconnected end-to-end system was tested."
+  ],
+  "next_step": "When a physical nut is available, fix camera view and lighting and verify one real camera inspection with conservative review/alert, persistence and timing before Stage 9"
+}

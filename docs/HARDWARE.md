@@ -1,5 +1,12 @@
 # Hardware evidence
 
+The Jetson ran one `metal_nut` development-preview saved-image replay through
+the frozen CPU model, ForgeGrade and SQLite. First forward took 1,618 ms,
+vision-process peak RSS was 431,696 KiB, and replay-to-SQLite commit took
+7,443 ms. A fresh system-Python process read the exact saved record. This is
+one replay timing, not live camera throughput or simultaneous Llama load.
+See `manifests/jetson_saved_nut_replay_v1.json`.
+
 The Stage 8 live diagnostic found 12 nearly black startup frames before the
 C270 exposure settled; a bounded mean-luminance guard selected frame 13.
 The selected MJPG frame was 640x480 and showed the room rather than a fixed

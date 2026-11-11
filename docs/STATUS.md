@@ -2,6 +2,21 @@
 
 ## Current stage
 
+**Stage 8 Jetson saved-image replay and SQLite persistence VERIFIED; live
+physical-nut inspection PENDING.** A previously exposed MVTec development
+image (`test/bent/017.png`) passed dataset-role and SHA-256 checks on the
+actual Jetson. The frozen model produced score 0.682808876 and the same
+9,015-pixel response area as the earlier PC replay. ForgeGrade assigned
+`REVIEW` because defect type remains unvalidated. JSON, raw maps, overlay and
+one SQLite row were saved; a fresh process read back the exact record. One
+CPU forward took 1,618 ms and replay-to-SQLite commit took 7,443 ms. See
+`manifests/jetson_saved_nut_replay_v1.json`. This is a **saved-image replay**,
+not a camera inspection or new accuracy result. No nut is available yet.
+**Next: put a distinct physical nut in a fixed lit C270 view and prove one
+conservatively reviewed, persisted camera inspection.**
+
+### Earlier checkpoints
+
 **Stage 8 live camera-to-model diagnostic VERIFIED; physical-part inspection
 PENDING.** The C270 delivered a usable 640x480 frame after 12 black startup
 frames were discarded. The Jetson ran the frozen EfficientAD export, saved a
@@ -408,9 +423,9 @@ and GPU availability still do not establish a Jetson camera-inspection system.
 
 ## Next exact task
 
-The live camera-to-model diagnostic is verified, but no physical nut was
+The Jetson saved-image nut replay is verified, but no physical nut is
 available. Next, place a distinct nut on a fixed lit inspection surface,
 aim the C270 at it, then run and persist one real inspection with a measured
-camera-to-result path. The benchmark score policy must not be treated as a
-validated physical-part quality threshold.
+camera-to-result path and a conservative review alert. The benchmark score
+policy is not a validated physical-part quality threshold.
 Llama advice remains Stage 9; disconnected end-to-end proof remains Stage 10.

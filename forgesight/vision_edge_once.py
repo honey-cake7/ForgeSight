@@ -26,11 +26,18 @@ def main():
     parser.add_argument("--threshold", type=float, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--map-output", type=Path)
+    parser.add_argument("--source-map-output", type=Path)
+    parser.add_argument("--source-size", type=int, nargs=2, metavar=("HEIGHT", "WIDTH"))
     args = parser.parse_args()
     if args.output.exists():
         parser.error("Choose a new output file.")
     if args.map_output is not None and args.map_output.exists():
         parser.error("Choose a new anomaly-map file.")
+    if (args.source_map_output is None) != (args.source_size is None):
+        parser.error("Source-map output and source size must be supplied together.")
+    if args.source_map_output is not None and (args.source_map_output.exists()
+            or min(args.source_size) <= 0 or max(args.source_size) > 4096):
+        parser.error("Choose a new source-map file and a bounded positive size.")
     if sha256(args.model) != args.model_sha256 or sha256(args.tensor) != args.tensor_sha256:
         parser.error("Model or tensor SHA-256 mismatch.")
     if not math.isfinite(args.threshold):
@@ -70,6 +77,17 @@ def main():
             np.save(stream, anomaly_map.squeeze().numpy().astype(np.float32), allow_pickle=False)
         report["map_file"] = str(args.map_output)
         report["map_sha256"] = sha256(args.map_output)
+    if args.source_map_output is not None:
+        from torch.nn import functional as F
+
+        resized = F.interpolate(anomaly_map, size=tuple(args.source_size),
+                                mode="bilinear", align_corners=False)
+        args.source_map_output.parent.mkdir(parents=True, exist_ok=True)
+        with args.source_map_output.open("xb") as stream:
+            np.save(stream, resized.squeeze().numpy().astype(np.float32), allow_pickle=False)
+        report["source_map_file"] = str(args.source_map_output)
+        report["source_map_sha256"] = sha256(args.source_map_output)
+        report["source_map_shape"] = list(resized.shape)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("x") as stream:
         json.dump(report, stream, indent=2)
