@@ -32,13 +32,29 @@ Continue with the proposed Orin Nano route. See the
 [recorded reply and implications](ORGANIZER_CLARIFICATION.md).
 Platform-family eligibility does not verify our actual module or deployment.
 
-## Jetson device inventory: BLOCKED - NOT VERIFIED
+## Jetson device inventory: REPORTED AVAILABLE - DEVICE AUDIT PENDING
 
-The proposed target is an NVIDIA Jetson Orin Nano. The user confirmed that the
-device is not currently available. Do not infer module variant, RAM, JetPack,
-CPU configuration, power mode, or camera from the proposed product name.
+On 2026-11-11 (Asia/Calcutta), the user reported receiving an **NVIDIA Jetson
+Orin Nano 8GB and a Logitech USB webcam**. This supersedes the previous report
+that no device was available. The exact module/SKU, physical memory, JetPack/L4T,
+storage, power mode, webcam model and capture capability have not been read from
+the device. Treat 8GB and Logitech USB as user-reported facts until audited.
 
-During the audit:
+At the arrival check, the Windows workspace was on `main` at `461276d`, clean before this
+documentation update. The read-only connection check found an SSH client, no
+configured SSH host in the user's config, and no matching present Jetson/USB
+network/serial/Logitech device through the selected Windows enumeration filter.
+This does not rule out a Jetson on the network. No connection address, login or
+authenticated device session has been established. Boot/setup state is unknown.
+No installation, flashing, power-mode change or camera capture was attempted.
+
+Next: obtain the boot state and, if available, the SSH username/address. Run the
+read-only inventory below on the actual Jetson before choosing target packages
+or adapting the desktop runner. Then resume the earliest open Stage 2 mandatory
+Llama/ExecuTorch proof, followed by the Stage 8 vision/camera deployment gate.
+PC Substep 9.3 is secondary while hardware access is being established.
+
+During the original 2026-11-05 audit:
 
 - Present-device enumeration returned no Jetson/APX/NVIDIA USB, relevant USB
   serial/network device, or camera matching the audit filters.

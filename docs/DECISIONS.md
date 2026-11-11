@@ -518,3 +518,12 @@ prompt, so do not claim independent scenario quality or prompt-injection resista
 The standard-library contract/evaluation code is portable; the current native
 worker still requires a separate verified ARM implementation and device budgets.
 Stop after Substep 9.2; bounded background execution is the next PC task.
+
+## 030: Resume device verification when hardware arrives
+
+The user reported receiving an Orin Nano 8GB and Logitech USB webcam on
+2026-11-11. Prioritize the read-only device/connection audit and the earliest
+open Stage 2 native Llama/ExecuTorch gate, then Stage 8 camera/vision proof.
+The PC background worker remains pending. Treat the reported hardware as a
+lead for verification, not observed module/RAM/camera or deployment evidence.
+Inspect boot state, software and existing work before installing or flashing.

@@ -523,3 +523,12 @@ unchanged. We still need verified industrial procedures for specific precautions
 and confirmed process evidence for causes. The next task is a small background
 queue so slow advice cannot hold up inspection; actual Jetson behavior requires
 device-side tests when hardware arrives.
+
+## Hardware arrival: inspect the actual device before deployment
+
+On 2026-11-11 the user reported receiving an Orin Nano 8GB and a Logitech USB
+webcam. We can now return to the open hardware steps. First we need to know
+whether it boots and how to connect; then we read its actual system information
+without installing anything. Owning a webcam does not yet prove it captures
+usable inspection images, and PC text generation does not prove Jetson execution.
+The reported hardware is documented separately from measured device facts.

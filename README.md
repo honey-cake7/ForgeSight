@@ -50,11 +50,13 @@ results. Jetson/camera deployment and complete offline edge operation remain ope
   verified text-parser refusal. All evidence, including that mismatch, is saved.
 
 All **132 tests pass** in the locked app environment. All four earlier
-environments are unchanged; the app preserves all 89 vision package versions. The Jetson remains unavailable; exact
-hardware, camera performance and disconnected edge operation are unverified.
-**Stage 8 remains blocked** because Jetson is unavailable. Next PC substep is
-the bounded background advisory worker before storage/UI integration; actual
-Jetson/camera validation is still required.
+environments are unchanged; the app preserves all 89 vision package versions.
+On 2026-11-11 the user reported receiving a **Jetson Orin Nano 8GB and Logitech
+USB webcam**. Exact hardware/software, camera operation and disconnected edge
+execution remain unverified. **The next action is a read-only device audit**
+once boot state and SSH access are known, then the outstanding Stage 2 native
+Llama/ExecuTorch proof and Stage 8 camera/vision deployment. The PC background
+advisory worker (Substep 9.3) remains pending.
 
 ## Open the local operator screen
 

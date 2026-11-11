@@ -37,22 +37,25 @@ or UI advice states were added. Stage 9 is NOT DONE. Guidance is explicitly
 PROTOTYPE_NOT_FACTORY_APPROVED; possible causes are withheld. Human review and
 broader domain/usefulness testing remain required for richer advice.
 
-Stage 8 remains BLOCKED - NOT VERIFIED: the user reconfirmed Jetson unavailable.
-Independent PC advisory work proceeds under the hardware-blocker rule; no
-physical-camera/device command or on-device/offline proof occurred. The current
+On 2026-11-11 the user reported receiving a Jetson Orin Nano 8GB and a Logitech
+USB webcam. Hardware availability is now USER-REPORTED; device-side verification
+and SSH access are pending. Stage 8 remains NOT VERIFIED: no actual camera or
+device command or on-device/offline proof has occurred. The current
 native wrapper is desktop x86_64 guarded and requires a verified ARM adapter
 before Jetson deployment. Desktop CPU threads/timing/memory are not target claims.
 
-STOPPED FOR REVIEW after Substep 9.2. Next PC action: implement bounded,
-single-worker background execution with busy refusal and timeout/failure isolation.
-Separate stored/UI advice states follow in subsequent substeps.
-Exact Jetson audit/camera validation remains the next physical-device action.
+PC work stopped for review after Substep 9.2. The next action now prioritizes a
+read-only Jetson hardware/software/webcam inventory, once its boot state and
+connection are known. Resolve the earliest open Stage 2 device Llama/ExecuTorch
+gate before claiming edge readiness. PC Substep 9.3 (bounded background worker)
+and separate stored/UI advice states remain pending.
 Reliable defect names, approved industrial limits, the two missed scratches and
 mandatory Jetson Llama/ExecuTorch/offline proof remain open.
 
 Stage 2.7 desktop Llama generation through ExecuTorch is verified. Stage 1 and
 the transition to Stage 3 were accepted by the user. Actual Stage 2 inference
-on Jetson is BLOCKED - NOT VERIFIED: the device is unavailable. Desktop text
+on Jetson is BLOCKED - NOT VERIFIED: an authenticated device session and actual
+generation are still missing. Desktop text
 generation is verified; device execution, quality, and offline proof are not.
 
 The organizer reply shared by the user confirms Jetson Orin platform-family
@@ -70,7 +73,8 @@ open; desktop vision work proceeds under the roadmap's hardware-blocker rule.
 - Windows Python 3.10.11 runs. Ubuntu WSL has an existing Python 3.12.14
   environment with PyTorch 2.6.0+cu124; PyTorch reports CUDA available and the
   desktop RTX 2000 Ada GPU name.
-- The user explicitly reports that the Jetson is not available yet.
+- At the original audit the user reported that Jetson was unavailable; on
+  2026-11-11 the user reported receiving the Orin Nano 8GB and Logitech USB webcam.
 - The original architecture PDF has been read; its proposed measurements and
   performance are not accepted as verified results.
 
@@ -265,7 +269,7 @@ device-only operation correctly exited 2. See `docs/EDGE_RUNTIME.md`.
 | Gate | Status | Missing evidence |
 | --- | --- | --- |
 | Repeatable minimal PC image environment | DONE on tested host | Pinned install and smoke check reproduced in two isolated environments |
-| Exact Jetson hardware and camera | BLOCKED - NOT VERIFIED | Device unavailable; need device-side inventory |
+| Exact Jetson hardware and camera | USER-REPORTED AVAILABLE; NOT VERIFIED | Orin Nano 8GB and Logitech USB reported 2026-11-11; need authenticated device-side inventory |
 | Llama through ExecuTorch on Jetson | BLOCKED - NOT VERIFIED | Actual device-generated text, runner/version/hash, memory and timing |
 | Meta Llama access and local source assets | VERIFIED | User-confirmed access; five files match pinned publisher metadata |
 | Desktop Llama export and artifact metadata | VERIFIED, not inference | Recorded PTE hash and program metadata; generation has separate evidence and quality remains open |
@@ -282,9 +286,11 @@ proof and do not establish a defect-inspection application.
 
 ## Next exact task
 
-Substep 9.3 PC: implement a bounded single-worker advisory queue. Verify immediate
-busy refusal and that slow, failed or timed-out advice cannot change or block
-inspection results. Persisted advisory state and UI delivery follow separately.
-The original 9.2 failure-layer expectation mismatch remains explicitly documented;
-this is no claim of general advisory quality. Stage 8 is blocked until the Jetson
-is physically available, and all mandatory ARM ExecuTorch/offline gates stay open.
+Resume the device audit: establish whether Jetson is booted, obtain its SSH
+username/address if available, and read its actual module, ARM architecture,
+memory, OS/JetPack/L4T, storage, existing packages and USB/video nodes. Preserve
+existing device work; no install or flashing before inspection. Next address
+Stage 2's actual native Llama/ExecuTorch generation, then Stage 8's physical
+vision/camera validation. PC Substep 9.3's bounded advisory queue remains pending.
+The original 9.2 failure-layer mismatch stays documented. All mandatory ARM
+ExecuTorch, real-camera and disconnected-operation gates remain NOT VERIFIED.

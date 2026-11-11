@@ -88,7 +88,7 @@ background/UI responsiveness or offline edge claim follows. See
 | Useful operator recommendations | ONE PC CHECKLIST NOTE VERIFIED; broad usefulness open | Actual ExecuTorch note cites real record/prototype checklist; no factory diagnosis, approved SOP, UI or device proof |
 | Every-inspection history | PC SQLITE REPLAY VERIFIED; edge/failure recovery open | Original graded/error records survive writer exit and fresh-process queries; 4 retries add no rows; see STORAGE.md |
 | One event per physical part | REPLAY + PERSISTENT ID GATE VERIFIED; physical proof open | 9 frames -> 4 declared-part records; known IDs blocked after restart; actual physical identity/camera unverified |
-| Exact eligible edge hardware | BLOCKED - NOT VERIFIED | Device-side module/RAM/architecture/JetPack inventory; device currently unavailable |
+| Exact eligible edge hardware | USER-REPORTED AVAILABLE; NOT VERIFIED | User reports Orin Nano 8GB and Logitech USB webcam on 2026-11-11; device-side module/RAM/architecture/JetPack inventory and authenticated access pending |
 | Llama-family inference via ExecuTorch on Jetson | BLOCKED - NOT VERIFIED | Actual locally generated text plus model/runtime/artifact provenance and measurements |
 | Physical camera validation | BLOCKED - NOT VERIFIED | Controlled real samples captured and inspected on Jetson |
 | Offline edge operation | BLOCKED - NOT VERIFIED | Disconnected cold start and real end-to-end device run |
