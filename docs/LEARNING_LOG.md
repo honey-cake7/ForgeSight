@@ -646,3 +646,18 @@ The vision model needs extra packages unavailable in the existing private Llama
 environment. We will set up and measure the vision path in the next substep,
 keeping the working Llama setup intact. Knowledge check: why is a camera's
 advertised frame rate different from the speed of a full inspection?
+
+## Stage 8.2: A model result from one saved image
+
+The calibrated EfficientAD model was exported with the same fixed 256x256
+input and checked against its source on two already used training images. We
+then moved the export and one training image to a new private vision runtime
+on the Jetson. File hashes and the prepared image tensor hash matched across
+machines. The Jetson returned an anomaly score and map in one CPU run.
+
+The 1.699-second forward is a first-run measurement, not a frame rate or a
+typical latency. The process used at most 431,704 KiB according to Linux's
+peak RSS counter; that does not include a simultaneous Llama process. The
+next check uses an actual captured nut and measures the complete path through
+inference and logging. Knowledge check: why can this familiar training image
+prove the model runs while telling us little about real camera accuracy?

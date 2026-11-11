@@ -1,5 +1,13 @@
 # Hardware evidence
 
+Stage 8.2 installed a separate Python 3.12.14 vision venv from the already
+staged ARM CPU Torch wheelhouse. Torch 2.14.0+cpu and NumPy 2.5.4 passed
+`pip check`; the Llama venv still reports Torch 2.14.0+cpu and ExecuTorch
+1.5.1+cpu, and system Python remains 3.8.10. A hash-checked frozen
+EfficientAD-S export ran one 256x256 benchmark image on CPU. First forward:
+1,699 ms; process peak RSS: 431,704 KiB. These exclude camera and Llama
+concurrency. See `manifests/jetson_efficientad_single_image_v1.json`.
+
 Stage 8.1 checked the C270 directly on the physical Jetson. GStreamer listed
 MJPEG 1280x720 and 640x480 at up to 30 fps, and YUY2 1280x720 at up to 10 fps.
 System OpenCV 4.5.4 opened `/dev/video0` through V4L2 and read one MJPG

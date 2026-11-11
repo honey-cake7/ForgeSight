@@ -2,6 +2,13 @@
 
 No challenge requirement is marked satisfied by repository setup alone.
 
+Stage 8.2 verified one hash-checked frozen EfficientAD-S image inference on
+the Jetson CPU, using a benchmark training image. It produced a finite score
+and anomaly map; the one-run forward and process RSS are recorded in
+`manifests/jetson_efficientad_single_image_v1.json`. No live part was inspected,
+so actual camera defect detection, accuracy, throughput, alert/log integration,
+combined Llama operation and disconnected end-to-end operation remain open.
+
 Stage 8.1 verified camera format negotiation and one live 640x480 frame read on
 the actual Jetson. The frame was not saved and no physical component or vision
 model was evaluated. The isolated Llama runtime lacks the frozen EfficientAD

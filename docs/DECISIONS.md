@@ -651,3 +651,16 @@ measure a single-image baseline on-device and only then optimize or connect
 live camera records. MJPEG is the initial capture candidate because 1280x720
 YUY2 advertises at most 10 fps, but actual capture quality, latency, model
 accuracy and simultaneous resource use remain unmeasured.
+
+## 037: Use a frozen TorchScript CPU baseline for first Jetson vision proof
+
+Export only the calibrated EfficientAD-S forward pass from the pinned desktop
+Anomalib environment. The separate Jetson vision venv installs CPU Torch and
+NumPy from already staged ARM wheels; system Python's existing Pillow prepares
+the input. This avoids changing the working Llama venv or system packages.
+The frozen source and export agreed exactly on two fit images, and the Jetson
+produced a matching tensor hash and score within 2.3e-7. CPU execution is a
+functional baseline, not a speed choice: one first forward was 1.699 s. Torch
+2.14 warns that TorchScript loading is deprecated, so any format migration
+needs new output-parity proof. Live capture and concurrent runtime costs are
+the next Stage 8 checks.

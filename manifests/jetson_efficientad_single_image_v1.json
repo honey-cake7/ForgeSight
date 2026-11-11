@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "stage": "8.2",
+  "status": "ONE_FROZEN_IMAGE_INFERENCE_VERIFIED_ON_JETSON",
+  "scope": "One previously used MVTec metal_nut training image; no camera or physical nut inspection",
+  "device": "NVIDIA Jetson Orin Nano 8GB, aarch64, Ubuntu 20.04.6, L4T 35.6.1",
+  "vision_runtime": {
+    "path": "/home/nvidia/.local/share/forgesight/vision_cpu_v1/venv",
+    "python": "3.12.14 isolated venv from the already staged standalone interpreter",
+    "torch": "2.14.0+cpu",
+    "numpy": "2.5.4",
+    "torch_threads": 2,
+    "cuda_available": false,
+    "installation": "--no-index from the existing verified ARM wheelhouse; pip check passed",
+    "system_python_after": "3.8.10",
+    "llama_venv_after": "Torch 2.14.0+cpu, ExecuTorch 1.5.1+cpu; imports and versions rechecked"
+  },
+  "model": {
+    "source": "frozen calibrated EfficientAD-S FP32 checkpoint",
+    "source_checkpoint_sha256": "aa2407dba9f74db8472ee6adc5968eefc7c243d9f200d70f2d3a792fd0b7f4fd",
+    "source_policy_sha256": "33a28c23328c63abf93fa0e01d270eda52f4a0195f7b8df89c14dda44e77a687",
+    "format": "TorchScript traced forward, fixed 1x3x256x256 input",
+    "bytes": 32320235,
+    "sha256_pc_and_jetson": "8766c41a51a5444f57f564134427bbd2d2d95dd6ec5ff08b24698f00f7f55dcd",
+    "storage": "Ignored local artifacts and private Jetson directory; binary not committed",
+    "pc_source_export_parity": {
+      "images": ["train/good/000.png", "train/good/001.png"],
+      "max_absolute_map_difference": 0.0,
+      "max_absolute_score_difference": 0.0
+    }
+  },
+  "input": {
+    "path": "train/good/000.png",
+    "role": "fit, already exposed during training; no holdout pixels read",
+    "image_sha256_pc_and_jetson": "b0309325bc305ae8b19246884f20397b951285786aecca0ebf1d009e9799e350",
+    "preprocessing": "Jetson system Python 3.8 Pillow/NumPy: RGB, bilinear 256x256, CHW float32 divided by 255",
+    "tensor_sha256_pc_and_jetson": "40f6e9ea512322e76a238204c7706f7eff91a7ca0f7edf5e1fab57818e290480"
+  },
+  "executed_script_sha256_pc_and_jetson": {
+    "vision_edge_preprocess.py": "51f382949cbcfda1d3cc89d0bf9ef51d78782c8e6fb96195515f01ae54f93bd8",
+    "vision_edge_once.py": "dda1ceeb9efc31b057900f5e58770b650892df37718ab9ef18b9fb10766eb39a"
+  },
+  "jetson_result": {
+    "raw_report_sha256_pc_and_jetson": "de753a5936c324fb42baad4162f37a5815fe62a91a5aa8a9d8248018416d78d7",
+    "model_load_ms": 173.4001389995683,
+    "first_forward_ms": 1699.1579579989775,
+    "process_peak_rss_kib": 431704,
+    "score": 0.028453722596168518,
+    "pc_export_score": 0.028453946113586426,
+    "threshold": 0.22776579856872559,
+    "candidate": "NORMAL_CANDIDATE",
+    "map_shape": [1, 1, 256, 256],
+    "timing_scope": "Load and first CPU forward only; no file decode, preprocessing, process startup, overlay, UI, logging, camera or Llama time",
+    "memory_scope": "ru_maxrss for this vision process only, not combined Jetson or GPU memory"
+  },
+  "limitations": [
+    "One run is not p50, p95, FPS or full inspection throughput.",
+    "This familiar benchmark normal image cannot validate anomaly accuracy or camera domain transfer.",
+    "CPU baseline has not been measured concurrently with the Llama worker.",
+    "TorchScript load emits a deprecation warning under Torch 2.14; future format migration requires separate parity proof.",
+    "Device remained network connected; offline end-to-end operation is unverified."
+  ],
+  "next_step": "Stage 8 camera-inference: capture one distinct physical nut, run this frozen model, log the real inspection and measure end-to-end latency"
+}

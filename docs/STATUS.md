@@ -2,6 +2,20 @@
 
 ## Current stage
 
+**Stage 8.2 single-image EfficientAD inference VERIFIED on the physical
+Jetson.** A separate Python 3.12 CPU vision venv loaded a hash-checked
+TorchScript export of the frozen calibrated EfficientAD-S checkpoint. The
+Jetson preprocessed a previously used MVTec training image and its tensor
+hash matched the PC. One first forward took 1,699 ms; process peak RSS was
+431,704 KiB. The score (0.0284537) matched the PC export within 2.3e-7 and
+produced a 256x256 anomaly map. See
+`manifests/jetson_efficientad_single_image_v1.json`. This is one CPU baseline
+on a familiar benchmark image, not a camera inspection, accuracy/FPS estimate
+or offline system proof. **Next: connect one physical nut capture to model
+inference and logging, with end-to-end timing.**
+
+### Earlier checkpoints
+
 **Stage 8.1 camera and dependency preflight VERIFIED on the physical Jetson.**
 The Logitech C270 advertised MJPEG 1280x720/30 and 640x480/30 modes; a direct
 OpenCV V4L2 read negotiated MJPG and returned one 640x480 color frame. The
@@ -381,10 +395,7 @@ and GPU availability still do not establish a Jetson camera-inspection system.
 
 ## Next exact task
 
-STOPPED FOR REVIEW after Substep 2.10. The actual Orin Nano generated 40 Llama
-tokens through ExecuTorch, and model/runner hashes, native statistics, timing,
-memory and connected Wi-Fi state are recorded. The next exact task is **Stage 8.1**:
-read the Logitech webcam's real capture formats and check a compatible Jetson
-vision path for the frozen EfficientAD model. PC Substep 9.3's queue remains
-pending. The original 9.2 failure-layer mismatch stays documented. Physical
-camera inspection, integrated advisory and disconnected operation remain open.
+Stage 8.2's saved-image Jetson CPU inference is verified. Next, capture one
+distinct physical nut on the C270, run the frozen vision model, persist the
+inspection and measure the complete camera-to-result path on the Jetson.
+Llama advice remains Stage 9; disconnected end-to-end proof remains Stage 10.
