@@ -4,7 +4,8 @@ An incremental project for offline industrial surface-defect inspection on an
 NVIDIA Jetson Orin Nano, with deterministic grading, local inspection history,
 and a Llama-family advisory model running on the device through ExecuTorch.
 
-**Current state: Stage 7 UI verified; Stage 9.2 PC advisory/refusal checks observed.** The system
+**Current state: Jetson SDK setup verified (2.9); PC Stage 7 UI verified;
+Stage 9.2 advisory/refusal checks observed.** The PC system
 runs a real trained EfficientAD-S model, highlights response regions, saves one
 record per declared part, adds deterministic pixel-only decisions and saves
 local SQLite history. A local screen runs real inspection and browses saved
@@ -49,18 +50,23 @@ results. Jetson/camera deployment and complete offline edge operation remain ope
   failure occurred earlier than expected; a declared eight-token follow-up
   verified text-parser refusal. All evidence, including that mismatch, is saved.
 
-All **140 tests pass** in the locked app environment. All four earlier
+All **147 tests pass** in the locked app environment. All four earlier
 environments are unchanged; the app preserves all 89 vision package versions.
 On 2026-11-11 an **authenticated read-only Jetson audit completed**: Orin Nano
 8GB identifiers, ARM64, Ubuntu 20.04.6/L4T 35.6.1, Python 3.8.10, CUDA 11.4,
-SD storage and a Logitech C270 webcam. No packages were installed and no models
-ran on the device. See [hardware facts and limits](docs/HARDWARE.md).
+SD storage and a Logitech C270 webcam. That initial audit installed nothing.
+See [hardware facts and limits](docs/HARDWARE.md).
 **Substep 2.8 prepared a candidate isolated CPU runtime recipe:** 33 core ARM
 ELF binaries match ten real Jetson system libraries, and 49 dependencies are
 locked for Python 3.12.14/ARM64. The separate interpreter archive is now downloaded
 and checksum-verified. Its ten native files bring the checked total to 43, matching
-12 actual Jetson system libraries. No target installation or interpreter execution
-occurred. See [the recipe and limits](docs/JETSON_RUNTIME.md).
+12 actual Jetson system libraries.
+**Substep 2.9 installed and checked the separate CPU runtime on Jetson:** Python
+3.12.14, Torch 2.14.0+cpu and ExecuTorch 1.5.1+cpu. Dependency checks, CPU tensor
+arithmetic, native imports and required operator registration passed. System
+Python 3.8.10 and checked system files/packages are unchanged. No model was loaded.
+See [setup, commands and limits](docs/JETSON_RUNTIME.md) and the
+[actual device setup evidence](manifests/jetson_runtime_installation_v1.json).
 Actual Jetson Llama generation, camera inspection and disconnected execution
 remain unverified. The PC background worker (9.3) remains pending.
 

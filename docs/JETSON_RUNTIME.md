@@ -1,8 +1,66 @@
-# Jetson Llama runtime recipe — Substep 2.8
+# Jetson Llama runtime — Substeps 2.8 and 2.9
 
-Status: **interpreter archive and core static checks match; nothing installed
-on Jetson**. This is a recipe and dependency investigation, not proof
-of imports, generation, performance or offline operation.
+Status: **isolated ARM64 runtime installed; native imports, CPU arithmetic and
+required operator registration verified on Jetson**. Llama generation, model
+performance, camera inspection and disconnected operation remain NOT VERIFIED.
+
+## Actual installation: Substep 2.9
+
+The working SDK is `/home/nvidia/.local/share/forgesight/llama_cpu_v1`. Keep it;
+this is separate from the previously deleted manual audit folder. It contains
+`python/` (standalone interpreter), `venv/` (isolated CPU packages), `stage/`
+(verified inputs), `logs/` and private caches. Persistent installation files
+stay here; pip may use ordinary OS temporary build storage. No sudo, system
+Python replacement, OS upgrade, CUDA change or power-mode change was used.
+
+| Check on actual Jetson | Observed result |
+| --- | --- |
+| System interpreter | `/usr/bin/python3` remains 3.8.10 |
+| Separate interpreter / venv | ARM64 Python 3.12.14; user site disabled |
+| Core packages | Torch 2.14.0+cpu, ExecuTorch 1.5.1+cpu, pytorch-tokenizers 1.6.0, TorchAO 0.18.0 |
+| Installation | 50 hashed package archives; 49 runtime dependencies plus wheel and bundled pip = 51 distributions |
+| Dependency check | `No broken requirements found.` |
+| CPU arithmetic | Small tensor expression returned 10.0; Torch has no CUDA build |
+| Native bindings | TextLLMRunner, GenerationConfig and CppTiktoken loaded/constructed as applicable; no runner/model constructed |
+| Backend registry | XnnpackBackend present; delegation/model execution not tested |
+| Required operators | embedding_4bit.dtype_out, update_cache.out and custom_sdpa.out all present after explicit library loading |
+| Preservation | System package inventory and five system/configuration hashes identical before/after |
+
+The required operators were absent before loading the two pinned kernel
+libraries, then present afterward. The native runner and both kernel-library
+hashes match the publisher-verified ARM CPU wheel. This establishes imports and
+registration; actual Llama operator execution is still a separate test.
+
+The import/tensor probe took 12.284 seconds and reported process peak RSS
+388,604 KiB. These are **not model latency or model memory measurements** and
+exclude future Llama/vision/UI work. One CPU thread was used for this probe only;
+the eventual model thread budget remains unselected.
+
+Inputs and returned evidence archives were SHA-256 verified. Installation used
+`--no-index --find-links ... --require-hashes`; only the two direct CPU wheel
+selectors were rewritten to exact local `+cpu` versions, retaining all hashes.
+Pinned setuptools/wheel were installed first; the antlr4 source dependency built
+on target with `--no-build-isolation`. This local-file install does not establish
+disconnected cold-start operation. No PTE/tokenizer weights were transferred.
+
+The committed record is `manifests/jetson_runtime_installation_v1.json`.
+Full logs, inventories, inputs and returned evidence remain locally under
+`artifacts/edge/jetson_runtime_setup_v1/`. `installation.json` is the earlier
+pre-probe checkpoint; `native_probe.json` records the subsequent successful check.
+All 147 PC software tests passed, including seven new setup safeguards. Two PC
+preparation errors were fixed before any target changes; those attempts remain
+recorded. Five PC environments/eight protected files match the prior snapshot.
+
+To inspect the installed versions in the Jetson SSH terminal:
+
+```sh
+/usr/bin/python3 --version
+/home/nvidia/.local/share/forgesight/llama_cpu_v1/venv/bin/python --version
+/home/nvidia/.local/share/forgesight/llama_cpu_v1/venv/bin/python -B -m pip check
+```
+
+These should report 3.8.10, 3.12.14 and no broken requirements respectively.
+The installed SDK is not disposable: do not rerun initialization/bootstrap over it.
 
 ## Selected first route
 
@@ -19,8 +77,8 @@ better Jetson latency. Thread count and combined CPU/RAM pressure need real
 measurement; the desktop eight-thread setting is not a target budget.
 
 The system Python remains `/usr/bin/python3` 3.8.10, Ubuntu remains 20.04.6,
-L4T remains 35.6.1 and CUDA remains 11.4. All target commands in this step read
-library metadata. The deleted manual-audit folder was not recreated.
+L4T remains 35.6.1 and CUDA remains 11.4. Substep 2.8 read library metadata;
+2.9 installed only the isolated CPU runtime. The deleted audit folder was not recreated.
 
 | Option | Trade-off | Decision |
 | --- | --- | --- |
@@ -28,7 +86,7 @@ library metadata. The deleted manual-audit folder was not recreated.
 | Native C++ ExecuTorch runner | Could reduce Python/export-package overhead, but needs additional build/toolchain and adapter work | Fallback if runtime or resource tests fail |
 | Change JetPack/Ubuntu | Changes a working camera/driver baseline; system migration has wider consequences | Not selected; static findings do not establish a need |
 
-## Actual evidence
+## Historical static evidence: Substep 2.8, before installation
 
 Four official ARM64 wheels were downloaded to the PC and checked against
 publisher SHA-256 values: CPU ExecuTorch, CPU Torch, pytorch-tokenizers and the
@@ -118,36 +176,49 @@ downloaded wheels, target-library data, ELF reports, Python release metadata,
 download failures and the isolated pure-Python build log. Raw artifacts stay
 outside Git; no model/data or credential values are committed.
 
-## Planned installation sequence — not executed
+## Guarded installation sequence used in Substep 2.9
 
-The exact Python archive and checked native requirements are now verified.
-The next substep can prepare the isolated environment in this sequence:
+The tested installer is `forgesight/edge_runtime_setup.py`, whose bootstrap
+functions run under system Python 3.8. Initialization refuses an existing prefix,
+root execution, a different device or insufficient storage. Extraction validates
+all paths/links before writing and verifies archive/input hashes. The executed
+source hashes are recorded; a later module-docstring clarification changed no
+executable AST. The sequence used was:
 
 1. Use a **fresh** user-owned prefix beneath `~/.local/share/forgesight/`.
    Refuse an existing prefix; never overwrite it or change `/usr/bin/python3`.
 2. Extract the verified interpreter there and invoke its absolute executable
    to create a separate venv. Verify Python 3.12.14, AArch64 and isolation.
 3. Stage the committed hash locks. From that isolated venv, the planned pip
-   operations are:
+   operations were (shown with shortened paths):
 
    ```sh
-   python -m pip install --require-hashes -r jetson_build_tools.lock.txt
-   python -m pip install --require-hashes --no-build-isolation -r jetson_llama.lock.txt
+   python -m pip --isolated install --no-index --find-links wheelhouse --require-hashes --only-binary=:all: -r build_tools.lock.txt
+   python -m pip --isolated install --no-index --find-links wheelhouse --require-hashes --no-build-isolation -r offline_runtime.lock.txt
    python -m pip check
    ```
 
-   Here `python` must be the isolated venv executable. The commands above have
-   not been run on the Jetson and are not a system-Python installation recipe.
+   Here `python` is the absolute isolated venv executable. The exact executed
+   argument lists and log hashes are in the installation manifest. The lock and
+   wheelhouse are verified files inside `stage/`, not arbitrary downloads.
 4. Test CPU Torch, native bindings, tokenizer and actual operator registration.
    Record failures and memory before model transfer; don't install the GPU
    vision stack into this CPU-only environment.
-5. Add an explicit ARM/device adapter with provenance and limits. Keep the
-   desktop worker's x86 guard intact. Only then transfer the verified PTE and
-   tokenizer and test bounded Llama generation through native ExecuTorch.
+The native probe is `forgesight/edge_runtime_probe.py`. It requires the actual
+device and isolated interpreter, checks versions/module locations, performs CPU
+arithmetic and registers operators. It deliberately loads no model. To repeat
+it manually, choose a new output filename and keep existing evidence:
 
-Next exact action, **Substep 2.9**: create/check only the isolated CPU
-runtime. Full model generation is its own proof gate. Stop for review after
-this compatibility substep. Stage 2 remains incomplete.
+```sh
+forgesight_runtime="$HOME/.local/share/forgesight/llama_cpu_v1"
+"$forgesight_runtime/venv/bin/python" -B "$forgesight_runtime/stage/edge_runtime_probe.py" --prefix "$forgesight_runtime" --output "$forgesight_runtime/native_probe_repeat_001.json"
+```
+
+Next exact action, **Substep 2.10**: add an explicit ARM/device adapter with
+provenance, timeout and limits. Keep the desktop worker's x86 guard intact.
+Transfer the verified PTE/tokenizer and test bounded actual Llama generation
+through native ExecuTorch. Save the output, hashes, threads, latency, memory and
+network state. Stop for review after 2.9; Stage 2 remains incomplete.
 
 ## Primary sources
 

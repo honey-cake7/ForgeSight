@@ -1,0 +1,358 @@
+{
+  "schema_version": 1,
+  "recorded_utc": "2026-11-11T18:16:36.830884+00:00",
+  "client_context_date": "2026-11-11",
+  "substep": "2.9",
+  "scope": "ACTUAL_JETSON_ISOLATED_CPU_RUNTIME_INSTALLATION_AND_NATIVE_SMOKE_ONLY",
+  "status": "JETSON_RUNTIME_IMPORTS_AND_REGISTRATION_VERIFIED_NOT_GENERATION",
+  "runtime_prefix": "/home/nvidia/.local/share/forgesight/llama_cpu_v1",
+  "configuration": {
+    "path": "configs/jetson_llama_runtime_v1.json",
+    "sha256": "44323f961be63bc01bdce341ef47ecf0c314c1871563797f883ca5ba6d9ab747"
+  },
+  "target_initialization": {
+    "schema_version": 1,
+    "purpose": "FORGESIGHT_STAGE_2_9_CPU_RUNTIME",
+    "prefix": "/home/nvidia/.local/share/forgesight/llama_cpu_v1",
+    "created_utc": "2026-11-11T17:50:09.552878+00:00",
+    "run_id": "394d7925946b46339e525a11454157e0"
+  },
+  "inputs": {
+    "interpreter": {
+      "sha256": "577b4bec0793ad1ff0cbff9adbd0df078eddde38a4c41bf5d83ad381a85ee39d",
+      "bytes": 29199399
+    },
+    "bundle": {
+      "sha256": "b4715e7cd6b108907b379ea0c33014e2dbbeb51165650513213bb65c095d09ab",
+      "bytes": 234782720
+    },
+    "bootstrap": {
+      "archive_sha256": "577b4bec0793ad1ff0cbff9adbd0df078eddde38a4c41bf5d83ad381a85ee39d",
+      "bundle_sha256": "b4715e7cd6b108907b379ea0c33014e2dbbeb51165650513213bb65c095d09ab",
+      "staged_files": 57
+    },
+    "package_archives": 50,
+    "runtime_lock": {
+      "path": "requirements/jetson_llama.lock.txt",
+      "sha256": "0ec2f5411500792d19b3ec05939c6465f6f9e7227676526bb969acbc32d1d75f"
+    },
+    "build_tools_lock": {
+      "path": "requirements/jetson_build_tools.lock.txt",
+      "sha256": "9a12342a7f215d4eaa81ed4f639d2ad1ac673970990e7323bf0907c8859e6320"
+    },
+    "offline_lock": {
+      "sha256": "8a404c2a14fc614cf305afa1b30ac94ced2aa095df93ba7c8df69909c4f5a0d8",
+      "derivation": "Only torch/ExecuTorch HTTPS selectors become exact +cpu version selectors; package hashes and other versions unchanged."
+    }
+  },
+  "installation": {
+    "status": "ISOLATED_PACKAGES_INSTALLED_NATIVE_PROBE_PENDING",
+    "prefix": "/home/nvidia/.local/share/forgesight/llama_cpu_v1",
+    "steps": [
+      {
+        "argv": [
+          "/home/nvidia/.local/share/forgesight/llama_cpu_v1/python/bin/python3.12",
+          "-B",
+          "-c",
+          "import json,platform,sys;assert platform.machine()=='aarch64';assert platform.python_version()=='3.12.14';print(json.dumps({'python':platform.python_version(),'executable':sys.executable,'prefix':sys.prefix}))"
+        ],
+        "returncode": 0,
+        "log": "/home/nvidia/.local/share/forgesight/llama_cpu_v1/logs/interpreter-ae793aa6.log",
+        "log_sha256": "4f137bcd060026c13efff6bea1a3791e9ce8c93af9ef587f40fa31d53bf03054"
+      },
+      {
+        "argv": [
+          "/home/nvidia/.local/share/forgesight/llama_cpu_v1/python/bin/python3.12",
+          "-B",
+          "-m",
+          "venv",
+          "/home/nvidia/.local/share/forgesight/llama_cpu_v1/venv"
+        ],
+        "returncode": 0,
+        "log": "/home/nvidia/.local/share/forgesight/llama_cpu_v1/logs/venv-7fd22731.log",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "/home/nvidia/.local/share/forgesight/llama_cpu_v1/venv/bin/python",
+          "-B",
+          "-m",
+          "pip",
+          "--isolated",
+          "--disable-pip-version-check",
+          "--cache-dir",
+          "/home/nvidia/.local/share/forgesight/llama_cpu_v1/cache/pip",
+          "install",
+          "--no-index",
+          "--find-links",
+          "/home/nvidia/.local/share/forgesight/llama_cpu_v1/stage/wheelhouse",
+          "--require-hashes",
+          "--only-binary=:all:",
+          "-r",
+          "/home/nvidia/.local/share/forgesight/llama_cpu_v1/stage/build_tools.lock.txt"
+        ],
+        "returncode": 0,
+        "log": "/home/nvidia/.local/share/forgesight/llama_cpu_v1/logs/build-tools-0e942b3a.log",
+        "log_sha256": "42aba2613a9e63cf122c88c4b9b9699979f5ebeaa80466de5023bec83106ca1a"
+      },
+      {
+        "argv": [
+          "/home/nvidia/.local/share/forgesight/llama_cpu_v1/venv/bin/python",
+          "-B",
+          "-m",
+          "pip",
+          "--isolated",
+          "--disable-pip-version-check",
+          "--cache-dir",
+          "/home/nvidia/.local/share/forgesight/llama_cpu_v1/cache/pip",
+          "install",
+          "--no-index",
+          "--find-links",
+          "/home/nvidia/.local/share/forgesight/llama_cpu_v1/stage/wheelhouse",
+          "--require-hashes",
+          "--no-build-isolation",
+          "-r",
+          "/home/nvidia/.local/share/forgesight/llama_cpu_v1/stage/offline_runtime.lock.txt"
+        ],
+        "returncode": 0,
+        "log": "/home/nvidia/.local/share/forgesight/llama_cpu_v1/logs/cpu-runtime-894808d7.log",
+        "log_sha256": "26898a1699013efa50bd5d0e4be7a80f1f8ffe7fdbfc9d93997693c580d09f0c"
+      },
+      {
+        "argv": [
+          "/home/nvidia/.local/share/forgesight/llama_cpu_v1/venv/bin/python",
+          "-B",
+          "-m",
+          "pip",
+          "--isolated",
+          "--disable-pip-version-check",
+          "--cache-dir",
+          "/home/nvidia/.local/share/forgesight/llama_cpu_v1/cache/pip",
+          "check"
+        ],
+        "returncode": 0,
+        "log": "/home/nvidia/.local/share/forgesight/llama_cpu_v1/logs/pip-check-86a1f1f4.log",
+        "log_sha256": "9261363b733079a641c2e4cc9bc46ffa1d8336945a87f807b6cf68847dbc9b09"
+      }
+    ],
+    "system_baseline_unchanged": true,
+    "model_executed": false
+  },
+  "native_probe": {
+    "status": "JETSON_RUNTIME_IMPORTS_AND_REGISTRATION_VERIFIED_NOT_GENERATION",
+    "scope": "ACTUAL_ARM64_ENVIRONMENT_SMOKE_NO_MODEL_LOADED",
+    "host": {
+      "machine": "aarch64",
+      "python": "3.12.14",
+      "executable": "/home/nvidia/.local/share/forgesight/llama_cpu_v1/venv/bin/python",
+      "prefix": "/home/nvidia/.local/share/forgesight/llama_cpu_v1/venv",
+      "base_prefix": "/home/nvidia/.local/share/forgesight/llama_cpu_v1/python",
+      "user_site_enabled": false
+    },
+    "packages": {
+      "pytorch-tokenizers": "1.6.0",
+      "torchao": "0.18.0",
+      "typing-extensions": "4.16.0",
+      "pyyaml": "6.0.3",
+      "tqdm": "4.70.1",
+      "anyio": "4.16.0",
+      "urllib3": "2.8.0",
+      "wheel": "0.45.1",
+      "sympy": "1.14.0",
+      "expecttest": "0.3.0",
+      "httpcore2": "2.16.0",
+      "parameterized": "0.9.0",
+      "charset-normalizer": "3.5.2",
+      "sentencepiece": "0.2.3",
+      "hypothesis": "6.170.15",
+      "networkx": "3.7",
+      "sortedcontainers": "2.4.0",
+      "httpx2": "2.16.0",
+      "omegaconf": "2.3.1",
+      "pip": "25.0.1",
+      "filelock": "4.2.10",
+      "click": "8.5.1",
+      "flatbuffers": "25.12.19",
+      "setuptools": "84.2.1",
+      "tzdata": "2026.6",
+      "antlr4-python3-runtime": "4.9.3",
+      "certifi": "2026.10.23",
+      "ruamel-yaml": "0.19.1",
+      "huggingface-hub": "2.4.0",
+      "mpmath": "1.3.0",
+      "tabulate": "0.10.0",
+      "fsspec": "2026.9.0",
+      "kgb": "7.3",
+      "hydra-core": "1.3.8",
+      "executorch": "1.5.1+cpu",
+      "pandas": "3.1.1",
+      "tiktoken": "0.14.0",
+      "numpy": "2.5.4",
+      "python-dateutil": "4.0.0",
+      "requests": "2.34.2",
+      "regex": "2026.11.9",
+      "h11": "0.16.0",
+      "tokenizers": "0.23.3",
+      "markupsafe": "3.0.4",
+      "py-cpuinfo": "9.0.0",
+      "jinja2": "3.1.6",
+      "packaging": "26.3",
+      "torch": "2.14.0+cpu",
+      "idna": "3.20",
+      "hf-xet": "1.8.0",
+      "truststore": "0.10.5"
+    },
+    "tensor_cpu_sum": 10.0,
+    "torch_cuda_build": null,
+    "torch_threads_for_probe_only": 1,
+    "native_runner": {
+      "path": "/home/nvidia/.local/share/forgesight/llama_cpu_v1/venv/lib/python3.12/site-packages/executorch/extension/llm/runner/_llm_runner.cpython-312-aarch64-linux-gnu.so",
+      "sha256": "cef6d7858872c1a7681e9ff1aa1ba622cce4f207e674c17a84aafbebaafdd19e"
+    },
+    "kernel_libraries": [
+      {
+        "relative_path": "lib/libexecutorch_kernels_quantized.so",
+        "sha256": "2ceebd6fe8af427f3d97bb49f6785b01a60e8ec02fe522c7d58cf93d496b0f83",
+        "bytes": 396624
+      },
+      {
+        "relative_path": "extension/llm/custom_ops/libcustom_ops_aot_lib.so",
+        "sha256": "a3884d23947647fa47f138715be82fe1eb0b5e7a5804bd7ca0b8761d1449406a",
+        "bytes": 2040136
+      }
+    ],
+    "operators_before_registration": {
+      "quantized_decomposed::embedding_4bit.dtype_out": false,
+      "llama::update_cache.out": false,
+      "llama::custom_sdpa.out": false
+    },
+    "operators_after_registration": {
+      "quantized_decomposed::embedding_4bit.dtype_out": true,
+      "llama::update_cache.out": true,
+      "llama::custom_sdpa.out": true
+    },
+    "registered_backends": [
+      "OpenvinoBackend",
+      "VgfBackend",
+      "XnnpackBackend"
+    ],
+    "native_classes_imported": [
+      "TextLLMRunner",
+      "GenerationConfig",
+      "Tiktoken"
+    ],
+    "elapsed_seconds": 12.284283073000552,
+    "process_maxrss_kib": 388604,
+    "memory_scope": "This one import/tensor probe only; excludes future Llama/vision/UI memory.",
+    "model_loaded": false,
+    "llama_generation_verified": false,
+    "camera_vision_verified": false,
+    "offline_network_disconnection_verified": false
+  },
+  "verification": {
+    "recorded_utc": "2026-11-11T18:15:01.539392+00:00",
+    "target_system_snapshot_identical": true,
+    "target_system_files_checked": 5,
+    "target_pip_check_passed": true,
+    "all_installation_log_hashes_match": true,
+    "native_runner_and_kernel_hashes_match_publisher_wheel": true,
+    "bundle_manifest_files_verified": 57,
+    "package_archives_verified": 50,
+    "offline_lock_preserves_pinned_hashes_and_versions": true,
+    "pc_reference": "artifacts/edge/jetson_compatibility_v1/after.json",
+    "pc_five_environments_match_prior_snapshot": true,
+    "pc_eight_protected_files_match_prior_snapshot": true,
+    "sources": {
+      "forgesight/edge_runtime_setup.py": {
+        "executed_source_sha256": "458e3fcbb3fdeb4129eb184c1bef2ad76be4f45c8a4f97f2b99d97e557e62bac",
+        "committed_source_sha256": "41711e84679f829d5f700cc2680b479fec0ed9204c226f89d2c8b971cbc70477",
+        "executable_ast_identical": true,
+        "note": "Setup module docstring clarified OS temporary build storage after execution; no executable changes."
+      },
+      "forgesight/edge_runtime_probe.py": {
+        "executed_source_sha256": "4575b43a0f5dfe5f6df544775ca4037eb1bfbcb57d3600b6cb3e97452730c4fe",
+        "committed_source_sha256": "4575b43a0f5dfe5f6df544775ca4037eb1bfbcb57d3600b6cb3e97452730c4fe",
+        "executable_ast_identical": true,
+        "note": "Exact bytes match executed source."
+      }
+    },
+    "model_executed": false,
+    "network_disconnection_tested": false
+  },
+  "preservation": {
+    "target_system_python": "3.8.10",
+    "target_before_sha256": "e23596f111e7694b7e8a6496949e27700558324f6de9e1ddb3d8e7d49a121717",
+    "target_after_sha256": "e23596f111e7694b7e8a6496949e27700558324f6de9e1ddb3d8e7d49a121717",
+    "target_system_snapshot_identical": true,
+    "target_system_file_hashes": {
+      "/etc/os-release": "c4109ab26f2402a6ef167a1f21debdff721ba53ad8934f65fb1bb90d9605b53a",
+      "/etc/nv_tegra_release": "f4fd4231743e2f887f87b7d4b5b6c6fb14def7672bf932451084ab345569e08f",
+      "/etc/nvpmodel.conf": "ce9a31708dc8e5953bab27ee3856a416f6bd740dd44dbfff451038f0341e074d",
+      "/usr/bin/python3": "97c05af16e702682821fddcf2420acc8db5895e30421478746a954f5f3b41a44",
+      "/usr/local/cuda/version.json": "0ccaeb6dcdb0b359893c862746ade7d198d4ca5a2b09a96ae76d9648271147a7"
+    },
+    "pc_five_environments_match_prior_snapshot": true,
+    "pc_eight_protected_files_match_prior_snapshot": true,
+    "deleted_manual_audit_folder_recreated": false,
+    "sudo_used": false,
+    "jetpack_or_cuda_configuration_changed": false
+  },
+  "tests": {
+    "argv": [
+      "/root/.cache/forgesight/app-v1/venv/bin/python",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests",
+      "-q"
+    ],
+    "returncode": 0,
+    "wall_seconds": 9.487705701,
+    "tests_passed": 147,
+    "new_setup_guard_tests": 7,
+    "suite_reported_seconds": 8.412,
+    "log": "artifacts/edge/jetson_runtime_setup_v1/tests.log",
+    "log_sha256": "1d10107797ba0290fa7a12509a883a79eb4b1b244bf8d531035d87fa376690c8"
+  },
+  "preparation_issues": {
+    "target_untouched_when_found": true,
+    "issues": [
+      "An initial link-guard fixture found a Windows-drive link target accepted after relative normalization; now validated before joining.",
+      "The initial offline-lock replacement string ended with a regex escape; replaced with a literal-returning callback and a regression test."
+    ],
+    "all_staged_package_hashes_verified": true
+  },
+  "evidence_archive": {
+    "path": "artifacts/edge/jetson_runtime_setup_v1/evidence.tar.gz",
+    "sha256": "f38e5d8d5ef77cf6f1445ec749f5f94365a082c6b8ca836b6db2144309fa08db",
+    "transport": "Target archive SHA-256 checked after lossless encoded transfer. Contains logs/results, no model or credential values."
+  },
+  "evidence_files": {
+    "target_evidence/.forgesight-runtime.json": "fdb37889ee5c56e27e8105f47fbc5728f3db76b513c2b86c72f9a5ddc7d8b0ee",
+    "target_evidence/bootstrap.json": "0e49613ee75ef28f90c06cd14bdee5790de8f0fff54ecf34b127a2f32bbcf066",
+    "target_evidence/installation.json": "dd9e29da5c77f1351dc24b0a37282a565f89039771ab5161120bd8bd96d7b00f",
+    "target_evidence/logs/build-tools-0e942b3a.log": "42aba2613a9e63cf122c88c4b9b9699979f5ebeaa80466de5023bec83106ca1a",
+    "target_evidence/logs/cpu-runtime-894808d7.log": "26898a1699013efa50bd5d0e4be7a80f1f8ffe7fdbfc9d93997693c580d09f0c",
+    "target_evidence/logs/interpreter-ae793aa6.log": "4f137bcd060026c13efff6bea1a3791e9ce8c93af9ef587f40fa31d53bf03054",
+    "target_evidence/logs/native-probe-c1a03402.log": "a231a24753be4c9718e6845a9fa2f682390dfb407738a7ea86726364f209ba04",
+    "target_evidence/logs/pip-check-86a1f1f4.log": "9261363b733079a641c2e4cc9bc46ffa1d8336945a87f807b6cf68847dbc9b09",
+    "target_evidence/logs/venv-7fd22731.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target_evidence/native_probe.json": "35e10cae2c4b6e85fe31f05341d3437add35647a8e7d194313a812d3a848bb8c",
+    "target_evidence/system_after.json": "e23596f111e7694b7e8a6496949e27700558324f6de9e1ddb3d8e7d49a121717",
+    "target_evidence/system_before.json": "e23596f111e7694b7e8a6496949e27700558324f6de9e1ddb3d8e7d49a121717"
+  },
+  "limitations": [
+    "The installation status is an earlier checkpoint; the subsequent native probe closes its pending imports/registration check.",
+    "Actual CPU tensor execution and operator registration do not prove Llama kernels or XNNPACK execute this model.",
+    "No PTE/tokenizer weights were transferred, no model loaded and no Llama generation performed.",
+    "One import/tensor probe timing/RSS is not model latency, model memory or combined vision/UI capacity.",
+    "Installation used local files and --no-index, but no network-disconnection/cold-start acceptance test occurred.",
+    "CPU-only Torch does not verify the separate Jetson CUDA vision path or camera capture."
+  ],
+  "stage_2_generation_gate": "NOT_VERIFIED",
+  "stage_8_camera_vision_gate": "NOT_VERIFIED",
+  "stage_10_offline_gate": "NOT_VERIFIED",
+  "next_exact_action": "Substep 2.10: explicit ARM device adapter, verified PTE/tokenizer transfer and bounded actual Llama generation through ExecuTorch."
+}

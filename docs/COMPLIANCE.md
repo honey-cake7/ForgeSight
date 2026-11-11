@@ -2,6 +2,13 @@
 
 No challenge requirement is marked satisfied by repository setup alone.
 
+Latest device checkpoint, Substep 2.9: isolated ARM64 Python/CPU Torch/ExecuTorch
+installation, dependency checks, native imports and operator registration passed
+on the actual Jetson. System Python is unchanged. No model was loaded or run;
+this closes the SDK setup prerequisite, **not the Llama-generation requirement**.
+See `manifests/jetson_runtime_installation_v1.json`. The earlier entries below
+describe their own checkpoints rather than the latest installation state.
+
 Stage 2.7 adds real desktop text generation through ExecuTorch's native C++
 runner, using the recorded PTE and tokenizer. The transcript is in
 `manifests/llama3_2_1b_pc_smoke.json`. This is a functional PC smoke test;
@@ -89,7 +96,7 @@ background/UI responsiveness or offline edge claim follows. See
 | Every-inspection history | PC SQLITE REPLAY VERIFIED; edge/failure recovery open | Original graded/error records survive writer exit and fresh-process queries; 4 retries add no rows; see STORAGE.md |
 | One event per physical part | REPLAY + PERSISTENT ID GATE VERIFIED; physical proof open | 9 frames -> 4 declared-part records; known IDs blocked after restart; actual physical identity/camera unverified |
 | Exact eligible edge hardware | AUTHENTICATED INVENTORY VERIFIED | Orin Nano 8GB module identifiers, ARM64, RAM, Ubuntu/L4T, SD storage and Logitech C270 USB/video nodes recorded; capture/inference are separate open gates |
-| Llama-family inference via ExecuTorch on Jetson | BLOCKED - NOT VERIFIED | Actual locally generated text plus model/runtime/artifact provenance and measurements |
+| Llama-family inference via ExecuTorch on Jetson | GENERATION NOT VERIFIED; isolated runtime/native setup verified | Actual locally generated text plus model/runtime/artifact provenance and measurements; imports/registration alone do not satisfy it |
 | Physical camera validation | BLOCKED - NOT VERIFIED | Controlled real samples captured and inspected on Jetson |
 | Offline edge operation | BLOCKED - NOT VERIFIED | Disconnected cold start and real end-to-end device run |
 | Real-time performance | NOT VERIFIED | Device vision/advice latency, distinct parts/minute, RAM and thermal observations |
@@ -122,6 +129,14 @@ or installed on Jetson, and no claim of native imports, Llama execution, memory
 fit or offline compliance follows. See `docs/JETSON_RUNTIME.md`,
 `manifests/jetson_python_archive_v1.json` and
 `manifests/jetson_runtime_compatibility_v1.json`.
+Substep 2.9 supersedes that no-installation checkpoint: 51 distributions are
+installed in the separate ARM64 CPU venv, `pip check` passed, CPU arithmetic
+executed and the native runner/tokenizer bindings loaded. XNNPACK and all three
+required operators are registered. Exact system snapshots match before/after;
+147 PC tests pass. The setup used only staged hashed files and a local package
+index policy, but the network was not disconnected for acceptance testing.
+No model/tokenizer weights were transferred; no Llama response, GPU vision,
+physical-camera inspection, combined resource fit or offline compliance follows.
 No calibrated millimeters, certified industrial grades, PDF performance,
 factory root causes, or actual offline compliance are claimed.
 

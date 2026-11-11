@@ -587,3 +587,30 @@ The Jetson still reports Python 3.8.10, with unchanged package/library snapshots
 Next create a separate user-owned interpreter/environment and test it directly.
 The prior 140-test PC result remains valid history; this follow-up verified the
 new artifact and target-library evidence without a broad software-test rerun.
+
+## Substep 2.9: build and test Llama's separate workspace on Jetson
+
+The Jetson now has a separate place for the CPU Llama runtime. Think of this
+as preparing a workbench before putting the model on it. The original system
+Python is still 3.8.10; only the new workbench uses Python 3.12.14. Keeping it
+separate protects the working Ubuntu/camera setup and leaves future GPU vision
+dependencies independent.
+
+We checked every downloaded package against its saved fingerprint, installed
+from local files, and checked that the packages agree about dependencies.
+The actual Jetson calculated a small tensor result (10.0), loaded ExecuTorch's
+native bindings, and found the required operators after their libraries loaded.
+This means the tools can start; it does not mean Llama has answered a question.
+
+All 147 software tests pass, including checks that refuse existing folders,
+unsafe archives and changed hashes. Two preparation mistakes were caught before
+changing the device and fixed. System snapshots match before/after; the existing
+PC environments and protected project/model files also match their earlier record.
+Logs and outputs are saved, and the working SDK should be kept on the device.
+
+Next is 2.10: connect the ARM device runner to the verified model/tokenizer,
+then ask one short question and save the real response, time and memory use.
+Camera inspection and a disconnected full-system demonstration come later.
+
+Knowledge check: why does successfully loading the runtime still fall short of
+proving that Llama generates text on this Jetson?

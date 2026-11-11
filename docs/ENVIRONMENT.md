@@ -1,5 +1,9 @@
 # Development environment and audit
 
+Latest device state: Substep 2.9 installed a separate ARM64 Python 3.12.14 CPU
+runtime at `/home/nvidia/.local/share/forgesight/llama_cpu_v1`; system Python is
+still 3.8.10. The earlier audit/setup entries below are historical checkpoints.
+
 The Windows and shared WSL observations below are audit records, not a full
 project dependency lock. No packages were installed during Stage 0.1 or Substep
 0.2. Substep 0.3 installed the single pinned dependency in an isolated project
@@ -334,3 +338,32 @@ The archive follow-up changed recipe metadata/documentation only; the last full
 140-test suite result is retained without a repeat. Fresh verification covers
 the archive checksum, native metadata, actual extra target-library definitions
 and preserved target state. See `manifests/jetson_python_archive_v1.json`.
+
+## Substep 2.9: installed isolated Jetson CPU runtime
+
+The standalone interpreter lives in `llama_cpu_v1/python/`; its venv lives in
+`llama_cpu_v1/venv/`. All imports in the native probe came from this venv; user
+site loading is disabled. Torch 2.14.0+cpu, ExecuTorch 1.5.1+cpu, TorchAO 0.18.0
+and pytorch-tokenizers 1.6.0 match the pinned recipe. The venv contains 51
+distributions: 49 runtime dependencies, wheel 0.45.1 and bundled pip 25.0.1.
+Setuptools 84.2.1 is already counted in the runtime lock.
+
+All 50 staged package archives matched their hashes. Installation used a local
+wheelhouse with `--no-index --require-hashes`, plus pinned build tools and
+`--no-build-isolation` for the antlr4 source dependency. No packages were added
+to system Python or any of the five existing PC environments. The target system
+package inventory and five checked system/configuration hashes are identical
+before/after; PC inventories/protected files match the earlier 2.8 snapshot.
+
+`pip check`, CPU arithmetic, native runner/tokenizer imports and required
+operator/backend registration passed on Jetson. The small CPU arithmetic probe
+does not test model-specific kernels or inference. No weights were transferred.
+No system aliases, default interpreter, CUDA stack, power mode or OS were changed.
+Persistent setup inputs/logs/caches stay in the private prefix; pip may use OS
+temporary build storage. Do not remove this working SDK as an audit copy.
+
+All 147 software tests passed in the unchanged app environment, including seven
+new installer guard tests. Full arguments/results/source hashes are recorded in
+`manifests/jetson_runtime_installation_v1.json`; version/probe commands are in
+`docs/JETSON_RUNTIME.md`. Llama generation and actual disconnected operation
+are still unverified.

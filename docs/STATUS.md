@@ -2,6 +2,32 @@
 
 ## Current stage
 
+**Substep 2.9 VERIFIED: the isolated CPU runtime is installed on the actual
+Jetson, and its native imports/registration probe passed.** System Python is
+still 3.8.10. The separate interpreter/venv uses ARM64 Python 3.12.14, Torch
+2.14.0+cpu and ExecuTorch 1.5.1+cpu at
+`/home/nvidia/.local/share/forgesight/llama_cpu_v1`. Keep this installed SDK;
+it is separate from the deleted manual-audit folder, which was not recreated.
+
+All 50 staged package archives matched their pinned hashes. Local-only package
+installation and `pip check` passed; 51 distributions are present (49 runtime
+dependencies plus wheel and bundled pip). CPU arithmetic returned 10.0. The
+native runner/tokenizer bindings loaded, XNNPACK is registered, and explicit
+library loading registered all three required operators. This is native runtime
+setup proof, **not Llama generation**. No model/tokenizer weights were transferred.
+
+Before/after system-Python package inventories and five system/configuration
+file hashes match exactly. The five existing PC environments and eight protected
+files match the prior verified snapshot. All **147 software tests pass**, including
+seven new installation safeguards. Actual logs/results are saved locally under
+`artifacts/edge/jetson_runtime_setup_v1/`; the committed record is
+`manifests/jetson_runtime_installation_v1.json`. Two preparation bugs were caught
+and fixed before device changes; their evidence is retained. Next: **2.10**, an
+explicit ARM adapter and a bounded real Llama generation test. Stage 2 remains
+incomplete; camera/vision and disconnected operation remain unverified.
+
+### Earlier checkpoints
+
 Substep 2.8 completed the read-only core ARM compatibility investigation and
 prepared a candidate isolated-runtime recipe. All 33 selected ARM ELF binaries
 match the library/version definitions read from ten actual Jetson system
@@ -77,18 +103,18 @@ The current
 native wrapper is desktop x86_64 guarded and requires a verified ARM adapter
 before Jetson deployment. Desktop CPU threads/timing/memory are not target claims.
 
-PC advisory work stopped for review after Substep 9.2. The next action now
-prioritizes Substep 2.9: retrieve/verify the pinned interpreter and then create
-only its isolated CPU runtime. Resolve the earliest open Stage 2 Llama/ExecuTorch
-gate before claiming edge readiness. PC Substep 9.3 (bounded background worker)
+PC advisory work stopped for review after Substep 9.2. Substep 2.9 has now
+prepared and tested the isolated runtime. Resolve the earliest open Stage 2
+Llama/ExecuTorch generation gate in 2.10 before claiming edge readiness.
+PC Substep 9.3 (bounded background worker)
 and separate stored/UI advice states remain pending.
 Reliable defect names, approved industrial limits, the two missed scratches and
 mandatory Jetson Llama/ExecuTorch/offline proof remain open.
 
 Stage 2.7 desktop Llama generation through ExecuTorch is verified. Stage 1 and
 the transition to Stage 3 were accepted by the user. Actual Stage 2 inference
-on Jetson is BLOCKED - NOT VERIFIED: actual model generation and runtime proof
-are still missing. Authenticated device inventory is now verified. Desktop text
+on Jetson is NOT VERIFIED: actual model generation is still missing, although
+native runtime setup and authenticated device inventory are now verified. Desktop text
 generation is verified; model execution on Jetson, quality and offline proof are not.
 
 The organizer reply shared by the user confirms Jetson Orin platform-family
@@ -319,12 +345,12 @@ proof and do not establish a defect-inspection application.
 
 ## Next exact task
 
-STOPPED FOR REVIEW after the Substep 2.8 interpreter follow-up. Download/hash
-and checked ELF/library prerequisites are verified. Next is 2.9: prepare a
-fresh isolated user prefix/venv with the verified archive and committed hash locks, preserve system
-Python/JetPack/CUDA, and test dependencies/native imports/registration on the
-actual Jetson. See `docs/JETSON_RUNTIME.md`; no installation is yet verified.
-An explicit ARM adapter and actual Llama generation follow as separate proof
-work, then Stage 8 camera/vision. PC Substep 9.3's queue remains pending.
-The original 9.2 failure-layer mismatch stays documented. All mandatory ARM
-ExecuTorch, real-camera and disconnected-operation gates remain NOT VERIFIED.
+STOPPED FOR REVIEW after Substep 2.9. Isolated installation, dependencies,
+CPU arithmetic, native imports and operator registration passed on Jetson.
+Next is **2.10**: implement an explicit ARM adapter, transfer only the verified
+PTE/tokenizer, and record one bounded actual Llama response through ExecuTorch,
+with hashes, thread count, timing, memory and network state. Preserve the desktop
+x86_64 guard and system Python/JetPack/CUDA. See `docs/JETSON_RUNTIME.md`.
+Then proceed to Stage 8 camera/vision. PC Substep 9.3's queue remains pending.
+The original 9.2 failure-layer mismatch stays documented. Mandatory ARM Llama
+generation, real-camera and disconnected-operation gates remain NOT VERIFIED.

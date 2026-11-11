@@ -589,3 +589,33 @@ this follow-up. Code/lock files are unchanged, so validate the actual archive an
 library data without rerunning the broad 140-test PC suite. Update the active
 recipe, leave earlier failure manifests as historical snapshots, and stop for
 review before the isolated-environment setup in Substep 2.9.
+
+## 034: Install and prove the isolated ARM SDK before transferring Llama
+
+Use the publisher-hashed standalone interpreter and matching CPU wheels in one
+fresh, marked user prefix. Refuse existing directories, wrong devices, root
+execution and unsafe archive paths/links. Validate all archive members before
+writing and recheck during extraction. Keep system Python 3.8.10, JetPack/CUDA
+and the deleted audit folder untouched. Two preparation defects (drive-letter
+link validation and regex replacement escaping) were fixed and tested before
+target initialization; preserve those attempts.
+
+Stage all 50 hashed package archives. Derive an offline lock by changing only
+the two direct CPU wheel URL selectors to their exact +cpu versions, retaining
+all hashes. Install pinned build tools first, then runtime dependencies without
+unpinned build isolation or remote index lookup. This avoids target download
+dependence during installation without claiming disconnected application proof.
+
+The actual SDK passed dependency checks, CPU arithmetic, native bindings and
+explicit registration of the required operators/XNNPACK. System before/after
+snapshots match; five PC environments/eight protected files match the earlier
+snapshot; 147 tests pass. Keep the working SDK at
+`/home/nvidia/.local/share/forgesight/llama_cpu_v1`. Its 51 packages include the
+49 runtime dependencies, wheel and bundled pip. Package overhead remains a
+trade-off; native C++ stays a fallback if full-model resource tests fail.
+
+Do not transfer weights or weaken the desktop x86 guard during setup. An import
+probe is not generation. Substep 2.10 needs an explicit ARM adapter and real
+bounded Llama output with hashes/timing/RAM/thread/network evidence. The setup
+probe's 12.284 seconds/388,604 KiB describes imports/tensor work only. No model
+latency, combined memory fit or offline compliance is established.

@@ -1,5 +1,9 @@
 # Hardware evidence
 
+Latest runtime checkpoint: Substep 2.9 verified a separate ARM64 CPU environment
+on this Jetson. System Python/checked configuration remain unchanged. This adds
+native imports and CPU arithmetic proof; model execution/camera inspection remain open.
+
 Observed during Stage 0.1 on 2026-11-05 (Asia/Calcutta). Memory availability and
 free disk space are snapshots, not reserved resources.
 
@@ -229,3 +233,18 @@ seconds and sampled child RSS 1,219,960/1,219,204 KiB. Truncation, timeout and
 missing-runtime checks kept advice unavailable. Whole-process load costs and
 CPU contention still need target measurements. No Jetson or camera was used;
 native ARM ExecuTorch execution and disconnected operation remain unverified.
+
+## Substep 2.9 actual device runtime boundary
+
+The actual Orin Nano now runs the separate Python 3.12.14 CPU venv at
+`/home/nvidia/.local/share/forgesight/llama_cpu_v1/venv`. Torch 2.14.0+cpu and
+ExecuTorch 1.5.1+cpu imported, CPU arithmetic returned 10.0, XNNPACK is registered,
+and loading the pinned libraries registered all three required Llama operators.
+System Python remains 3.8.10; system packages and five checked system/configuration
+files match before/after. No sudo, CUDA, camera, power-mode or OS changes were used.
+
+The one import/tensor probe took 12.284 seconds with peak process RSS 388,604 KiB.
+These exclude a loaded model and future vision/UI work; they are not inference
+benchmarks or proof of combined memory fit. The one-thread probe setting is not
+a model thread-budget decision. No PTE/tokenizer weights were copied and no
+Llama-generated response was produced. See `manifests/jetson_runtime_installation_v1.json`.
