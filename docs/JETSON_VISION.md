@@ -51,3 +51,26 @@ camera, grading, logging, UI and Llama are outside the timing; there is no
 measured throughput or physical-part accuracy yet. The device was connected
 to a network. Torch 2.14 emits a TorchScript deprecation warning; a new model
 format would need a separate output-parity check.
+
+## Live camera diagnostic while no nut is available
+
+`vision_edge_camera_diagnostic.py` runs under the existing system Python 3.8
+because that environment already has OpenCV and Pillow. It reads up to 40 C270
+frames, discards grossly dark startup frames (mean grayscale below 20), saves
+the selected PNG, invokes the separate vision venv for inference, and saves
+`anomaly_map.npy` plus `response_overlay.png`. It writes `diagnostic.json` with
+`is_inspection=false`, no part ID and no grade. Use a fresh output directory:
+
+```sh
+cd "$HOME/.local/share/forgesight/vision_cpu_v1"
+/usr/bin/python3 -B vision_edge_camera_diagnostic.py --vision-python "$PWD/venv/bin/python" --model "$PWD/efficientad_s_calibrated.ts" --model-sha256 8766c41a51a5444f57f564134427bbd2d2d95dd6ec5ff08b24698f00f7f55dcd --threshold 0.22776579856872559 --output-dir "$PWD/runs/camera_diagnostic_02"
+```
+
+The actual run selected frame 13 after rejecting 12 black frames. It saved a
+640x480 room view, a 256x256 raw map, an overlay and JSON under that private
+Jetson directory. An ignored PC copy is at
+`artifacts/edge/camera_diagnostic_02/`. One model forward took 1,637 ms;
+camera-to-report took 10,047 ms. The model score is out of domain and has no
+defect meaning. No physical nut inspection, quality grade, SQLite record,
+throughput or offline operation is proved. The frame may contain people or
+room details; keep image artifacts private and outside Git.

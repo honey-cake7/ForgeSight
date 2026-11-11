@@ -2,6 +2,13 @@
 
 No challenge requirement is marked satisfied by repository setup alone.
 
+The Stage 8 camera-to-model diagnostic reached the frozen EfficientAD export
+and saved its map/overlay from a live C270 frame. The view contained no
+declared nut, so it was explicitly marked `is_inspection=false`; no grade,
+alert or SQLite inspection row was claimed. A physical-part inspection and
+its measured end-to-end result remain the Stage 8 proof gate. See
+`manifests/jetson_camera_model_diagnostic_v1.json`.
+
 Stage 8.2 verified one hash-checked frozen EfficientAD-S image inference on
 the Jetson CPU, using a benchmark training image. It produced a finite score
 and anomaly map; the one-run forward and process RSS are recorded in

@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "stage": "8_camera_path_diagnostic",
+  "status": "LIVE_CAMERA_TO_MODEL_DIAGNOSTIC_VERIFIED_NO_PART",
+  "physical_part_inspection": "NOT_VERIFIED_NO_NUT_AVAILABLE",
+  "scope": "One live C270 room scene, captured on the physical Jetson and passed through the frozen EfficientAD CPU export; no part ID, ForgeGrade decision, SQLite inspection or Llama advice",
+  "device": "NVIDIA Jetson Orin Nano 8GB, aarch64, Ubuntu 20.04.6, L4T 35.6.1",
+  "runtime": "Separate vision_cpu_v1 Python 3.12/Torch 2.14.0+cpu for model; existing system Python 3.8/OpenCV 4.5.4/Pillow for camera and preprocessing",
+  "model_sha256": "8766c41a51a5444f57f564134427bbd2d2d95dd6ec5ff08b24698f00f7f55dcd",
+  "executed_script_sha256_pc_and_jetson": {
+    "vision_edge_camera_diagnostic.py": "c4a3ff57243e11e936be38506aab92373bfc0bf14821f2eff26e91e23ea2652c",
+    "vision_edge_once.py": "28152307a037462613725ef529d73d128115320bf16d3d33fb5c41c9cc3d399a"
+  },
+  "camera": {
+    "node": "/dev/video0",
+    "api": "OpenCV V4L2",
+    "negotiated_fourcc": "MJPG",
+    "frame_shape_hwc": [480, 640, 3],
+    "startup_black_frames_discarded": 12,
+    "selected_frame_number": 13,
+    "gross_darkness_gate_mean_luma": 20.0,
+    "selected_mean_luma": 90.121875,
+    "camera_open_ms": 846.1876879991905,
+    "capture_until_usable_ms": 1152.7397540012316,
+    "scene_review": "Live room view, not a fixed inspection rig or a physical nut; visual review was local only"
+  },
+  "model_result": {
+    "score": 96.21212768554688,
+    "benchmark_threshold": 0.22776579856872559,
+    "candidate": "ANOMALY_CANDIDATE_OUT_OF_DOMAIN_DIAGNOSTIC_ONLY",
+    "map_shape": [1, 1, 256, 256],
+    "first_forward_ms": 1636.96819800316,
+    "vision_process_peak_rss_kib": 433120,
+    "camera_to_report_ms": 10047.318700999313,
+    "timing_scope": "camera open/read, PNG save, preprocessing process, model process startup/load/forward, map and overlay; excludes diagnostic launcher startup and final report write",
+    "score_interpretation": "Room scene is outside the metal_nut dataset; this is not a defect finding, quality grade, accuracy result or throughput estimate"
+  },
+  "private_artifacts": {
+    "jetson_directory": "/home/nvidia/.local/share/forgesight/vision_cpu_v1/runs/camera_diagnostic_02",
+    "ignored_pc_directory": "artifacts/edge/camera_diagnostic_02",
+    "frame_png_sha256_pc_and_jetson": "2cc87460a57a221e78cd9dd6c9b2172516d7b550e5f47e6d042a1c3458b497a2",
+    "prepared_tensor_sha256": "e34393902ab9b626cd965d491238ef037f078a1898f2e25638f1cf27e6ec89da",
+    "anomaly_map_npy_sha256_pc_and_jetson": "fc23617e5941ca204fd9f0f3b8df2d2d4f21aeb6eef18a7a73fa6bdb29b19ff3",
+    "response_overlay_png_sha256_pc_and_jetson": "e1de5915ecadded20653885f6ff9c8efdbdc7f8b4eff0d7bfacb63246cb7cad7",
+    "diagnostic_json_sha256_pc_and_jetson": "8a7ddeebf344a7bf9f55a55946bbfe45340a7ec6a9605555ed575772cba26e91",
+    "raw_images_and_maps_committed": false
+  },
+  "initial_issue": "The first captured frame was nearly black. A separate 12-frame probe showed the image stayed dark before exposure settled; the retry used a bounded gross-darkness guard and selected frame 13.",
+  "next_step": "When a nut and fixed lit inspection surface are available, capture a distinct declared part and verify real inspection record, deterministic review/alert and end-to-end timing before closing Stage 8"
+}

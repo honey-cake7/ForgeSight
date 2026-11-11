@@ -661,3 +661,14 @@ peak RSS counter; that does not include a simultaneous Llama process. The
 next check uses an actual captured nut and measures the complete path through
 inference and logging. Knowledge check: why can this familiar training image
 prove the model runs while telling us little about real camera accuracy?
+
+## Stage 8 camera diagnostic: capture needs exposure time
+
+The first live frame was almost black. Watching several frames showed that
+the C270 needed about 12 frames to adjust exposure. We added a bounded guard
+that rejects grossly dark startup frames, then saved a visible live frame,
+its model response map and an overlay. This proves the camera and model can
+run in sequence on the Jetson. The camera currently sees a room, and no nut
+is available, so its high anomaly score is not a defect finding. The complete
+diagnostic took about ten seconds in this one run, including two child-process
+startups. Next we need a fixed lit surface and a real distinct part.

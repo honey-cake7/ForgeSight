@@ -1,5 +1,13 @@
 # Hardware evidence
 
+The Stage 8 live diagnostic found 12 nearly black startup frames before the
+C270 exposure settled; a bounded mean-luminance guard selected frame 13.
+The selected MJPG frame was 640x480 and showed the room rather than a fixed
+inspection surface. The frozen model ran on it and saved a raw map and overlay
+privately. One camera-to-report path took 10,047 ms; no part throughput or
+camera-domain accuracy can be inferred. See
+`manifests/jetson_camera_model_diagnostic_v1.json`.
+
 Stage 8.2 installed a separate Python 3.12.14 vision venv from the already
 staged ARM CPU Torch wheelhouse. Torch 2.14.0+cpu and NumPy 2.5.4 passed
 `pip check`; the Llama venv still reports Torch 2.14.0+cpu and ExecuTorch

@@ -25,9 +25,12 @@ def main():
     parser.add_argument("--tensor-sha256", required=True)
     parser.add_argument("--threshold", type=float, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--map-output", type=Path)
     args = parser.parse_args()
     if args.output.exists():
         parser.error("Choose a new output file.")
+    if args.map_output is not None and args.map_output.exists():
+        parser.error("Choose a new anomaly-map file.")
     if sha256(args.model) != args.model_sha256 or sha256(args.tensor) != args.tensor_sha256:
         parser.error("Model or tensor SHA-256 mismatch.")
     if not math.isfinite(args.threshold):
@@ -61,6 +64,12 @@ def main():
               "map_min": float(anomaly_map.min()), "map_max": float(anomaly_map.max()),
               "map_shape": list(anomaly_map.shape),
               "timing_scope": "model load and first forward only; excludes image decode, preprocessing, process startup, UI, logging and Llama"}
+    if args.map_output is not None:
+        args.map_output.parent.mkdir(parents=True, exist_ok=True)
+        with args.map_output.open("xb") as stream:
+            np.save(stream, anomaly_map.squeeze().numpy().astype(np.float32), allow_pickle=False)
+        report["map_file"] = str(args.map_output)
+        report["map_sha256"] = sha256(args.map_output)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("x") as stream:
         json.dump(report, stream, indent=2)

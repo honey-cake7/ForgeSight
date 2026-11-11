@@ -2,6 +2,19 @@
 
 ## Current stage
 
+**Stage 8 live camera-to-model diagnostic VERIFIED; physical-part inspection
+PENDING.** The C270 delivered a usable 640x480 frame after 12 black startup
+frames were discarded. The Jetson ran the frozen EfficientAD export, saved a
+raw anomaly map and response overlay, and recorded 1,637 ms model forward and
+10,047 ms camera-to-report time for this one diagnostic. The camera viewed a
+room, not a nut or inspection rig. The score has no defect meaning; no part ID,
+grade, inspection row or Llama advice was produced. The user has no nut yet.
+See `manifests/jetson_camera_model_diagnostic_v1.json`. **Next: position a
+distinct nut in a fixed lit view and verify capture, inference, deterministic
+review/alert, persistence and end-to-end timing.**
+
+### Earlier checkpoints
+
 **Stage 8.2 single-image EfficientAD inference VERIFIED on the physical
 Jetson.** A separate Python 3.12 CPU vision venv loaded a hash-checked
 TorchScript export of the frozen calibrated EfficientAD-S checkpoint. The
@@ -395,7 +408,9 @@ and GPU availability still do not establish a Jetson camera-inspection system.
 
 ## Next exact task
 
-Stage 8.2's saved-image Jetson CPU inference is verified. Next, capture one
-distinct physical nut on the C270, run the frozen vision model, persist the
-inspection and measure the complete camera-to-result path on the Jetson.
+The live camera-to-model diagnostic is verified, but no physical nut was
+available. Next, place a distinct nut on a fixed lit inspection surface,
+aim the C270 at it, then run and persist one real inspection with a measured
+camera-to-result path. The benchmark score policy must not be treated as a
+validated physical-part quality threshold.
 Llama advice remains Stage 9; disconnected end-to-end proof remains Stage 10.

@@ -664,3 +664,13 @@ functional baseline, not a speed choice: one first forward was 1.699 s. Torch
 2.14 warns that TorchScript loading is deprecated, so any format migration
 needs new output-parity proof. Live capture and concurrent runtime costs are
 the next Stage 8 checks.
+
+## 038: Reject black startup frames and keep no-part runs diagnostic
+
+The first saved C270 frame was nearly black. A short device probe found 12
+dark frames before exposure settled. For the current diagnostic, read at most
+40 frames and accept the first with mean grayscale value at least 20; fail
+closed if none qualifies. This is only a gross startup-darkness check, not a
+validated lighting standard for metal nuts. Save the source, raw anomaly map
+and overlay in private ignored artifacts. With no physical nut or declared
+part ID, never create a ForgeGrade decision or SQLite inspection row.
