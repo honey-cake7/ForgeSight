@@ -683,3 +683,14 @@ the defect type. The provisional rule therefore said `REVIEW`, which is a
 request for human inspection, not a certified rejection. The source-grid map
 and overlay are saved privately. The next proof still requires a real nut
 in a fixed camera view; this replay cannot establish camera-domain accuracy.
+
+## Stage 9.1: on-device advice stays separate from the grade
+
+The Jetson's Llama model read only compact facts from the stored replay and
+the local prototype image-check checklist. The first prompt omitted a needed
+citation, so the host refused it. With an explicit system role, ExecuTorch
+generated the cited note; the host accepted only the reviewed wording. A
+missing-runtime trial saved an unavailable status instead. In both cases the
+original `REVIEW` decision and SQLite row stayed unchanged. This is a first
+device generation from inspection evidence, not proof of useful factory
+diagnosis, asynchronous delivery or offline operation.

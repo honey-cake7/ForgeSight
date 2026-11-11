@@ -2,6 +2,22 @@
 
 ## Current stage
 
+**Stage 9.1 saved-replay advisory VERIFIED on the physical Jetson; Stage 9
+asynchronous delivery PENDING.** At the user's request, the already persisted
+`test/bent/017.png` replay was used while no physical nut is available. The
+reviewed `[E1]` inspection facts and `[G1]` prototype checklist went through
+Llama 3.2 1B on-device via ExecuTorch/XNNPACK. The model generated a cited
+note that passed the strict host output contract; the original SQLite record
+and authoritative `REVIEW` grade stayed unchanged. One run used 82 prompt and
+33 generated tokens, with 1.955 s native inference, 22.157 s native child wall
+time and 1,156,388 KiB sampled peak child RSS. A missing-runtime probe saved
+`ADVICE_UNAVAILABLE` with no note and preserved the original record. See
+`manifests/jetson_forgeassist_replay_v1.json`. **Next: bounded single-worker
+advice queue and timeout isolation; UI delivery and offline proof remain open.**
+Stage 8's live physical-nut gate also remains open.
+
+### Earlier checkpoints
+
 **Stage 8 Jetson saved-image replay and SQLite persistence VERIFIED; live
 physical-nut inspection PENDING.** A previously exposed MVTec development
 image (`test/bent/017.png`) passed dataset-role and SHA-256 checks on the
@@ -423,9 +439,8 @@ and GPU availability still do not establish a Jetson camera-inspection system.
 
 ## Next exact task
 
-The Jetson saved-image nut replay is verified, but no physical nut is
-available. Next, place a distinct nut on a fixed lit inspection surface,
-aim the C270 at it, then run and persist one real inspection with a measured
-camera-to-result path and a conservative review alert. The benchmark score
-policy is not a validated physical-part quality threshold.
-Llama advice remains Stage 9; disconnected end-to-end proof remains Stage 10.
+Stage 9.1's on-device advisory for a saved replay is verified. Next, add a
+bounded single-worker queue so inspection results stay available while
+ExecuTorch advice runs; verify immediate busy response and timeout handling.
+Stage 8's physical-nut camera proof remains open until a nut is available.
+Disconnected end-to-end proof remains Stage 10.

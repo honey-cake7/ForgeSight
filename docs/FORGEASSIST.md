@@ -241,3 +241,34 @@ inspection results remain available while advice is pending. Persisted advisory
 state and UI delivery follow as separate substeps. Approved factory procedures
 are needed before expanding beyond prototype image checks. Stage 8 and all
 on-device/offline gates remain BLOCKED - NOT VERIFIED. Stop for review here.
+
+## Stage 9.1 Jetson replay advisory update
+
+At the user's request, work continued using the already persisted Jetson
+`SAVED_IMAGE_REPLAY` record while no physical nut is available. The new
+`forgesight.assist_jetson_replay_once` controller checks that the JSON matches
+SQLite, validates the deterministic decision and reviewed prototype guidance,
+then prepares compact `[E1]` and `[G1]` text. It runs the private Jetson Llama
+3.2 1B PTE through the existing ExecuTorch/XNNPACK ARM adapter and saves a
+separate advice payload. It never updates the inspection record or grade.
+
+The ARM adapter now accepts an optional system-role prompt. Its earlier
+user-role-only probe generated an incomplete note without `[G1]`, which the
+host contract withheld. The system-role run generated the reviewed cited
+note, and `parse_advisory` accepted it. A separate missing-runtime test saved
+`ADVICE_UNAVAILABLE` and no advisory; a fresh SQLite read still matched the
+original `REVIEW` record. The actual command on Jetson, from the private
+vision directory, was:
+
+```sh
+/usr/bin/python3 -B -m forgesight.assist_jetson_replay_once --record runs/dev_bent_017_replay_02/record.json --database inspections_replay_v2.sqlite3 --guidance guidance/prototype_inspection_v1.json --llama-root "$HOME/.local/share/forgesight/llama_cpu_v1" --output-dir "$PWD/runs/forgeassist_replay_advice_01"
+```
+
+Choose a fresh output path to repeat it. Evidence and exact hashes are in
+`manifests/jetson_forgeassist_replay_v1.json`; raw logs and text remain in
+private Jetson storage with an ignored PC copy. One run used 82 prompt and
+33 generated tokens, 1.955 s native inference and 22.157 s native child wall
+time. The checklist is developer-authored and **not factory-approved**. The
+note is a narrow reviewed form, not independent diagnosis or a confirmed cause.
+The controller is synchronous; a bounded queue, timeout proof, UI delivery,
+physical-camera advice and network-disconnected run remain open.

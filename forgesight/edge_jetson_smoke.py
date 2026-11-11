@@ -33,11 +33,17 @@ def fingerprint(path, expected):
     return {'bytes': path.stat().st_size, 'sha256': actual}
 
 
-def chat_prompt(text):
+def chat_prompt(text, system_text=None):
     text = text.strip()
     if not text or len(text.encode('utf-8')) > 4096 or '<|' in text or '|>' in text:
         raise ValueError('Prompt must be bounded plain text without chat markers.')
-    return ('<|begin_of_text|><|start_header_id|>user<|end_header_id|>\n\n'
+    system = ''
+    if system_text is not None:
+        system_text = system_text.strip()
+        if not system_text or len(system_text.encode('utf-8')) > 2048 or '<|' in system_text or '|>' in system_text:
+            raise ValueError('System prompt must be bounded plain text without chat markers.')
+        system = '<|start_header_id|>system<|end_header_id|>\n\n' + system_text + '<|eot_id|>'
+    return ('<|begin_of_text|>' + system + '<|start_header_id|>user<|end_header_id|>\n\n'
             + text + '<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n')
 
 
@@ -126,10 +132,12 @@ def worker(request):
     tokenizer = CppTiktoken()
     tokenizer.load(str(files['tokenizer']))
     prompt_text = files['prompt'].read_text(encoding='utf-8')
-    formatted = chat_prompt(prompt_text)
+    system_text = Path(request['system_prompt']).read_text(encoding='utf-8') if request.get('system_prompt') else None
+    formatted = chat_prompt(prompt_text, system_text)
     ids = tokenizer.encode(formatted, 0, 0)
-    if (ids[0] != 128000 or ids.count(128000) != 1 or ids.count(128006) != 2
-            or ids.count(128007) != 2 or ids.count(128009) != 1):
+    headers = 3 if system_text is not None else 2
+    if (ids[0] != 128000 or ids.count(128000) != 1 or ids.count(128006) != headers
+            or ids.count(128007) != headers or ids.count(128009) != headers-1):
         raise ValueError('Unexpected Llama chat tokenization.')
     validate_budget(len(ids), request['max_new_tokens'], profile)
     config = {'echo': False, 'temperature': 0.0, 'warming': False,
@@ -145,6 +153,7 @@ def worker(request):
               'packages': {name: importlib.metadata.version(name) for name in
                            ('torch', 'executorch', 'pytorch-tokenizers')},
               'prompt_text': prompt_text.strip(), 'prompt_token_count': len(ids),
+              'system_prompt_sha256': sha256(request['system_prompt']) if system_text is not None else None,
               'generation_config': config, 'torch_threads': torch.get_num_threads(),
               'offline_status': 'NOT_VERIFIED_CONNECTED_WIFI', 'stats': []}
     (output/'inputs.json').write_text(json.dumps(report, indent=2)+'\n')
@@ -239,6 +248,7 @@ def main():
     parser.add_argument('--export', type=Path)
     parser.add_argument('--assets', type=Path)
     parser.add_argument('--prompt', type=Path)
+    parser.add_argument('--system-prompt', type=Path)
     parser.add_argument('--output', type=Path)
     parser.add_argument('--threads', type=int, default=2)
     parser.add_argument('--max-new-tokens', type=int, default=64)
@@ -257,6 +267,8 @@ def main():
     # Reject a wrong device/environment before creating any output directory.
     verify_target(args.root)
     request = {name: str(getattr(args, name).resolve()) for name in required}
+    if args.system_prompt is not None:
+        request['system_prompt'] = str(args.system_prompt.resolve())
     request.update({'threads': args.threads, 'max_new_tokens': args.max_new_tokens})
     report = capture(request, args.timeout)
     print(json.dumps({'status': report['status'], 'completion_reason': report['completion_reason'],

@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "stage": "9.1_saved_replay_advice",
+  "status": "JETSON_EXECUTORCH_ADVICE_VERIFIED_FOR_ONE_SAVED_REPLAY",
+  "scope": "One previously persisted Jetson MVTec metal_nut development-preview replay, not a live physical-nut event or asynchronous UI integration",
+  "source_inspection": {
+    "inspection_id": "be71d850-208a-4f74-acdf-d235207d54ec",
+    "record_file_sha256": "4ed43804c789e10731f2257f12664a9f340856b5b6894d1c6c454f399af312e5",
+    "canonical_record_sha256": "6e25559fa5890b857c43ee48a8a30f2fe97087d63ecec8765639d1e422af79bf",
+    "decision_sha256": "cd01ca29e930ec8ce40561faf092595e1ebd19137493c31b70a19ea58accb807",
+    "authoritative_grade_before_and_after": "REVIEW",
+    "original_record_and_sqlite_unchanged": true,
+    "source_mode": "SAVED_IMAGE_REPLAY",
+    "physical_part_inspected": false
+  },
+  "guidance": {
+    "document_id": "forgesight-prototype-image-review-v1",
+    "approval_status": "PROTOTYPE_NOT_FACTORY_APPROVED",
+    "file_sha256": "0ef2cbf10b43cd54049280a37e2aad46415528082148ac75008fd23d4e1a23b9",
+    "canonical_sha256": "60238ff09a2453786e81e1a9fd1e905d53ca3b5c5ad7c368c8a2972fe31c7825",
+    "evidence_ids": ["E1", "G1"],
+    "model_received": "Compact anomaly/REVIEW/unknown-type-and-cause facts plus prototype image-clarity/lighting checklist; no image or arbitrary part metadata"
+  },
+  "device_runtime": {
+    "device": "NVIDIA Jetson Orin Nano 8GB, aarch64",
+    "llama_model": "meta-llama/Llama-3.2-1B-Instruct",
+    "pte_sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739",
+    "tokenizer_sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55",
+    "executorch": "1.5.1+cpu",
+    "backend": "XNNPACK CPU",
+    "system_role_prompting": true,
+    "prompt_tokens": 82,
+    "generated_tokens": 33,
+    "threads": 2,
+    "native_model_load_seconds": 3.041,
+    "native_inference_seconds": 1.955,
+    "whole_native_child_seconds": 22.156669485997554,
+    "sampled_peak_child_rss_kib": 1156388,
+    "network_state_during_this_run": "NOT_INDEPENDENTLY_CHECKED",
+    "disconnected_offline_run": "NOT_VERIFIED"
+  },
+  "generated_advisory": {
+    "status": "GENERATED_REQUIRES_HUMAN_REVIEW",
+    "text": "[E1] Anomaly flagged; grade REVIEW; defect type and cause unknown.\n\n[G1] Prototype checklist: Hold for human review; check image clarity and lighting.",
+    "output_policy": "forgeassist-reviewed-note-forms-v2",
+    "host_validation": "Accepted only after actual ExecuTorch generation; citations, unknown type/cause, checklist and reviewed complete statement form checked",
+    "possible_explanation": null,
+    "quality_grade_authority": "DETERMINISTIC_RULES_ONLY",
+    "general_advice_quality": "NOT_ESTABLISHED_TEMPLATE_LIKE_PROTOTYPE_NOTE"
+  },
+  "failure_checks": {
+    "first_user_role_only_probe": "ExecuTorch generated an incomplete note without G1; host parser withheld it",
+    "missing_runtime": "ADVICE_UNAVAILABLE with null advisory and the original SQLite inspection unchanged",
+    "actual_timeout": "NOT_TESTED_ON_JETSON",
+    "bounded_async_queue": "NOT_IMPLEMENTED",
+    "operator_ui_delivery": "NOT_IMPLEMENTED"
+  },
+  "private_artifacts": {
+    "jetson_success": "/home/nvidia/.local/share/forgesight/vision_cpu_v1/runs/forgeassist_replay_advice_01",
+    "jetson_missing_runtime": "/home/nvidia/.local/share/forgesight/vision_cpu_v1/runs/forgeassist_missing_runtime_01",
+    "ignored_pc_copy": "artifacts/assist_stage9_jetson_v1",
+    "advice_report_sha256_pc_and_jetson": "087e4b568330aae1adddd34879d2773551273dccac57551ea98efbededfdc3a7",
+    "advisory_sha256_pc_and_jetson": "5ab9342b625d41576ee0d9b7fc49cb715beb7f5edfd42d05e195ff9c310ed723",
+    "native_run_sha256_pc_and_jetson": "c42f43d6c93461fbe1302a75e46539a2fb1bcec93c1c5fe766985d8283423a13",
+    "generated_text_sha256_pc_and_jetson": "f0944e7cd2cfe906f91ef93d2b84dba1be73689abf49ee065d83c985eaf3def2",
+    "missing_runtime_report_sha256_pc_and_jetson": "acb3a38d110fda66618827119c6888fb5b3ceee7fd15358bd760380d89a8c610",
+    "controller_sha256_pc_and_jetson": "15b11a84ba6bf3e402cd67701250bc2cde47a528e3abd893c4ea73ecadb631eb",
+    "jetson_runner_sha256_pc_and_jetson": "07404822b369caa8daba4c56f73fc95b8cb27b968e8a797353c0af8567a68c47"
+  },
+  "next_step": "Stage 9.2: bounded single-worker advisory queue, immediate busy response and timeout/failure isolation while inspection results remain available"
+}

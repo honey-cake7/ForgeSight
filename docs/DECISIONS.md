@@ -685,3 +685,14 @@ maps, an overlay, a structured record and one SQLite row. The dataset path is
 source provenance, not a model-predicted subtype. Keep `unknown` type and
 the policy's `REVIEW` decision. This proves edge replay/persistence without
 reopening the 111-image final holdout or claiming live inspection.
+
+## 040: Begin Stage 9 on the saved replay while physical capture remains open
+
+The user confirmed no physical nut will be available and asked to proceed.
+Use the already persisted Jetson replay as the Stage 9 input while retaining
+Stage 8's physical-component proof as open. Keep Llama advice in a separate
+payload; it cannot rewrite the ForgeGrade decision. Add optional system-role
+chat formatting to the verified ARM runner because a user-role-only probe
+omitted the required G1 citation and was withheld. The system-role run
+generated the reviewed cited note. This is one synchronous advice proof;
+the bounded queue, UI delivery and full offline gate remain separate.

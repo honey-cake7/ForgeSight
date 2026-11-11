@@ -2,6 +2,15 @@
 
 No challenge requirement is marked satisfied by repository setup alone.
 
+Stage 9.1 generated one real, strictly validated advisory on the Jetson from
+an already persisted saved-image inspection, using Llama 3.2 1B through
+ExecuTorch/XNNPACK. The separate payload cites `[E1][G1]` and keeps the
+deterministic `REVIEW` grade unchanged. Missing runtime produced no advice and
+left SQLite intact. This is a connected-device, replay-only proof; bounded
+asynchronous delivery, live physical-nut advice, UI integration, useful
+factory-approved procedures and disconnected operation remain open. See
+`manifests/jetson_forgeassist_replay_v1.json`.
+
 The Jetson now has one real saved-image EfficientAD/ForgeGrade/SQLite replay
 with a stored anomaly map, overlay and exact fresh-process record readback.
 It used an already exposed development-preview nut image, so it adds no

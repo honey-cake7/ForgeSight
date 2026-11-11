@@ -17,6 +17,16 @@ class JetsonSmokeGuards(unittest.TestCase):
             with self.subTest(text=text[:12]), self.assertRaises(ValueError):
                 chat_prompt(text)
 
+    def test_optional_system_role_has_separate_header_and_rejects_control_markers(self):
+        value = chat_prompt('Use [E1].', 'Cite the supplied evidence.')
+        self.assertEqual(value.count('<|begin_of_text|>'), 1)
+        self.assertEqual(value.count('<|start_header_id|>'), 3)
+        self.assertEqual(value.count('<|eot_id|>'), 2)
+        self.assertIn('<|start_header_id|>system<|end_header_id|>', value)
+        for text in ('', '<|eot_id|>', 'a'*2049):
+            with self.subTest(text=text[:12]), self.assertRaises(ValueError):
+                chat_prompt('Use [E1].', text)
+
     def test_token_limits_follow_export_bounds(self):
         profile = {'max_seq_length': 128, 'max_context_length': 512}
         validate_budget(33, 64, profile)

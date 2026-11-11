@@ -1,5 +1,13 @@
 # Hardware evidence
 
+Stage 9.1 ran the existing Llama 3.2 1B PTE through ExecuTorch/XNNPACK on the
+same Jetson for the saved nut replay. With two CPU threads, one run generated
+33 tokens from 82 prompt tokens; native load/inference took 3.041/1.955 s,
+whole native child wall time was 22.157 s and sampled peak child RSS was
+1,156,388 KiB. Vision was not concurrent, so these are separate process
+measurements and not combined memory/throughput proof. See
+`manifests/jetson_forgeassist_replay_v1.json`.
+
 The Jetson ran one `metal_nut` development-preview saved-image replay through
 the frozen CPU model, ForgeGrade and SQLite. First forward took 1,618 ms,
 vision-process peak RSS was 431,696 KiB, and replay-to-SQLite commit took
