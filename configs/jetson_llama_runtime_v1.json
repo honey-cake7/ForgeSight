@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "status": "PREPARATION_ONLY_NOT_INSTALLED",
+  "readiness": "CORE_STATIC_CHECKS_MATCH_INTERPRETER_DOWNLOAD_PENDING",
+  "selected_route": "ISOLATED_ARM64_CPYTHON_AND_CPU_EXECUTORCH_WHEELS",
+  "target": {
+    "architecture": "aarch64",
+    "os": "Ubuntu 20.04.6",
+    "l4t": "35.6.1",
+    "glibc": "2.31",
+    "system_python_to_preserve": "/usr/bin/python3 (3.8.10)"
+  },
+  "python": {
+    "version": "3.12.14",
+    "build_release": "20260901",
+    "asset_name": "cpython-3.12.14+20260901-aarch64-unknown-linux-gnu-install_only_stripped.tar.gz",
+    "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20260901/cpython-3.12.14%2B20260901-aarch64-unknown-linux-gnu-install_only_stripped.tar.gz",
+    "bytes": 29199399,
+    "sha256": "577b4bec0793ad1ff0cbff9adbd0df078eddde38a4c41bf5d83ad381a85ee39d",
+    "download_verified": false,
+    "prefix_policy": "A fresh user-owned directory beneath ~/.local/share/forgesight; never replace an existing directory or /usr/bin/python3."
+  },
+  "packages": {
+    "executorch": "1.5.1+cpu",
+    "torch": "2.14.0+cpu",
+    "pytorch-tokenizers": "1.6.0",
+    "torchao": "0.18.0",
+    "resolved_package_count": 49,
+    "lock_file": "requirements/jetson_llama.lock.txt",
+    "lock_sha256": "0ec2f5411500792d19b3ec05939c6465f6f9e7227676526bb969acbc32d1d75f",
+    "build_tools_lock_file": "requirements/jetson_build_tools.lock.txt",
+    "build_tools_lock_sha256": "9a12342a7f215d4eaa81ed4f639d2ad1ac673970990e7323bf0907c8859e6320",
+    "source_build_policy": "Only antlr4-python3-runtime 4.9.3 needs a source build; its sdist hash is pinned. Install pinned build tools first and use --no-build-isolation for the runtime lock."
+  },
+  "model": {
+    "id": "meta-llama/Llama-3.2-1B-Instruct",
+    "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "pte_sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739",
+    "tokenizer_sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55",
+    "backend": "XNNPACK_ARM64_CPU",
+    "max_seq_length": 128,
+    "max_context_length": 512,
+    "initial_smoke_max_new_tokens": 64,
+    "thread_budget": "NOT_MEASURED_ON_TARGET; do not inherit eight desktop threads as a validated target setting"
+  },
+  "static_assessment": {
+    "status": "STATIC_CHECKS_MATCH_NOT_RUNTIME_PROOF",
+    "errors": [],
+    "elf_files_checked": 33,
+    "system_libraries_required": [
+      "ld-linux-aarch64.so.1",
+      "libatomic.so.1",
+      "libc.so.6",
+      "libdl.so.2",
+      "libgcc_s.so.1",
+      "libm.so.6",
+      "libpthread.so.0",
+      "librt.so.1",
+      "libstdc++.so.6",
+      "libz.so.1"
+    ],
+    "imports_verified": false,
+    "kernel_execution_verified": false,
+    "llama_generation_verified": false,
+    "memory_or_latency_verified": false,
+    "limitation": "Library/version presence is necessary only. Loader search paths, CPU instructions, Python imports, operator registration and the full model must be tested on the real target."
+  },
+  "installation_prerequisites": [
+    "Retrieve the exact interpreter archive and verify SHA-256 before extraction.",
+    "Inspect interpreter ELF/library requirements against this target; none have been executed yet.",
+    "Stage locks and files into a new isolated user prefix, preserving existing work."
+  ],
+  "next_substep_checks": [
+    "Create only the isolated interpreter/environment; preserve system Python, JetPack and CUDA.",
+    "Install pinned build tools, then the runtime hash lock without unpinned build isolation.",
+    "Run dependency checks, CPU torch operations and native runner/custom-op registration on Jetson.",
+    "Implement an explicit ARM device adapter; the desktop-only wrapper guard remains intact.",
+    "Transfer only verified PTE/tokenizer assets and run a bounded real Llama prompt in a later proof step."
+  ],
+  "native_build_fallback": {
+    "selected": false,
+    "source_commit": "3b60683923245cf472b7323426920e15623ba361",
+    "minimum_cmake": "3.24",
+    "current_cmake": "3.16.3",
+    "note": "Prebuilt candidate avoids a source build. Native C++ remains a fallback if real Python runtime memory, dependency or loader tests fail."
+  },
+  "claims": {
+    "target_environment_created": false,
+    "target_python_changed": false,
+    "os_upgrade_selected": false,
+    "os_upgrade_requirement": "NOT_ESTABLISHED; the candidate core libraries match the current userspace statically.",
+    "imports_verified": false,
+    "llama_generation_verified": false,
+    "offline_operation_verified": false,
+    "model_latency_or_memory_verified": false
+  }
+}

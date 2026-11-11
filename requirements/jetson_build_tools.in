@@ -1,0 +1,4 @@
+# Isolated Python-only build tools for the locked antlr4 source distribution.
+# This setuptools version matches the target runtime lock.
+setuptools==84.2.1
+wheel==0.45.1

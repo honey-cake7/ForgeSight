@@ -1,0 +1,6 @@
+# CPU-only ARM64 reference runtime; separate from Jetson CUDA vision dependencies.
+# These exact versions match the existing exported PTE and desktop reference.
+torch @ https://download-r2.pytorch.org/whl/cpu/torch-2.14.0%2Bcpu-cp312-cp312-manylinux_2_28_aarch64.whl#sha256=da8140c3d4a41500d29710e35bf8e66a4295ec31026487c69f54a3f583310f8d
+executorch @ https://download.pytorch.org/whl/cpu/executorch-1.5.1%2Bcpu-cp312-cp312-manylinux_2_28_aarch64.whl#sha256=a4a745d91b2e4c0301f9e400caf6cd8834e173dcebb8f5389da9d9fc3eb3eb1a
+pytorch-tokenizers==1.6.0
+torchao==0.18.0

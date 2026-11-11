@@ -2,6 +2,23 @@
 
 ## Current stage
 
+Substep 2.8 completed the read-only core ARM compatibility investigation and
+prepared a candidate isolated-runtime recipe. All 33 selected ARM ELF binaries
+match the library/version definitions read from ten actual Jetson system
+libraries. A 49-package ARM/Python 3.12.14 dependency lock resolved, and its sole
+source-only dependency built as a pure-Python wheel in a fresh PC build env.
+All 140 software tests pass. No target interpreter/package installation or model
+execution occurred; system Python remains 3.8.10. The deleted manual audit folder
+was not recreated. See `docs/JETSON_RUNTIME.md` and
+`manifests/jetson_runtime_compatibility_v1.json`.
+
+The standalone Python archive's official URL/digest is pinned, but download
+attempts returned HTTP 403/timeouts. Its bytes and ELF requirements remain
+unverified. Thus the candidate is NOT READY FOR INSTALLATION until that archive
+is acquired/verified. Static library matching is not Python import, kernel,
+Llama generation, performance or offline proof. The selected route uses isolated
+CPU wheels; a native C++ runner remains a fallback, and no OS change is selected.
+
 Stage 9.2 PC-only advisory/refusal checks are observed. All 27 declared contract
 checks matched and all 132 software tests passed. Normal/error/inconsistent
 inputs now save unavailable reports without requesting a Llama process. Guidance
@@ -52,9 +69,9 @@ The current
 native wrapper is desktop x86_64 guarded and requires a verified ARM adapter
 before Jetson deployment. Desktop CPU threads/timing/memory are not target claims.
 
-PC work stopped for review after Substep 9.2. The next action now prioritizes
-Substep 2.8: a read-only ARM compatibility probe and reproducible isolated-runtime
-recipe for this exact device. Resolve the earliest open Stage 2 Llama/ExecuTorch
+PC advisory work stopped for review after Substep 9.2. The next action now
+prioritizes Substep 2.9: retrieve/verify the pinned interpreter and then create
+only its isolated CPU runtime. Resolve the earliest open Stage 2 Llama/ExecuTorch
 gate before claiming edge readiness. PC Substep 9.3 (bounded background worker)
 and separate stored/UI advice states remain pending.
 Reliable defect names, approved industrial limits, the two missed scratches and
@@ -294,13 +311,12 @@ proof and do not establish a defect-inspection application.
 
 ## Next exact task
 
-STOPPED FOR REVIEW after the first authenticated device audit. Substep 2.8 is a
-read-only compatibility probe and pinned deployment recipe: choose an isolated
-newer Python or native ARM runner path after checking the existing 1.5.1 artifact,
-ARM wheels/kernel availability, glibc and build dependencies. System Python 3.8
-is below ExecuTorch's >=3.10 package floor; CMake 3.16.3 is below its pinned native
-build minimum 3.24. Do not assume an OS reflash is necessary or install yet.
-Then prove actual on-device Llama/ExecuTorch generation, followed by Stage 8's
-physical vision/camera validation. PC Substep 9.3's queue remains pending.
+STOPPED FOR REVIEW after Substep 2.8. Next is 2.9: first resolve the official
+interpreter archive download and verify SHA-256/ELF requirements. Then prepare
+a fresh isolated user prefix/venv with the committed hash locks, preserve system
+Python/JetPack/CUDA, and test dependencies/native imports/registration on the
+actual Jetson. See `docs/JETSON_RUNTIME.md`; no installation is yet verified.
+An explicit ARM adapter and actual Llama generation follow as separate proof
+work, then Stage 8 camera/vision. PC Substep 9.3's queue remains pending.
 The original 9.2 failure-layer mismatch stays documented. All mandatory ARM
 ExecuTorch, real-camera and disconnected-operation gates remain NOT VERIFIED.

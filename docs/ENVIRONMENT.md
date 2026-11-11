@@ -303,3 +303,25 @@ Next audit ARM package contents/dependencies and native build alternatives,
 then choose a separate reproducible runtime path. Do not replace system Python,
 mix the x86/CUDA 12.4 PC stack into CUDA 11.4, or infer that an OS reflash is
 necessary from these initial version differences.
+
+## Substep 2.8: target resolution and static native-library checks
+
+The selected recipe uses isolated ARM64 CPython 3.12.14, Torch 2.14.0+cpu,
+ExecuTorch 1.5.1+cpu, pytorch-tokenizers 1.6.0 and TorchAO 0.18.0. Both pylock
+and pip-compatible hash locks resolve 49 packages for `aarch64-manylinux_2_31`.
+Runtime versions/architecture are pinned; the existing x86 environments and
+system Jetson Python 3.8 are not installation targets. Prebuilt CPU wheels avoid
+requiring the target's old CMake for this first candidate.
+
+Four publisher-hashed ARM wheels were downloaded to ignored PC artifacts;
+`readelf` inspected the selected core wheels without executing them. Their
+33 ELF files match exact GNU version definitions from ten actual Jetson system
+libraries. Other dependency/interpreter runtime behavior remains unverified.
+The official standalone interpreter archive has pinned metadata/hash, but its
+download failed, so it has not been inspected, extracted or executed.
+
+The source-only antlr4 dependency successfully built into a pure-Python wheel in
+a fresh PC-only cache venv, using the committed build-tool hash lock. No existing
+environment was modified. The 140-test suite passes in the unchanged app env,
+including eight static-guard tests. No model/holdout inference was requested.
+Full target import/dependency checks and real Llama execution remain future work.

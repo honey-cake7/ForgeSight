@@ -108,6 +108,16 @@ query errors and missing camera-format tooling remain explicit. The next task
 is a compatibility recipe for isolated modern Python/native ExecuTorch on this
 userspace, not a claim that current PC environments run on Jetson. See
 `manifests/jetson_device_audit_v1.json` and `docs/HARDWARE.md`.
+
+Substep 2.8 adds static ARM library checks and a pinned candidate recipe, not
+runtime proof. The core wheels' 33 ELF files match ten authenticated target
+library/version inventories. The target-specific lock resolves 49 packages;
+the sole source-only package built as a pure-Python wheel on the PC. All 140
+software tests pass. No environment/package/model was installed on Jetson.
+The pinned interpreter archive download failed and remains unverified; no
+claim of installation readiness, native imports, Llama execution, memory fit or
+offline compliance follows. See `docs/JETSON_RUNTIME.md` and
+`manifests/jetson_runtime_compatibility_v1.json`.
 No calibrated millimeters, certified industrial grades, PDF performance,
 factory root causes, or actual offline compliance are claimed.
 

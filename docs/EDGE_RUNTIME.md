@@ -11,16 +11,23 @@ Python 3.8.10. This closes identification, not model execution. No target model,
 Torch/ExecuTorch installation, export or generation occurred. See
 `docs/HARDWARE.md` and `manifests/jetson_device_audit_v1.json`.
 
-**Next Substep 2.8:** read-only ARM compatibility investigation and a pinned
-isolated-runtime/native-build recipe. The installed Python is below the
-[pinned package's >=3.10 floor](https://pypi.org/pypi/executorch/1.5.1/json).
-The [pinned native CMake source](https://github.com/pytorch/executorch/blob/3b60683923245cf472b7323426920e15623ba361/CMakeLists.txt)
-requires 3.24, above the target's 3.16.3. A newer isolated Python/toolchain or
-compatible native ARM runner may avoid an OS change; evaluate dependencies,
-kernel availability and build/ABI constraints before choosing. Do not disable
-the desktop-only guard and present that as ARM support. Keep the existing small
-Llama artifact and mandatory ExecuTorch route. Device memory/latency under load,
-camera inspection and disconnected operation remain unverified.
+**Substep 2.8:** read-only checks matched all 33 selected ARM core ELF files
+against ten actual target system libraries, and resolved 49 packages for isolated
+CPython 3.12.14. CPU wheels include the native runner/custom/quantized libraries.
+The existing system Python/CUDA are preserved; no target installation occurred.
+See [the complete recipe and trade-offs](JETSON_RUNTIME.md) and
+`manifests/jetson_runtime_compatibility_v1.json`.
+
+The separate Python interpreter archive has a pinned official name/digest, but
+downloads returned HTTP 403/timeouts. Its contents/ABI remain unverified, so
+installation readiness remains pending. Next Substep 2.9 must retrieve/verify
+that archive before creating an isolated runtime and testing imports/operators.
+The [pinned package's Python floor](https://pypi.org/pypi/executorch/1.5.1/json)
+still excludes system Python 3.8. A native C++ build remains a fallback; its
+[CMake minimum](https://github.com/pytorch/executorch/blob/3b60683923245cf472b7323426920e15623ba361/CMakeLists.txt)
+is 3.24, but the selected prebuilt candidate does not require rebuilding on-device.
+Do not disable the desktop-only guard and call that ARM support. Actual native
+generation, memory/latency under load and disconnected operation remain open.
 
 The [organizer reply shared by the user](ORGANIZER_CLARIFICATION.md) accepts
 Jetson Orin platform-family eligibility for PS5. Mandatory on-device Llama via

@@ -553,3 +553,22 @@ was missing. We saved those gaps. The initial terminal mangled long output, so
 the final inventory was transferred in short encoded lines and checked against
 its device-reported SHA-256. Next resolve the ARM runtime recipe, then prove
 real Llama generation on this device. Stop at this hardware-inventory gate.
+
+## Substep 2.8: Check the parts before installing the runtime
+
+An ARM label alone does not tell us whether a package works with our Jetson's
+system libraries. We inspected the official packages and compared 33 binary
+files with ten real libraries on the Jetson. Those checked requirements match.
+We also froze 49 dependency versions, and tested building one Python-only
+dependency on the PC. The Jetson itself received no installation or file changes.
+
+Our first candidate is a separate Python 3.12 environment for CPU ExecuTorch,
+keeping system Python 3.8 and the camera/driver setup intact. It follows the
+working PC reference while leaving GPU vision packages separate. We still need
+actual imports, model output and memory/speed tests before calling it compatible
+in practice. Static evidence cannot prove the whole program works.
+
+The official interpreter download has failed so far. Its expected hash is saved,
+but we cannot call the file verified without its bytes. Next obtain/check that
+file, then create the separate environment. All 140 software tests pass; no
+Jetson model execution or offline proof is claimed.

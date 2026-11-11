@@ -83,13 +83,18 @@ the committed summary/provenance is `manifests/jetson_device_audit_v1.json`.
 The script was checked for Python 3.8 syntax and the transported source matched
 its local SHA-256. No broad PC test rerun or model-performance claim is made.
 
-Next is Substep 2.8: a read-only ARM runtime compatibility probe and a pinned
-isolated-environment/native-build recipe. The pinned ExecuTorch Python package
-requires Python >=3.10; the current Python 3.8 cannot host it. A native build's
-pinned CMake minimum is 3.24, above the installed 3.16.3. Neither observation
-alone justifies replacing the working OS. Check ARM wheels, native kernels and
-dependencies before any installation or upgrade. Llama generation, GPU vision,
-camera capture, latency/memory under load and offline operation remain unverified.
+Substep 2.8 subsequently read definitions from ten actual system libraries over
+authenticated SSH, without writing target files or importing ML runtimes. All
+33 ELF files in the three selected core CPU wheels match those library/version
+requirements. The target remains Python 3.8.10/glibc 2.31. No new interpreter,
+package, model or manual-audit folder was created. The user reports removing the
+manual-audit copy after running it; that folder was not recreated or relied on.
+See `docs/JETSON_RUNTIME.md` and the compatibility manifest.
+
+The candidate uses separate CPython 3.12.14 and CPU wheels; the interpreter asset
+download is not yet verified. A native build remains a fallback and would need
+newer CMake. No OS change or source build on Jetson is selected. Llama generation,
+GPU vision, camera capture, latency/memory and offline operation remain unverified.
 
 ### Arrival and connection history
 

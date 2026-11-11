@@ -550,3 +550,25 @@ offline device gates remain open. Preserve the terminal-transport failures;
 use short encoded lines and a verified device-reported SHA-256 for the final
 authoritative JSON. Test the standalone script on the real target; a full PC
 test rerun is unnecessary for this inventory-only change. Stop for review here.
+
+## 032: Try isolated matching ARM CPU wheels before changing the Jetson OS
+
+Publisher-hashed CPU ExecuTorch 1.5.1 and Torch 2.14.0 ARM wheels contain the
+native runner and required operator libraries. Their selected 33 ELF files
+match exact definitions in ten target system libraries. Resolve/lock 49 packages
+for Python 3.12.14/ARM and retain the existing small Llama artifact/context.
+Choose an isolated CPU reference runtime as the first candidate; keep CUDA vision
+dependencies separate. No target package or interpreter is installed here.
+
+This minimizes initial adapter/build differences from the PC reference, but
+brings Torch/export-related dependency overhead. Native C++ remains a fallback
+if actual imports, memory or contention tests fail. Static matching does not
+prove CPU instruction support, loader paths, operator registration or generation.
+Do not promise latency/memory or change system Python, libc, CMake or JetPack.
+
+Pin separate Python archive metadata and require a verified download before
+setup. Official downloads failed; preserve that open prerequisite. The sole
+source-only dependency built with pinned tools in a fresh PC environment; use
+locked tools and controlled build isolation in the future target setup. Existing
+environments/assets remain unchanged; 140 tests pass. Stop after the recipe and
+static checks; interpreter acquisition and isolated setup are Substep 2.9.

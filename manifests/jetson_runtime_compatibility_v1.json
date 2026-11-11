@@ -1,0 +1,2353 @@
+{
+  "schema_version": 1,
+  "recorded_utc": "2026-11-11T17:01:06.161339+00:00",
+  "client_context_date": "2026-11-11",
+  "scope": "STAGE_2_8_STATIC_CORE_ARM_COMPATIBILITY_AND_CANDIDATE_RECIPE_ONLY",
+  "status": "CORE_STATIC_CHECKS_MATCH_INTERPRETER_DOWNLOAD_PENDING",
+  "recipe": {
+    "schema_version": 1,
+    "status": "PREPARATION_ONLY_NOT_INSTALLED",
+    "readiness": "CORE_STATIC_CHECKS_MATCH_INTERPRETER_DOWNLOAD_PENDING",
+    "selected_route": "ISOLATED_ARM64_CPYTHON_AND_CPU_EXECUTORCH_WHEELS",
+    "target": {
+      "architecture": "aarch64",
+      "os": "Ubuntu 20.04.6",
+      "l4t": "35.6.1",
+      "glibc": "2.31",
+      "system_python_to_preserve": "/usr/bin/python3 (3.8.10)"
+    },
+    "python": {
+      "version": "3.12.14",
+      "build_release": "20260901",
+      "asset_name": "cpython-3.12.14+20260901-aarch64-unknown-linux-gnu-install_only_stripped.tar.gz",
+      "url": "https://github.com/astral-sh/python-build-standalone/releases/download/20260901/cpython-3.12.14%2B20260901-aarch64-unknown-linux-gnu-install_only_stripped.tar.gz",
+      "bytes": 29199399,
+      "sha256": "577b4bec0793ad1ff0cbff9adbd0df078eddde38a4c41bf5d83ad381a85ee39d",
+      "download_verified": false,
+      "prefix_policy": "A fresh user-owned directory beneath ~/.local/share/forgesight; never replace an existing directory or /usr/bin/python3."
+    },
+    "packages": {
+      "executorch": "1.5.1+cpu",
+      "torch": "2.14.0+cpu",
+      "pytorch-tokenizers": "1.6.0",
+      "torchao": "0.18.0",
+      "resolved_package_count": 49,
+      "lock_file": "requirements/jetson_llama.lock.txt",
+      "lock_sha256": "0ec2f5411500792d19b3ec05939c6465f6f9e7227676526bb969acbc32d1d75f",
+      "build_tools_lock_file": "requirements/jetson_build_tools.lock.txt",
+      "build_tools_lock_sha256": "9a12342a7f215d4eaa81ed4f639d2ad1ac673970990e7323bf0907c8859e6320",
+      "source_build_policy": "Only antlr4-python3-runtime 4.9.3 needs a source build; its sdist hash is pinned. Install pinned build tools first and use --no-build-isolation for the runtime lock."
+    },
+    "model": {
+      "id": "meta-llama/Llama-3.2-1B-Instruct",
+      "revision": "9213176726f574b556790deb65791e0c5aa438b6",
+      "pte_sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739",
+      "tokenizer_sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55",
+      "backend": "XNNPACK_ARM64_CPU",
+      "max_seq_length": 128,
+      "max_context_length": 512,
+      "initial_smoke_max_new_tokens": 64,
+      "thread_budget": "NOT_MEASURED_ON_TARGET; do not inherit eight desktop threads as a validated target setting"
+    },
+    "static_assessment": {
+      "status": "STATIC_CHECKS_MATCH_NOT_RUNTIME_PROOF",
+      "errors": [],
+      "elf_files_checked": 33,
+      "system_libraries_required": [
+        "ld-linux-aarch64.so.1",
+        "libatomic.so.1",
+        "libc.so.6",
+        "libdl.so.2",
+        "libgcc_s.so.1",
+        "libm.so.6",
+        "libpthread.so.0",
+        "librt.so.1",
+        "libstdc++.so.6",
+        "libz.so.1"
+      ],
+      "imports_verified": false,
+      "kernel_execution_verified": false,
+      "llama_generation_verified": false,
+      "memory_or_latency_verified": false,
+      "limitation": "Library/version presence is necessary only. Loader search paths, CPU instructions, Python imports, operator registration and the full model must be tested on the real target."
+    },
+    "installation_prerequisites": [
+      "Retrieve the exact interpreter archive and verify SHA-256 before extraction.",
+      "Inspect interpreter ELF/library requirements against this target; none have been executed yet.",
+      "Stage locks and files into a new isolated user prefix, preserving existing work."
+    ],
+    "next_substep_checks": [
+      "Create only the isolated interpreter/environment; preserve system Python, JetPack and CUDA.",
+      "Install pinned build tools, then the runtime hash lock without unpinned build isolation.",
+      "Run dependency checks, CPU torch operations and native runner/custom-op registration on Jetson.",
+      "Implement an explicit ARM device adapter; the desktop-only wrapper guard remains intact.",
+      "Transfer only verified PTE/tokenizer assets and run a bounded real Llama prompt in a later proof step."
+    ],
+    "native_build_fallback": {
+      "selected": false,
+      "source_commit": "3b60683923245cf472b7323426920e15623ba361",
+      "minimum_cmake": "3.24",
+      "current_cmake": "3.16.3",
+      "note": "Prebuilt candidate avoids a source build. Native C++ remains a fallback if real Python runtime memory, dependency or loader tests fail."
+    },
+    "claims": {
+      "target_environment_created": false,
+      "target_python_changed": false,
+      "os_upgrade_selected": false,
+      "os_upgrade_requirement": "NOT_ESTABLISHED; the candidate core libraries match the current userspace statically.",
+      "imports_verified": false,
+      "llama_generation_verified": false,
+      "offline_operation_verified": false,
+      "model_latency_or_memory_verified": false
+    }
+  },
+  "verification": {
+    "created_utc": "2026-11-11T17:00:07.996398+00:00",
+    "protected_files_unchanged": 8,
+    "five_existing_environments_unchanged": true,
+    "both_runtime_lock_formats_match": true,
+    "runtime_packages": 49,
+    "no_nvidia_cuda_dependency_packages_in_cpu_lock": true,
+    "target_collector_source_matches_executed_source": true,
+    "python38_collector_syntax": "PASS",
+    "core_elf_files_checked": 33,
+    "static_errors": [],
+    "software_tests_passed": 140,
+    "new_guard_tests": 8,
+    "interpreter_archive_verified": false,
+    "target_install_performed": false,
+    "target_model_execution_performed": false,
+    "target_manual_audit_folder_recreated": false
+  },
+  "selected_core_wheels": [
+    {
+      "label": "cpu_torch",
+      "filename": "torch-2.14.0+cpu-cp312-cp312-manylinux_2_28_aarch64.whl",
+      "url": "https://download-r2.pytorch.org/whl/cpu/torch-2.14.0%2Bcpu-cp312-cp312-manylinux_2_28_aarch64.whl",
+      "sha256": "da8140c3d4a41500d29710e35bf8e66a4295ec31026487c69f54a3f583310f8d",
+      "bytes": 159254839
+    },
+    {
+      "label": "cpu_executorch",
+      "filename": "executorch-1.5.1+cpu-cp312-cp312-manylinux_2_28_aarch64.whl",
+      "url": "https://download.pytorch.org/whl/cpu/executorch-1.5.1%2Bcpu-cp312-cp312-manylinux_2_28_aarch64.whl",
+      "sha256": "a4a745d91b2e4c0301f9e400caf6cd8834e173dcebb8f5389da9d9fc3eb3eb1a",
+      "bytes": 18131076
+    },
+    {
+      "label": "pypi_tokenizer",
+      "filename": "pytorch_tokenizers-1.6.0-cp312-cp312-manylinux_2_28_aarch64.whl",
+      "url": "https://files.pythonhosted.org/packages/5a/04/5da60fb8d2f4d98bde98e18e694c084ad6d7714e6d264e2a66920bef8906/pytorch_tokenizers-1.6.0-cp312-cp312-manylinux_2_28_aarch64.whl",
+      "sha256": "09e415750e301badb10711e443c1ed6189bd6ce1604e3c38ee03217a69021dbb",
+      "bytes": 1493251
+    },
+    {
+      "label": "pypi_executorch",
+      "filename": "executorch-1.5.1-cp312-cp312-manylinux_2_28_aarch64.whl",
+      "url": "https://files.pythonhosted.org/packages/37/f9/18d126eacacaec6d07dd02cef3b3c5511de9315fe355c6bddaaa22338890/executorch-1.5.1-cp312-cp312-manylinux_2_28_aarch64.whl",
+      "sha256": "2c177f7922354a8a0d6111628c954519b87549598640e5e0042bef137b4cb83c",
+      "bytes": 17930720
+    }
+  ],
+  "target_libraries": {
+    "libc": [
+      "glibc",
+      "2.31"
+    ],
+    "libraries": {
+      "ld-linux-aarch64.so.1": {
+        "machine": 183,
+        "path": "/usr/lib/aarch64-linux-gnu/ld-2.31.so",
+        "provided_versions": [
+          "GLIBC_2.17",
+          "GLIBC_PRIVATE",
+          "ld-linux-aarch64.so.1"
+        ],
+        "sha256": "f8adf99608ed294d9e1d5b8a8e9b9fbb4d493d25ea47b8474670d7e332042b74"
+      },
+      "libatomic.so.1": {
+        "machine": 183,
+        "path": "/usr/lib/aarch64-linux-gnu/libatomic.so.1.2.0",
+        "provided_versions": [
+          "LIBATOMIC_1.0",
+          "LIBATOMIC_1.1",
+          "LIBATOMIC_1.2",
+          "libatomic.so.1"
+        ],
+        "sha256": "7107aedf71161e1f80e26d1868a3172ede38fbb468208e594cc09e1ee276e4cd"
+      },
+      "libc.so.6": {
+        "machine": 183,
+        "path": "/usr/lib/aarch64-linux-gnu/libc-2.31.so",
+        "provided_versions": [
+          "GLIBC_2.17",
+          "GLIBC_2.18",
+          "GLIBC_2.22",
+          "GLIBC_2.23",
+          "GLIBC_2.24",
+          "GLIBC_2.25",
+          "GLIBC_2.26",
+          "GLIBC_2.27",
+          "GLIBC_2.28",
+          "GLIBC_2.29",
+          "GLIBC_2.30",
+          "GLIBC_PRIVATE",
+          "libc.so.6"
+        ],
+        "sha256": "45e721f531d445f23b56e71d75d8320bf0cc79cacbe9f8e6676a6a1b1aa6079f"
+      },
+      "libdl.so.2": {
+        "machine": 183,
+        "path": "/usr/lib/aarch64-linux-gnu/libdl-2.31.so",
+        "provided_versions": [
+          "GLIBC_2.17",
+          "GLIBC_PRIVATE",
+          "libdl.so.2"
+        ],
+        "sha256": "4b711433a2ee7aacdf30283d75a5a5ebd61b066ca665734d2a5135a4717cd7ca"
+      },
+      "libgcc_s.so.1": {
+        "machine": 183,
+        "path": "/usr/lib/aarch64-linux-gnu/libgcc_s.so.1",
+        "provided_versions": [
+          "GCC_3.0",
+          "GCC_3.3",
+          "GCC_3.3.1",
+          "GCC_3.4",
+          "GCC_3.4.2",
+          "GCC_3.4.4",
+          "GCC_4.0.0",
+          "GCC_4.2.0",
+          "GCC_4.3.0",
+          "GCC_4.5.0",
+          "GCC_4.7.0",
+          "GCC_7.0.0",
+          "GLIBC_2.0",
+          "libgcc_s.so.1"
+        ],
+        "sha256": "42e40b1edf78999d41d763cb169c70b563e8b5dbc665e072380f96832ad4a407"
+      },
+      "libm.so.6": {
+        "machine": 183,
+        "path": "/usr/lib/aarch64-linux-gnu/libm-2.31.so",
+        "provided_versions": [
+          "GLIBC_2.17",
+          "GLIBC_2.18",
+          "GLIBC_2.23",
+          "GLIBC_2.24",
+          "GLIBC_2.25",
+          "GLIBC_2.27",
+          "GLIBC_2.28",
+          "GLIBC_2.29",
+          "GLIBC_2.31",
+          "libm.so.6"
+        ],
+        "sha256": "e0838e5ec9819b7ed89349f4c1778b4baccf374fb8fca5f982248f863479f370"
+      },
+      "libpthread.so.0": {
+        "machine": 183,
+        "path": "/usr/lib/aarch64-linux-gnu/libpthread-2.31.so",
+        "provided_versions": [
+          "GLIBC_2.17",
+          "GLIBC_2.18",
+          "GLIBC_2.28",
+          "GLIBC_2.30",
+          "GLIBC_2.31",
+          "GLIBC_PRIVATE",
+          "libpthread.so.0"
+        ],
+        "sha256": "612ecb3eb356eccfb4e1a334503278cd758e2eb269f432012f74c59ddf00271d"
+      },
+      "librt.so.1": {
+        "machine": 183,
+        "path": "/usr/lib/aarch64-linux-gnu/librt-2.31.so",
+        "provided_versions": [
+          "GLIBC_2.17",
+          "librt.so.1"
+        ],
+        "sha256": "ca85dd4465a9e7e346f44bbd3248f4a6499ca2c9961de1bce2c76ddd6fdc4029"
+      },
+      "libstdc++.so.6": {
+        "machine": 183,
+        "path": "/usr/lib/aarch64-linux-gnu/libstdc++.so.6.0.28",
+        "provided_versions": [
+          "CXXABI_1.3",
+          "CXXABI_1.3.1",
+          "CXXABI_1.3.10",
+          "CXXABI_1.3.11",
+          "CXXABI_1.3.12",
+          "CXXABI_1.3.2",
+          "CXXABI_1.3.3",
+          "CXXABI_1.3.4",
+          "CXXABI_1.3.5",
+          "CXXABI_1.3.6",
+          "CXXABI_1.3.7",
+          "CXXABI_1.3.8",
+          "CXXABI_1.3.9",
+          "CXXABI_TM_1",
+          "GLIBCXX_3.4",
+          "GLIBCXX_3.4.1",
+          "GLIBCXX_3.4.10",
+          "GLIBCXX_3.4.11",
+          "GLIBCXX_3.4.12",
+          "GLIBCXX_3.4.13",
+          "GLIBCXX_3.4.14",
+          "GLIBCXX_3.4.15",
+          "GLIBCXX_3.4.16",
+          "GLIBCXX_3.4.17",
+          "GLIBCXX_3.4.18",
+          "GLIBCXX_3.4.19",
+          "GLIBCXX_3.4.2",
+          "GLIBCXX_3.4.20",
+          "GLIBCXX_3.4.21",
+          "GLIBCXX_3.4.22",
+          "GLIBCXX_3.4.23",
+          "GLIBCXX_3.4.24",
+          "GLIBCXX_3.4.25",
+          "GLIBCXX_3.4.26",
+          "GLIBCXX_3.4.27",
+          "GLIBCXX_3.4.28",
+          "GLIBCXX_3.4.3",
+          "GLIBCXX_3.4.4",
+          "GLIBCXX_3.4.5",
+          "GLIBCXX_3.4.6",
+          "GLIBCXX_3.4.7",
+          "GLIBCXX_3.4.8",
+          "GLIBCXX_3.4.9",
+          "libstdc++.so.6"
+        ],
+        "sha256": "d5106b70d2682294dee634486749ee06cf24ac830190996dcab95a246ebc152b"
+      },
+      "libz.so.1": {
+        "machine": 183,
+        "path": "/usr/lib/aarch64-linux-gnu/libz.so.1.2.11",
+        "provided_versions": [
+          "ZLIB_1.2.0",
+          "ZLIB_1.2.0.2",
+          "ZLIB_1.2.0.8",
+          "ZLIB_1.2.2",
+          "ZLIB_1.2.2.3",
+          "ZLIB_1.2.2.4",
+          "ZLIB_1.2.3.3",
+          "ZLIB_1.2.3.4",
+          "ZLIB_1.2.3.5",
+          "ZLIB_1.2.5.1",
+          "ZLIB_1.2.5.2",
+          "ZLIB_1.2.7.1",
+          "ZLIB_1.2.9",
+          "libz.so.1"
+        ],
+        "sha256": "f7421fde8036391750dc2b1dd7299a0a3305a93cb95846fcc381590f565215c1"
+      }
+    },
+    "machine": "aarch64",
+    "model_executed": false,
+    "packages_installed": false,
+    "python": "3.8.10",
+    "python_executable": "/usr/bin/python3",
+    "scope": "READ_ONLY_TARGET_LIBRARY_PROBE_NOT_MODEL_EXECUTION",
+    "system_python_packages": [
+      [
+        "Brlapi",
+        "0.7.0"
+      ],
+      [
+        "Click",
+        "7.0"
+      ],
+      [
+        "Jetson.GPIO",
+        "2.1.9"
+      ],
+      [
+        "Mako",
+        "1.1.0"
+      ],
+      [
+        "MarkupSafe",
+        "1.1.0"
+      ],
+      [
+        "PAM",
+        "0.4.2"
+      ],
+      [
+        "Pillow",
+        "7.0.0"
+      ],
+      [
+        "PyGObject",
+        "3.36.0"
+      ],
+      [
+        "PyICU",
+        "2.4.2"
+      ],
+      [
+        "PyJWT",
+        "1.7.1"
+      ],
+      [
+        "PyNaCl",
+        "1.3.0"
+      ],
+      [
+        "PyYAML",
+        "5.3.1"
+      ],
+      [
+        "SecretStorage",
+        "2.3.1"
+      ],
+      [
+        "apt-clone",
+        "0.2.1"
+      ],
+      [
+        "apturl",
+        "0.5.2"
+      ],
+      [
+        "bcrypt",
+        "3.1.7"
+      ],
+      [
+        "blinker",
+        "1.4"
+      ],
+      [
+        "certifi",
+        "2019.11.28"
+      ],
+      [
+        "chardet",
+        "3.0.4"
+      ],
+      [
+        "colorama",
+        "0.4.3"
+      ],
+      [
+        "cryptography",
+        "2.8"
+      ],
+      [
+        "cupshelpers",
+        "1.0"
+      ],
+      [
+        "cycler",
+        "0.10.0"
+      ],
+      [
+        "dbus-python",
+        "1.2.16"
+      ],
+      [
+        "decorator",
+        "4.4.2"
+      ],
+      [
+        "defer",
+        "1.0.6"
+      ],
+      [
+        "distro",
+        "1.4.0"
+      ],
+      [
+        "distro-info",
+        "0.23+ubuntu1.1"
+      ],
+      [
+        "duplicity",
+        "0.8.12.0"
+      ],
+      [
+        "entrypoints",
+        "0.3"
+      ],
+      [
+        "fasteners",
+        "0.14.1"
+      ],
+      [
+        "future",
+        "0.18.2"
+      ],
+      [
+        "graphsurgeon",
+        "0.4.6"
+      ],
+      [
+        "httplib2",
+        "0.14.0"
+      ],
+      [
+        "idna",
+        "2.8"
+      ],
+      [
+        "keyring",
+        "18.0.1"
+      ],
+      [
+        "kiwisolver",
+        "1.0.1"
+      ],
+      [
+        "language-selector",
+        "0.1"
+      ],
+      [
+        "launchpadlib",
+        "1.10.13"
+      ],
+      [
+        "lazr.restfulclient",
+        "0.14.2"
+      ],
+      [
+        "lazr.uri",
+        "1.0.3"
+      ],
+      [
+        "lockfile",
+        "0.12.2"
+      ],
+      [
+        "louis",
+        "3.12.0"
+      ],
+      [
+        "macaroonbakery",
+        "1.3.1"
+      ],
+      [
+        "matplotlib",
+        "3.1.2"
+      ],
+      [
+        "monotonic",
+        "1.5"
+      ],
+      [
+        "numpy",
+        "1.17.4"
+      ],
+      [
+        "oauthlib",
+        "3.1.0"
+      ],
+      [
+        "olefile",
+        "0.46"
+      ],
+      [
+        "onboard",
+        "1.4.1"
+      ],
+      [
+        "onnx-graphsurgeon",
+        "0.3.12"
+      ],
+      [
+        "pandas",
+        "0.25.3"
+      ],
+      [
+        "paramiko",
+        "2.6.0"
+      ],
+      [
+        "pexpect",
+        "4.6.0"
+      ],
+      [
+        "protobuf",
+        "3.6.1"
+      ],
+      [
+        "pyRFC3339",
+        "1.1"
+      ],
+      [
+        "pycairo",
+        "1.16.2"
+      ],
+      [
+        "pycrypto",
+        "2.6.1"
+      ],
+      [
+        "pycups",
+        "1.9.73"
+      ],
+      [
+        "pymacaroons",
+        "0.13.0"
+      ],
+      [
+        "pyparsing",
+        "2.4.6"
+      ],
+      [
+        "python-apt",
+        "2.0.1+ubuntu0.20.4.1"
+      ],
+      [
+        "python-dateutil",
+        "2.7.3"
+      ],
+      [
+        "python-dbusmock",
+        "0.19"
+      ],
+      [
+        "python-debian",
+        "0.1.36+ubuntu1.1"
+      ],
+      [
+        "pytz",
+        "2019.3"
+      ],
+      [
+        "pyxdg",
+        "0.26"
+      ],
+      [
+        "requests",
+        "2.22.0"
+      ],
+      [
+        "requests-unixsocket",
+        "0.2.0"
+      ],
+      [
+        "scipy",
+        "1.3.3"
+      ],
+      [
+        "simplejson",
+        "3.16.0"
+      ],
+      [
+        "six",
+        "1.14.0"
+      ],
+      [
+        "systemd-python",
+        "234"
+      ],
+      [
+        "tensorrt",
+        "8.5.2.2"
+      ],
+      [
+        "ubuntu-advantage-tools",
+        "8001"
+      ],
+      [
+        "ubuntu-drivers-common",
+        "0.0.0"
+      ],
+      [
+        "uff",
+        "0.6.9"
+      ],
+      [
+        "urllib3",
+        "1.25.8"
+      ],
+      [
+        "urwid",
+        "2.0.1"
+      ],
+      [
+        "wadllib",
+        "1.3.3"
+      ],
+      [
+        "xkit",
+        "0.0.0"
+      ]
+    ],
+    "target_files_written": false
+  },
+  "core_elf_probe": [
+    {
+      "member": "torch/_C.cpython-312-aarch64-linux-gnu.so",
+      "wheel": "cpu_torch",
+      "sha256": "4a3a82f861d9f62e1a2c227bdb88fb7ca2becd3345b6d950b5e9b214ce1cb116",
+      "machine": 183,
+      "needed": [
+        "libtorch_python.so",
+        "libc.so.6"
+      ],
+      "required_versions": {
+        "libc.so.6": [
+          "GLIBC_2.17"
+        ]
+      },
+      "provided_versions": [],
+      "rpath": [
+        "$ORIGIN:$ORIGIN/lib"
+      ]
+    },
+    {
+      "member": "torch/lib/libaoti_custom_ops.so",
+      "wheel": "cpu_torch",
+      "sha256": "9e0fdbcaa62c00b0e69d9aac930f70d7733eaf471d5702dec2dde4730524d9b2",
+      "machine": 183,
+      "needed": [
+        "libtorch.so",
+        "libtorch_cpu.so",
+        "libc10.so",
+        "libstdc++.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6"
+      ],
+      "required_versions": {
+        "libgcc_s.so.1": [
+          "GCC_3.0"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.17"
+        ],
+        "libstdc++.so.6": [
+          "CXXABI_1.3",
+          "CXXABI_1.3.9",
+          "GLIBCXX_3.4",
+          "GLIBCXX_3.4.11",
+          "GLIBCXX_3.4.15",
+          "GLIBCXX_3.4.20",
+          "GLIBCXX_3.4.21",
+          "GLIBCXX_3.4.9"
+        ]
+      },
+      "provided_versions": [],
+      "rpath": [
+        "$ORIGIN"
+      ]
+    },
+    {
+      "member": "torch/lib/libarm_compute.so",
+      "wheel": "cpu_torch",
+      "sha256": "6fa9225a9d092c7ebf6ff6acea25cd154146da036d8bdef7aa61d2c12a510bc5",
+      "machine": 183,
+      "needed": [
+        "libdl.so.2",
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libgomp.so.1",
+        "libgcc_s.so.1",
+        "libpthread.so.0",
+        "libc.so.6"
+      ],
+      "required_versions": {
+        "libgcc_s.so.1": [
+          "GCC_3.0"
+        ],
+        "libgomp.so.1": [
+          "GOMP_4.0",
+          "OMP_1.0"
+        ],
+        "libpthread.so.0": [
+          "GLIBC_2.17"
+        ],
+        "libm.so.6": [
+          "GLIBC_2.17",
+          "GLIBC_2.27"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.17"
+        ],
+        "libstdc++.so.6": [
+          "CXXABI_1.3",
+          "CXXABI_1.3.5",
+          "CXXABI_1.3.8",
+          "CXXABI_1.3.9",
+          "GLIBCXX_3.4",
+          "GLIBCXX_3.4.11",
+          "GLIBCXX_3.4.14",
+          "GLIBCXX_3.4.15",
+          "GLIBCXX_3.4.17",
+          "GLIBCXX_3.4.18",
+          "GLIBCXX_3.4.20",
+          "GLIBCXX_3.4.21",
+          "GLIBCXX_3.4.9"
+        ]
+      },
+      "provided_versions": [],
+      "rpath": [
+        "$ORIGIN"
+      ]
+    },
+    {
+      "member": "torch/lib/libarm_compute_graph.so",
+      "wheel": "cpu_torch",
+      "sha256": "52d09a8bd651415cb93e68b66759201288b5ae323643aef5bdf4c00f310d4334",
+      "machine": 183,
+      "needed": [
+        "libdl.so.2",
+        "libarm_compute.so",
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libgomp.so.1",
+        "libgcc_s.so.1",
+        "libpthread.so.0",
+        "libc.so.6"
+      ],
+      "required_versions": {
+        "libgcc_s.so.1": [
+          "GCC_3.0"
+        ],
+        "libpthread.so.0": [
+          "GLIBC_2.17"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.17"
+        ],
+        "libstdc++.so.6": [
+          "CXXABI_1.3",
+          "CXXABI_1.3.9",
+          "GLIBCXX_3.4",
+          "GLIBCXX_3.4.11",
+          "GLIBCXX_3.4.14",
+          "GLIBCXX_3.4.15",
+          "GLIBCXX_3.4.21",
+          "GLIBCXX_3.4.9"
+        ]
+      },
+      "provided_versions": [],
+      "rpath": [
+        "$ORIGIN"
+      ]
+    },
+    {
+      "member": "torch/lib/libbackend_with_compiler.so",
+      "wheel": "cpu_torch",
+      "sha256": "fa1e49325d67c54a14597a4924a77815171a79377351f5a6953c0efc89952671",
+      "machine": 183,
+      "needed": [
+        "libtorch.so",
+        "libtorch_cpu.so",
+        "libc10.so",
+        "libstdc++.so.6",
+        "libgcc_s.so.1",
+        "libpthread.so.0",
+        "libc.so.6"
+      ],
+      "required_versions": {
+        "libgcc_s.so.1": [
+          "GCC_3.0"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.17"
+        ],
+        "libpthread.so.0": [
+          "GLIBC_2.17"
+        ],
+        "libstdc++.so.6": [
+          "CXXABI_1.3",
+          "CXXABI_1.3.3",
+          "CXXABI_1.3.5",
+          "CXXABI_1.3.9",
+          "GLIBCXX_3.4",
+          "GLIBCXX_3.4.11",
+          "GLIBCXX_3.4.14",
+          "GLIBCXX_3.4.15",
+          "GLIBCXX_3.4.18",
+          "GLIBCXX_3.4.20",
+          "GLIBCXX_3.4.21",
+          "GLIBCXX_3.4.9"
+        ]
+      },
+      "provided_versions": [],
+      "rpath": [
+        "$ORIGIN"
+      ]
+    },
+    {
+      "member": "torch/lib/libc10.so",
+      "wheel": "cpu_torch",
+      "sha256": "37107f80c282d6bce6cab79ef56fe8fc7210a79797a3020a60d119557266e513",
+      "machine": 183,
+      "needed": [
+        "libdl.so.2",
+        "libpthread.so.0",
+        "librt.so.1",
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "required_versions": {
+        "libdl.so.2": [
+          "GLIBC_2.17"
+        ],
+        "ld-linux-aarch64.so.1": [
+          "GLIBC_2.17"
+        ],
+        "libm.so.6": [
+          "GLIBC_2.17"
+        ],
+        "libpthread.so.0": [
+          "GLIBC_2.17"
+        ],
+        "libgcc_s.so.1": [
+          "GCC_3.0",
+          "GCC_4.5.0"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.17"
+        ],
+        "libstdc++.so.6": [
+          "CXXABI_1.3",
+          "CXXABI_1.3.2",
+          "CXXABI_1.3.5",
+          "CXXABI_1.3.7",
+          "CXXABI_1.3.8",
+          "CXXABI_1.3.9",
+          "GLIBCXX_3.4",
+          "GLIBCXX_3.4.11",
+          "GLIBCXX_3.4.14",
+          "GLIBCXX_3.4.15",
+          "GLIBCXX_3.4.17",
+          "GLIBCXX_3.4.18",
+          "GLIBCXX_3.4.19",
+          "GLIBCXX_3.4.20",
+          "GLIBCXX_3.4.21",
+          "GLIBCXX_3.4.22",
+          "GLIBCXX_3.4.9"
+        ]
+      },
+      "provided_versions": [],
+      "rpath": [
+        "$ORIGIN"
+      ]
+    },
+    {
+      "member": "torch/lib/libgfortran.so.5",
+      "wheel": "cpu_torch",
+      "sha256": "272d52d43e6f40ba80ba89a5f7625e323dc0b4daf036d019067b8268c81c01a4",
+      "machine": 183,
+      "needed": [
+        "libz.so.1",
+        "libm.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "required_versions": {
+        "ld-linux-aarch64.so.1": [
+          "GLIBC_2.17"
+        ],
+        "libgcc_s.so.1": [
+          "GCC_3.0",
+          "GCC_3.3",
+          "GCC_4.2.0",
+          "GCC_4.5.0"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.17"
+        ],
+        "libm.so.6": [
+          "GLIBC_2.17",
+          "GLIBC_2.27"
+        ]
+      },
+      "provided_versions": [
+        "GFORTRAN_8",
+        "GFORTRAN_C99_8",
+        "GFORTRAN_F2C_8",
+        "libgfortran.so.5"
+      ],
+      "rpath": [
+        "$ORIGIN"
+      ]
+    },
+    {
+      "member": "torch/lib/libgomp.so.1",
+      "wheel": "cpu_torch",
+      "sha256": "6ea1e242aba9c19f4175d3a44ee2a3f43d4141a244a1a2be04a00af39cf5828c",
+      "machine": 183,
+      "needed": [
+        "libdl.so.2",
+        "libpthread.so.0",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "required_versions": {
+        "ld-linux-aarch64.so.1": [
+          "GLIBC_2.17"
+        ],
+        "libdl.so.2": [
+          "GLIBC_2.17"
+        ],
+        "libpthread.so.0": [
+          "GLIBC_2.17"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.17"
+        ]
+      },
+      "provided_versions": [
+        "GOACC_2.0",
+        "GOACC_2.0.1",
+        "GOACC_2.0.2",
+        "GOMP_1.0",
+        "GOMP_2.0",
+        "GOMP_3.0",
+        "GOMP_4.0",
+        "GOMP_4.0.1",
+        "GOMP_4.5",
+        "GOMP_5.0",
+        "GOMP_5.0.1",
+        "GOMP_5.1",
+        "GOMP_5.1.1",
+        "GOMP_PLUGIN_1.0",
+        "GOMP_PLUGIN_1.1",
+        "GOMP_PLUGIN_1.2",
+        "GOMP_PLUGIN_1.3",
+        "GOMP_PLUGIN_1.4",
+        "OACC_2.0",
+        "OACC_2.0.1",
+        "OACC_2.5",
+        "OACC_2.5.1",
+        "OACC_2.6",
+        "OMP_1.0",
+        "OMP_2.0",
+        "OMP_3.0",
+        "OMP_3.1",
+        "OMP_4.0",
+        "OMP_4.5",
+        "OMP_5.0",
+        "OMP_5.0.1",
+        "OMP_5.0.2",
+        "OMP_5.1",
+        "OMP_5.1.1",
+        "OMP_5.2",
+        "libgomp.so.1"
+      ],
+      "rpath": [
+        "$ORIGIN"
+      ]
+    },
+    {
+      "member": "torch/lib/libjitbackend_test.so",
+      "wheel": "cpu_torch",
+      "sha256": "6ccb69757831f6ea51c790a4f7f8ae06c55b24f27a7b8d706c4760da0982543e",
+      "machine": 183,
+      "needed": [
+        "libtorch.so",
+        "libtorch_cpu.so",
+        "libc10.so",
+        "libstdc++.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6"
+      ],
+      "required_versions": {
+        "libgcc_s.so.1": [
+          "GCC_3.0"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.17"
+        ],
+        "libstdc++.so.6": [
+          "CXXABI_1.3",
+          "CXXABI_1.3.3",
+          "CXXABI_1.3.5",
+          "CXXABI_1.3.9",
+          "GLIBCXX_3.4",
+          "GLIBCXX_3.4.11",
+          "GLIBCXX_3.4.14",
+          "GLIBCXX_3.4.15",
+          "GLIBCXX_3.4.20",
+          "GLIBCXX_3.4.21",
+          "GLIBCXX_3.4.9"
+        ]
+      },
+      "provided_versions": [],
+      "rpath": [
+        "$ORIGIN"
+      ]
+    },
+    {
+      "member": "torch/lib/libopenblas.so.0",
+      "wheel": "cpu_torch",
+      "sha256": "55da8b468e2734b2704725480c2d93c7e2b90fb91812ec91e0935316a6769756",
+      "machine": 183,
+      "needed": [
+        "libm.so.6",
+        "libpthread.so.0",
+        "libgfortran.so.5",
+        "libgomp.so.1",
+        "libc.so.6"
+      ],
+      "required_versions": {
+        "libgfortran.so.5": [
+          "GFORTRAN_8"
+        ],
+        "libpthread.so.0": [
+          "GLIBC_2.17"
+        ],
+        "libgomp.so.1": [
+          "GOMP_2.0",
+          "GOMP_4.0",
+          "OMP_1.0",
+          "OMP_3.0",
+          "OMP_4.5"
+        ],
+        "libm.so.6": [
+          "GLIBC_2.17",
+          "GLIBC_2.27"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.17"
+        ]
+      },
+      "provided_versions": [],
+      "rpath": [
+        "$ORIGIN"
+      ]
+    },
+    {
+      "member": "torch/lib/libshm.so",
+      "wheel": "cpu_torch",
+      "sha256": "44e691898f1ad24eacd8129e3842a18759ddfbcfc6b4792ea8eff47dda69c17f",
+      "machine": 183,
+      "needed": [
+        "libtorch_cpu.so",
+        "librt.so.1",
+        "libc10.so",
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libgcc_s.so.1",
+        "libpthread.so.0",
+        "libc.so.6"
+      ],
+      "required_versions": {
+        "libgcc_s.so.1": [
+          "GCC_3.0"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.17"
+        ],
+        "libpthread.so.0": [
+          "GLIBC_2.17"
+        ],
+        "libstdc++.so.6": [
+          "CXXABI_1.3",
+          "CXXABI_1.3.5",
+          "CXXABI_1.3.9",
+          "GLIBCXX_3.4",
+          "GLIBCXX_3.4.11",
+          "GLIBCXX_3.4.18",
+          "GLIBCXX_3.4.21",
+          "GLIBCXX_3.4.9"
+        ]
+      },
+      "provided_versions": [],
+      "rpath": [
+        "$ORIGIN"
+      ]
+    },
+    {
+      "member": "torch/lib/libtorch.so",
+      "wheel": "cpu_torch",
+      "sha256": "3e8a0379fe130c8f011a24d3f90e8a1bf893bd57c449fe902c4d7756dc6c73c6",
+      "machine": 183,
+      "needed": [
+        "libtorch_cpu.so",
+        "libgcc_s.so.1",
+        "libpthread.so.0",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "required_versions": {
+        "ld-linux-aarch64.so.1": [
+          "GLIBC_2.17"
+        ],
+        "libgcc_s.so.1": [
+          "GCC_3.0"
+        ],
+        "libpthread.so.0": [
+          "GLIBC_2.17"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.17"
+        ]
+      },
+      "provided_versions": [],
+      "rpath": [
+        "$ORIGIN"
+      ]
+    },
+    {
+      "member": "torch/lib/libtorch_cpu.so",
+      "wheel": "cpu_torch",
+      "sha256": "3e8a4a3fe9a90733520a49ffeab6ff986aba57790bc0211a1da9e55df5df5b97",
+      "machine": 183,
+      "needed": [
+        "libc10.so",
+        "libopenblas.so.0",
+        "librt.so.1",
+        "libgcc_s.so.1",
+        "libdl.so.2",
+        "libgomp.so.1",
+        "libm.so.6",
+        "libpthread.so.0",
+        "libarm_compute.so",
+        "libarm_compute_graph.so",
+        "libstdc++.so.6",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "required_versions": {
+        "ld-linux-aarch64.so.1": [
+          "GLIBC_2.17"
+        ],
+        "librt.so.1": [
+          "GLIBC_2.17"
+        ],
+        "libdl.so.2": [
+          "GLIBC_2.17"
+        ],
+        "libgomp.so.1": [
+          "GOMP_1.0",
+          "GOMP_4.0",
+          "OMP_1.0"
+        ],
+        "libgcc_s.so.1": [
+          "GCC_3.0",
+          "GCC_4.2.0",
+          "GCC_4.5.0"
+        ],
+        "libpthread.so.0": [
+          "GLIBC_2.17"
+        ],
+        "libstdc++.so.6": [
+          "CXXABI_1.3",
+          "CXXABI_1.3.11",
+          "CXXABI_1.3.2",
+          "CXXABI_1.3.3",
+          "CXXABI_1.3.5",
+          "CXXABI_1.3.7",
+          "CXXABI_1.3.8",
+          "CXXABI_1.3.9",
+          "GLIBCXX_3.4",
+          "GLIBCXX_3.4.11",
+          "GLIBCXX_3.4.14",
+          "GLIBCXX_3.4.15",
+          "GLIBCXX_3.4.17",
+          "GLIBCXX_3.4.18",
+          "GLIBCXX_3.4.19",
+          "GLIBCXX_3.4.20",
+          "GLIBCXX_3.4.21",
+          "GLIBCXX_3.4.22",
+          "GLIBCXX_3.4.5",
+          "GLIBCXX_3.4.9"
+        ],
+        "libm.so.6": [
+          "GLIBC_2.17",
+          "GLIBC_2.23",
+          "GLIBC_2.27"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.17",
+          "GLIBC_2.28"
+        ]
+      },
+      "provided_versions": [],
+      "rpath": [
+        "$ORIGIN"
+      ]
+    },
+    {
+      "member": "torch/lib/libtorch_global_deps.so",
+      "wheel": "cpu_torch",
+      "sha256": "188dfe4f3260496f17c7280c5c2c26c810ee6c889b115af30d4cf79e5e34bfe5",
+      "machine": 183,
+      "needed": [
+        "libc.so.6"
+      ],
+      "required_versions": {
+        "libc.so.6": [
+          "GLIBC_2.17"
+        ]
+      },
+      "provided_versions": [],
+      "rpath": [
+        "$ORIGIN"
+      ]
+    },
+    {
+      "member": "torch/lib/libtorch_python.so",
+      "wheel": "cpu_torch",
+      "sha256": "0e929970cb893cd41afc6fe993a7dbc364c72813b4c916c837cbfe39e1e1ecd0",
+      "machine": 183,
+      "needed": [
+        "libtorch.so",
+        "libshm.so",
+        "libtorch_cpu.so",
+        "libc10.so",
+        "libstdc++.so.6",
+        "libgcc_s.so.1",
+        "libpthread.so.0",
+        "libc.so.6"
+      ],
+      "required_versions": {
+        "libgcc_s.so.1": [
+          "GCC_3.0",
+          "GCC_4.5.0"
+        ],
+        "libpthread.so.0": [
+          "GLIBC_2.17"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.17",
+          "GLIBC_2.28"
+        ],
+        "libstdc++.so.6": [
+          "CXXABI_1.3",
+          "CXXABI_1.3.11",
+          "CXXABI_1.3.2",
+          "CXXABI_1.3.3",
+          "CXXABI_1.3.5",
+          "CXXABI_1.3.7",
+          "CXXABI_1.3.8",
+          "CXXABI_1.3.9",
+          "GLIBCXX_3.4",
+          "GLIBCXX_3.4.11",
+          "GLIBCXX_3.4.14",
+          "GLIBCXX_3.4.15",
+          "GLIBCXX_3.4.18",
+          "GLIBCXX_3.4.19",
+          "GLIBCXX_3.4.20",
+          "GLIBCXX_3.4.21",
+          "GLIBCXX_3.4.22",
+          "GLIBCXX_3.4.9"
+        ]
+      },
+      "provided_versions": [],
+      "rpath": [
+        "$ORIGIN"
+      ]
+    },
+    {
+      "member": "torch/lib/libtorchbind_test.so",
+      "wheel": "cpu_torch",
+      "sha256": "6809c7cb7d859a7ed6479aae0d2fd91828f02d2f3203d35054f760492bcb52f6",
+      "machine": 183,
+      "needed": [
+        "libtorch.so",
+        "libtorch_cpu.so",
+        "libc10.so",
+        "libstdc++.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6"
+      ],
+      "required_versions": {
+        "libgcc_s.so.1": [
+          "GCC_3.0"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.17"
+        ],
+        "libstdc++.so.6": [
+          "CXXABI_1.3",
+          "CXXABI_1.3.3",
+          "CXXABI_1.3.5",
+          "CXXABI_1.3.9",
+          "GLIBCXX_3.4",
+          "GLIBCXX_3.4.11",
+          "GLIBCXX_3.4.14",
+          "GLIBCXX_3.4.18",
+          "GLIBCXX_3.4.20",
+          "GLIBCXX_3.4.21",
+          "GLIBCXX_3.4.9"
+        ]
+      },
+      "provided_versions": [],
+      "rpath": [
+        "$ORIGIN"
+      ]
+    },
+    {
+      "member": "executorch/backends/apple/coreml/executorchcoreml.cpython-312-aarch64-linux-gnu.so",
+      "wheel": "cpu_executorch",
+      "sha256": "a2efefec24a832d4bc9cd0825414007bd66007c9b803b2d6a6737dc508546e88",
+      "machine": 183,
+      "needed": [
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "required_versions": {
+        "ld-linux-aarch64.so.1": [
+          "GLIBC_2.17"
+        ],
+        "libgcc_s.so.1": [
+          "GCC_3.0",
+          "GCC_3.3.1"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.17"
+        ],
+        "libstdc++.so.6": [
+          "CXXABI_1.3",
+          "CXXABI_1.3.2",
+          "CXXABI_1.3.3",
+          "CXXABI_1.3.5",
+          "CXXABI_1.3.8",
+          "CXXABI_1.3.9",
+          "GLIBCXX_3.4",
+          "GLIBCXX_3.4.11",
+          "GLIBCXX_3.4.14",
+          "GLIBCXX_3.4.15",
+          "GLIBCXX_3.4.18",
+          "GLIBCXX_3.4.19",
+          "GLIBCXX_3.4.20",
+          "GLIBCXX_3.4.21",
+          "GLIBCXX_3.4.9"
+        ]
+      },
+      "provided_versions": [],
+      "rpath": [
+        "$ORIGIN/../../../backends/cuda:$ORIGIN/../../../lib:$ORIGIN/../../../src/executorch/lib"
+      ]
+    },
+    {
+      "member": "executorch/backends/cortex_m/library/_cmsis_nn/cmsis_nn.cpython-312-aarch64-linux-gnu.so",
+      "wheel": "cpu_executorch",
+      "sha256": "fa52f86bbe777f9ccb4c53e4585aae450cd4cafabbd35027645ed09fd06620d6",
+      "machine": 183,
+      "needed": [
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6"
+      ],
+      "required_versions": {
+        "libgcc_s.so.1": [
+          "GCC_3.0",
+          "GCC_3.3.1"
+        ],
+        "libstdc++.so.6": [
+          "CXXABI_1.3",
+          "CXXABI_1.3.11",
+          "CXXABI_1.3.2",
+          "CXXABI_1.3.3",
+          "CXXABI_1.3.5",
+          "CXXABI_1.3.8",
+          "CXXABI_1.3.9",
+          "GLIBCXX_3.4",
+          "GLIBCXX_3.4.11",
+          "GLIBCXX_3.4.18",
+          "GLIBCXX_3.4.20",
+          "GLIBCXX_3.4.21",
+          "GLIBCXX_3.4.9"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.17"
+        ]
+      },
+      "provided_versions": [],
+      "rpath": [
+        "$ORIGIN/../../../../backends/cuda:$ORIGIN/../../../../lib:$ORIGIN/../../../../src/executorch/lib"
+      ]
+    },
+    {
+      "member": "executorch/codegen/tools/selective_build.cpython-312-aarch64-linux-gnu.so",
+      "wheel": "cpu_executorch",
+      "sha256": "5f09b0a45f980fb482be678f48d04282a9e65550673aeb3b631522b6918903a4",
+      "machine": 183,
+      "needed": [
+        "libexecutorch.so",
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6"
+      ],
+      "required_versions": {
+        "libgcc_s.so.1": [
+          "GCC_3.0",
+          "GCC_3.3.1"
+        ],
+        "libstdc++.so.6": [
+          "CXXABI_1.3",
+          "CXXABI_1.3.11",
+          "CXXABI_1.3.2",
+          "CXXABI_1.3.3",
+          "CXXABI_1.3.5",
+          "CXXABI_1.3.9",
+          "GLIBCXX_3.4",
+          "GLIBCXX_3.4.11",
+          "GLIBCXX_3.4.18",
+          "GLIBCXX_3.4.20",
+          "GLIBCXX_3.4.21"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.17"
+        ]
+      },
+      "provided_versions": [],
+      "rpath": [
+        "$ORIGIN/../../lib:$ORIGIN/../../src/executorch/lib:$ORIGIN/../../../lib64:$ORIGIN/../../backends/cuda"
+      ]
+    },
+    {
+      "member": "executorch/extension/llm/custom_ops/libcustom_ops_aot_lib.so",
+      "wheel": "cpu_executorch",
+      "sha256": "a3884d23947647fa47f138715be82fe1eb0b5e7a5804bd7ca0b8761d1449406a",
+      "machine": 183,
+      "needed": [
+        "libexecutorch.so",
+        "_C.cpython-312-aarch64-linux-gnu.so",
+        "libtorch.so",
+        "libtorch_cpu.so",
+        "libc10.so",
+        "libexecutorch_threadpool.so",
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6"
+      ],
+      "required_versions": {
+        "libgcc_s.so.1": [
+          "GCC_3.0",
+          "GCC_4.0.0"
+        ],
+        "libm.so.6": [
+          "GLIBC_2.17",
+          "GLIBC_2.27"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.17"
+        ],
+        "libstdc++.so.6": [
+          "CXXABI_1.3",
+          "CXXABI_1.3.7",
+          "CXXABI_1.3.8",
+          "CXXABI_1.3.9",
+          "GLIBCXX_3.4",
+          "GLIBCXX_3.4.21",
+          "GLIBCXX_3.4.9"
+        ]
+      },
+      "provided_versions": [],
+      "rpath": [
+        "$ORIGIN/../../pybindings:$ORIGIN/../../../../torch/lib:$ORIGIN/../../../lib:$ORIGIN/../../../src/executorch/lib:$ORIGIN/../../../../lib64:$ORIGIN/../../../backends/cuda"
+      ]
+    },
+    {
+      "member": "executorch/extension/llm/runner/_llm_runner.cpython-312-aarch64-linux-gnu.so",
+      "wheel": "cpu_executorch",
+      "sha256": "cef6d7858872c1a7681e9ff1aa1ba622cce4f207e674c17a84aafbebaafdd19e",
+      "machine": 183,
+      "needed": [
+        "libexecutorch.so",
+        "_C.cpython-312-aarch64-linux-gnu.so",
+        "libtorch_python.so",
+        "libtorch.so",
+        "libc10.so",
+        "libatomic.so.1",
+        "librt.so.1",
+        "libdl.so.2",
+        "libpthread.so.0",
+        "libtorch_cpu.so",
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6"
+      ],
+      "required_versions": {
+        "libm.so.6": [
+          "GLIBC_2.17",
+          "GLIBC_2.27"
+        ],
+        "libpthread.so.0": [
+          "GLIBC_2.17"
+        ],
+        "libgcc_s.so.1": [
+          "GCC_3.0",
+          "GCC_3.3.1",
+          "GCC_4.2.0",
+          "GCC_4.5.0"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.17"
+        ],
+        "libstdc++.so.6": [
+          "CXXABI_1.3",
+          "CXXABI_1.3.1",
+          "CXXABI_1.3.11",
+          "CXXABI_1.3.2",
+          "CXXABI_1.3.3",
+          "CXXABI_1.3.5",
+          "CXXABI_1.3.7",
+          "CXXABI_1.3.8",
+          "CXXABI_1.3.9",
+          "GLIBCXX_3.4",
+          "GLIBCXX_3.4.11",
+          "GLIBCXX_3.4.14",
+          "GLIBCXX_3.4.15",
+          "GLIBCXX_3.4.17",
+          "GLIBCXX_3.4.18",
+          "GLIBCXX_3.4.19",
+          "GLIBCXX_3.4.20",
+          "GLIBCXX_3.4.21",
+          "GLIBCXX_3.4.9"
+        ]
+      },
+      "provided_versions": [],
+      "rpath": [
+        "$ORIGIN/../../pybindings:$ORIGIN/../../../../torch/lib:$ORIGIN/../../../lib:$ORIGIN/../../../src/executorch/lib:$ORIGIN/../../../../lib64:$ORIGIN/../../../backends/cuda"
+      ]
+    },
+    {
+      "member": "executorch/extension/pybindings/_C.cpython-312-aarch64-linux-gnu.so",
+      "wheel": "cpu_executorch",
+      "sha256": "a943edd8d200b1520b9fbc0a32fc0807ab50c0435945625300686f0632256d70",
+      "machine": 183,
+      "needed": [
+        "libexecutorch.so",
+        "libexecutorch_kernels_optimized.so",
+        "libexecutorch_backend_xnnpack.so",
+        "libexecutorch_threadpool.so",
+        "libexecutorch_etdump.so",
+        "libexecutorch_backend_openvino.so",
+        "libtorch_python.so",
+        "libtorch.so",
+        "libtorch_cpu.so",
+        "libc10.so",
+        "libdl.so.2",
+        "libstdc++.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "required_versions": {
+        "ld-linux-aarch64.so.1": [
+          "GLIBC_2.17"
+        ],
+        "libdl.so.2": [
+          "GLIBC_2.17"
+        ],
+        "libgcc_s.so.1": [
+          "GCC_3.0",
+          "GCC_3.3.1"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.17"
+        ],
+        "libstdc++.so.6": [
+          "CXXABI_1.3",
+          "CXXABI_1.3.11",
+          "CXXABI_1.3.2",
+          "CXXABI_1.3.3",
+          "CXXABI_1.3.5",
+          "CXXABI_1.3.9",
+          "GLIBCXX_3.4",
+          "GLIBCXX_3.4.11",
+          "GLIBCXX_3.4.14",
+          "GLIBCXX_3.4.18",
+          "GLIBCXX_3.4.19",
+          "GLIBCXX_3.4.20",
+          "GLIBCXX_3.4.21",
+          "GLIBCXX_3.4.9"
+        ]
+      },
+      "provided_versions": [],
+      "rpath": [
+        "$ORIGIN/../../../torch/lib:$ORIGIN/../../src/executorch/lib:$ORIGIN/../../lib:$ORIGIN/../../../lib64:$ORIGIN/../../backends/cuda"
+      ]
+    },
+    {
+      "member": "executorch/extension/pybindings/data_loader.cpython-312-aarch64-linux-gnu.so",
+      "wheel": "cpu_executorch",
+      "sha256": "6749bce005be0a252bbaef4fa796577bf0004551018f534c8c92321302fba8b1",
+      "machine": 183,
+      "needed": [
+        "libexecutorch.so",
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6"
+      ],
+      "required_versions": {
+        "libgcc_s.so.1": [
+          "GCC_3.0",
+          "GCC_3.3.1"
+        ],
+        "libstdc++.so.6": [
+          "CXXABI_1.3",
+          "CXXABI_1.3.11",
+          "CXXABI_1.3.2",
+          "CXXABI_1.3.3",
+          "CXXABI_1.3.5",
+          "CXXABI_1.3.9",
+          "GLIBCXX_3.4",
+          "GLIBCXX_3.4.11",
+          "GLIBCXX_3.4.18",
+          "GLIBCXX_3.4.20",
+          "GLIBCXX_3.4.21"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.17"
+        ]
+      },
+      "provided_versions": [],
+      "rpath": [
+        "$ORIGIN/../../lib:$ORIGIN/../../src/executorch/lib:$ORIGIN/../../../lib64:$ORIGIN/../../backends/cuda"
+      ]
+    },
+    {
+      "member": "executorch/extension/training/pybindings/_training_lib.cpython-312-aarch64-linux-gnu.so",
+      "wheel": "cpu_executorch",
+      "sha256": "34ea3a7180d944aeb4a1c9e550cf1c70926e7afcde90da07b404f6c497358163",
+      "machine": 183,
+      "needed": [
+        "libexecutorch_backend_xnnpack.so",
+        "libexecutorch.so",
+        "libtorch_python.so",
+        "libexecutorch_etdump.so",
+        "libtorch.so",
+        "libtorch_cpu.so",
+        "libc10.so",
+        "libstdc++.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6"
+      ],
+      "required_versions": {
+        "libgcc_s.so.1": [
+          "GCC_3.0",
+          "GCC_3.3.1"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.17"
+        ],
+        "libstdc++.so.6": [
+          "CXXABI_1.3",
+          "CXXABI_1.3.11",
+          "CXXABI_1.3.2",
+          "CXXABI_1.3.3",
+          "CXXABI_1.3.5",
+          "CXXABI_1.3.9",
+          "GLIBCXX_3.4",
+          "GLIBCXX_3.4.11",
+          "GLIBCXX_3.4.14",
+          "GLIBCXX_3.4.18",
+          "GLIBCXX_3.4.20",
+          "GLIBCXX_3.4.21"
+        ]
+      },
+      "provided_versions": [],
+      "rpath": [
+        "$ORIGIN/../../../../torch/lib:$ORIGIN/../../../lib:$ORIGIN/../../../src/executorch/lib:$ORIGIN/../../../../lib64:$ORIGIN/../../../backends/cuda"
+      ]
+    },
+    {
+      "member": "executorch/kernels/quantized/libquantized_ops_aot_lib.so",
+      "wheel": "cpu_executorch",
+      "sha256": "37abdb72fca41b49c6eb496bbb5e50fcc452d9982f44dff44481998e5a079978",
+      "machine": 183,
+      "needed": [
+        "libexecutorch.so",
+        "libexecutorch_kernels_quantized.so",
+        "_C.cpython-312-aarch64-linux-gnu.so",
+        "libtorch.so",
+        "libtorch_cpu.so",
+        "libc10.so",
+        "libstdc++.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6"
+      ],
+      "required_versions": {
+        "libgcc_s.so.1": [
+          "GCC_3.0"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.17"
+        ],
+        "libstdc++.so.6": [
+          "CXXABI_1.3",
+          "CXXABI_1.3.9",
+          "GLIBCXX_3.4",
+          "GLIBCXX_3.4.21",
+          "GLIBCXX_3.4.9"
+        ]
+      },
+      "provided_versions": [],
+      "rpath": [
+        "$ORIGIN/../../lib:$ORIGIN/../../src/executorch/lib:$ORIGIN/../../../lib64:$ORIGIN/../../extension/pybindings:$ORIGIN/../../../torch/lib:$ORIGIN/../../backends/cuda"
+      ]
+    },
+    {
+      "member": "executorch/lib/libexecutorch.so",
+      "wheel": "cpu_executorch",
+      "sha256": "95e92e48c98f31036d96030f2ef1941a24be18845290829fec6f16a62f220aef",
+      "machine": 183,
+      "needed": [
+        "libdl.so.2",
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6"
+      ],
+      "required_versions": {
+        "libgcc_s.so.1": [
+          "GCC_3.0"
+        ],
+        "libm.so.6": [
+          "GLIBC_2.17",
+          "GLIBC_2.27"
+        ],
+        "libstdc++.so.6": [
+          "CXXABI_1.3",
+          "CXXABI_1.3.11",
+          "CXXABI_1.3.5",
+          "CXXABI_1.3.8",
+          "CXXABI_1.3.9",
+          "GLIBCXX_3.4",
+          "GLIBCXX_3.4.18",
+          "GLIBCXX_3.4.19",
+          "GLIBCXX_3.4.20",
+          "GLIBCXX_3.4.21"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.17"
+        ]
+      },
+      "provided_versions": [],
+      "rpath": [
+        "$ORIGIN:$ORIGIN/../backends/cuda:$ORIGIN/../lib:$ORIGIN/../src/executorch/lib"
+      ]
+    },
+    {
+      "member": "executorch/lib/libexecutorch_backend_openvino.so",
+      "wheel": "cpu_executorch",
+      "sha256": "791d880661ab40af4a387e65fab6b25e160ee7aaca8399622cbdb8634485ed3a",
+      "machine": 183,
+      "needed": [
+        "libdl.so.2",
+        "libexecutorch.so",
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6"
+      ],
+      "required_versions": {
+        "libgcc_s.so.1": [
+          "GCC_3.0"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.17"
+        ],
+        "libdl.so.2": [
+          "GLIBC_2.17"
+        ],
+        "libstdc++.so.6": [
+          "CXXABI_1.3",
+          "CXXABI_1.3.9",
+          "GLIBCXX_3.4",
+          "GLIBCXX_3.4.11",
+          "GLIBCXX_3.4.21"
+        ]
+      },
+      "provided_versions": [],
+      "rpath": [
+        "$ORIGIN:$ORIGIN/../backends/cuda:$ORIGIN/../lib:$ORIGIN/../src/executorch/lib"
+      ]
+    },
+    {
+      "member": "executorch/lib/libexecutorch_backend_xnnpack.so",
+      "wheel": "cpu_executorch",
+      "sha256": "ad1059216df2e2662a23ba5f9eb5e55b7e944dd1f49e03f3426c656cb338efba",
+      "machine": 183,
+      "needed": [
+        "libexecutorch_threadpool.so",
+        "libexecutorch.so",
+        "libpthread.so.0",
+        "libm.so.6",
+        "libstdc++.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6"
+      ],
+      "required_versions": {
+        "libgcc_s.so.1": [
+          "GCC_3.0"
+        ],
+        "libpthread.so.0": [
+          "GLIBC_2.17"
+        ],
+        "libm.so.6": [
+          "GLIBC_2.17",
+          "GLIBC_2.27"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.17"
+        ],
+        "libstdc++.so.6": [
+          "CXXABI_1.3",
+          "CXXABI_1.3.5",
+          "CXXABI_1.3.9",
+          "GLIBCXX_3.4",
+          "GLIBCXX_3.4.11",
+          "GLIBCXX_3.4.18",
+          "GLIBCXX_3.4.21"
+        ]
+      },
+      "provided_versions": [],
+      "rpath": [
+        "$ORIGIN:$ORIGIN/../backends/cuda:$ORIGIN/../lib:$ORIGIN/../src/executorch/lib"
+      ]
+    },
+    {
+      "member": "executorch/lib/libexecutorch_etdump.so",
+      "wheel": "cpu_executorch",
+      "sha256": "d9c81a223f630ac8956ffe285923576287ca51f8331edb580746ba2cf37fbde2",
+      "machine": 183,
+      "needed": [
+        "libexecutorch.so",
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6"
+      ],
+      "required_versions": {
+        "libstdc++.so.6": [
+          "CXXABI_1.3",
+          "CXXABI_1.3.9"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.17"
+        ]
+      },
+      "provided_versions": [],
+      "rpath": [
+        "$ORIGIN:$ORIGIN/../backends/cuda:$ORIGIN/../lib:$ORIGIN/../src/executorch/lib"
+      ]
+    },
+    {
+      "member": "executorch/lib/libexecutorch_kernels_optimized.so",
+      "wheel": "cpu_executorch",
+      "sha256": "4363449c4c33351e1bcc92cae78c7f8727133b60769cb3749de1065353bc7d79",
+      "machine": 183,
+      "needed": [
+        "libexecutorch.so",
+        "libdl.so.2",
+        "libexecutorch_threadpool.so",
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6"
+      ],
+      "required_versions": {
+        "libgcc_s.so.1": [
+          "GCC_3.0",
+          "GCC_4.0.0",
+          "GCC_4.2.0"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.17"
+        ],
+        "libm.so.6": [
+          "GLIBC_2.17",
+          "GLIBC_2.27"
+        ],
+        "libstdc++.so.6": [
+          "CXXABI_1.3",
+          "CXXABI_1.3.3",
+          "CXXABI_1.3.7",
+          "CXXABI_1.3.8",
+          "CXXABI_1.3.9",
+          "GLIBCXX_3.4",
+          "GLIBCXX_3.4.11",
+          "GLIBCXX_3.4.14",
+          "GLIBCXX_3.4.17",
+          "GLIBCXX_3.4.18",
+          "GLIBCXX_3.4.21",
+          "GLIBCXX_3.4.22"
+        ]
+      },
+      "provided_versions": [],
+      "rpath": [
+        "$ORIGIN:$ORIGIN/../backends/cuda:$ORIGIN/../lib:$ORIGIN/../src/executorch/lib"
+      ]
+    },
+    {
+      "member": "executorch/lib/libexecutorch_kernels_quantized.so",
+      "wheel": "cpu_executorch",
+      "sha256": "2ceebd6fe8af427f3d97bb49f6785b01a60e8ec02fe522c7d58cf93d496b0f83",
+      "machine": 183,
+      "needed": [
+        "libexecutorch_threadpool.so",
+        "libexecutorch.so",
+        "libdl.so.2",
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6"
+      ],
+      "required_versions": {
+        "libgcc_s.so.1": [
+          "GCC_3.0"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.17"
+        ],
+        "libstdc++.so.6": [
+          "CXXABI_1.3",
+          "CXXABI_1.3.9",
+          "GLIBCXX_3.4"
+        ]
+      },
+      "provided_versions": [],
+      "rpath": [
+        "$ORIGIN:$ORIGIN/../backends/cuda:$ORIGIN/../lib:$ORIGIN/../src/executorch/lib"
+      ]
+    },
+    {
+      "member": "executorch/lib/libexecutorch_threadpool.so",
+      "wheel": "cpu_executorch",
+      "sha256": "cf5ecd4ed00cd63e42713485322e55de387c8c27ef9da7496c897c10bf9638da",
+      "machine": 183,
+      "needed": [
+        "libexecutorch.so",
+        "libpthread.so.0",
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6"
+      ],
+      "required_versions": {
+        "libgcc_s.so.1": [
+          "GCC_3.0"
+        ],
+        "libpthread.so.0": [
+          "GLIBC_2.17"
+        ],
+        "libstdc++.so.6": [
+          "CXXABI_1.3",
+          "CXXABI_1.3.9",
+          "GLIBCXX_3.4",
+          "GLIBCXX_3.4.11",
+          "GLIBCXX_3.4.14",
+          "GLIBCXX_3.4.21"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.17"
+        ]
+      },
+      "provided_versions": [],
+      "rpath": [
+        "$ORIGIN:$ORIGIN/../backends/cuda:$ORIGIN/../lib:$ORIGIN/../src/executorch/lib"
+      ]
+    },
+    {
+      "member": "pytorch_tokenizers/pytorch_tokenizers_cpp.cpython-312-aarch64-linux-gnu.so",
+      "wheel": "pypi_tokenizer",
+      "sha256": "193ddccf7d47941d2246eea817f2f5faa381fb1be90db340fd8ba0f90c6435d1",
+      "machine": 183,
+      "needed": [
+        "libatomic.so.1",
+        "librt.so.1",
+        "libpthread.so.0",
+        "libstdc++.so.6",
+        "libm.so.6",
+        "libgcc_s.so.1",
+        "libc.so.6",
+        "ld-linux-aarch64.so.1"
+      ],
+      "required_versions": {
+        "ld-linux-aarch64.so.1": [
+          "GLIBC_2.17"
+        ],
+        "libgcc_s.so.1": [
+          "GCC_3.0",
+          "GCC_3.3.1",
+          "GCC_4.2.0",
+          "GCC_4.5.0"
+        ],
+        "libpthread.so.0": [
+          "GLIBC_2.17"
+        ],
+        "libc.so.6": [
+          "GLIBC_2.17"
+        ],
+        "libm.so.6": [
+          "GLIBC_2.17",
+          "GLIBC_2.27"
+        ],
+        "libstdc++.so.6": [
+          "CXXABI_1.3",
+          "CXXABI_1.3.1",
+          "CXXABI_1.3.11",
+          "CXXABI_1.3.2",
+          "CXXABI_1.3.3",
+          "CXXABI_1.3.5",
+          "CXXABI_1.3.7",
+          "CXXABI_1.3.8",
+          "CXXABI_1.3.9",
+          "GLIBCXX_3.4",
+          "GLIBCXX_3.4.11",
+          "GLIBCXX_3.4.14",
+          "GLIBCXX_3.4.15",
+          "GLIBCXX_3.4.17",
+          "GLIBCXX_3.4.18",
+          "GLIBCXX_3.4.19",
+          "GLIBCXX_3.4.20",
+          "GLIBCXX_3.4.21",
+          "GLIBCXX_3.4.9"
+        ]
+      },
+      "provided_versions": [],
+      "rpath": []
+    }
+  ],
+  "static_assessment": {
+    "status": "STATIC_CHECKS_MATCH_NOT_RUNTIME_PROOF",
+    "errors": [],
+    "elf_files_checked": 33,
+    "system_libraries_required": [
+      "ld-linux-aarch64.so.1",
+      "libatomic.so.1",
+      "libc.so.6",
+      "libdl.so.2",
+      "libgcc_s.so.1",
+      "libm.so.6",
+      "libpthread.so.0",
+      "librt.so.1",
+      "libstdc++.so.6",
+      "libz.so.1"
+    ],
+    "imports_verified": false,
+    "kernel_execution_verified": false,
+    "llama_generation_verified": false,
+    "memory_or_latency_verified": false,
+    "limitation": "Library/version presence is necessary only. Loader search paths, CPU instructions, Python imports, operator registration and the full model must be tested on the real target."
+  },
+  "dependency_source_build": {
+    "steps": [
+      {
+        "argv": [
+          "/root/.local/bin/uv",
+          "venv",
+          "--python",
+          "/mnt/c/Users/RF AND SIMULATION/Desktop/honey/ForgeSight/.venv/bin/python",
+          "/root/.cache/forgesight/jetson-antlr-build-_ure3c79/venv"
+        ],
+        "returncode": 0
+      },
+      {
+        "argv": [
+          "/root/.local/bin/uv",
+          "pip",
+          "sync",
+          "--python",
+          "/root/.cache/forgesight/jetson-antlr-build-_ure3c79/venv/bin/python",
+          "--require-hashes",
+          "requirements/jetson_build_tools.lock.txt"
+        ],
+        "returncode": 0
+      },
+      {
+        "argv": [
+          "/root/.local/bin/uv",
+          "build",
+          "/mnt/c/Users/RF AND SIMULATION/Desktop/honey/ForgeSight/artifacts/edge/jetson_compatibility_v1/antlr4-python3-runtime-4.9.3.tar.gz",
+          "--wheel",
+          "--no-build-isolation",
+          "--python",
+          "/root/.cache/forgesight/jetson-antlr-build-_ure3c79/venv/bin/python",
+          "--out-dir",
+          "/mnt/c/Users/RF AND SIMULATION/Desktop/honey/ForgeSight/artifacts/edge/jetson_compatibility_v1/built_wheels"
+        ],
+        "returncode": 0
+      }
+    ],
+    "build_environment": "/root/.cache/forgesight/jetson-antlr-build-_ure3c79/venv",
+    "sdist_sha256": "f224469b4168294902bb1efa80a8bf7855f24c99aef99cbefc1bcd3cce77881b",
+    "wheel": "/mnt/c/Users/RF AND SIMULATION/Desktop/honey/ForgeSight/artifacts/edge/jetson_compatibility_v1/built_wheels/antlr4_python3_runtime-4.9.3-py3-none-any.whl",
+    "wheel_sha256": "5ed203104b9ee38179ea62afc561256b0132ed18fdd8e873648ea1e38f759e18",
+    "wheel_bytes": 144590,
+    "wheel_metadata": "Wheel-Version: 1.0\nGenerator: setuptools (84.2.1)\nRoot-Is-Purelib: true\nTag: py3-none-any\n\n",
+    "no_native_binaries": true,
+    "target_install_performed": false
+  },
+  "interpreter_download_failures": {
+    "archive_verified": false,
+    "attempts": [
+      {
+        "source": "official releases.astral.sh URL from uv metadata",
+        "result": "HTTP 403"
+      },
+      {
+        "source": "canonical GitHub asset URL with download query",
+        "result": "URL connection timeout after redirect"
+      },
+      {
+        "source": "canonical GitHub asset through Windows curl IPv4",
+        "result": "curl exit 28, connection timeout"
+      }
+    ],
+    "expected_sha256_from_github_release_metadata": "sha256:577b4bec0793ad1ff0cbff9adbd0df078eddde38a4c41bf5d83ad381a85ee39d",
+    "no_target_installation": true
+  },
+  "tests": {
+    "command": [
+      "/root/.cache/forgesight/app-v1/venv/bin/python",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests",
+      "-q"
+    ],
+    "returncode": 0,
+    "wall_seconds": 9.377299370000001
+  },
+  "source_files": {
+    "forgesight/edge_compatibility.py": {
+      "bytes": 9791,
+      "sha256": "45e4044e5e460019155ef3a7fc758eebc2476c9ab6fd9c44a45807af20217146"
+    },
+    "tests/test_edge_compatibility.py": {
+      "bytes": 5478,
+      "sha256": "3262495cee933b70892391bbf29d9da514df60a83dba3f8ccc4a151532520fd9"
+    },
+    "configs/jetson_llama_runtime_v1.json": {
+      "bytes": 4595,
+      "sha256": "95ae42da1686599a9e2b5d74f289de636b5e86167f7a9ef314a4528a2811da5e"
+    },
+    "requirements/jetson_llama.in": {
+      "bytes": 565,
+      "sha256": "817a79ed3d5e38e91485e48a1064350e5646e2e074b02ece5c1955470ef05844"
+    },
+    "requirements/pylock.jetson_llama.toml": {
+      "bytes": 32275,
+      "sha256": "64842817a8f330bdfc2af660b610115418bbf7d5d30bf0ed309b709047f69424"
+    },
+    "requirements/jetson_llama.lock.txt": {
+      "bytes": 84097,
+      "sha256": "0ec2f5411500792d19b3ec05939c6465f6f9e7227676526bb969acbc32d1d75f"
+    },
+    "requirements/jetson_build_tools.in": {
+      "bytes": 170,
+      "sha256": "a7d3a6f34f8124386726664067f8e9acd6b04e3091267f0fb7eb8449a6387f61"
+    },
+    "requirements/jetson_build_tools.lock.txt": {
+      "bytes": 774,
+      "sha256": "9a12342a7f215d4eaa81ed4f639d2ad1ac673970990e7323bf0907c8859e6320"
+    }
+  },
+  "local_evidence": {
+    "artifacts/edge/jetson_compatibility_v1/candidate_links.json": {
+      "bytes": 2769,
+      "sha256": "41409b601947ac45fda6b64beb75aa42af413a9c8b6ac12d03a1f27d3fac08e7"
+    },
+    "artifacts/edge/jetson_compatibility_v1/downloaded_wheels.json": {
+      "bytes": 13990,
+      "sha256": "fa58a384df031fa441bc287bb0a72fa014aed0a6952a3e5e6f01e5381966243f"
+    },
+    "artifacts/edge/jetson_compatibility_v1/elf_probe.json": {
+      "bytes": 23447,
+      "sha256": "fbac1f7eb44164d9cc26d00fea5108408731ce254ffdbc64cc759606db29b07e"
+    },
+    "artifacts/edge/jetson_compatibility_v1/target_libraries.json": {
+      "bytes": 9085,
+      "sha256": "7f0abf85cb9c040cc4bbc112fcbedfbe189d29c70b3a6d1c2e23ca57f19d2056"
+    },
+    "artifacts/edge/jetson_compatibility_v1/target_transport.json": {
+      "bytes": 149,
+      "sha256": "b1741e864fc29668eaa84a6ce5342586a5bd4c3a45f95c7dc629ba750aab69d4"
+    },
+    "artifacts/edge/jetson_compatibility_v1/target_probe_source.py": {
+      "bytes": 2986,
+      "sha256": "cbc6f7e659a85ea09709bf7b7668d1e453d3c631e498d14f0104d42927904b06"
+    },
+    "artifacts/edge/jetson_compatibility_v1/target_probe.gz.b64": {
+      "bytes": 2714,
+      "sha256": "3dfb2e2419a6567a9da28707bfda337fce748d18b4fd2679e3b6b977f195dc4a"
+    },
+    "artifacts/edge/jetson_compatibility_v1/python_download_candidate.json": {
+      "bytes": 510,
+      "sha256": "97a1569080737ee405514e2a6361e5d42fce4d6c7d41711687bd34286f964232"
+    },
+    "artifacts/edge/jetson_compatibility_v1/python_release_asset.json": {
+      "bytes": 541,
+      "sha256": "e7e15bbf02a6f1dcea24c9ab9965a849abefc93d74109d9ce1fcd3fe09127a39"
+    },
+    "artifacts/edge/jetson_compatibility_v1/python_archive_download_issues.json": {
+      "bytes": 586,
+      "sha256": "ffe4de56bea677ce190861629223169a78e1a73b451af4520bb3ffe452f5dfe8"
+    },
+    "artifacts/edge/jetson_compatibility_v1/initial_download_issue.json": {
+      "bytes": 172,
+      "sha256": "bd5430e8e249ae32cbfc8ddc1a900ddeb58c4cafdf88f05e510393591f8a5beb"
+    },
+    "artifacts/edge/jetson_compatibility_v1/antlr_build_verification.json": {
+      "bytes": 1772,
+      "sha256": "7a76d7ae42464115a653187081997c042db3c1998665dddf9e0fd8e8ac2a0a19"
+    },
+    "artifacts/edge/jetson_compatibility_v1/antlr_build.log": {
+      "bytes": 13462,
+      "sha256": "cca6aeebd7e43024b09e9ff326c4051923475831ce5f11a8dcc463d6866c55cb"
+    },
+    "artifacts/edge/jetson_compatibility_v1/tests.log": {
+      "bytes": 99,
+      "sha256": "bb1618476a6e26884f4e465e15d0717d308b02d2cf0e54c51ed5d62192dbff8a"
+    },
+    "artifacts/edge/jetson_compatibility_v1/tests_result.json": {
+      "bytes": 217,
+      "sha256": "b8c771d02097cbe1d993a7807de3940304a036c7c99ca48891aca9d30f6a3a80"
+    },
+    "artifacts/edge/jetson_compatibility_v1/verification.json": {
+      "bytes": 646,
+      "sha256": "2aa26a22cd8dd0f53cf5f9752c7be6a77747c23c981a8b2f92e7303c5a5e8011"
+    },
+    "artifacts/edge/jetson_compatibility_v1/before.json": {
+      "bytes": 21707,
+      "sha256": "d13c257e79293f7e01567d9620e53a4f56798c9ede7e170468b22f53595acb2a"
+    },
+    "artifacts/edge/jetson_compatibility_v1/after.json": {
+      "bytes": 21707,
+      "sha256": "d13c257e79293f7e01567d9620e53a4f56798c9ede7e170468b22f53595acb2a"
+    },
+    "artifacts/edge/jetson_compatibility_v1/ssh_probe_session.json": {
+      "bytes": 324,
+      "sha256": "43835c4bd33617a29faa403f741121ce2e8a2d9fe1a26a7df5a670074640f6c6"
+    },
+    "artifacts/edge/jetson_compatibility_v1/verified_probe_final/report.json": {
+      "bytes": 46920,
+      "sha256": "2f017c1972e9fd5537ef12b28ef44a6e6df639780f2d533774b47198576946e7"
+    }
+  },
+  "sources": [
+    "https://download.pytorch.org/whl/cpu/executorch/",
+    "https://download.pytorch.org/whl/cpu/torch/",
+    "https://pypi.org/pypi/executorch/1.5.1/json",
+    "https://pypi.org/pypi/pytorch-tokenizers/1.6.0/json",
+    "https://api.github.com/repos/astral-sh/python-build-standalone/releases/tags/20260901",
+    "https://github.com/pytorch/executorch/blob/3b60683923245cf472b7323426920e15623ba361/extension/llm/runner/__init__.py"
+  ],
+  "installation_readiness": "PENDING_INTERPRETER_ACQUISITION_AND_ABI_CHECK",
+  "interpreter_executed": false,
+  "target_packages_installed": false,
+  "target_environment_created": false,
+  "target_system_python_changed": false,
+  "cuda_stack_changed": false,
+  "deleted_manual_audit_folder_recreated": false,
+  "credential_values_recorded": false,
+  "no_new_vision_or_holdout_inference": true,
+  "stage_2_generation_gate": "NOT_VERIFIED",
+  "stage_8_camera_vision_gate": "NOT_VERIFIED",
+  "stage_10_offline_gate": "NOT_VERIFIED",
+  "next_exact_action": "Substep 2.9: retrieve/verify interpreter archive and executable requirements, then create only the isolated ARM CPU environment and verify native imports/operator registration. Model generation remains a separate proof gate."
+}
