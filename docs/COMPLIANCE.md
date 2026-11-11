@@ -88,7 +88,7 @@ background/UI responsiveness or offline edge claim follows. See
 | Useful operator recommendations | ONE PC CHECKLIST NOTE VERIFIED; broad usefulness open | Actual ExecuTorch note cites real record/prototype checklist; no factory diagnosis, approved SOP, UI or device proof |
 | Every-inspection history | PC SQLITE REPLAY VERIFIED; edge/failure recovery open | Original graded/error records survive writer exit and fresh-process queries; 4 retries add no rows; see STORAGE.md |
 | One event per physical part | REPLAY + PERSISTENT ID GATE VERIFIED; physical proof open | 9 frames -> 4 declared-part records; known IDs blocked after restart; actual physical identity/camera unverified |
-| Exact eligible edge hardware | USER-REPORTED AVAILABLE; NOT VERIFIED | User reports Orin Nano 8GB and Logitech USB webcam on 2026-11-11; device-side module/RAM/architecture/JetPack inventory and authenticated access pending |
+| Exact eligible edge hardware | AUTHENTICATED INVENTORY VERIFIED | Orin Nano 8GB module identifiers, ARM64, RAM, Ubuntu/L4T, SD storage and Logitech C270 USB/video nodes recorded; capture/inference are separate open gates |
 | Llama-family inference via ExecuTorch on Jetson | BLOCKED - NOT VERIFIED | Actual locally generated text plus model/runtime/artifact provenance and measurements |
 | Physical camera validation | BLOCKED - NOT VERIFIED | Controlled real samples captured and inspected on Jetson |
 | Offline edge operation | BLOCKED - NOT VERIFIED | Disconnected cold start and real end-to-end device run |
@@ -97,6 +97,17 @@ background/UI responsiveness or offline edge claim follows. See
 | Reproducible source/application/report/video | NOT VERIFIED | Reproducible setup, actual application, report, demo and repository delivery |
 
 HailoRT is not applicable to the proposed Jetson route without Hailo hardware.
+
+The 2026-11-11 authenticated inventory closes the device-identification gate
+only. Strict SSH identity checks were retained; no credentials are stored in
+the project. The audit script ran on the actual ARM64 Python 3.8.10 interpreter,
+with lossless JSON transport checked by SHA-256. No installation, runtime/model
+execution, frame capture or disconnected test occurred. The 35.6.1 release maps
+to the JetPack 5.1.5 family, but the JetPack metapackage is absent. Power-mode
+query errors and missing camera-format tooling remain explicit. The next task
+is a compatibility recipe for isolated modern Python/native ExecuTorch on this
+userspace, not a claim that current PC environments run on Jetson. See
+`manifests/jetson_device_audit_v1.json` and `docs/HARDWARE.md`.
 No calibrated millimeters, certified industrial grades, PDF performance,
 factory root causes, or actual offline compliance are claimed.
 

@@ -32,7 +32,66 @@ Continue with the proposed Orin Nano route. See the
 [recorded reply and implications](ORGANIZER_CLARIFICATION.md).
 Platform-family eligibility does not verify our actual module or deployment.
 
-## Jetson device inventory: REPORTED AVAILABLE - DEVICE AUDIT PENDING
+## Jetson device inventory: AUTHENTICATED READ-ONLY AUDIT VERIFIED
+
+On 2026-11-11 an SSH session authenticated after the user-supplied device-console
+ED25519 fingerprint matched the advertised key. Strict host-key checking was
+retained; the verified key was saved on the PC. Credentials are not recorded in
+the repository or audit artifacts. The session closed normally after inspection.
+No package install, model transfer, flashing, power-mode change or camera stream
+was performed. This completes the first device inventory, not Stages 2 or 8.
+
+| Item | Actual observation |
+| --- | --- |
+| Device-tree model | NVIDIA Jetson Orin Nano Engineering Reference Developer Kit Super |
+| Module / carrier identifiers | `p3767-0003` / `p3768-0000`, `super` configuration |
+| Module interpretation | Orin Nano 8GB; NVIDIA maps P3767-0003 to this variant |
+| Architecture / CPU count | Linux `aarch64`; 6 online CPUs |
+| Kernel / L4T | `5.10.216-tegra`; release 35.6.1 |
+| OS / libc | Ubuntu 20.04.6 LTS; glibc 2.31 |
+| System Python | `/usr/bin/python3`, 3.8.10 |
+| Memory | 7,629,624 KiB (7.28 GiB) reported total; 4.28 GiB available at the final snapshot |
+| Swap | 3.64 GiB configured across six zram devices; not additional physical RAM |
+| Root storage | SD, `mmcblk1`, 119.2 GiB device; about 92.70 GiB free on root at the snapshot |
+| CUDA / cuDNN | nvcc 11.4.315; cuDNN package 8.6.0.166 for CUDA 11.4 |
+| Camera | Logitech C270, USB `046d:0825`; names at `/dev/video0` and `/dev/video1` refer to the same USB function |
+| Existing Python modules | NumPy 1.17.4, Pillow 7.0.0; `cv2` discoverable without importing it |
+| ML/advisory stack in system Python | Torch, torchvision and ExecuTorch not found by module/metadata checks; FastAPI/Uvicorn metadata absent |
+| Toolchain | GCC/G++ 9.4.0, CMake 3.16.3, Git 2.25.1 |
+| Power query | Reports `25W`, mode 1, but also EMC permission errors; full power/clock verification remains open |
+
+The hardware mapping comes from NVIDIA's [module table](https://docs.nvidia.com/jetson/archives/r36.4.3/DeveloperGuide/IN/QuickStart.html).
+NVIDIA maps [L4T 35.6.1 to JetPack 5.1.5](https://developer.nvidia.com/embedded/jetson-linux-r3561).
+The `nvidia-jetpack` metapackage is absent, so record this as a release-family
+mapping rather than a fully installed/verified JetPack bundle. The package query
+returned 1 because some requested package names were absent; its successful
+component-version output is retained. `v4l2-ctl` is unavailable, leaving format
+enumeration unverified. No attempt was made to install it. User-reported camera
+preview remains distinct from project-controlled frame capture and inference.
+
+`scripts/audit_jetson_readonly.py` ran on the actual Python 3.8 interpreter and
+uses only standard-library inspection. Existing project checks were limited to
+six named home/Desktop/projects paths; none existed. This is not an exhaustive
+search or permission to overwrite another directory. System ML modules were not
+imported, and no CUDA tensor or model forward was executed.
+
+The console initially altered long JSON lines; a first encoded capture also hit
+the capture token limit. Both attempts are retained. The final short-line
+compressed transfer passed SHA-256 verification before JSON parsing. Authoritative
+local evidence is `artifacts/hardware/jetson_audit_2026_11_11_01/device_audit.json`;
+the committed summary/provenance is `manifests/jetson_device_audit_v1.json`.
+The script was checked for Python 3.8 syntax and the transported source matched
+its local SHA-256. No broad PC test rerun or model-performance claim is made.
+
+Next is Substep 2.8: a read-only ARM runtime compatibility probe and a pinned
+isolated-environment/native-build recipe. The pinned ExecuTorch Python package
+requires Python >=3.10; the current Python 3.8 cannot host it. A native build's
+pinned CMake minimum is 3.24, above the installed 3.16.3. Neither observation
+alone justifies replacing the working OS. Check ARM wheels, native kernels and
+dependencies before any installation or upgrade. Llama generation, GPU vision,
+camera capture, latency/memory under load and offline operation remain unverified.
+
+### Arrival and connection history
 
 On 2026-11-11 (Asia/Calcutta), the user reported receiving an **NVIDIA Jetson
 Orin Nano 8GB and a Logitech USB webcam**. This supersedes the previous report

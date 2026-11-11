@@ -37,24 +37,24 @@ or UI advice states were added. Stage 9 is NOT DONE. Guidance is explicitly
 PROTOTYPE_NOT_FACTORY_APPROVED; possible causes are withheld. Human review and
 broader domain/usefulness testing remain required for richer advice.
 
-On 2026-11-11 the user reported receiving a Jetson Orin Nano 8GB and a Logitech
-USB webcam. The user also reports Ubuntu booted, webcam preview working and SSH
-service active, and supplied a login/address. Initial Windows/WSL connections
-failed. The user subsequently supplied terminal output confirming `wlan0` UP,
-the LAN address, a separate Docker bridge, and SSH listening on all interfaces.
-A fresh Windows retry now reaches an SSH server at the expected address but
-stops on first-use host-key verification. Its advertised public-key fingerprint
-is saved locally and awaits comparison with output read directly on the Jetson.
-No host-key bypass, known_hosts modification or login occurred. Authenticated
-device verification remains pending. Stage 8
-remains NOT VERIFIED: no project camera/device commands or on-device/offline
-proof have been observed. The current
+On 2026-11-11 the first authenticated read-only Jetson audit completed after
+matching the user-provided console host fingerprint. The actual device reports
+Orin Nano 8GB identifiers, ARM64, 6 CPUs, Ubuntu 20.04.6, L4T 35.6.1, Python
+3.8.10, CUDA 11.4, 7.28 GiB reported RAM and about 92.70 GiB free SD storage.
+Logitech C270 USB/video nodes are confirmed; no project frame was captured.
+The system interpreter has no discoverable Torch/ExecuTorch, and `v4l2-ctl` is
+missing. Power query reports 25W with EMC permission errors. Full provenance and
+limitations are in `docs/HARDWARE.md` and `manifests/jetson_device_audit_v1.json`.
+No packages, models, device files or configuration were installed/changed by the
+audit; the SSH session closed normally. Device inventory is VERIFIED, while
+actual Llama/ExecuTorch generation and Stage 8 camera/vision remain NOT VERIFIED.
+The current
 native wrapper is desktop x86_64 guarded and requires a verified ARM adapter
 before Jetson deployment. Desktop CPU threads/timing/memory are not target claims.
 
-PC work stopped for review after Substep 9.2. The next action now prioritizes a
-read-only Jetson hardware/software/webcam inventory, once server identity and
-authentication are established. Resolve the earliest open Stage 2 device Llama/ExecuTorch
+PC work stopped for review after Substep 9.2. The next action now prioritizes
+Substep 2.8: a read-only ARM compatibility probe and reproducible isolated-runtime
+recipe for this exact device. Resolve the earliest open Stage 2 Llama/ExecuTorch
 gate before claiming edge readiness. PC Substep 9.3 (bounded background worker)
 and separate stored/UI advice states remain pending.
 Reliable defect names, approved industrial limits, the two missed scratches and
@@ -62,9 +62,9 @@ mandatory Jetson Llama/ExecuTorch/offline proof remain open.
 
 Stage 2.7 desktop Llama generation through ExecuTorch is verified. Stage 1 and
 the transition to Stage 3 were accepted by the user. Actual Stage 2 inference
-on Jetson is BLOCKED - NOT VERIFIED: an authenticated device session and actual
-generation are still missing. Desktop text
-generation is verified; device execution, quality, and offline proof are not.
+on Jetson is BLOCKED - NOT VERIFIED: actual model generation and runtime proof
+are still missing. Authenticated device inventory is now verified. Desktop text
+generation is verified; model execution on Jetson, quality and offline proof are not.
 
 The organizer reply shared by the user confirms Jetson Orin platform-family
 eligibility for PS5, conditional on mandatory Llama, on-device ExecuTorch, and
@@ -277,7 +277,7 @@ device-only operation correctly exited 2. See `docs/EDGE_RUNTIME.md`.
 | Gate | Status | Missing evidence |
 | --- | --- | --- |
 | Repeatable minimal PC image environment | DONE on tested host | Pinned install and smoke check reproduced in two isolated environments |
-| Exact Jetson hardware and camera | USER-REPORTED AVAILABLE; NOT VERIFIED | Orin Nano 8GB and Logitech USB reported 2026-11-11; need authenticated device-side inventory |
+| Exact Jetson hardware and camera inventory | VERIFIED by authenticated audit | Orin Nano 8GB identifiers, ARM64, OS/RAM/storage and Logitech C270 USB/video nodes recorded; controlled capture remains separate |
 | Llama through ExecuTorch on Jetson | BLOCKED - NOT VERIFIED | Actual device-generated text, runner/version/hash, memory and timing |
 | Meta Llama access and local source assets | VERIFIED | User-confirmed access; five files match pinned publisher metadata |
 | Desktop Llama export and artifact metadata | VERIFIED, not inference | Recorded PTE hash and program metadata; generation has separate evidence and quality remains open |
@@ -294,18 +294,13 @@ proof and do not establish a defect-inspection application.
 
 ## Next exact task
 
-First compare the advertised SSH host key with
-`ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub` run directly on the Jetson.
-The latest Windows retry reaches a server at the expected address; authentication
-has not been attempted because its first-use identity is not yet verified.
-Do not repeat the already supplied interface/listener checks or bypass host-key
-verification. Candidate-key evidence is saved under
-`artifacts/hardware/connection_attempt_2026_11_11_02/`; the initial failed
-connection evidence remains in the `_01` directory.
-Then resume the device audit and read its actual module, ARM architecture,
-memory, OS/JetPack/L4T, storage, existing packages and USB/video nodes. Preserve
-existing device work; no install or flashing before inspection. Next address
-Stage 2's actual native Llama/ExecuTorch generation, then Stage 8's physical
-vision/camera validation. PC Substep 9.3's bounded advisory queue remains pending.
+STOPPED FOR REVIEW after the first authenticated device audit. Substep 2.8 is a
+read-only compatibility probe and pinned deployment recipe: choose an isolated
+newer Python or native ARM runner path after checking the existing 1.5.1 artifact,
+ARM wheels/kernel availability, glibc and build dependencies. System Python 3.8
+is below ExecuTorch's >=3.10 package floor; CMake 3.16.3 is below its pinned native
+build minimum 3.24. Do not assume an OS reflash is necessary or install yet.
+Then prove actual on-device Llama/ExecuTorch generation, followed by Stage 8's
+physical vision/camera validation. PC Substep 9.3's queue remains pending.
 The original 9.2 failure-layer mismatch stays documented. All mandatory ARM
 ExecuTorch, real-camera and disconnected-operation gates remain NOT VERIFIED.

@@ -532,3 +532,24 @@ whether it boots and how to connect; then we read its actual system information
 without installing anything. Owning a webcam does not yet prove it captures
 usable inspection images, and PC text generation does not prove Jetson execution.
 The reported hardware is documented separately from measured device facts.
+
+## First actual Jetson audit: hardware is present, deployment is still separate
+
+We authenticated to the Jetson and read its real configuration without installing
+anything. It is the 8GB Orin Nano variant, with six CPU cores, SD storage and a
+Logitech C270 webcam. Linux reports 7.28 GiB of memory, with about 4.28 GiB available
+at that moment. Available memory is a snapshot, not a guarantee that both models
+fit together under load. Two video nodes do not mean two physical webcams.
+
+The Jetson has Ubuntu 20.04/Python 3.8/CUDA 11.4. The PC uses different software
+and a different processor architecture, so copying its environment is not a
+deployment recipe. Our pinned ExecuTorch Python package needs newer Python; we
+will investigate a separate environment or native runner before installing.
+This does not automatically mean the Jetson needs a new operating system.
+
+The audit confirmed camera detection and existing software, not defect detection
+or Llama execution. A power query had permission errors; camera-format tooling
+was missing. We saved those gaps. The initial terminal mangled long output, so
+the final inventory was transferred in short encoded lines and checked against
+its device-reported SHA-256. Next resolve the ARM runtime recipe, then prove
+real Llama generation on this device. Stop at this hardware-inventory gate.

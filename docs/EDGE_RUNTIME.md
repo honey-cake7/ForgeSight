@@ -5,6 +5,23 @@ BLOCKED - NOT VERIFIED. Substep 2.7 completed real desktop generation after
 actual export; no Jetson generation, device benchmark, or disconnected run has
 been performed. Earlier substep sections retain their historical snapshots.
 
+The first authenticated Jetson inventory completed on 2026-11-11. The actual
+Orin Nano 8GB target uses ARM64, Ubuntu 20.04.6/L4T 35.6.1, glibc 2.31 and
+Python 3.8.10. This closes identification, not model execution. No target model,
+Torch/ExecuTorch installation, export or generation occurred. See
+`docs/HARDWARE.md` and `manifests/jetson_device_audit_v1.json`.
+
+**Next Substep 2.8:** read-only ARM compatibility investigation and a pinned
+isolated-runtime/native-build recipe. The installed Python is below the
+[pinned package's >=3.10 floor](https://pypi.org/pypi/executorch/1.5.1/json).
+The [pinned native CMake source](https://github.com/pytorch/executorch/blob/3b60683923245cf472b7323426920e15623ba361/CMakeLists.txt)
+requires 3.24, above the target's 3.16.3. A newer isolated Python/toolchain or
+compatible native ARM runner may avoid an OS change; evaluate dependencies,
+kernel availability and build/ABI constraints before choosing. Do not disable
+the desktop-only guard and present that as ARM support. Keep the existing small
+Llama artifact and mandatory ExecuTorch route. Device memory/latency under load,
+camera inspection and disconnected operation remain unverified.
+
 The [organizer reply shared by the user](ORGANIZER_CLARIFICATION.md) accepts
 Jetson Orin platform-family eligibility for PS5. Mandatory on-device Llama via
 ExecuTorch and local defect/quality-control operation remain unchanged.

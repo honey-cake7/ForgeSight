@@ -527,3 +527,26 @@ open Stage 2 native Llama/ExecuTorch gate, then Stage 8 camera/vision proof.
 The PC background worker remains pending. Treat the reported hardware as a
 lead for verification, not observed module/RAM/camera or deployment evidence.
 Inspect boot state, software and existing work before installing or flashing.
+
+## 031: Base Jetson deployment on observed userspace, not the PC lock
+
+The first authenticated read-only audit identifies an Orin Nano 8GB in Super
+configuration, Ubuntu 20.04.6/L4T 35.6.1, ARM64/glibc 2.31, Python 3.8.10 and
+CUDA 11.4. The Logitech camera is a C270. Preserve this working installation
+while choosing the next recipe; do not install, reflash, replace system Python
+or change power mode during the audit. JetPack metapackage absence is not
+absence of NVIDIA drivers. The 25W query also produced permission errors and
+does not certify effective clocks, thermals or power limits.
+
+Python 3.8 cannot host the pinned ExecuTorch Python distribution; the installed
+CMake is also below the pinned native build floor. Investigate isolated modern
+Python/ARM wheel dependencies and native C++ runner alternatives before choosing
+a deployment path. Wheel architecture tags and available RAM are not proof of
+complete runtime compatibility or model fit. Keep the Llama/ExecuTorch mandate;
+no substitute runtime or larger model is selected. Current PC guards stay intact.
+
+Record actual inventory as completed, while Llama generation, vision/camera and
+offline device gates remain open. Preserve the terminal-transport failures;
+use short encoded lines and a verified device-reported SHA-256 for the final
+authoritative JSON. Test the standalone script on the real target; a full PC
+test rerun is unnecessary for this inventory-only change. Stop for review here.

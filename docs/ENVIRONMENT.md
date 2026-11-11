@@ -281,3 +281,25 @@ found that the app environment has no pip module; read-only inventory used
 standard-library `importlib.metadata` instead, with the issue retained locally.
 This is PC portability evidence only; do not copy x86_64 environments to Jetson.
 See `artifacts/assist_stage9_2/` and the committed refusal-verification manifest.
+
+## First authenticated Jetson inventory (2026-11-11)
+
+The target is ARM64/glibc 2.31, Ubuntu 20.04.6, L4T 35.6.1, CUDA 11.4.315,
+cuDNN 8.6.0.166 and system Python 3.8.10. Metadata shows NumPy 1.17.4 and Pillow
+7.0.0; OpenCV's module is discoverable, while Torch/ExecuTorch are not. No ML
+runtime was imported and no tensor/CUDA inference was attempted. No package
+or model was installed. This is inventory, not a new tested app environment.
+
+The standalone standard-library audit script ran on the actual Python 3.8
+interpreter. Its source also passes Python 3.8 syntax parsing on the PC. The
+last full app-suite result remains the Stage 9.2 132-test PC result; that suite
+was not rerun for this standalone audit and has not run on Jetson.
+
+The pinned ExecuTorch 1.5.1 package requires Python >=3.10/<3.15; its native
+source requires CMake >=3.24, while the Jetson has 3.16.3. PyPI metadata lists
+an ARM64 CPython 3.12 manylinux_2_28 wheel, but a filename does not establish
+all dependency/kernel or target compatibility. No wheel was installed or run.
+Next audit ARM package contents/dependencies and native build alternatives,
+then choose a separate reproducible runtime path. Do not replace system Python,
+mix the x86/CUDA 12.4 PC stack into CUDA 11.4, or infer that an OS reflash is
+necessary from these initial version differences.

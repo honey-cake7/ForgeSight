@@ -1,0 +1,362 @@
+{
+  "schema_version": 1,
+  "recorded_utc": "2026-11-11T16:15:44.354508+00:00",
+  "client_context_date": "2026-11-11",
+  "scope": "AUTHENTICATED_JETSON_INVENTORY_ONLY_NOT_MODEL_OR_CAMERA_CAPTURE_PROOF",
+  "status": "FIRST_DEVICE_INVENTORY_VERIFIED",
+  "connection": {
+    "host_identity_matched_user_console_ed25519_fingerprint": true,
+    "strict_host_key_checking": true,
+    "authentication_succeeded": true,
+    "credential_values_recorded": false,
+    "private_network_addresses_kept_in_ignored_artifacts": true,
+    "session_closed_normally": true
+  },
+  "device_inventory": {
+    "camera_frame_captured": false,
+    "commands": {
+      "camera_devices": {
+        "argv": [
+          "v4l2-ctl",
+          "--list-devices"
+        ],
+        "error": "NOT_INSTALLED_OR_NOT_ON_PATH",
+        "returncode": null
+      },
+      "camera_formats": {
+        "argv": [
+          "v4l2-ctl",
+          "--device",
+          "/dev/video0",
+          "--list-formats-ext"
+        ],
+        "error": "NOT_INSTALLED_OR_NOT_ON_PATH",
+        "returncode": null
+      },
+      "cmake": {
+        "argv": [
+          "cmake",
+          "--version"
+        ],
+        "output_truncated": false,
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "cmake version 3.16.3\n\nCMake suite maintained and supported by Kitware (kitware.com/cmake).\n"
+      },
+      "compiler": {
+        "argv": [
+          "g++",
+          "--version"
+        ],
+        "output_truncated": false,
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "g++ (Ubuntu 9.4.0-1ubuntu1~20.04.2) 9.4.0\nCopyright (C) 2019 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n"
+      },
+      "cuda_compiler": {
+        "argv": [
+          "/usr/local/cuda/bin/nvcc",
+          "--version"
+        ],
+        "output_truncated": false,
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2022 NVIDIA Corporation\nBuilt on Sun_Oct_23_22:16:07_PDT_2022\nCuda compilation tools, release 11.4, V11.4.315\nBuild cuda_11.4.r11.4/compiler.31964100_0\n"
+      },
+      "git": {
+        "argv": [
+          "git",
+          "--version"
+        ],
+        "output_truncated": false,
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "git version 2.25.1\n"
+      },
+      "identity": {
+        "argv": [
+          "id"
+        ],
+        "output_truncated": false,
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "uid=1000(nvidia) gid=1000(nvidia) groups=1000(nvidia),4(adm),24(cdrom),27(sudo),29(audio),30(dip),44(video),46(plugdev),103(render),113(i2c),116(lpadmin),119(sambashare),130(gdm),996(weston-launch),999(gpio)\n"
+      },
+      "installed_nvidia_packages": {
+        "argv": [
+          "dpkg-query",
+          "-W",
+          "-f=${Package}\t${Version}\n",
+          "nvidia-l4t-*",
+          "nvidia-jetpack",
+          "nvidia-cuda",
+          "libcudnn*",
+          "python3-opencv"
+        ],
+        "output_truncated": false,
+        "returncode": 1,
+        "stderr": "dpkg-query: no packages found matching nvidia-jetpack\ndpkg-query: no packages found matching nvidia-cuda\ndpkg-query: no packages found matching python3-opencv\n",
+        "stdout": "libcudnn8\t8.6.0.166-1+cuda11.4\nlibcudnn8-dev\t8.6.0.166-1+cuda11.4\nlibcudnn8-samples\t8.6.0.166-1+cuda11.4\nnvidia-l4t-3d-core\t35.6.1-20250304015758\nnvidia-l4t-apt-source\t35.6.1-20250304015758\nnvidia-l4t-bootloader\t35.6.1-20250304015758\nnvidia-l4t-camera\t35.6.1-20250304015758\nnvidia-l4t-ccp-t186ref\t\nnvidia-l4t-configs\t35.6.1-20250304015758\nnvidia-l4t-core\t35.6.1-20250304015758\nnvidia-l4t-cuda\t35.6.1-20250304015758\nnvidia-l4t-display-kernel\t5.10.216-tegra-35.6.1-20250304015758\nnvidia-l4t-firmware\t35.6.1-20250304015758\nnvidia-l4t-gbm\t35.6.1-20250304015758\nnvidia-l4t-graphics-demos\t35.6.1-20250304015758\nnvidia-l4t-gstreamer\t35.6.1-20250304015758\nnvidia-l4t-init\t35.6.1-20250304015758\nnvidia-l4t-initrd\t35.6.1-20250304015758\nnvidia-l4t-jetson-io\t35.6.1-20250304015758\nnvidia-l4t-jetson-multimedia-api\t35.6.1-20250304015758\nnvidia-l4t-jetsonpower-gui-tools\t35.6.1-20250304015758\nnvidia-l4t-kernel\t5.10.216-tegra-35.6.1-20250304015758\nnvidia-l4t-kernel-dtbs\t5.10.216-tegra-35.6.1-20250304015758\nnvidia-l4t-kernel-headers\t5.10.216-tegra-35.6.1-20250304015758\nnvidia-l4t-libvulkan\t35.6.1-20250304015758\nnvidia-l4t-multimedia\t35.6.1-20250304015758\nnvidia-l4t-multimedia-utils\t35.6.1-20250304015758\nnvidia-l4t-nvfancontrol\t35.6.1-20250304015758\nnvidia-l4t-nvpmodel\t35.6.1-20250304015758\nnvidia-l4t-nvpmodel-gui-tools\t35.6.1-20250304015758\nnvidia-l4t-nvsci\t35.6.1-20250304015758\nnvidia-l4t-oem-config\t35.6.1-20250304015758\nnvidia-l4t-openwfd\t35.6.1-20250304015758\nnvidia-l4t-optee\t35.6.1-20250304015758\nnvidia-l4t-pva\t35.6.1-20250304015758\nnvidia-l4t-tools\t35.6.1-20250304015758\nnvidia-l4t-vulkan-sc\t35.6.1-20250304015758\nnvidia-l4t-vulkan-sc-dev\t35.6.1-20250304015758\nnvidia-l4t-vulkan-sc-samples\t35.6.1-20250304015758\nnvidia-l4t-vulkan-sc-sdk\t35.6.1-20250304015758\nnvidia-l4t-wayland\t35.6.1-20250304015758\nnvidia-l4t-weston\t35.6.1-20250304015758\nnvidia-l4t-x11\t35.6.1-20250304015758\nnvidia-l4t-xusb-firmware\t35.6.1-20250304015758\n"
+      },
+      "kernel": {
+        "argv": [
+          "uname",
+          "-a"
+        ],
+        "output_truncated": false,
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "Linux ubuntu 5.10.216-tegra #1 SMP PREEMPT Tue Mar 4 01:35:16 PST 2025 aarch64 aarch64 aarch64 GNU/Linux\n"
+      },
+      "power_mode_query": {
+        "argv": [
+          "/usr/sbin/nvpmodel",
+          "-q"
+        ],
+        "output_truncated": false,
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NV Power Mode: 25W\n1\nNVPM ERROR: Error opening /sys/kernel/nvpmodel_emc_cap/emc_iso_cap: 13\nNVPM ERROR: failed to read PARAM EMC: ARG MAX_FREQ: PATH /sys/kernel/nvpmodel_emc_cap/emc_iso_cap\n"
+      },
+      "storage_layout": {
+        "argv": [
+          "lsblk",
+          "-o",
+          "NAME,SIZE,TYPE,FSTYPE,MOUNTPOINT"
+        ],
+        "output_truncated": false,
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "NAME           SIZE TYPE FSTYPE MOUNTPOINT\nloop0           16M loop vfat   \nmmcblk1      119.2G disk        \n\u251c\u2500mmcblk1p1  117.8G part ext4   /\n\u251c\u2500mmcblk1p2    128M part        \n\u251c\u2500mmcblk1p3    768K part        \n\u251c\u2500mmcblk1p4   31.6M part        \n\u251c\u2500mmcblk1p5    128M part        \n\u251c\u2500mmcblk1p6    768K part        \n\u251c\u2500mmcblk1p7   31.6M part        \n\u251c\u2500mmcblk1p8     80M part        \n\u251c\u2500mmcblk1p9    512K part        \n\u251c\u2500mmcblk1p10    64M part vfat   \n\u251c\u2500mmcblk1p11    80M part        \n\u251c\u2500mmcblk1p12   512K part        \n\u251c\u2500mmcblk1p13    64M part        \n\u251c\u2500mmcblk1p14   400M part        \n\u2514\u2500mmcblk1p15 479.5M part        \nzram0        620.9M disk        [SWAP]\nzram1        620.9M disk        [SWAP]\nzram2        620.9M disk        [SWAP]\nzram3        620.9M disk        [SWAP]\nzram4        620.9M disk        [SWAP]\nzram5        620.9M disk        [SWAP]\n"
+      },
+      "usb": {
+        "argv": [
+          "lsusb"
+        ],
+        "output_truncated": false,
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "Bus 002 Device 002: ID 0bda:0489 Realtek Semiconductor Corp. 4-Port USB 3.0 Hub\nBus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub\nBus 001 Device 003: ID 13d3:3549 IMC Networks Bluetooth Radio\nBus 001 Device 006: ID 1a2c:2124 China Resource Semico Co., Ltd Bluetooth Radio\nBus 001 Device 005: ID 046d:0825 Logitech, Inc. Webcam C270\nBus 001 Device 004: ID 093a:2510 Pixart Imaging, Inc. Optical Mouse\nBus 001 Device 002: ID 0bda:5489 Realtek Semiconductor Corp. 4-Port USB 2.0 Hub\nBus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub\n"
+      }
+    },
+    "device_files_written_by_script": false,
+    "disk": {
+      "/": {
+        "free_bytes": 99533754368,
+        "total_bytes": 123851919360,
+        "used_bytes": 17979490304
+      },
+      "/home/nvidia": {
+        "free_bytes": 99533754368,
+        "total_bytes": 123851919360,
+        "used_bytes": 17979490304
+      }
+    },
+    "elapsed_seconds": 0.16488012099989646,
+    "existing_project_candidates": {},
+    "files": {
+      "/etc/nv_tegra_release": {
+        "error": null,
+        "value": "# R35 (release), REVISION: 6.1, GCID: 39721438, BOARD: t186ref, EABI: aarch64, DATE: Tue Mar  4 10:13:09 UTC 2025"
+      },
+      "/etc/os-release": {
+        "error": null,
+        "value": "NAME=\"Ubuntu\"\nVERSION=\"20.04.6 LTS (Focal Fossa)\"\nID=ubuntu\nID_LIKE=debian\nPRETTY_NAME=\"Ubuntu 20.04.6 LTS\"\nVERSION_ID=\"20.04\"\nHOME_URL=\"https://www.ubuntu.com/\"\nSUPPORT_URL=\"https://help.ubuntu.com/\"\nBUG_REPORT_URL=\"https://bugs.launchpad.net/ubuntu/\"\nPRIVACY_POLICY_URL=\"https://www.ubuntu.com/legal/terms-and-policies/privacy-policy\"\nVERSION_CODENAME=focal\nUBUNTU_CODENAME=focal"
+      },
+      "/proc/device-tree/compatible": {
+        "error": null,
+        "value": "nvidia,p3768-0000+p3767-0003-super\nnvidia,p3767-0003\nnvidia,tegra234"
+      },
+      "/proc/device-tree/model": {
+        "error": null,
+        "value": "NVIDIA Jetson Orin Nano Engineering Reference Developer Kit Super"
+      },
+      "/proc/device-tree/nvidia,dtsfilename": {
+        "error": null,
+        "value": "/dvs/git/dirty/git-master_linux/kernel/kernel-5.10/arch/arm64/boot/dts/../../../../../../hardware/nvidia/platform/t23x/p3768/kernel-dts/tegra234-p3767-0003-super-p3768-0000-a0.dts"
+      },
+      "/proc/meminfo": {
+        "error": null,
+        "value": "MemTotal:        7629624 kB\nMemFree:         2806708 kB\nMemAvailable:    4487408 kB\nBuffers:           52232 kB\nCached:          1813348 kB\nSwapCached:            0 kB\nActive:           982984 kB\nInactive:        3160168 kB\nActive(anon):       6540 kB\nInactive(anon):  2356712 kB\nActive(file):     976444 kB\nInactive(file):   803456 kB\nUnevictable:       21428 kB\nMlocked:               0 kB\nSwapTotal:       3814800 kB\nSwapFree:        3814800 kB\nDirty:             12484 kB\nWriteback:             0 kB\nAnonPages:       2275908 kB\nMapped:           452744 kB\nShmem:             64216 kB\nKReclaimable:      94524 kB\nSlab:             205892 kB\nSReclaimable:      94524 kB\nSUnreclaim:       111368 kB\nKernelStack:       15872 kB\nPageTables:        35104 kB\nNFS_Unstable:          0 kB\nBounce:                0 kB\nWritebackTmp:          0 kB\nCommitLimit:     7629612 kB\nCommitted_AS:    8657156 kB\nVmallocTotal:   135290159040 kB\nVmallocUsed:       52720 kB\nVmallocChunk:          0 kB\nPercpu:             3696 kB\nHardwareCorrupted:     0 kB\nAnonHugePages:    614400 kB\nShmemHugePages:        0 kB\nShmemPmdMapped:        0 kB\nFileHugePages:         0 kB\nFilePmdMapped:         0 kB\nCmaTotal:         262144 kB\nCmaFree:          222772 kB\nHugePages_Total:       0\nHugePages_Free:        0\nHugePages_Rsvd:        0\nHugePages_Surp:        0\nHugepagesize:       2048 kB\nHugetlb:               0 kB"
+      },
+      "/proc/swaps": {
+        "error": null,
+        "value": "Filename\t\t\t\tType\t\tSize\t\tUsed\t\tPriority\n/dev/zram0                              partition\t635800\t\t0\t\t5\n/dev/zram1                              partition\t635800\t\t0\t\t5\n/dev/zram2                              partition\t635800\t\t0\t\t5\n/dev/zram3                              partition\t635800\t\t0\t\t5\n/dev/zram4                              partition\t635800\t\t0\t\t5\n/dev/zram5                              partition\t635800\t\t0\t\t5"
+      },
+      "/usr/local/cuda/version.json": {
+        "error": null,
+        "value": "{\n   \"cuda\" : {\n      \"name\" : \"CUDA SDK\",\n      \"version\" : \"11.4.19\"\n   },\n   \"cuda_compat\" : {\n      \"name\" : \"CUDA Specific Libraries\",\n      \"version\" : \"11.4.31478197\"\n   },\n   \"cuda_cudart\" : {\n      \"name\" : \"CUDA Runtime (cudart)\",\n      \"version\" : \"11.4.298\"\n   },\n   \"cuda_cuobjdump\" : {\n      \"name\" : \"cuobjdump\",\n      \"version\" : \"11.4.315\"\n   },\n   \"cuda_cupti\" : {\n      \"name\" : \"CUPTI\",\n      \"version\" : \"11.4.298\"\n   },\n   \"cuda_cuxxfilt\" : {\n      \"name\" : \"CUDA cu++ filt\",\n      \"version\" : \"11.4.300\"\n   },\n   \"cuda_gdb\" : {\n      \"name\" : \"CUDA GDB\",\n      \"version\" : \"11.4.298\"\n   },\n   \"cuda_nvcc\" : {\n      \"name\" : \"CUDA NVCC\",\n      \"version\" : \"11.4.315\"\n   },\n   \"cuda_nvdisasm\" : {\n      \"name\" : \"CUDA nvdisasm\",\n      \"version\" : \"11.4.298\"\n   },\n   \"cuda_nvml_dev\" : {\n      \"name\" : \"CUDA NVML Headers\",\n      \"version\" : \"11.4.298\"\n   },\n   \"cuda_nvprune\" : {\n      \"name\" : \"CUDA nvprune\",\n      \"version\" : \"11.4.298\"\n   },\n   \"cuda_nvrtc\" : {\n      \"name\" : \"CUDA NVRTC\",\n      \"version\" : \"11.4.300\"\n   },\n   \"cuda_nvtx\" : {\n      \"name\" : \"CUDA NVTX\",\n      \"version\" : \"11.4.300\"\n   },\n   \"cuda_samples\" : {\n      \"name\" : \"CUDA Samples\",\n      \"version\" : \"11.4.300\"\n   },\n   \"cuda_sanitizer_api\" : {\n      \"name\" : \"CUDA Compute Sanitizer API\",\n      \"version\" : \"11.4.298\"\n   },\n   \"cuda_thrust\" : {\n      \"name\" : \"CUDA C++ Core Compute Libraries\",\n      \"version\" : \"11.4.298\"\n   },\n   \"libcublas\" : {\n      \"name\" : \"CUDA cuBLAS\",\n      \"version\" : \"11.6.6.84\"\n   },\n   \"libcudla\" : {\n      \"name\" : \"CUDA cuDLA\",\n      \"version\" : \"11.4.298\"\n   },\n   \"libcufft\" : {\n      \"name\" : \"CUDA cuFFT\",\n      \"version\" : \"10.6.0.202\"\n   },\n   \"libcurand\" : {\n      \"name\" : \"CUDA cuRAND\",\n      \"version\" : \"10.2.5.297\"\n   },\n   \"libcusolver\" : {\n      \"name\" : \"CUDA cuSOLVER\",\n      \"version\" : \"11.2.0.297\"\n   },\n   \"libcusparse\" : {\n      \"name\" : \"CUDA cuSPARSE\",\n      \"version\" : \"11.6.0.299\"\n   },\n   \"libnpp\" : {\n      \"name\" : \"CUDA NPP\",\n      \"version\" : \"11.4.0.287\"\n   },\n   \"nsight_compute\" : {\n      \"name\" : \"Nsight Compute\",\n      \"version\" : \"2021.2.8.1\"\n   }\n}"
+      },
+      "/usr/local/cuda/version.txt": {
+        "error": "FileNotFoundError: [Errno 2] No such file or directory: '/usr/local/cuda/version.txt'",
+        "value": null
+      }
+    },
+    "host": {
+      "cwd": "/home/nvidia",
+      "libc": [
+        "glibc",
+        "2.31"
+      ],
+      "machine": "aarch64",
+      "python": "3.8.10",
+      "python_executable": "/usr/bin/python3",
+      "system": "Linux"
+    },
+    "llama_inference_run": false,
+    "offline_disconnection_verified": false,
+    "packages_installed": false,
+    "power_mode_changed": false,
+    "python_module_locations_without_importing_ml": {
+      "cv2": "/usr/lib/python3.8/dist-packages/cv2/__init__.py",
+      "executorch": null,
+      "numpy": "/usr/lib/python3/dist-packages/numpy/__init__.py",
+      "torch": null,
+      "torchvision": null
+    },
+    "python_package_versions_without_importing_ml": {
+      "Pillow": "7.0.0",
+      "executorch": null,
+      "fastapi": null,
+      "numpy": "1.17.4",
+      "opencv-python": null,
+      "opencv-python-headless": null,
+      "pytorch-tokenizers": null,
+      "torch": null,
+      "torchao": null,
+      "torchvision": null,
+      "uvicorn": null
+    },
+    "remote_reported_utc": "2026-11-11T16:05:58.312464+00:00",
+    "schema_version": 1,
+    "scope": "AUTHENTICATED_DEVICE_READ_ONLY_INVENTORY",
+    "status": "INVENTORY_CAPTURED_NOT_INFERENCE_PROOF",
+    "video_nodes": [
+      {
+        "name": {
+          "error": null,
+          "value": "C270 HD WEBCAM"
+        },
+        "node": "/dev/video0",
+        "sysfs_device": "/sys/devices/platform/3610000.xhci/usb1/1-2/1-2.2/1-2.2:1.0"
+      },
+      {
+        "name": {
+          "error": null,
+          "value": "C270 HD WEBCAM"
+        },
+        "node": "/dev/video1",
+        "sysfs_device": "/sys/devices/platform/3610000.xhci/usb1/1-2/1-2.2/1-2.2:1.0"
+      }
+    ],
+    "vision_inference_run": false
+  },
+  "supplemental_observations": {
+    "online_cpu_count": 6,
+    "root_block_device_type": "SD"
+  },
+  "interpretations": {
+    "module": "NVIDIA Jetson Orin Nano 8GB, P3767-0003 on P3768-0000; Super configuration",
+    "jetpack_release_family": "L4T 35.6.1 maps to JetPack 5.1.5; nvidia-jetpack metapackage not present, full bundle not asserted",
+    "camera": "One Logitech C270 USB function, with two video nodes; frame acquisition/format capabilities not verified",
+    "power": "25W mode reported with EMC permission errors; do not claim full effective power/clock verification",
+    "existing_project_check_scope": "Six named paths only; no exhaustive workspace or filesystem scan"
+  },
+  "compatibility_findings": {
+    "executorch_metadata": {
+      "source": "https://pypi.org/pypi/executorch/1.5.1/json",
+      "retrieved_utc": "2026-11-11T16:10:15.395184+00:00",
+      "version": "1.5.1",
+      "requires_python": "<3.15,>=3.10",
+      "aarch64_cp312_wheels": [
+        {
+          "filename": "executorch-1.5.1-cp312-cp312-manylinux_2_28_aarch64.whl",
+          "sha256": "2c177f7922354a8a0d6111628c954519b87549598640e5e0042bef137b4cb83c",
+          "bytes": 17930720
+        }
+      ],
+      "source_only_not_installed": true
+    },
+    "pinned_source_revision": "3b60683923245cf472b7323426920e15623ba361",
+    "source_minimum_cmake": "3.24",
+    "installed_cmake": "3.16.3",
+    "system_python": "3.8.10",
+    "python_package_supported_now": false,
+    "native_target_runtime_supported_now": "NOT_VERIFIED",
+    "os_upgrade_selected": false,
+    "isolated_target_environment_created": false
+  },
+  "primary_sources": [
+    {
+      "claim": "P3767-0003 is Orin Nano 8GB",
+      "url": "https://docs.nvidia.com/jetson/archives/r36.4.3/DeveloperGuide/IN/QuickStart.html"
+    },
+    {
+      "claim": "L4T 35.6.1 JetPack 5.1.5 mapping and Super configurations",
+      "url": "https://developer.nvidia.com/embedded/jetson-linux-r3561"
+    },
+    {
+      "claim": "Pinned ExecuTorch Python requirement and ARM wheel metadata",
+      "url": "https://pypi.org/pypi/executorch/1.5.1/json"
+    },
+    {
+      "claim": "Pinned native CMake minimum",
+      "url": "https://github.com/pytorch/executorch/blob/3b60683923245cf472b7323426920e15623ba361/CMakeLists.txt"
+    }
+  ],
+  "verification": {
+    "script_source_transport_identical": true,
+    "actual_arm64_python38_execution": true,
+    "report_sha256_verified": "d2b7ddb1378006df5cc6f054470a4597db46a8c6c3e291a4e7e4499db25a4a88",
+    "python38_syntax_check": "PASS",
+    "readonly_evidence_flags_checked": true,
+    "ssh_session_exit_code": 0,
+    "full_pc_app_suite_rerun": false,
+    "target_app_or_model_tests_run": false
+  },
+  "source_file": {
+    "path": "scripts/audit_jetson_readonly.py",
+    "bytes": 5667,
+    "sha256": "bf84eb2c0cbe16580491a2103cb888ada54e3eeb875cce234bca10b17bf17ac4"
+  },
+  "local_evidence": {
+    "artifacts/hardware/jetson_audit_2026_11_11_01/device_audit.json": {
+      "bytes": 15278,
+      "sha256": "9b18980555283cf44b3a006d0b9c2856ae7cf87f638d0d6f88fe6838f1832c91"
+    },
+    "artifacts/hardware/jetson_audit_2026_11_11_01/report.gz.b64": {
+      "bytes": 5699,
+      "sha256": "ee2fb40243f4bbc5c4ae0f09bc4c4634d46f2a7041f484bcc9480c53ae16dba8"
+    },
+    "artifacts/hardware/jetson_audit_2026_11_11_01/transport.json": {
+      "bytes": 555,
+      "sha256": "9763debdaa947330d61588d39e82a1d6523a8f14a47dd9df4e2f7a00d5a1bcff"
+    },
+    "artifacts/hardware/jetson_audit_2026_11_11_01/terminal_capture.json": {
+      "bytes": 49599,
+      "sha256": "be3c02d0150c02a8f2fa3d011c6753baf3873c613b282acbb9bfbe381e830bb4"
+    },
+    "artifacts/hardware/jetson_audit_2026_11_11_01/transport.py": {
+      "bytes": 3481,
+      "sha256": "1b52e9d5f7a9b09053fa627ade215a256238d410ab20dcdb256e5cc833308831"
+    },
+    "artifacts/hardware/jetson_audit_2026_11_11_01/supplemental_console.json": {
+      "bytes": 539,
+      "sha256": "60ca213d9ebacf8c7135d329eb718574d4cb15ef245ac5b3687e8b7a28e465e4"
+    },
+    "artifacts/hardware/jetson_audit_2026_11_11_01/executorch_metadata.json": {
+      "bytes": 443,
+      "sha256": "1cf64cecab54c54ba4511e1fb3503c3e8e750f0e6dd3ee220d65e966d149c9ee"
+    },
+    "artifacts/hardware/jetson_audit_2026_11_11_01/verification.json": {
+      "bytes": 373,
+      "sha256": "aa356b7a2a19566ccb462029e80cf4971d05a62619729ef81ae4e402efefed33"
+    }
+  },
+  "transport_retries": "Initial pretty console output was wrapped; first encoded capture truncated by output budget. Both retained. Final short-line gzip/base64 transfer and device SHA-256 verified. Three inventory executions, no model inference.",
+  "hardware_identification_gate": "VERIFIED",
+  "stage_2_llama_inference_gate": "NOT_VERIFIED",
+  "stage_8_camera_vision_gate": "NOT_VERIFIED",
+  "stage_10_offline_gate": "NOT_VERIFIED",
+  "next_exact_action": "Substep 2.8: read-only ARM package/kernel/ABI compatibility probe and pinned isolated-runtime/native-build recipe before installation."
+}

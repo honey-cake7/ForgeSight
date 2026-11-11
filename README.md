@@ -51,12 +51,14 @@ results. Jetson/camera deployment and complete offline edge operation remain ope
 
 All **132 tests pass** in the locked app environment. All four earlier
 environments are unchanged; the app preserves all 89 vision package versions.
-On 2026-11-11 the user reported receiving a **Jetson Orin Nano 8GB and Logitech
-USB webcam**. Exact hardware/software, camera operation and disconnected edge
-execution remain unverified. **The next action is a read-only device audit**
-once boot state and SSH access are known, then the outstanding Stage 2 native
-Llama/ExecuTorch proof and Stage 8 camera/vision deployment. The PC background
-advisory worker (Substep 9.3) remains pending.
+On 2026-11-11 an **authenticated read-only Jetson audit completed**: Orin Nano
+8GB identifiers, ARM64, Ubuntu 20.04.6/L4T 35.6.1, Python 3.8.10, CUDA 11.4,
+SD storage and a Logitech C270 webcam. No packages were installed and no models
+ran on the device. See [hardware facts and limits](docs/HARDWARE.md).
+**Next is Substep 2.8: ARM runtime compatibility and an isolated deployment
+recipe.** Current Python/CMake are older than the pinned ExecuTorch Python/build
+requirements. Actual Jetson Llama generation, camera inspection and disconnected
+edge execution remain unverified. The PC background worker (9.3) remains pending.
 
 ## Open the local operator screen
 
