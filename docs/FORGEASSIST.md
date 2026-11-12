@@ -272,3 +272,28 @@ time. The checklist is developer-authored and **not factory-approved**. The
 note is a narrow reviewed form, not independent diagnosis or a confirmed cause.
 The controller is synchronous; a bounded queue, timeout proof, UI delivery,
 physical-camera advice and network-disconnected run remain open.
+
+## Stage 9.2 Jetson saved-replay queue update
+
+`forgesight.assist_queue` admits one outstanding advisory and returns a busy
+response immediately for overlapping work. `forgesight.assist_queue_replay_once`
+uses it to launch the existing bounded Jetson controller in a background thread,
+read the saved SQLite inspection while generation is pending, and check that the
+original record is unchanged afterward. The successful device command was:
+
+```sh
+cd /home/nvidia/.local/share/forgesight/vision_cpu_v1
+/usr/bin/python3 -B -m forgesight.assist_queue_replay_once --record runs/dev_bent_017_replay_02/record.json --database inspections_replay_v2.sqlite3 --guidance guidance/prototype_inspection_v1.json --llama-root /home/nvidia/.local/share/forgesight/llama_cpu_v1 --output-dir runs/forgeassist_queue_advice_03
+```
+
+The measured submission took 1.214 ms; duplicate refusal took 0.0052 ms.
+The persisted `REVIEW` record was readable before advice finished and remained
+unchanged after real ExecuTorch generation. The controller took 20.761 s and
+saved a separate advisory. Local tests verify overlap refusal and recovery from
+a worker exception, including a simulated timeout. These results do not prove
+an actual Jetson timeout, continuous camera capture, UI delivery, physical-nut
+inspection or network-disconnected operation. The controller's own report still
+says `async_queue_implemented: false` because that controller remains a
+standalone synchronous command; the separate queue probe supplies this proof.
+The probe saved `queue_probe.json` beside the advisory report. See
+`manifests/jetson_forgeassist_queue_v1.json` for hashes and exact scope.

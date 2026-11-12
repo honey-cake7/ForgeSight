@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "stage": "9.2_saved_replay_bounded_queue",
+  "status": "JETSON_REPLAY_QUEUE_VERIFIED",
+  "scope": "One previously persisted MVTec metal_nut saved-image replay on the physical Jetson; no physical nut or live camera event",
+  "device": "Jetson Orin Nano 8GB, aarch64, system Python 3.8 for queue controller and isolated ExecuTorch Llama runtime",
+  "source_inspection_id": "be71d850-208a-4f74-acdf-d235207d54ec",
+  "authoritative_grade": "REVIEW",
+  "probe": {
+    "submit_ms": 1.213721000112855,
+    "busy_refusal_ms": 0.0052480002068477916,
+    "busy_refused": true,
+    "inspection_readable_while_pending": true,
+    "inspection_unchanged_after": true,
+    "worker_returncode": 0,
+    "advice_status": "JETSON_ADVICE_GENERATED_REQUIRES_HUMAN_REVIEW",
+    "controller_runtime_wall_ms": 20760.89812600003,
+    "sampled_peak_child_rss_kib": 1156568
+  },
+  "local_tests": "python -B -m unittest tests.test_assist_queue -q: 2 passed",
+  "sha256_pc_matches_jetson": {
+    "forgesight/assist_queue.py": "f35f831b7ebaf44b78fcf55e84599dcc51e26e1f02e4aebbc151adbcf45246c7",
+    "forgesight/assist_queue_replay_once.py": "e7f31921234c17e141c9cc29027ee1e420a646f0c200381abafb478ac95e917d",
+    "advice_report.json": "01c34016d471fb20b06d4cf143a84420a423e7b6a917336d6dc055949e915525",
+    "advisory.json": "5ab9342b625d41576ee0d9b7fc49cb715beb7f5edfd42d05e195ff9c310ed723",
+    "queue_probe.json": "cfd6e524543548f62f6588a78e97761358c936ce3fb9852c1f42e08909d8ba60"
+  },
+  "private_device_output": "/home/nvidia/.local/share/forgesight/vision_cpu_v1/runs/forgeassist_queue_advice_03",
+  "not_verified": ["actual Jetson timeout", "operator UI delivery", "continuous camera capture while Llama runs", "physical nut inspection", "network-disconnected operation"],
+  "next_step": "Connect separate advisory state to the operator UI without changing the authoritative inspection decision"
+}

@@ -2,8 +2,19 @@
 
 ## Current stage
 
-**Stage 9.1 saved-replay advisory VERIFIED on the physical Jetson; Stage 9
-asynchronous delivery PENDING.** At the user's request, the already persisted
+**Stage 9.2 bounded saved-replay advice queue VERIFIED on the physical Jetson;
+UI delivery PENDING.** A single worker accepted a replay advisory in 1.214 ms,
+refused an overlapping request in 0.0052 ms, and kept the original SQLite
+inspection readable while real ExecuTorch generation ran. The generated note
+remained separate from the unchanged `REVIEW` decision. The Jetson run exited
+successfully; its controller took 20.761 s and sampled 1,156,568 KiB peak
+child RSS. See `manifests/jetson_forgeassist_queue_v1.json`. Timeout/failure
+recovery has a local unit test, but a real Jetson timeout and UI behavior are
+still unverified. Stage 8's physical-nut gate remains open.
+
+### Earlier checkpoint
+
+**Stage 9.1 saved-replay advisory VERIFIED on the physical Jetson.** At the user's request, the already persisted
 `test/bent/017.png` replay was used while no physical nut is available. The
 reviewed `[E1]` inspection facts and `[G1]` prototype checklist went through
 Llama 3.2 1B on-device via ExecuTorch/XNNPACK. The model generated a cited
@@ -12,9 +23,8 @@ and authoritative `REVIEW` grade stayed unchanged. One run used 82 prompt and
 33 generated tokens, with 1.955 s native inference, 22.157 s native child wall
 time and 1,156,388 KiB sampled peak child RSS. A missing-runtime probe saved
 `ADVICE_UNAVAILABLE` with no note and preserved the original record. See
-`manifests/jetson_forgeassist_replay_v1.json`. **Next: bounded single-worker
-advice queue and timeout isolation; UI delivery and offline proof remain open.**
-Stage 8's live physical-nut gate also remains open.
+`manifests/jetson_forgeassist_replay_v1.json`. Stage 8's live physical-nut gate
+also remains open.
 
 ### Earlier checkpoints
 
