@@ -31,6 +31,7 @@ class StubService:
     def state(self):
         return {"camera": {"ready": True, "message": "Test frame"},
                 "busy": False, "latest": None, "history": [],
+                "advice": {"status": "NOT_ELIGIBLE", "advisory": None},
                 "replay_samples": ["test/bent/017.png"],
                 "local_replay_samples": ["test/bent/017.png"]}
 
@@ -50,6 +51,10 @@ class StubService:
 
     def upload_diagnostic(self, upload_id, data):
         self.requests.append(("diagnostic", upload_id, data))
+
+    def request_advice(self):
+        self.requests.append(("advice",))
+        return "PENDING"
 
 
 class LiveHttpTests(unittest.TestCase):
@@ -153,6 +158,18 @@ class LiveHttpTests(unittest.TestCase):
         with self.assertRaises(HTTPError) as rejected:
             urlopen(request)
         self.assertEqual(rejected.exception.code, 403)
+
+    def test_same_origin_advice_request_is_separate_from_capture(self):
+        self.assertIn(b"Generate Llama advice", urlopen(self.base).read())
+        request = Request(self.base + "/api/advice", method="POST", data=b"",
+                          headers={"Origin": self.base})
+        self.assertEqual(urlopen(request).status, 202)
+        self.assertEqual(self.service.requests[-1], ("advice",))
+        request = Request(self.base + "/api/advice", method="POST", data=b"x",
+                          headers={"Origin": self.base})
+        with self.assertRaises(HTTPError) as rejected:
+            urlopen(request)
+        self.assertEqual(rejected.exception.code, 400)
 
 
 class ReplayIntakeTests(unittest.TestCase):

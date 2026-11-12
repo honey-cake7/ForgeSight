@@ -37,10 +37,11 @@ def main():
         parser.error("Inspection record exceeds the metadata size bound.")
     original_bytes = args.record.read_bytes()
     record = json.loads(original_bytes)
-    if (record.get("source", {}).get("mode") != "SAVED_IMAGE_REPLAY"
+    source_mode = record.get("source", {}).get("mode")
+    if (source_mode not in ("SAVED_IMAGE_REPLAY", "USER_UPLOADED_IMAGE_DIAGNOSTIC")
             or record["source"].get("physical_part") is not False
             or record.get("model", {}).get("jetson_verified") is not True):
-        parser.error("This first Jetson advisory requires a verified saved-image replay record.")
+        parser.error("Jetson advisory requires a saved replay or uploaded-image diagnostic record.")
     stored = InspectionStore(args.database, create=False).get_inspection(record["inspection_id"])
     if stored != record:
         parser.error("The saved inspection differs from the immutable SQLite record.")
@@ -49,7 +50,7 @@ def main():
     root.mkdir(parents=True)
     (root / "input_inspection.json").write_bytes(original_bytes)
     report = {"schema_version": 1, "created_utc": datetime.now(timezone.utc).isoformat(),
-              "status": "ADVICE_UNAVAILABLE", "source_mode": "SAVED_IMAGE_REPLAY",
+              "status": "ADVICE_UNAVAILABLE", "source_mode": source_mode,
               "physical_part_inspected": False, "inspection_id": record["inspection_id"],
               "inspection_sha256": canonical_hash(record), "inspection_file_sha256": sha256(args.record),
               "authoritative_grade": record["decision"]["grade"],
@@ -106,7 +107,7 @@ def main():
                     try:
                         advice = parse_advisory(worker["generated_text_display"], context)
                         advice["jetson_verified"] = True
-                        advice["source_mode"] = "SAVED_IMAGE_REPLAY"
+                        advice["source_mode"] = source_mode
                         report["advisory"] = advice
                         report["status"] = "JETSON_ADVICE_GENERATED_REQUIRES_HUMAN_REVIEW"
                         (root / "advisory.json").write_text(json.dumps(advice, indent=2) + "\n")

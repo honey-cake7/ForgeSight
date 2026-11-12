@@ -16,6 +16,8 @@ from uuid import uuid4
 
 from PIL import Image
 
+from forgesight.assist_display import advice_for
+from forgesight.assist_queue import AdvisoryQueue
 from forgesight.storage import InspectionStore
 from forgesight.vision_edge_live_once import MODEL_SHA256, sha256
 
@@ -133,12 +135,77 @@ class LiveService:
         self.latest = None
         self.latest_root = None
         self.latest_source = None
+        self.advice_root = args.advice_root
+        self.advice_queue = AdvisoryQueue()
+        self.advice_futures = {}
+        self.llama_ready = (args.guidance.is_file()
+                            and (args.llama_root / "venv/bin/python").is_file()
+                            and (args.llama_root / "model/llama3_2_1b_xnnpack.pte").is_file())
+
+    def close(self):
+        self.advice_queue.close()
+
+    def advice_state(self):
+        with self.lock:
+            latest, root = self.latest, self.latest_root
+            future = self.advice_futures.get(latest.get("inspection_id")) if latest else None
+        if not self.llama_ready:
+            return {"status": "NOT_CONNECTED", "advisory": None}
+        if (not latest or latest.get("status") != "ANALYZED"
+                or latest.get("candidate") != "ANOMALY_CANDIDATE"
+                or latest.get("source_mode") not in
+                ("SAVED_IMAGE_REPLAY", "USER_UPLOADED_IMAGE_DIAGNOSTIC")
+                or root is None):
+            return {"status": "NOT_ELIGIBLE", "advisory": None}
+        record_path = root / "record.json"
+        if not record_path.is_file():
+            return {"status": "ADVICE_UNAVAILABLE", "advisory": None}
+        record = json.loads(record_path.read_text())
+        advice = advice_for(record, self.advice_root)
+        if future is not None and not future.done():
+            return {"status": "PENDING", "advisory": None}
+        if future is not None and advice["status"] in ("NOT_REQUESTED", "PENDING"):
+            return {"status": "ADVICE_UNAVAILABLE", "advisory": None}
+        return advice
+
+    def request_advice(self):
+        with self.lock:
+            latest, root = self.latest, self.latest_root
+            if (not self.llama_ready or self.busy or not latest
+                    or latest.get("status") != "ANALYZED"
+                    or latest.get("candidate") != "ANOMALY_CANDIDATE"
+                    or latest.get("source_mode") not in
+                    ("SAVED_IMAGE_REPLAY", "USER_UPLOADED_IMAGE_DIAGNOSTIC")
+                    or root is None):
+                raise ValueError("Llama advice is available after a flagged saved-image result")
+            record_path = root / "record.json"
+            record = json.loads(record_path.read_text())
+            if (record["inspection_id"] != latest["inspection_id"]
+                    or self.store.get_inspection(record["inspection_id"]) != record):
+                raise ValueError("Inspection record does not match SQLite")
+            output = self.advice_root / record["inspection_id"]
+            if output.exists() or record["inspection_id"] in self.advice_futures:
+                return "ALREADY_REQUESTED"
+            command = [sys.executable, "-B", "-m", "forgesight.assist_jetson_replay_once",
+                       "--record", str(record_path), "--database", str(self.args.database),
+                       "--guidance", str(self.args.guidance),
+                       "--llama-root", str(self.args.llama_root),
+                       "--output-dir", str(output), "--llama-timeout-seconds",
+                       str(self.args.llama_timeout_seconds)]
+            future = self.advice_queue.submit(lambda: subprocess.run(
+                command, capture_output=True, text=True,
+                timeout=self.args.llama_timeout_seconds + 45))
+            if future is None:
+                return "BUSY"
+            self.advice_futures[record["inspection_id"]] = future
+            return "PENDING"
 
     def state(self):
         with self.lock:
             latest = self.latest
             busy = self.busy
         return {"camera": self.camera.state(), "busy": busy, "latest": latest,
+                "advice": self.advice_state(),
                 "replay_samples": sorted(self.replay_samples),
                 "local_replay_samples": self.local_replay_samples,
                 "history": [{"part_id": r["part_id"], "inspection_id": r["inspection_id"],
@@ -388,6 +455,18 @@ def handler_for(service):
                     "http://" + self.headers.get("Host", "")):
                 self.send(403, b"Forbidden", "text/plain")
                 return
+            if self.path == "/api/advice":
+                if self.headers.get("Content-Length", "0") != "0":
+                    self.send(400, b"Invalid request", "text/plain")
+                    return
+                try:
+                    status = service.request_advice()
+                except ValueError as error:
+                    self.send(409, json.dumps({"error": str(error)}).encode(), "application/json")
+                    return
+                self.send(202 if status == "PENDING" else 409,
+                          json.dumps({"status": status}).encode(), "application/json")
+                return
             if self.path not in ("/api/inspect", "/api/replay", "/api/replay-local",
                                  "/api/upload-diagnostic"):
                 self.send(400, b"Invalid request", "text/plain")
@@ -428,6 +507,12 @@ def main():
     parser.add_argument("--grade-policy", type=Path, default=Path("configs/forgegrade_v1.json"))
     parser.add_argument("--dataset-manifest", type=Path, default=Path("manifests/metal_nut_v1.json"))
     parser.add_argument("--dataset-root", type=Path, default=Path("data/mvtec_ad/metal_nut"))
+    parser.add_argument("--guidance", type=Path, default=Path("guidance/prototype_inspection_v1.json"))
+    parser.add_argument("--llama-root", type=Path,
+                        default=Path("/home/nvidia/.local/share/forgesight/llama_cpu_v1"))
+    parser.add_argument("--advice-root", type=Path,
+                        default=Path("runs/live_inspections_v1/advice"))
+    parser.add_argument("--llama-timeout-seconds", type=float, default=75)
     parser.add_argument("--database", type=Path, default=Path("runs/live_inspections_v1/inspections.sqlite3"))
     parser.add_argument("--runs-root", type=Path, default=Path("runs/live_inspections_v1"))
     parser.add_argument("--camera-index", type=int, default=0)
@@ -435,6 +520,8 @@ def main():
     args = parser.parse_args()
     if not 1024 <= args.port <= 65535:
         parser.error("Use an unprivileged port")
+    if not 0 < args.llama_timeout_seconds <= 240:
+        parser.error("Use a Llama timeout between 0 and 240 seconds")
     args.database = args.database.resolve()
     args.runs_root = args.runs_root.resolve()
     args.vision_python = vision_executable(args.vision_python)
@@ -442,6 +529,9 @@ def main():
     args.grade_policy = args.grade_policy.resolve()
     args.dataset_manifest = args.dataset_manifest.resolve()
     args.dataset_root = args.dataset_root.resolve()
+    args.guidance = args.guidance.resolve()
+    args.llama_root = args.llama_root.resolve()
+    args.advice_root = args.advice_root.resolve()
     camera = CameraFeed(args.camera_index)
     service = LiveService(args, camera)
     server = ThreadingHTTPServer(("127.0.0.1", args.port), handler_for(service))
@@ -452,6 +542,7 @@ def main():
     finally:
         server.server_close()
         camera.close()
+        service.close()
 
 
 if __name__ == "__main__":

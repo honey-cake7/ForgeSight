@@ -25,6 +25,13 @@
       <p id="diagnostic-status" role="status" aria-live="polite">Choose a PNG and enter a new upload ID.</p>
       <p class="replay-footnote">The score uses the frozen model. The benchmark threshold is for reference only; this path always gives REVIEW until the uploaded image domain is validated.</p>
     </section>
+    <section class="panel advice-panel">
+      <div class="panel-head"><div><h2>Llama advice</h2><p>On-device ExecuTorch · separate from ForgeGrade</p></div></div>
+      <p id="advice-status" role="status" aria-live="polite">Analyze an image to see whether advice is available.</p>
+      <button id="advice-request" disabled>Generate Llama advice</button>
+      <p id="advice-note" hidden></p>
+      <p class="replay-footnote">Advice is a checked operator note. It cannot change the saved grade or identify a confirmed defect cause.</p>
+    </section>
     <section class="panel history"><div class="panel-head"><div><h2>Recent inspections</h2><p>Stored locally in SQLite</p></div></div><div id="history">No inspections yet.</div></section>
   </main>
 </body>

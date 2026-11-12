@@ -56,7 +56,12 @@ def _prepare_advisory(record: dict, guidance: dict) -> dict:
         raise AdvisoryRefusal('UNSUPPORTED_TYPE_OR_GRADE', 'Expected the current unknown-type REVIEW prototype, not a different grading/type policy.')
     if grade_record(record, decision['policy_snapshot']) != decision:
         raise AdvisoryRefusal('INCONSISTENT_DECISION', 'Decision does not match its recorded deterministic evidence/policy.')
-    if decision['reason'] != 'UNKNOWN_UNSEEN_OR_UNRELIABLE_TYPE':
+    source_mode = record.get('source', {}).get('mode')
+    supported_reason = (decision['reason'] == 'UNKNOWN_UNSEEN_OR_UNRELIABLE_TYPE'
+                        or (source_mode == 'USER_UPLOADED_IMAGE_DIAGNOSTIC'
+                            and record['source'].get('physical_part') is False
+                            and decision['reason'] == 'UPLOADED_IMAGE_DOMAIN_UNVALIDATED'))
+    if not supported_reason:
         raise AdvisoryRefusal('INVALID_EVIDENCE_FOR_ADVICE', 'Invalid evidence cannot be presented as an analyzed defect event.')
     if canonical_hash(guidance) != GUIDANCE_DOCUMENT_SHA256:
         raise AdvisoryRefusal('UNRECOGNIZED_GUIDANCE', 'Guidance content differs from the reviewed prototype document; advice is withheld.')
@@ -77,6 +82,7 @@ def _prepare_advisory(record: dict, guidance: dict) -> dict:
         f'[G1] Prototype checklist: {entry["text"]}'
     )
     return {'schema_version': 1, 'prompt_version': PROMPT_VERSION, 'output_policy_version': OUTPUT_POLICY_VERSION,
+            'source_mode': source_mode,
             'inspection_id': record['inspection_id'], 'inspection_sha256': canonical_hash(record),
             'authoritative_decision': deepcopy(decision), 'decision_sha256': canonical_hash(decision),
             'evidence': {'E1': {'inspection_id': record['inspection_id'], 'record_sha256': canonical_hash(record),

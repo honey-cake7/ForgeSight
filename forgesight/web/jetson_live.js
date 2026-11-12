@@ -29,6 +29,7 @@ async function refreshState() {
     }
     updateButton();
     if (state.latest) renderLatest(state.latest, state.busy);
+    renderAdvice(state.advice, state.latest, state.busy);
     renderHistory(state.history);
   } catch (error) {
     cameraReady = false;
@@ -36,6 +37,25 @@ async function refreshState() {
     byId('camera-status').textContent = error.message;
     updateButton();
   }
+}
+
+function renderAdvice(advice, latest, inspectionBusy) {
+  const status = advice?.status || 'NOT_CONNECTED';
+  const eligible = latest?.status === 'ANALYZED' && latest?.candidate === 'ANOMALY_CANDIDATE' &&
+    ['SAVED_IMAGE_REPLAY', 'USER_UPLOADED_IMAGE_DIAGNOSTIC'].includes(latest?.source_mode);
+  byId('advice-request').disabled = inspectionBusy || !eligible || status !== 'NOT_REQUESTED';
+  const labels = {
+    NOT_CONNECTED: 'On-device Llama runtime is unavailable.',
+    NOT_ELIGIBLE: 'Advice is available after a flagged saved-image result.',
+    NOT_REQUESTED: 'Flagged image saved. You can request a separate Llama note.',
+    PENDING: 'Llama is generating on this Jetson through ExecuTorch…',
+    ADVICE_UNAVAILABLE: 'Llama advice was unavailable. The inspection grade is unchanged.',
+    GENERATED_REQUIRES_HUMAN_REVIEW: 'ExecuTorch generation verified · human review required.'
+  };
+  byId('advice-status').textContent = labels[status] || 'Llama advice status is unknown.';
+  const note = advice?.advisory?.note;
+  byId('advice-note').hidden = status !== 'GENERATED_REQUIRES_HUMAN_REVIEW' || !note;
+  byId('advice-note').textContent = note || '';
 }
 
 function renderLatest(item, processing) {
@@ -154,6 +174,21 @@ byId('diagnostic-submit').addEventListener('click', async () => {
     byId('diagnostic-status').textContent = 'Analyzing uploaded PNG…';
   } catch (error) {
     byId('diagnostic-status').textContent = error.message;
+  } finally {
+    await refreshState();
+  }
+});
+
+byId('advice-request').addEventListener('click', async () => {
+  byId('advice-request').disabled = true;
+  byId('advice-status').textContent = 'Requesting on-device Llama advice…';
+  try {
+    const response = await fetch('/api/advice', {method: 'POST'});
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || result.status || 'Advice request rejected');
+    byId('advice-status').textContent = 'Llama is generating on this Jetson through ExecuTorch…';
+  } catch (error) {
+    byId('advice-status').textContent = error.message;
   } finally {
     await refreshState();
   }
