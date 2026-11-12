@@ -49,7 +49,7 @@ function renderLatest(item, processing) {
   const grade = byId('grade');
   grade.textContent = item.grade || 'ERROR';
   grade.className = 'grade ' + (item.grade || '').toLowerCase();
-  byId('source-mode').textContent = item.source_mode === 'LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC' ? 'Screen photo diagnostic · no physical nut inspected' : item.source_mode === 'LIVE_CAMERA' ? 'Operator-declared physical nut' : 'Camera capture';
+  byId('source-mode').textContent = item.source_mode === 'LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC' ? 'Screen photo diagnostic · no physical nut inspected' : item.source_mode === 'LIVE_CAMERA' ? 'Marked physical by operator · not independently verified' : 'Camera capture';
   byId('candidate').textContent = item.candidate === 'ANOMALY_CANDIDATE' ? 'Above benchmark threshold' : item.candidate === 'NORMAL_CANDIDATE' ? 'At/below benchmark threshold' : 'Unavailable';
   byId('score').textContent = item.score == null ? '—' : Number(item.score).toFixed(4);
   byId('latency').textContent = item.model_forward_ms == null ? '—' : Math.round(item.model_forward_ms) + ' ms';
@@ -98,6 +98,16 @@ function renderHistory(rows) {
 
 byId('confirmed').addEventListener('change', updateButton);
 byId('part-id').addEventListener('input', updateButton);
+for (const choice of document.querySelectorAll('input[name="source-kind"]')) {
+  choice.addEventListener('change', () => {
+    const physical = document.querySelector('input[name="source-kind"]:checked').value === 'physical_nut';
+    byId('confirm-text').textContent = physical
+      ? 'I confirm an actual metal nut, not a photo on any screen, is in view.'
+      : 'I confirm a displayed nut photo, not a physical part, is in view.';
+    byId('confirmed').checked = false;
+    updateButton();
+  });
+}
 byId('inspect').addEventListener('click', async () => {
   busy = true;
   updateButton();

@@ -80,3 +80,9 @@ be completed before this launch can be called physical-inspection verified.
   response, not confirmed damage or a physical nut inspection. The GUI now
   explains broad responses and keeps the phone-screen source label visible.
   See `manifests/jetson_phone_screen_diagnostic_v1.json`.
+- A later displayed-photo capture was visibly sharper, but 76.3% of its frame
+  still exceeded the benchmark pixel threshold. The operator had selected
+  `LIVE_CAMERA` for that capture, despite no real nut being available; that
+  immutable record is not physical-part evidence. The GUI now requires an
+  explicit fresh confirmation when switching to physical-nut mode. See
+  `manifests/jetson_screen_photo_quality_check_v1.json`.

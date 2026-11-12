@@ -12,6 +12,12 @@ not physical-part defect evidence. See
 `manifests/jetson_phone_screen_diagnostic_v1.json`. Physical-part and offline
 acceptance remain unverified.
 
+A later displayed-photo capture was sharper, but the broad model response
+persisted at 76.3% of the frame. Its UI source was accidentally selected as
+`LIVE_CAMERA`; the visual scene and user clarification show this is still no
+physical-nut evidence. The GUI confirmation now spells out the source choice.
+See `manifests/jetson_screen_photo_quality_check_v1.json`.
+
 The [Jetson live camera UI prototype](JETSON_LIVE_UI.md) was deployed to the
 physical Jetson. Its C270 preview and loopback page worked; a PC Edge browser
 rendered the room view through SSH. That preflight scene contained no nut;

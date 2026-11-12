@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "stage": "8_displayed_photo_quality_check",
+  "status": "SHARPER_DISPLAY_CAPTURE_VERIFIED_BROAD_RESPONSE_PERSISTS",
+  "device": "Jetson Orin Nano C270 live GUI, frozen EfficientAD-S CPU export",
+  "earlier_capture": {
+    "inspection_id": "bed7cc60-5b16-4459-9d53-4e8a68dbbaea",
+    "source_mode": "LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC",
+    "response_area_px": 234723,
+    "response_area_fraction": 0.764072265625,
+    "central_crop_laplacian_variance": 14.22
+  },
+  "latest_capture": {
+    "inspection_id": "436406ae-c5dc-4e97-baf5-31ca5473ce27",
+    "capture_id": "TEST_11",
+    "saved_source_mode": "LIVE_CAMERA",
+    "actual_source_interpretation": "Displayed nut image, not a proven physical nut; user previously clarified no physical nut is available and a cursor is visible in this capture",
+    "status": "ANALYZED",
+    "grade": "REVIEW",
+    "reason": "CAMERA_DOMAIN_UNVALIDATED",
+    "raw_score": 5.250351905822754,
+    "benchmark_image_threshold": 0.22776579856872559,
+    "response_area_px": 234276,
+    "response_area_fraction": 0.7626171875,
+    "model_forward_ms": 1570.6187289979425,
+    "saved_frame_to_record_ms": 6694.558850998874,
+    "central_crop_laplacian_variance": 77.75,
+    "source_size_px": [640, 480]
+  },
+  "image_quality_method": "OpenCV grayscale Laplacian variance in the same [y=40:440, x=80:560] crop. Higher value supports the visual sharpness improvement but also responds to display pixels, texture and lighting; it is not a calibrated quality metric.",
+  "visual_review": "The current nut image has more distinct edges and surface texture than the earlier soft capture. The overlay remains broad rather than isolating a confirmed defect.",
+  "private_evidence": {
+    "earlier_frame": "artifacts/edge/live_ui_jetson_01/phone_screen_test7/frame.png",
+    "latest_frame": "artifacts/edge/live_ui_jetson_01/quality_check/latest.png",
+    "latest_frame_sha256": "c2cc68a4391cfd08db01c9acead51ac6c7bba0751e629e356ae30cf5c1febcaf",
+    "latest_overlay": "artifacts/edge/live_ui_jetson_01/quality_check/overlay.png",
+    "latest_overlay_sha256": "f5ee437f451ae948002b3e954015dc4190157b639e2827dedc9adf562edf6041",
+    "browser_screenshot": "artifacts/edge/live_ui_jetson_01/quality_check/ui_source_clarity.png",
+    "browser_screenshot_sha256": "5f6d923b8af4b60a6a9e4f4072358d20419b245ba5de5f9e1ef689aef8b93356"
+  },
+  "ui_clarification": "The screen-photo choice remains the default. Changing to physical-nut mode now requires a fresh confirmation explicitly stating an actual metal nut, not a screen photo, is in view.",
+  "updated_ui_sha256_pc_matches_jetson": {
+    "forgesight/web/jetson_live.html": "3f9b37651b219004d8ba74b71e69d9bb5d942b5a03612043e685566942e51b39",
+    "forgesight/web/jetson_live.js": "32b650a555b642bf1c258b2437bcf83c467d6a9c6b6aad06455f805667450c49"
+  },
+  "not_verified": ["physical nut inspection", "display-camera defect accuracy", "defect subtype", "offline end-to-end operation"]
+}
