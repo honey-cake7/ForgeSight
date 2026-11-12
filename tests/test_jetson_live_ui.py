@@ -28,7 +28,8 @@ class StubService:
     def state(self):
         return {"camera": {"ready": True, "message": "Test frame"},
                 "busy": False, "latest": None, "history": [],
-                "replay_samples": ["test/bent/017.png"]}
+                "replay_samples": ["test/bent/017.png"],
+                "local_replay_samples": ["test/bent/017.png"]}
 
     def image(self, name):
         return None
@@ -40,6 +41,9 @@ class StubService:
 
     def replay(self, replay_id, dataset_path, data):
         self.requests.append((replay_id, dataset_path, data))
+
+    def replay_local(self, replay_id, dataset_path):
+        self.requests.append(("local", replay_id, dataset_path))
 
 
 class LiveHttpTests(unittest.TestCase):
@@ -111,6 +115,22 @@ class LiveHttpTests(unittest.TestCase):
         self.assertEqual(rejected.exception.code, 409)
         self.assertEqual(len(self.service.requests), 1)
 
+    def test_jetson_local_replay_route_needs_no_file_upload(self):
+        self.assertIn(b"Analyze Jetson copy", urlopen(self.base).read())
+        request = Request(self.base + "/api/replay-local", method="POST",
+                          data=json.dumps({"replay_id": "BENT-LOCAL-001",
+                                           "dataset_path": "test/bent/017.png"}).encode(),
+                          headers={"Origin": self.base, "Content-Type": "application/json"})
+        self.assertEqual(urlopen(request).status, 202)
+        self.assertEqual(self.service.requests[-1],
+                         ("local", "BENT-LOCAL-001", "test/bent/017.png"))
+        request = Request(self.base + "/api/replay-local", method="POST",
+                          data=b"{}", headers={"Origin": "http://elsewhere.invalid",
+                                                 "Content-Type": "application/json"})
+        with self.assertRaises(HTTPError) as rejected:
+            urlopen(request)
+        self.assertEqual(rejected.exception.code, 403)
+
 
 class ReplayIntakeTests(unittest.TestCase):
     def test_only_exact_manifest_preview_bytes_are_accepted(self):
@@ -136,6 +156,33 @@ class ReplayIntakeTests(unittest.TestCase):
             self.assertEqual(len(saved), 1)
             self.assertEqual(saved[0].read_bytes(), b"original-png-fixture")
             self.assertEqual(service.latest["source_mode"], "SAVED_IMAGE_REPLAY")
+
+    def test_local_replay_uses_only_checked_jetson_file(self):
+        with TemporaryDirectory() as folder:
+            root = Path(folder)
+            dataset = root / "dataset"
+            image = dataset / "test/bent/017.png"
+            image.parent.mkdir(parents=True)
+            image.write_bytes(b"original-png-fixture")
+            service = LiveService.__new__(LiveService)
+            service.args = SimpleNamespace(runs_root=root / "runs", dataset_root=dataset)
+            service.replay_samples = {"test/bent/017.png": {
+                "sha256": hashlib.sha256(image.read_bytes()).hexdigest()}}
+            service.local_replay_samples = ["test/bent/017.png"]
+            service.lock = Lock()
+            service.busy = False
+            service.latest = None
+            service.store = SimpleNamespace(has_part=lambda _part_id: False)
+            with self.assertRaises(ValueError):
+                service.replay_local("LOCAL-001", "test/bent/000.png")
+            image.write_bytes(b"modified")
+            with self.assertRaises(ValueError):
+                service.replay_local("LOCAL-001", "test/bent/017.png")
+            image.write_bytes(b"original-png-fixture")
+            with patch("forgesight.jetson_live_ui.Thread") as worker:
+                service.replay_local("LOCAL-001", "test/bent/017.png")
+            worker.return_value.start.assert_called_once()
+            self.assertEqual(len(list((root / "runs").glob("replay_*/upload/test/bent/017.png"))), 1)
 
 
 if __name__ == "__main__":

@@ -1,5 +1,13 @@
 # Learning log
 
+## Stage 10 UI diagnostic: A browser file picker sees its own computer
+
+The prior page asked a Jetson user to navigate hidden `.local` for a file that
+the server already had. A server-side selection of a hash-checked source file
+removes that unnecessary step. The selected dataset path is never used as an
+arbitrary filesystem path: it must match one of four frozen manifest entries,
+and its current bytes must still match the expected SHA-256.
+
 ## Stage 10 UI diagnostic: Keep the original image bytes intact
 
 Photographing a dataset image on a screen changes its color, focus, geometry

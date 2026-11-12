@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "stage": "10_local_dataset_ui_replay_diagnostic",
+  "status": "JETSON_LOCAL_DATASET_REPLAY_VERIFIED",
+  "scope": "One previously exposed MVTec metal_nut defect PNG selected from the Jetson runtime without a browser file picker",
+  "device": "NVIDIA Jetson Orin Nano, aarch64",
+  "source_mode": "SAVED_IMAGE_REPLAY",
+  "dataset_path": "test/bent/017.png",
+  "dataset_role": "development_preview",
+  "image_sha256": "b49cc898143c46a8c3a8697411d04a078b36f60f4798ccc68aea33ea8fcac026",
+  "replay_id": "JETSON-COPY-5a45a184ed40",
+  "inspection_id": "6d8cedaa-9e28-4405-8098-51aef6424a2b",
+  "model_score": 0.6828088760375977,
+  "frozen_image_threshold": 0.22776579856872559,
+  "candidate": "ANOMALY_CANDIDATE",
+  "forgegrade": "REVIEW",
+  "response_area_px": 9015,
+  "model_forward_ms": 2192.6054879986623,
+  "request_to_state_ms": 9601.318850000098,
+  "non_preview_path_rejected": true,
+  "ui_served_original_png_sha256_match": true,
+  "overlay_png_sha256": "a477fbe51db3e73da1a1442997ae9ff07a2568353ac0819176006b0b0e5fd981",
+  "sqlite_exact_record_readback": true,
+  "connected_pc_edge_render": "Four choices, Analyze Jetson copy button, saved replay label, score, threshold and response area were rendered through a loopback SSH tunnel",
+  "browser_button_click": "NOT_TESTED_ENDPOINT_SUBMITTED_BY_STANDARD_LIBRARY_CLIENT",
+  "physical_part_inspected": false,
+  "new_accuracy_evidence": false,
+  "offline_operation_in_this_run": "NOT_VERIFIED_CONNECTED_RUN",
+  "private_report": {
+    "jetson": "/home/nvidia/.local/share/forgesight/vision_cpu_v1/runs/ui_local_replay_smoke_01/report.json",
+    "ignored_pc_copy": "artifacts/edge/jetson_ui_local_replay_01_report.json",
+    "copied_report_sha256": "7a787a41845e775e6c5ab0e5464982c56cea06e5ec5f81e206a7cb67900c1bb9"
+  },
+  "deployed_source_sha256": {
+    "forgesight/jetson_live_ui.py": "a415bc3fc8cc6920230f3569d49116036652bcee77093dc75300479f7f7a2bae",
+    "forgesight/web/jetson_live.html": "9128c20f42c18f0030cd5d70f0e53a7fe13673dab8b395e762e4b1533873d98d",
+    "forgesight/web/jetson_live.js": "c571a39a8674eda94703280e35d95baaa2448bf1ec34cce0f0bd114baec561a1",
+    "forgesight/web/jetson_live.css": "b924665de02711e92acc660ab0ac8412cd54ae91f7720e3acc367150e0d51f94",
+    "scripts/jetson_ui_local_replay_smoke.py": "8cd8bfc2d2043cc183d1c8e96d418b2dbc5e8c7d816a563dd5d0acd16cbfce27"
+  },
+  "focused_local_test": "10 tests passed: tests.test_jetson_live_ui and tests.test_vision_edge_replay_roles in isolated WSL app venv",
+  "limitations": [
+    "Only four previously exposed development-preview images are selectable",
+    "Arbitrary personal photos are not accepted by the frozen benchmark replay path",
+    "No physical nut was inspected and no new accuracy estimate was measured",
+    "The browser rendered the page, but its button was not clicked in this automated smoke run"
+  ]
+}

@@ -2,6 +2,16 @@
 
 ## Current stage
 
+**Jetson-copy replay button VERIFIED.** The earlier upload picker caused
+confusion because it browses the browser computer and the Jetson runtime lives
+under hidden `.local`. The UI now offers **Analyze Jetson copy** for the four
+hash-checked development previews. The physical Jetson replayed
+`test/bent/017.png` without a picker, scored 0.682808876 above 0.227765799,
+served the overlay and read back the same SQLite record. A non-preview path was
+rejected. PC Edge rendered the new button and result through the loopback
+tunnel. This does not accept arbitrary personal photos or add accuracy proof.
+See `manifests/jetson_ui_local_replay_v1.json`.
+
 **Original-PNG upload to the Jetson UI VERIFIED for one previously exposed
 defect image.** The updated loopback page accepts only four frozen MVTec
 development-preview PNGs. A real Jetson upload of `test/bent/017.png` returned

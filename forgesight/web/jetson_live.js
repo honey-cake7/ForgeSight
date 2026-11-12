@@ -5,11 +5,14 @@ let priorInspection = null;
 let cameraReady = false;
 let busy = false;
 let replaySamples = [];
+let localReplaySamples = [];
 
 function updateButton() {
   byId('inspect').disabled = !cameraReady || busy || !byId('confirmed').checked || !/^[A-Za-z0-9_-]{1,64}$/.test(byId('part-id').value);
   byId('replay-submit').disabled = busy || !replaySamples.includes(byId('replay-sample').value) ||
     !byId('replay-file').files.length || !/^[A-Za-z0-9_-]{1,64}$/.test(byId('replay-id').value);
+  byId('replay-local').disabled = busy || !localReplaySamples.includes(byId('replay-sample').value) ||
+    !/^[A-Za-z0-9_-]{1,64}$/.test(byId('replay-id').value);
 }
 
 async function refreshState() {
@@ -26,6 +29,7 @@ async function refreshState() {
         ...replaySamples.map(path => new Option(path, path)));
       byId('replay-sample').value = selected;
     }
+    localReplaySamples = Array.isArray(state.local_replay_samples) ? state.local_replay_samples : [];
     const badge = byId('camera-status');
     badge.textContent = state.camera.message;
     badge.classList.toggle('ready', cameraReady);
@@ -158,6 +162,25 @@ byId('replay-submit').addEventListener('click', async () => {
         'X-Dataset-Path': byId('replay-sample').value}, body: file});
     const result = await response.json();
     if (!response.ok) throw new Error(result.error || 'Replay request rejected');
+    byId('replay-status').textContent = 'Analyzing original dataset image…';
+  } catch (error) {
+    byId('replay-status').textContent = error.message;
+  } finally {
+    await refreshState();
+  }
+});
+
+byId('replay-local').addEventListener('click', async () => {
+  busy = true;
+  updateButton();
+  byId('replay-status').textContent = 'Opening the original PNG stored on the Jetson…';
+  try {
+    const response = await fetch('/api/replay-local', {method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({replay_id: byId('replay-id').value,
+        dataset_path: byId('replay-sample').value})});
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Jetson replay request rejected');
     byId('replay-status').textContent = 'Analyzing original dataset image…';
   } catch (error) {
     byId('replay-status').textContent = error.message;

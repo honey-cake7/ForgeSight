@@ -1,5 +1,14 @@
 # Decisions and unresolved choices
 
+## Stage 10 UI diagnostic: Use verified files already on the Jetson
+
+The browser picker exposes the browser machine's filesystem; it cannot make
+Jetson files visible to a PC browser, and `.local` is hidden in a Jetson file
+picker. Add a no-picker button for the four frozen development-preview PNGs
+already on the Jetson. Verify the selected local file hash again on each run
+and reuse the saved-image replay path. Keep arbitrary uploads outside this
+benchmark replay until a separate diagnostic contract is defined.
+
 ## Stage 10 UI diagnostic: Upload original development images by exact hash
 
 Add a saved-image upload path to the existing loopback Jetson page. Require a

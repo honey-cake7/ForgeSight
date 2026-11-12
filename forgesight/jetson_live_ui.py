@@ -120,6 +120,10 @@ class LiveService:
         manifest = json.loads(args.dataset_manifest.read_text())
         self.replay_samples = {row["path"]: row for row in manifest["samples"]
                                if row["role"] == "development_preview"}
+        self.local_replay_samples = sorted(
+            path for path, row in self.replay_samples.items()
+            if (args.dataset_root / path).is_file()
+            and sha256(args.dataset_root / path) == row["sha256"])
         self.store = InspectionStore(args.database)
         self.lock = Lock()
         self.busy = False
@@ -133,6 +137,7 @@ class LiveService:
             busy = self.busy
         return {"camera": self.camera.state(), "busy": busy, "latest": latest,
                 "replay_samples": sorted(self.replay_samples),
+                "local_replay_samples": self.local_replay_samples,
                 "history": [{"part_id": r["part_id"], "inspection_id": r["inspection_id"],
                              "source_mode": r["source"]["mode"],
                              "grade": r["decision"]["grade"], "status": r["status"],
@@ -170,6 +175,14 @@ class LiveService:
             self.latest = {"status": "PROCESSING", "part_id": replay_id,
                            "source_mode": "SAVED_IMAGE_REPLAY"}
         Thread(target=self._run_replay, args=(replay_id, image, sample, root), daemon=True).start()
+
+    def replay_local(self, replay_id, dataset_path):
+        if dataset_path not in self.local_replay_samples:
+            raise ValueError("Selected original image is not available on the Jetson")
+        image = self.args.dataset_root / dataset_path
+        if not image.is_file() or image.stat().st_size > MAX_UPLOAD_BYTES:
+            raise ValueError("Selected Jetson image is missing or too large")
+        self.replay(replay_id, dataset_path, image.read_bytes())
 
     def _run_replay(self, replay_id, image, sample, root):
         try:
@@ -320,7 +333,7 @@ def handler_for(service):
                     "http://" + self.headers.get("Host", "")):
                 self.send(403, b"Forbidden", "text/plain")
                 return
-            if self.path not in ("/api/inspect", "/api/replay"):
+            if self.path not in ("/api/inspect", "/api/replay", "/api/replay-local"):
                 self.send(400, b"Invalid request", "text/plain")
                 return
             try:
@@ -330,11 +343,16 @@ def handler_for(service):
                         raise ValueError("Invalid camera request")
                     body = json.loads(self.rfile.read(length))
                     service.inspect(body.get("part_id"), body.get("confirmed"), body.get("source_kind"))
-                else:
+                elif self.path == "/api/replay":
                     if self.headers.get("Content-Type") != "image/png" or not 0 < length <= MAX_UPLOAD_BYTES:
                         raise ValueError("Upload one original PNG under 8 MiB")
                     service.replay(self.headers.get("X-Replay-Id"),
                                    self.headers.get("X-Dataset-Path"), self.rfile.read(length))
+                else:
+                    if self.headers.get("Content-Type") != "application/json" or not 0 < length <= 512:
+                        raise ValueError("Invalid local replay request")
+                    body = json.loads(self.rfile.read(length))
+                    service.replay_local(body.get("replay_id"), body.get("dataset_path"))
             except (ValueError, RuntimeError, TypeError, AttributeError) as error:
                 self.send(409, json.dumps({"error": str(error)}).encode(), "application/json")
                 return
@@ -349,6 +367,7 @@ def main():
     parser.add_argument("--model", type=Path, default=Path("efficientad_s_calibrated.ts"))
     parser.add_argument("--grade-policy", type=Path, default=Path("configs/forgegrade_v1.json"))
     parser.add_argument("--dataset-manifest", type=Path, default=Path("manifests/metal_nut_v1.json"))
+    parser.add_argument("--dataset-root", type=Path, default=Path("data/mvtec_ad/metal_nut"))
     parser.add_argument("--database", type=Path, default=Path("runs/live_inspections_v1/inspections.sqlite3"))
     parser.add_argument("--runs-root", type=Path, default=Path("runs/live_inspections_v1"))
     parser.add_argument("--camera-index", type=int, default=0)
@@ -362,6 +381,7 @@ def main():
     args.model = args.model.resolve()
     args.grade_policy = args.grade_policy.resolve()
     args.dataset_manifest = args.dataset_manifest.resolve()
+    args.dataset_root = args.dataset_root.resolve()
     camera = CameraFeed(args.camera_index)
     service = LiveService(args, camera)
     server = ThreadingHTTPServer(("127.0.0.1", args.port), handler_for(service))

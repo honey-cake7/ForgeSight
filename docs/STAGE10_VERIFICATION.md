@@ -17,6 +17,7 @@ Stage 11 submission acceptance must not inherit a completed Stage 10 claim.
 | Repeated vision runtime | 20 cold replays of two previously used images; all 20 saved and read back | [vision latency](../manifests/jetson_offline_vision_latency_v1.json) |
 | Repeated advisory runtime | Eight fresh ExecuTorch generations from one unchanged saved record; all eight passed the evidence contract | [advice latency](../manifests/jetson_offline_advice_latency_v1.json) |
 | Original-PNG upload through live UI, connected | One previously exposed bent image accepted, scored 0.682808876 above 0.227765799, overlay and SQLite readback matched; altered bytes rejected | [upload smoke](../manifests/jetson_ui_original_png_upload_v1.json) |
+| Jetson-copy replay through live UI, connected | Same permitted bent image scored 0.682808876 without browser file picker; overlay and SQLite readback matched; non-preview path rejected | [local replay](../manifests/jetson_ui_local_replay_v1.json) |
 
 The separate reports sampled Wi-Fi, ethernet IPv4 addresses and default
 routes during each disconnected interval, then verified Wi-Fi recovery and

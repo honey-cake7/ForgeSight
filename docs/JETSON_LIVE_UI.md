@@ -22,25 +22,36 @@ operation remain unverified.
 ## Test the original defect PNG without the camera
 
 The same loopback page now has **Test an original MVTec defect image**. Select
-one of the four development-preview paths, choose that exact PNG from the
-local `metal_nut/test` directory, enter a fresh replay ID, and click **Upload
-& analyze**. The browser sends the original file bytes to the Jetson. The
-server checks the frozen manifest SHA-256, sample role, selected path and PNG
-SHA-256 before accepting it. A modified image is rejected before inspection.
+one of the four development-preview paths, enter a fresh replay ID, and click
+**Analyze Jetson copy**. This reads the original PNG already stored in the
+Jetson runtime; no file picker or camera is needed. If the selected file is
+missing or its hash changed, the button is unavailable or the request is
+rejected. The server checks the frozen manifest SHA-256, sample role, selected
+path and PNG SHA-256 before accepting it.
+
+The optional **Upload the matching PNG from this browser's computer** section
+uses a file picker. That picker sees the computer running the browser: PC
+files if Firefox/Edge is on the PC, Jetson files if Firefox is on the Jetson.
+The Jetson dataset is under hidden `.local`, which can make it hard to browse
+to. If needed, press Ctrl+L in the picker and paste the full directory path
+below, or use **Analyze Jetson copy**. Uploads accept only the exact selected
+MVTec file. A personal photo or a different test image will be rejected by the
+current replay path; this is a deliberate boundary around the frozen
+benchmark. It does not mean EfficientAD has inspected or rejected that photo.
+
 The result panel shows the raw EfficientAD score, benchmark threshold,
 candidate, response area, overlay and ForgeGrade decision. The SQLite record
 uses `SAVED_IMAGE_REPLAY` and `physical_part: false`. Camera availability does
-not control the upload button. These four images were already exposed during
+not control either replay button. These four images were already exposed during
 development; repeat uploads test the runtime, not new accuracy.
 
-For the first check, select `test/bent/017.png` and choose that file from your
-PC or Jetson file picker. If the file is on the Jetson, its directory is
+For the first check, select `test/bent/017.png`, enter a unique ID such as
+`BENT-TEST-001`, then click **Analyze Jetson copy**. The Jetson directory is
 `/home/nvidia/.local/share/forgesight/vision_cpu_v1/data/mvtec_ad/metal_nut/test/bent/`.
-Do not select a phone photograph or a different `017.png`. The exact file is
-required. The previous Jetson upload measured score `0.682808876` against
+The tested local replay measured score `0.682808876` against
 threshold `0.227765799` and showed `ANOMALY_CANDIDATE`/`REVIEW`; a rerun
 should be compared against those numbers, with small runtime differences
-possible. See `manifests/jetson_ui_original_png_upload_v1.json`.
+possible. See `manifests/jetson_ui_local_replay_v1.json`.
 
 ## Launch after copying this source to the Jetson vision directory
 
@@ -74,7 +85,7 @@ The source files needed in that directory are `forgesight/grade.py`,
 `venv/bin/python`, `efficientad_s_calibrated.ts`, and
 `configs/forgegrade_v1.json` are reused. The Llama runtime and system Python
 packages are unchanged. The frozen `manifests/metal_nut_v1.json` and original
-development-preview PNGs are required for uploads. A physical nut inspection
+development-preview PNGs are required for replay. A physical nut inspection
 remains unverified.
 
 ## Current proof
