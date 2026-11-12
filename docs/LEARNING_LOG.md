@@ -1,5 +1,15 @@
 # Learning log
 
+## Stage 10.4: Intake rejection differs from an inspection error
+
+The replay accepts a hash-checked image before creating an inspection record.
+When a model path is missing after that point, the failed attempt is saved as
+ERROR with a deterministic REVIEW and is still visible in SQLite. A corrupt
+image that fails the frozen dataset hash check is rejected before an
+inspection starts, so it creates no inspection row. Keeping those outcomes
+distinct makes recovery evidence easier to audit. A later valid replay used
+the unchanged model and preserved the ERROR row.
+
 ## Stage 10.3: Local UI service under disconnection
 
 Serving page files and exercising the queue through Jetson loopback HTTP

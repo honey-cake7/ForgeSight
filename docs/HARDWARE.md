@@ -1,5 +1,12 @@
 # Hardware evidence
 
+Stage 10.4 injected a missing model path and corrupt image copy into the
+Jetson saved-replay flow while Wi-Fi was disconnected. The valid recovery
+replay later ran a 1,777 ms frozen EfficientAD first forward and persisted
+PASS. Eleven route/interface samples had a maximum 1.001 s gap; Wi-Fi was
+restored and the recovery timer stopped. This single recovery forward is not
+a throughput estimate. See `manifests/jetson_offline_failure_recovery_v1.json`.
+
 Stage 10.3 served the saved-replay operator page over Jetson loopback while
 Wi-Fi was disconnected. One ExecuTorch advisory became visible through the
 local status API in 21.403 s; its native child took 20.888 s and sampled

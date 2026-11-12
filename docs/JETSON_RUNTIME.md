@@ -6,6 +6,28 @@ vision-plus-advice replay while Wi-Fi was disconnected. See
 `manifests/jetson_offline_saved_replay_pilot_v1.json`; full physical-camera
 offline acceptance remains open.
 
+## Stage 10.4 disconnected failure recovery
+
+`scripts/jetson_offline_failure_recovery.py` checks the source image/model
+hashes and sole Wi-Fi route, schedules an independent four-minute reconnect
+timer, then disconnects Wi-Fi. It passes a nonexistent path in place of the
+model argument without touching the working export, tests a corrupt image
+copy against the manifest integrity gate, and runs the valid frozen image
+again. It checks SQLite rows after each step, samples network state, restores
+Wi-Fi and cancels the timer. Use a fresh output directory and transient unit
+name for a repeat. Device commands:
+
+```sh
+cd /home/nvidia/.local/share/forgesight/vision_cpu_v1
+python3 -B scripts/jetson_offline_failure_recovery.py --prefix "$PWD" --output-dir "$PWD/runs/offline_failure_recovery_01" --preflight-only
+sudo systemd-run --unit=forgesight-offline-failure-recovery-v1 --collect /usr/bin/python3 -B "$PWD/scripts/jetson_offline_failure_recovery.py" --prefix "$PWD" --output-dir "$PWD/runs/offline_failure_recovery_01"
+```
+
+Raw reports and SQLite are private under that run directory, with an ignored
+PC copy under `artifacts/offline_stage10_jetson_v1/offline_failure_recovery_01`.
+The corrupt file fails integrity checking before decoder use; decoder-level
+failure remains a separate test. See the Stage 10.4 manifest.
+
 ## Stage 10.3 disconnected loopback UI pilot
 
 `scripts/jetson_offline_ui_pilot.py` reads the prior saved REVIEW replay,

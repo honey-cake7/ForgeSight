@@ -2,6 +2,16 @@
 
 No challenge requirement is marked satisfied by repository setup alone.
 
+Stage 10.4 tested two controlled failure inputs on the disconnected Jetson.
+A nonexistent model path caused an ERROR inspection with deterministic REVIEW
+and a persisted SQLite row; an invalid image copy failed the manifest hash
+check before image decoding and created no inspection row. A valid replay then
+produced PASS with both accepted rows intact. The working model and dataset
+image were not modified. Eleven interface/route samples showed no upstream
+route during the probe. This does not test actual camera failure, decoder-
+level image corruption, physical parts or complete offline acceptance. See
+`manifests/jetson_offline_failure_recovery_v1.json`.
+
 Stage 10.3 exercised the Jetson's saved-replay operator page over loopback
 HTTP with Wi-Fi disconnected. The local client received HTML/CSS/JavaScript,
 PENDING/BUSY states, a real ExecuTorch note and a separate native TIMEOUT that

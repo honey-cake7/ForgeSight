@@ -1,5 +1,14 @@
 # Decisions and unresolved choices
 
+## Stage 10.4: Inject failures through arguments and copies
+
+Pass an absent model path rather than rename the working export. Use a
+deliberately invalid copy rather than alter a MVTec source file. Accept the
+existing intake boundary: hash-mismatched bytes are refused before an
+inspection row exists, while a model failure after accepted input is saved as
+an ERROR/REVIEW inspection. Prove recovery with a fresh valid replay in the
+same database, and preserve the original source hashes.
+
 ## Stage 10.3: Prove local UI service behavior without a new browser install
 
 Use the existing saved-replay page and a local HTTP client on the Jetson for

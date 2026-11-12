@@ -2,6 +2,19 @@
 
 ## Current stage
 
+**Stage 10.4 disconnected saved-replay failure recovery VERIFIED on the
+physical Jetson; full Stage 10 acceptance PENDING.** With Wi-Fi disconnected,
+an intentionally missing model path produced a persisted ERROR inspection and
+conservative REVIEW decision. A deliberately corrupt image copy failed the
+frozen-image SHA-256 intake check before inference and created no inspection
+row. A subsequent valid normal replay produced PASS; both accepted records
+remained in fresh SQLite and matched their JSON files. The real frozen model
+and image hashes were unchanged. Eleven roughly one-second network samples
+showed no Wi-Fi/ethernet IPv4 or default route, and Wi-Fi recovered. See
+`manifests/jetson_offline_failure_recovery_v1.json`.
+
+### Earlier checkpoint
+
 **Stage 10.3 disconnected loopback operator-page service VERIFIED on the
 physical Jetson; full Stage 10 acceptance PENDING.** With Wi-Fi disconnected,
 a local HTTP client fetched the page's HTML, JavaScript and CSS and exercised
@@ -510,7 +523,7 @@ device-only operation correctly exited 2. See `docs/EDGE_RUNTIME.md`.
 | Defect-type classification | NOT VERIFIED | Current predicted types remain unknown; need valid same-domain classification evidence |
 | Pixel-only decision rules | PC PROTOTYPE VERIFIED | Deterministic policy tests/replay; physical tolerances, severity and industrial certification open |
 | Local history and duplicates after restart | PC SQLITE REPLAY VERIFIED | Four original records survive writer exit, exact retries add zero rows; no physical identity or power-loss claim |
-| Offline end-to-end inspection | PARTIAL: saved-case replay and loopback UI service under disconnection | Physical camera part, rendered offline browser, longer-run metrics and remaining failure checks open |
+| Offline end-to-end inspection | PARTIAL: saved-case replay, loopback UI service and two input-failure paths under disconnection | Physical camera part, rendered offline browser, decoder failure, longer-run metrics and remaining failure checks open |
 
 Stage 1 input preparation is verified and its review gate was accepted. The
 Stage 2 device-generation gate is verified for one prompt. Desktop data work
@@ -518,7 +531,6 @@ and GPU availability still do not establish a Jetson camera-inspection system.
 
 ## Next exact task
 
-Continue Stage 10 with missing-model/corrupt-input and camera-failure recovery
-checks, then longer-run metrics. A true offline browser demonstration requires
-a locally available browser. Physical-nut camera acceptance remains open until
-a nut is available.
+Continue Stage 10 with camera failure/recovery and longer-run metrics. A true
+offline browser demonstration requires a locally available browser. Physical-
+nut camera acceptance remains open until a nut is available.

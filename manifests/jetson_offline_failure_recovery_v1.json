@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "stage": "10.4_disconnected_saved_replay_failure_recovery",
+  "status": "DISCONNECTED_SAVED_REPLAY_FAILURE_RECOVERY_VERIFIED_FULL_STAGE_10_OPEN",
+  "device": "NVIDIA Jetson Orin Nano 8GB, aarch64",
+  "scope": "Controlled missing-model path and corrupt saved-image copy followed by one valid saved-image recovery; no source asset modified",
+  "source_mode": "SAVED_IMAGE_REPLAY",
+  "physical_part_inspected": false,
+  "new_accuracy_evidence": false,
+  "frozen_model_sha256_before_and_after": "8766c41a51a5444f57f564134427bbd2d2d95dd6ec5ff08b24698f00f7f55dcd",
+  "source_image_sha256_before_and_after": "b0309325bc305ae8b19246884f20397b951285786aecca0ebf1d009e9799e350",
+  "missing_model": {
+    "injection": "Pass a nonexistent export path; leave the real frozen model in place",
+    "process_exit_code": 1,
+    "record_status": "ERROR",
+    "saved_report_status": "PERSISTED_REPLAY_ERROR",
+    "grade": "REVIEW",
+    "reason": "INSPECTION_ERROR_OR_INCOMPLETE",
+    "error_type": "RuntimeError",
+    "nested_cause": "FileNotFoundError for injected model path",
+    "sqlite_rows_after": 1,
+    "record_file_matches_fresh_sqlite_readback": true,
+    "record_sha256": "c9d38da96cf89b2d72986a7fd8b45965b3df96375c3057e87eb7e86e497d4049"
+  },
+  "corrupt_input": {
+    "injection": "A deliberately invalid PNG copy in the private run directory",
+    "process_exit_code": 2,
+    "rejection": "SAVED_IMAGE_SHA256_MISMATCH",
+    "model_invoked": false,
+    "inspection_row_created": false,
+    "sqlite_rows_after": 1,
+    "limit": "The integrity gate rejected the bytes before image decoding; decoder-level failure handling was not exercised"
+  },
+  "valid_recovery": {
+    "dataset_path": "train/good/000.png",
+    "dataset_role": "fit",
+    "process_exit_code": 0,
+    "record_status": "ANALYZED",
+    "grade": "PASS",
+    "score": 0.028453722596168518,
+    "model_forward_ms": 1776.5399400013848,
+    "sqlite_rows_after": 2,
+    "both_record_files_match_fresh_sqlite_readback": true,
+    "record_sha256": "4f3a6a5579768e895eed22847166ef040c7f6bef5d5cc453c6a06e8eef91d952"
+  },
+  "network": {
+    "samples": 11,
+    "sample_interval_target_seconds": 1,
+    "maximum_observed_sample_gap_seconds": 1.0010000000000003,
+    "all_samples_no_wifi_or_ethernet_ipv4_or_default_route": true,
+    "disconnected_before_recovery": true,
+    "independent_reconnect_watchdog_scheduled_seconds": 240,
+    "wifi_restored_with_default_route": true,
+    "watchdog_timer_inactive_after_run": true,
+    "limit": "Route/interface sampling cannot exclude a brief between-sample link or unexamined interface"
+  },
+  "sha256_device_matches_pc": {
+    "recovery_report.json": "f0d6b11c3c1baefbcc5c32fec299c8f9e17002031a7e667b981f9937f3f9ea91",
+    "inspections.sqlite3": "b028baed193a5f415ad0d2575ff91ace6abdd38c336f3cc3f93cb55d652d5617"
+  },
+  "script_sha256": "5cf1d6d86e20dacfef68b74b8eca325732fc150c824d27f0d64428568c213f80",
+  "private_evidence": {
+    "jetson": "/home/nvidia/.local/share/forgesight/vision_cpu_v1/runs/offline_failure_recovery_01",
+    "ignored_pc_copy": "artifacts/offline_stage10_jetson_v1/offline_failure_recovery_01"
+  },
+  "focused_tests": "Four offline-safety and replay-role unit tests passed in isolated WSL app environment",
+  "not_verified": [
+    "actual camera disconnection and recovery",
+    "decoder-level corrupt-image failure",
+    "physical nut inspection",
+    "full application cold start or OS reboot",
+    "long-run p50/p95 and distinct physical parts per minute",
+    "complete Stage 10 acceptance"
+  ]
+}
