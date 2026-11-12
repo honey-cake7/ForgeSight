@@ -2,6 +2,18 @@
 
 ## Current stage
 
+**Original-PNG upload to the Jetson UI VERIFIED for one previously exposed
+defect image.** The updated loopback page accepts only four frozen MVTec
+development-preview PNGs. A real Jetson upload of `test/bent/017.png` returned
+EfficientAD score 0.682808876 versus threshold 0.227765799,
+`ANOMALY_CANDIDATE`, ForgeGrade `REVIEW`, a PNG overlay and exact SQLite
+readback. Modified bytes were rejected. This confirms the saved-image UI path;
+the connected PC Edge browser also rendered the four permitted file choices
+and score through the Jetson loopback tunnel. This is not new accuracy,
+physical nut or disconnected-operation evidence. See
+`manifests/jetson_ui_original_png_upload_v1.json` and
+[usage instructions](JETSON_LIVE_UI.md).
+
 The consolidated [Stage 10 verification ledger](STAGE10_VERIFICATION.md)
 lists measured Jetson results and every remaining acceptance gate. Stage 10
 is **INCOMPLETE**. The user clarified that only an MVTec nut photo on a phone

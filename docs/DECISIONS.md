@@ -1,5 +1,14 @@
 # Decisions and unresolved choices
 
+## Stage 10 UI diagnostic: Upload original development images by exact hash
+
+Add a saved-image upload path to the existing loopback Jetson page. Require a
+selected path from the four development-preview samples, the frozen manifest
+hash and a byte-for-byte PNG hash match. Reuse the existing replay runner and
+SQLite record; label the result `SAVED_IMAGE_REPLAY`. Keep camera capture
+separate. Do not expose the final holdout set through this interactive tool or
+count repeated development images as fresh accuracy evidence.
+
 ## Stage 10.7: Repeat one frozen advisory input for runtime statistics
 
 Use the same hash-checked saved REVIEW inspection eight times in separate

@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "stage": "10_saved_image_ui_upload_diagnostic",
+  "status": "JETSON_UI_ORIGINAL_PNG_REPLAY_VERIFIED",
+  "scope": "One previously exposed MVTec metal_nut development-preview defect PNG sent to the running Jetson loopback UI upload endpoint",
+  "device": "NVIDIA Jetson Orin Nano, aarch64",
+  "source_mode": "SAVED_IMAGE_REPLAY",
+  "dataset_path": "test/bent/017.png",
+  "dataset_role": "development_preview",
+  "image_sha256": "b49cc898143c46a8c3a8697411d04a078b36f60f4798ccc68aea33ea8fcac026",
+  "dataset_manifest_sha256": "14b11ebd03d5107c7ef3478e1c4d20887237e2fbef58601ac043014b8f0e340f",
+  "replay_id": "UPLOAD-BENT-4d5bd341bae9",
+  "inspection_id": "c68865b5-7a65-43f6-8544-98c17c190e11",
+  "model_score": 0.6828088760375977,
+  "frozen_image_threshold": 0.22776579856872559,
+  "candidate": "ANOMALY_CANDIDATE",
+  "forgegrade": "REVIEW",
+  "response_area_px": 9015,
+  "source_area_px": 490000,
+  "model_forward_ms": 2008.4992180018162,
+  "upload_accept_to_state_ms": 8878.149591000692,
+  "timing_scope": "Single HTTP upload through asynchronous replay to UI state; includes image preprocessing, model process startup, maps, grade, JSON and SQLite; excludes browser file-picking and network transfer before request acceptance",
+  "rejected_modified_bytes_before_replay": true,
+  "ui_served_original_png_sha256_match": true,
+  "overlay_png_sha256": "a477fbe51db3e73da1a1442997ae9ff07a2568353ac0819176006b0b0e5fd981",
+  "sqlite_exact_record_readback": true,
+  "physical_part_inspected": false,
+  "new_accuracy_evidence": false,
+  "offline_operation_in_this_run": "NOT_VERIFIED_CONNECTED_RUN",
+  "browser_rendered_controls": "PC Edge through temporary loopback SSH tunnel displayed four permitted sample options, saved replay label, score, threshold and response area",
+  "browser_file_picker_click": "NOT_TESTED_ENDPOINT_SUBMITTED_BY_STANDARD_LIBRARY_CLIENT",
+  "private_report": {
+    "jetson": "/home/nvidia/.local/share/forgesight/vision_cpu_v1/runs/ui_upload_smoke_01/report.json",
+    "ignored_pc_copy": "artifacts/edge/jetson_ui_upload_01_report.json",
+    "copied_report_sha256": "9c34b4b7337ac68ed8bfaa87d3fb11f6ccfc68eb82d84240af55759153c28bdc"
+  },
+  "deployed_source_sha256": {
+    "forgesight/jetson_live_ui.py": "a064ee23bb05d9955f6c4a2a29bed38319a0ea4b375a18f11350f3eab94ac01f",
+    "forgesight/web/jetson_live.html": "c6be55c588ac664dc607843a86656edec729454e20c4f71454daa1d856e559da",
+    "forgesight/web/jetson_live.js": "44a33ce3599acfa1c205e4d111958e0a0fc4e0bd818106db642417a00ab74609",
+    "forgesight/web/jetson_live.css": "5459f2308d78ba2552ffa27ae9371a12cf7f9133c60b3449c269237e9402c781",
+    "scripts/jetson_ui_upload_smoke.py": "3c7ba1003135167a6164cc0d238a1597b1f9099072ac9c5f885f16547892a74d"
+  },
+  "focused_local_test": "8 tests passed: tests.test_jetson_live_ui and tests.test_vision_edge_replay_roles in isolated WSL app venv",
+  "limitations": [
+    "This development image was already used before and gives no new accuracy estimate",
+    "No physical nut was inspected",
+    "This connected smoke run is not offline end-to-end proof",
+    "The browser rendered the page, but its file picker was not clicked in the automated smoke run"
+  ]
+}

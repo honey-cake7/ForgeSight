@@ -1,15 +1,18 @@
 """Exercise the loopback inspection contract without claiming camera proof."""
 
 from http.server import ThreadingHTTPServer
+import hashlib
 import json
 from pathlib import Path
-from threading import Thread
+from threading import Lock, Thread
 from tempfile import TemporaryDirectory
+from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
-from forgesight.jetson_live_ui import handler_for, vision_executable
+from forgesight.jetson_live_ui import LiveService, handler_for, vision_executable
 
 
 class StubCamera:
@@ -24,7 +27,8 @@ class StubService:
 
     def state(self):
         return {"camera": {"ready": True, "message": "Test frame"},
-                "busy": False, "latest": None, "history": []}
+                "busy": False, "latest": None, "history": [],
+                "replay_samples": ["test/bent/017.png"]}
 
     def image(self, name):
         return None
@@ -33,6 +37,9 @@ class StubService:
         if confirmed is not True:
             raise ValueError("Operator declaration required")
         self.requests.append((part_id, source_kind))
+
+    def replay(self, replay_id, dataset_path, data):
+        self.requests.append((replay_id, dataset_path, data))
 
 
 class LiveHttpTests(unittest.TestCase):
@@ -82,6 +89,53 @@ class LiveHttpTests(unittest.TestCase):
                     urlopen(request)
                 self.assertEqual(raised.exception.code, code)
         self.assertEqual(self.service.requests, [])
+
+    def test_original_png_upload_route_and_size_guard(self):
+        self.assertIn(b"Upload &amp; analyze", urlopen(self.base).read())
+        request = Request(self.base + "/api/replay", method="POST", data=b"png-fixture",
+                          headers={"Origin": self.base, "Content-Type": "image/png",
+                                   "X-Replay-Id": "BENT-001",
+                                   "X-Dataset-Path": "test/bent/017.png"})
+        self.assertEqual(urlopen(request).status, 202)
+        self.assertEqual(self.service.requests[-1],
+                         ("BENT-001", "test/bent/017.png", b"png-fixture"))
+        request = Request(self.base + "/api/replay", method="POST", data=b"wrong-origin",
+                          headers={"Origin": "http://elsewhere.invalid", "Content-Type": "image/png"})
+        with self.assertRaises(HTTPError) as rejected:
+            urlopen(request)
+        self.assertEqual(rejected.exception.code, 403)
+        request = Request(self.base + "/api/replay", method="POST", data=b"wrong-type",
+                          headers={"Origin": self.base, "Content-Type": "application/octet-stream"})
+        with self.assertRaises(HTTPError) as rejected:
+            urlopen(request)
+        self.assertEqual(rejected.exception.code, 409)
+        self.assertEqual(len(self.service.requests), 1)
+
+
+class ReplayIntakeTests(unittest.TestCase):
+    def test_only_exact_manifest_preview_bytes_are_accepted(self):
+        with TemporaryDirectory() as folder:
+            service = LiveService.__new__(LiveService)
+            service.args = SimpleNamespace(runs_root=Path(folder))
+            service.replay_samples = {"test/bent/017.png": {
+                "sha256": hashlib.sha256(b"original-png-fixture").hexdigest()}}
+            service.lock = Lock()
+            service.busy = False
+            service.latest = None
+            service.store = SimpleNamespace(has_part=lambda _part_id: False)
+            for path, content in [("test/bent/017.png", b"modified"),
+                                  ("test/bent/000.png", b"original-png-fixture")]:
+                with self.subTest(path=path):
+                    with self.assertRaises(ValueError):
+                        service.replay("BENT-001", path, content)
+            self.assertEqual(list(Path(folder).iterdir()), [])
+            with patch("forgesight.jetson_live_ui.Thread") as worker:
+                service.replay("BENT-001", "test/bent/017.png", b"original-png-fixture")
+            worker.return_value.start.assert_called_once()
+            saved = list(Path(folder).glob("replay_*/upload/test/bent/017.png"))
+            self.assertEqual(len(saved), 1)
+            self.assertEqual(saved[0].read_bytes(), b"original-png-fixture")
+            self.assertEqual(service.latest["source_mode"], "SAVED_IMAGE_REPLAY")
 
 
 if __name__ == "__main__":

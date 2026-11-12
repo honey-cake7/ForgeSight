@@ -4,9 +4,12 @@ const overlay = byId('overlay');
 let priorInspection = null;
 let cameraReady = false;
 let busy = false;
+let replaySamples = [];
 
 function updateButton() {
   byId('inspect').disabled = !cameraReady || busy || !byId('confirmed').checked || !/^[A-Za-z0-9_-]{1,64}$/.test(byId('part-id').value);
+  byId('replay-submit').disabled = busy || !replaySamples.includes(byId('replay-sample').value) ||
+    !byId('replay-file').files.length || !/^[A-Za-z0-9_-]{1,64}$/.test(byId('replay-id').value);
 }
 
 async function refreshState() {
@@ -16,6 +19,13 @@ async function refreshState() {
     const state = await response.json();
     cameraReady = !!state.camera.ready;
     busy = !!state.busy;
+    if (Array.isArray(state.replay_samples) && state.replay_samples.join('|') !== replaySamples.join('|')) {
+      replaySamples = state.replay_samples;
+      const selected = byId('replay-sample').value;
+      byId('replay-sample').replaceChildren(new Option('Choose image', ''),
+        ...replaySamples.map(path => new Option(path, path)));
+      byId('replay-sample').value = selected;
+    }
     const badge = byId('camera-status');
     badge.textContent = state.camera.message;
     badge.classList.toggle('ready', cameraReady);
@@ -38,22 +48,25 @@ async function refreshState() {
 
 function renderLatest(item, processing) {
   if (processing || item.status === 'PROCESSING') {
-    byId('request-status').textContent = 'Analyzing captured frame… camera preview remains live.';
+    if (item.source_mode === 'SAVED_IMAGE_REPLAY') byId('replay-status').textContent = 'Analyzing original dataset image…';
+    else byId('request-status').textContent = 'Analyzing captured frame… camera preview remains live.';
     return;
   }
   if (item.inspection_id === priorInspection && item.status !== 'ERROR') return;
   priorInspection = item.inspection_id || null;
-  byId('request-status').textContent = item.status === 'ANALYZED' ? 'Inspection saved locally.' : 'Inspection failed; see error below.';
+  const statusText = item.status === 'ANALYZED' ? 'Result saved locally.' : 'Analysis failed; see error below.';
+  if (item.source_mode === 'SAVED_IMAGE_REPLAY') byId('replay-status').textContent = statusText;
+  else byId('request-status').textContent = statusText;
   byId('result-empty').hidden = true;
   byId('result-content').hidden = false;
   const grade = byId('grade');
   grade.textContent = item.grade || 'ERROR';
   grade.className = 'grade ' + (item.grade || '').toLowerCase();
-  byId('source-mode').textContent = item.source_mode === 'LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC' ? 'Screen photo diagnostic · no physical nut inspected' : item.source_mode === 'LIVE_CAMERA' ? 'Marked physical by operator · not independently verified' : 'Camera capture';
+  byId('source-mode').textContent = item.source_mode === 'SAVED_IMAGE_REPLAY' ? 'Original dataset replay · ' + item.dataset_path + ' · no physical nut inspected' : item.source_mode === 'LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC' ? 'Screen photo diagnostic · no physical nut inspected' : item.source_mode === 'LIVE_CAMERA' ? 'Marked physical by operator · not independently verified' : 'Camera capture';
   byId('candidate').textContent = item.candidate === 'ANOMALY_CANDIDATE' ? 'Above benchmark threshold' : item.candidate === 'NORMAL_CANDIDATE' ? 'At/below benchmark threshold' : 'Unavailable';
-  byId('score').textContent = item.score == null ? '—' : Number(item.score).toFixed(4);
+  byId('score').textContent = item.score == null ? '—' : Number(item.score).toFixed(4) + ' / threshold ' + Number(item.threshold).toFixed(4);
   byId('latency').textContent = item.model_forward_ms == null ? '—' : Math.round(item.model_forward_ms) + ' ms';
-  const responseFraction = item.response_area_px == null ? null : Number(item.response_area_px) / (640 * 480);
+  const responseFraction = item.response_area_px == null ? null : Number(item.response_area_px) / Number(item.source_area_px || 640 * 480);
   byId('area').textContent = responseFraction == null ? '—' : Number(item.response_area_px).toLocaleString() + ' px · ' + (responseFraction * 100).toFixed(1) + '%';
   byId('response-note').textContent = responseFraction != null && responseFraction > 0.5
     ? (item.source_mode === 'LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC'
@@ -89,7 +102,7 @@ function renderHistory(rows) {
     const details = document.createElement('span');
     details.textContent = new Date(row.timestamp_utc).toLocaleString();
     const grade = document.createElement('span');
-    grade.textContent = (row.source_mode === 'LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC' ? 'SCREEN PHOTO · ' : '') + row.grade + ' · ' + row.status;
+    grade.textContent = (row.source_mode === 'SAVED_IMAGE_REPLAY' ? 'DATASET REPLAY · ' : row.source_mode === 'LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC' ? 'SCREEN PHOTO · ' : '') + row.grade + ' · ' + row.status;
     line.append(name, details, grade);
     list.append(line);
   }
@@ -98,6 +111,9 @@ function renderHistory(rows) {
 
 byId('confirmed').addEventListener('change', updateButton);
 byId('part-id').addEventListener('input', updateButton);
+for (const id of ['replay-sample', 'replay-file', 'replay-id']) {
+  byId(id).addEventListener(id === 'replay-id' ? 'input' : 'change', updateButton);
+}
 for (const choice of document.querySelectorAll('input[name="source-kind"]')) {
   choice.addEventListener('change', () => {
     const physical = document.querySelector('input[name="source-kind"]:checked').value === 'physical_nut';
@@ -122,6 +138,29 @@ byId('inspect').addEventListener('click', async () => {
     byId('confirmed').checked = false;
   } catch (error) {
     byId('request-status').textContent = error.message;
+  } finally {
+    await refreshState();
+  }
+});
+
+byId('replay-submit').addEventListener('click', async () => {
+  const file = byId('replay-file').files[0];
+  if (!file || file.size < 1 || file.size > 8 * 1024 * 1024) {
+    byId('replay-status').textContent = 'Choose one original PNG under 8 MiB.';
+    return;
+  }
+  busy = true;
+  updateButton();
+  byId('replay-status').textContent = 'Uploading original image…';
+  try {
+    const response = await fetch('/api/replay', {method: 'POST',
+      headers: {'Content-Type': 'image/png', 'X-Replay-Id': byId('replay-id').value,
+        'X-Dataset-Path': byId('replay-sample').value}, body: file});
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Replay request rejected');
+    byId('replay-status').textContent = 'Analyzing original dataset image…';
+  } catch (error) {
+    byId('replay-status').textContent = error.message;
   } finally {
     await refreshState();
   }

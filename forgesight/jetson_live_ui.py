@@ -1,6 +1,7 @@
 """Loopback live C270 preview and one-part EfficientAD inspection UI for Jetson."""
 
 import argparse
+import hashlib
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import os
@@ -18,6 +19,8 @@ from forgesight.vision_edge_live_once import MODEL_SHA256, sha256
 
 WEB_ROOT = Path(__file__).with_name("web")
 PART_ID = re.compile(r"[A-Za-z0-9_-]{1,64}\Z")
+MAX_UPLOAD_BYTES = 8 * 1024 * 1024
+DATASET_MANIFEST_SHA256 = "14b11ebd03d5107c7ef3478e1c4d20887237e2fbef58601ac043014b8f0e340f"
 
 
 def vision_executable(path):
@@ -112,17 +115,24 @@ class LiveService:
             raise ValueError("Jetson vision runtime or frozen model is missing/mismatched")
         if not args.grade_policy.is_file():
             raise ValueError("ForgeGrade policy is missing")
+        if sha256(args.dataset_manifest) != DATASET_MANIFEST_SHA256:
+            raise ValueError("Frozen MVTec manifest is missing or mismatched")
+        manifest = json.loads(args.dataset_manifest.read_text())
+        self.replay_samples = {row["path"]: row for row in manifest["samples"]
+                               if row["role"] == "development_preview"}
         self.store = InspectionStore(args.database)
         self.lock = Lock()
         self.busy = False
         self.latest = None
         self.latest_root = None
+        self.latest_source = None
 
     def state(self):
         with self.lock:
             latest = self.latest
             busy = self.busy
         return {"camera": self.camera.state(), "busy": busy, "latest": latest,
+                "replay_samples": sorted(self.replay_samples),
                 "history": [{"part_id": r["part_id"], "inspection_id": r["inspection_id"],
                              "source_mode": r["source"]["mode"],
                              "grade": r["decision"]["grade"], "status": r["status"],
@@ -132,10 +142,86 @@ class LiveService:
     def image(self, name):
         with self.lock:
             root = self.latest_root
+            source = self.latest_source
         if root is None:
             return None
-        path = root / "response_overlay.png" if name == "overlay" else root.parent / "frame.png"
+        path = root / "response_overlay.png" if name == "overlay" else source
         return path.read_bytes() if path.is_file() else None
+
+    def replay(self, replay_id, dataset_path, data):
+        if not isinstance(replay_id, str) or not PART_ID.fullmatch(replay_id):
+            raise ValueError("Enter a new replay ID using letters, numbers, - or _")
+        sample = self.replay_samples.get(dataset_path)
+        if sample is None or not isinstance(data, bytes) or not 0 < len(data) <= MAX_UPLOAD_BYTES:
+            raise ValueError("Choose one permitted MVTec development-preview PNG")
+        if hashlib.sha256(data).hexdigest() != sample["sha256"]:
+            raise ValueError("Uploaded file does not match the selected original MVTec PNG")
+        with self.lock:
+            if self.busy:
+                raise ValueError("An inspection is already running")
+            if self.store.has_part(replay_id):
+                raise ValueError("This replay ID is already recorded; enter a new one")
+            root = self.args.runs_root / ("replay_" + uuid4().hex)
+            image = root / "upload" / dataset_path
+            image.parent.mkdir(parents=True, exist_ok=False)
+            with image.open("xb") as stream:
+                stream.write(data)
+            self.busy = True
+            self.latest = {"status": "PROCESSING", "part_id": replay_id,
+                           "source_mode": "SAVED_IMAGE_REPLAY"}
+        Thread(target=self._run_replay, args=(replay_id, image, sample, root), daemon=True).start()
+
+    def _run_replay(self, replay_id, image, sample, root):
+        try:
+            command = [sys.executable, "-B", "-m", "forgesight.vision_edge_replay",
+                       "--image", str(image), "--image-sha256", sample["sha256"],
+                       "--dataset-manifest", str(self.args.dataset_manifest),
+                       "--part-id", replay_id,
+                       "--vision-python", str(self.args.vision_python),
+                       "--model", str(self.args.model), "--model-sha256", MODEL_SHA256,
+                       "--grade-policy", str(self.args.grade_policy),
+                       "--database", str(self.args.database),
+                       "--output-dir", str(root / "result")]
+            result = subprocess.run(command, capture_output=True, text=True, timeout=180)
+            self._publish_result(replay_id, root / "result", image, result)
+        except Exception as error:
+            with self.lock:
+                self.latest_root = root
+                self.latest_source = image
+                self.latest = {"status": "ERROR", "part_id": replay_id, "error": str(error)}
+        finally:
+            with self.lock:
+                self.busy = False
+
+    def _publish_result(self, part_id, result_root, image, result):
+        record_path = result_root / "record.json"
+        if record_path.is_file():
+            record = json.loads(record_path.read_text())
+            if self.store.get_inspection(record["inspection_id"]) != record:
+                raise RuntimeError("Inspection record was not confirmed in SQLite")
+            if result.returncode and record["status"] == "ANALYZED":
+                raise RuntimeError("Inspection process failed after writing an analyzed record")
+            latest = {"status": record["status"], "part_id": part_id,
+                      "source_mode": record["source"]["mode"],
+                      "dataset_path": record["source"].get("dataset_path"),
+                      "inspection_id": record["inspection_id"], "grade": record["decision"]["grade"],
+                      "reason": record["decision"]["reason"],
+                      "action": record["decision"]["operator_action"],
+                      "score": record["score"], "candidate": record["candidate"],
+                      "threshold": record["model"]["image_threshold"],
+                      "response_area_px": (record["geometry"] or {}).get("total_area_px"),
+                      "source_area_px": record["source"]["size_px"][0] * record["source"]["size_px"][1],
+                      "model_forward_ms": record["timings"].get("model_forward_ms"),
+                      "inspection_ms": (record["timings"].get("capture_file_to_record_ms")
+                                        or record["timings"].get("replay_before_record_write_ms")),
+                      "error": record["error"]}
+        else:
+            latest = {"status": "ERROR", "part_id": part_id,
+                      "error": (result.stderr or result.stdout)[-1000:] or "Inspection process failed"}
+        with self.lock:
+            self.latest_root = result_root
+            self.latest_source = image
+            self.latest = latest
 
     def inspect(self, part_id, confirmed, source_kind):
         if (not isinstance(part_id, str) or not PART_ID.fullmatch(part_id)
@@ -173,33 +259,11 @@ class LiveService:
                        "--camera-index", str(self.args.camera_index),
                        "--operator-declared-part" if source_kind == "physical_nut" else "--screen-photo-diagnostic"]
             result = subprocess.run(command, capture_output=True, text=True, timeout=180)
-            record_path = root / "result" / "record.json"
-            if record_path.is_file():
-                record = json.loads(record_path.read_text())
-                if self.store.get_inspection(record["inspection_id"]) != record:
-                    raise RuntimeError("Inspection record was not confirmed in SQLite")
-                if result.returncode and record["status"] == "ANALYZED":
-                    raise RuntimeError("Inspection process failed after writing an analyzed record")
-                latest = {"status": record["status"], "part_id": part_id,
-                          "source_mode": record["source"]["mode"],
-                          "inspection_id": record["inspection_id"], "grade": record["decision"]["grade"],
-                          "reason": record["decision"]["reason"],
-                          "action": record["decision"]["operator_action"],
-                          "score": record["score"], "candidate": record["candidate"],
-                          "threshold": record["model"]["image_threshold"],
-                          "response_area_px": (record["geometry"] or {}).get("total_area_px"),
-                          "model_forward_ms": record["timings"].get("model_forward_ms"),
-                          "inspection_ms": record["timings"].get("capture_file_to_record_ms"),
-                          "error": record["error"]}
-            else:
-                latest = {"status": "ERROR", "part_id": part_id,
-                          "error": (result.stderr or result.stdout)[-1000:] or "Inspection process failed"}
-            with self.lock:
-                self.latest_root = root / "result" if record_path.is_file() else root
-                self.latest = latest
+            self._publish_result(part_id, root / "result", image, result)
         except Exception as error:
             with self.lock:
                 self.latest_root = root
+                self.latest_source = root / "frame.png"
                 self.latest = {"status": "ERROR", "part_id": part_id, "error": str(error)}
         finally:
             with self.lock:
@@ -256,15 +320,21 @@ def handler_for(service):
                     "http://" + self.headers.get("Host", "")):
                 self.send(403, b"Forbidden", "text/plain")
                 return
-            if self.path != "/api/inspect" or self.headers.get("Content-Type") != "application/json":
+            if self.path not in ("/api/inspect", "/api/replay"):
                 self.send(400, b"Invalid request", "text/plain")
                 return
             try:
                 length = int(self.headers.get("Content-Length", "-1"))
-                if not 0 < length <= 512:
-                    raise ValueError("Invalid request size")
-                body = json.loads(self.rfile.read(length))
-                service.inspect(body.get("part_id"), body.get("confirmed"), body.get("source_kind"))
+                if self.path == "/api/inspect":
+                    if self.headers.get("Content-Type") != "application/json" or not 0 < length <= 512:
+                        raise ValueError("Invalid camera request")
+                    body = json.loads(self.rfile.read(length))
+                    service.inspect(body.get("part_id"), body.get("confirmed"), body.get("source_kind"))
+                else:
+                    if self.headers.get("Content-Type") != "image/png" or not 0 < length <= MAX_UPLOAD_BYTES:
+                        raise ValueError("Upload one original PNG under 8 MiB")
+                    service.replay(self.headers.get("X-Replay-Id"),
+                                   self.headers.get("X-Dataset-Path"), self.rfile.read(length))
             except (ValueError, RuntimeError, TypeError, AttributeError) as error:
                 self.send(409, json.dumps({"error": str(error)}).encode(), "application/json")
                 return
@@ -278,6 +348,7 @@ def main():
     parser.add_argument("--vision-python", type=Path, default=Path("venv/bin/python"))
     parser.add_argument("--model", type=Path, default=Path("efficientad_s_calibrated.ts"))
     parser.add_argument("--grade-policy", type=Path, default=Path("configs/forgegrade_v1.json"))
+    parser.add_argument("--dataset-manifest", type=Path, default=Path("manifests/metal_nut_v1.json"))
     parser.add_argument("--database", type=Path, default=Path("runs/live_inspections_v1/inspections.sqlite3"))
     parser.add_argument("--runs-root", type=Path, default=Path("runs/live_inspections_v1"))
     parser.add_argument("--camera-index", type=int, default=0)
@@ -290,6 +361,7 @@ def main():
     args.vision_python = vision_executable(args.vision_python)
     args.model = args.model.resolve()
     args.grade_policy = args.grade_policy.resolve()
+    args.dataset_manifest = args.dataset_manifest.resolve()
     camera = CameraFeed(args.camera_index)
     service = LiveService(args, camera)
     server = ThreadingHTTPServer(("127.0.0.1", args.port), handler_for(service))

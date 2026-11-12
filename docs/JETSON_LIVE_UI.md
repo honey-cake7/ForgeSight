@@ -19,10 +19,34 @@ overlay marks model response, not confirmed damage. Defect type remains
 `unknown`; physical quality accuracy, throughput and offline end-to-end
 operation remain unverified.
 
+## Test the original defect PNG without the camera
+
+The same loopback page now has **Test an original MVTec defect image**. Select
+one of the four development-preview paths, choose that exact PNG from the
+local `metal_nut/test` directory, enter a fresh replay ID, and click **Upload
+& analyze**. The browser sends the original file bytes to the Jetson. The
+server checks the frozen manifest SHA-256, sample role, selected path and PNG
+SHA-256 before accepting it. A modified image is rejected before inspection.
+The result panel shows the raw EfficientAD score, benchmark threshold,
+candidate, response area, overlay and ForgeGrade decision. The SQLite record
+uses `SAVED_IMAGE_REPLAY` and `physical_part: false`. Camera availability does
+not control the upload button. These four images were already exposed during
+development; repeat uploads test the runtime, not new accuracy.
+
+For the first check, select `test/bent/017.png` and choose that file from your
+PC or Jetson file picker. If the file is on the Jetson, its directory is
+`/home/nvidia/.local/share/forgesight/vision_cpu_v1/data/mvtec_ad/metal_nut/test/bent/`.
+Do not select a phone photograph or a different `017.png`. The exact file is
+required. The previous Jetson upload measured score `0.682808876` against
+threshold `0.227765799` and showed `ANOMALY_CANDIDATE`/`REVIEW`; a rerun
+should be compared against those numbers, with small runtime differences
+possible. See `manifests/jetson_ui_original_png_upload_v1.json`.
+
 ## Launch after copying this source to the Jetson vision directory
 
-Keep the C270 attached. Aim it at the selected source under even lighting;
-make the nut or displayed photo fill most of the preview. In a Jetson terminal:
+For camera capture, keep the C270 attached and aim it at the selected source
+under even lighting. For saved-image replay, the camera need not be ready. In
+a Jetson terminal:
 
 ```sh
 cd /home/nvidia/.local/share/forgesight/vision_cpu_v1
@@ -37,19 +61,21 @@ ssh -N -L 8770:127.0.0.1:8770 nvidia@<JETSON_IP>
 ```
 
 Open `http://127.0.0.1:8770` in the PC browser, or open the same address in
-Firefox on the Jetson desktop. Choose the correct source mode, enter a new
-capture ID, confirm it is visible, then click **Capture & analyze**. The camera
+Firefox on the Jetson desktop. For camera use, choose the correct source mode,
+enter a new capture ID, confirm it is visible, then click **Capture & analyze**. The camera
 preview stays visible while the saved frame is analyzed. Stop the server with
 Ctrl+C. Local output is under `runs/live_inspections_v1/` in the Jetson vision
 directory; the SQLite file is `runs/live_inspections_v1/inspections.sqlite3`.
 
 The source files needed in that directory are `forgesight/grade.py`,
-`forgesight/vision_edge_live_once.py`, `forgesight/jetson_live_ui.py`, and
+`forgesight/vision_edge_live_once.py`, `forgesight/vision_edge_replay.py`,
+`forgesight/jetson_live_ui.py`, and
 `forgesight/web/jetson_live.{html,css,js}`. Existing `forgesight` modules,
 `venv/bin/python`, `efficientad_s_calibrated.ts`, and
 `configs/forgegrade_v1.json` are reused. The Llama runtime and system Python
-packages are unchanged. An SSH transfer and physical Jetson browser test must
-be completed before this launch can be called physical-inspection verified.
+packages are unchanged. The frozen `manifests/metal_nut_v1.json` and original
+development-preview PNGs are required for uploads. A physical nut inspection
+remains unverified.
 
 ## Current proof
 

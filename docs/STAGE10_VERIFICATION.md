@@ -16,6 +16,7 @@ Stage 11 submission acceptance must not inherit a completed Stage 10 claim.
 | Camera failure and recovery | Absent V4L2 index failed without frame/grade; connected C270 captured a live room frame and saved a frozen-model map | [camera recovery](../manifests/jetson_offline_camera_recovery_v1.json) |
 | Repeated vision runtime | 20 cold replays of two previously used images; all 20 saved and read back | [vision latency](../manifests/jetson_offline_vision_latency_v1.json) |
 | Repeated advisory runtime | Eight fresh ExecuTorch generations from one unchanged saved record; all eight passed the evidence contract | [advice latency](../manifests/jetson_offline_advice_latency_v1.json) |
+| Original-PNG upload through live UI, connected | One previously exposed bent image accepted, scored 0.682808876 above 0.227765799, overlay and SQLite readback matched; altered bytes rejected | [upload smoke](../manifests/jetson_ui_original_png_upload_v1.json) |
 
 The separate reports sampled Wi-Fi, ethernet IPv4 addresses and default
 routes during each disconnected interval, then verified Wi-Fi recovery and
@@ -24,6 +25,8 @@ between-sample route or an unexamined interface. The private run directories
 listed in each manifest retain full logs, maps and records; raw camera imagery
 is not committed. [Jetson runtime commands](JETSON_RUNTIME.md) reproduce the
 tested paths with fresh output directories and transient unit names.
+The upload smoke ran while connected and provides no additional disconnected
+or physical-part acceptance.
 
 ## Measured runtime table
 
