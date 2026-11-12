@@ -44,7 +44,13 @@ def inspect(args):
     if not args.image.is_file() or args.image.stat().st_size > 32 * 1024 * 1024:
         raise ValueError("Expected a bounded camera PNG.")
     with Image.open(args.image) as image:
-        if image.format != "PNG" or image.mode != "RGB" or image.size != (640, 480):
+        if image.format != "PNG" or image.mode != "RGB":
+            raise ValueError("Expected an RGB PNG.")
+        width, height = image.size
+        if args.uploaded_image_diagnostic:
+            if not 64 <= width <= 1024 or not 64 <= height <= 1024:
+                raise ValueError("Expected an uploaded RGB PNG between 64 and 1024 pixels per side.")
+        elif image.size != (640, 480):
             raise ValueError("Expected a 640x480 RGB camera PNG.")
         image.load()
     if args.model_sha256 != MODEL_SHA256 or sha256(args.model) != MODEL_SHA256:
@@ -68,12 +74,14 @@ def inspect(args):
         "schema_version": 1, "inspection_id": str(uuid4()), "part_id": args.part_id,
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
         "source": {"path": str(args.image.resolve()),
-                   "mode": ("LIVE_CAMERA" if args.operator_declared_part else
+                   "mode": ("USER_UPLOADED_IMAGE_DIAGNOSTIC" if args.uploaded_image_diagnostic else
+                            "LIVE_CAMERA" if args.operator_declared_part else
                             "LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC" if args.screen_photo_diagnostic else
                             "LIVE_CAMERA_DIAGNOSTIC_NO_PART"),
                    "physical_part": "OPERATOR_DECLARED_UNVERIFIED" if args.operator_declared_part else False,
                    "sha256": source_hash,
-                   "size_px": [640, 480], "camera_index": args.camera_index},
+                   "size_px": [width, height],
+                   "camera_index": None if args.uploaded_image_diagnostic else args.camera_index},
         "model": {"name": "EfficientAD-S", "input_size_px": [256, 256], "precision": "fp32",
                   "checkpoint_sha256": policy["checkpoint_sha256"],
                   "export_sha256": args.model_sha256,
@@ -100,14 +108,14 @@ def inspect(args):
             "--tensor", str(tensor), "--tensor-sha256", tensor_hash,
             "--threshold", str(policy["image_threshold"]),
             "--output", str(root / "inference.json"), "--map-output", str(model_map),
-            "--source-map-output", str(source_map), "--source-size", "480", "640"])
+            "--source-map-output", str(source_map), "--source-size", str(height), str(width)])
         inference = json.loads((root / "inference.json").read_text())
         if (inference["model_sha256"] != args.model_sha256
                 or inference["tensor_sha256"] != tensor_hash
                 or inference["threshold"] != policy["image_threshold"]):
             raise ValueError("Inconsistent inference evidence.")
         values = np.load(source_map, allow_pickle=False)
-        if values.shape != (480, 640) or not np.isfinite(values).all():
+        if values.shape != (height, width) or not np.isfinite(values).all():
             raise ValueError("Invalid source anomaly map.")
         record["score"] = inference["score"]
         record["candidate"] = inference["candidate"]
@@ -157,6 +165,7 @@ def main():
     declaration.add_argument("--operator-declared-part", action="store_true")
     declaration.add_argument("--screen-photo-diagnostic", action="store_true")
     declaration.add_argument("--diagnostic-no-part", action="store_true")
+    declaration.add_argument("--uploaded-image-diagnostic", action="store_true")
     args = parser.parse_args()
     record = inspect(args)
     print(json.dumps({"inspection_id": record["inspection_id"], "status": record["status"],

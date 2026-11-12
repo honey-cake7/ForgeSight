@@ -23,9 +23,16 @@
       <div class="replay-fields"><label>Dataset image<select id="replay-sample"><option value="">Choose image</option></select></label><label>New replay ID<input id="replay-id" maxlength="64" autocomplete="off" placeholder="Example: BENT-TEST-001"></label></div>
       <button id="replay-local" disabled>Analyze Jetson copy</button>
       <p class="replay-footnote">Recommended on the Jetson: the original files are already stored on this device. No file picker is needed.</p>
-      <details class="upload-details"><summary>Upload the matching PNG from this browser's computer</summary><p>The file picker shows files on the computer running this browser. It may not show files on the Jetson. Only the exact selected MVTec PNG is accepted; other photos or modified files are rejected.</p><label>Original PNG<input id="replay-file" type="file" accept="image/png,.png"></label><button id="replay-submit" disabled>Upload &amp; analyze</button></details>
       <p id="replay-status" role="status" aria-live="polite">Choose a dataset image and a new replay ID.</p>
       <p class="replay-footnote">These are known development images. Their scores test the frozen model path, not new accuracy or physical-nut performance.</p>
+    </section>
+    <section class="panel user-upload-panel">
+      <div class="panel-head"><div><h2>Upload your own test PNG</h2><p>Diagnostic score · no preset file match required</p></div></div>
+      <p>Choose an RGB PNG from the computer running this browser, including another MVTec test image. The file must be 64–1024 pixels per side and under 8 MiB.</p>
+      <div class="replay-fields"><label>Choose PNG<input id="diagnostic-file" type="file" accept="image/png,.png"></label><label>New upload ID<input id="diagnostic-id" maxlength="64" autocomplete="off" placeholder="Example: MY-TEST-001"></label></div>
+      <button id="diagnostic-submit" disabled>Analyze uploaded PNG</button>
+      <p id="diagnostic-status" role="status" aria-live="polite">Choose a PNG and enter a new upload ID.</p>
+      <p class="replay-footnote">The score uses the frozen model. The benchmark threshold is for reference only; this path always gives REVIEW until the uploaded image domain is validated.</p>
     </section>
     <section class="panel history"><div class="panel-head"><div><h2>Recent inspections</h2><p>Stored locally in SQLite</p></div></div><div id="history">No inspections yet.</div></section>
   </main>

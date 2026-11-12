@@ -97,6 +97,11 @@ def grade_record(record: dict, policy: dict) -> dict:
                         'Screen-photo diagnostic only; no physical part was inspected. Use the original saved image for benchmark evaluation.',
                         score=record.get('score'),
                         response_area_px=(record.get('geometry') or {}).get('total_area_px'))
+    if record.get('source', {}).get('mode') == 'USER_UPLOADED_IMAGE_DIAGNOSTIC':
+        return decision('REVIEW', 'UPLOADED_IMAGE_DOMAIN_UNVALIDATED', 'UNASSESSED',
+                        'Uploaded-image diagnostic only; no physical part was inspected. The MVTec threshold may not apply to this image.',
+                        score=record.get('score'),
+                        response_area_px=(record.get('geometry') or {}).get('total_area_px'))
     if record.get('source', {}).get('mode') in ('LIVE_CAMERA', 'LIVE_CAMERA_DIAGNOSTIC_NO_PART'):
         return review('CAMERA_DOMAIN_UNVALIDATED',
                       score=record.get('score'),

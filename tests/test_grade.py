@@ -113,6 +113,14 @@ class GradeTests(unittest.TestCase):
         self.assertEqual(self.grade()['reason'], 'CAMERA_DOMAIN_UNVALIDATED')
         self.assertIn('no physical part was inspected', self.grade()['operator_action'])
 
+    def test_user_upload_cannot_inherit_benchmark_pass_or_reject(self):
+        self.record['source']['mode'] = 'USER_UPLOADED_IMAGE_DIAGNOSTIC'
+        self.assertEqual(self.grade()['reason'], 'UPLOADED_IMAGE_DOMAIN_UNVALIDATED')
+        self.assertEqual(self.grade()['grade'], 'REVIEW')
+        self.anomaly(width=200, height=200)
+        self.assertEqual(self.grade()['reason'], 'UPLOADED_IMAGE_DOMAIN_UNVALIDATED')
+        self.assertEqual(self.grade()['grade'], 'REVIEW')
+
 
 if __name__ == '__main__':
     unittest.main()

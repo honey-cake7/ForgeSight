@@ -2,6 +2,7 @@
 
 from http.server import ThreadingHTTPServer
 import hashlib
+from io import BytesIO
 import json
 from pathlib import Path
 from threading import Lock, Thread
@@ -11,6 +12,8 @@ import unittest
 from unittest.mock import patch
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
+
+from PIL import Image
 
 from forgesight.jetson_live_ui import LiveService, handler_for, vision_executable
 
@@ -44,6 +47,9 @@ class StubService:
 
     def replay_local(self, replay_id, dataset_path):
         self.requests.append(("local", replay_id, dataset_path))
+
+    def upload_diagnostic(self, upload_id, data):
+        self.requests.append(("diagnostic", upload_id, data))
 
 
 class LiveHttpTests(unittest.TestCase):
@@ -95,7 +101,7 @@ class LiveHttpTests(unittest.TestCase):
         self.assertEqual(self.service.requests, [])
 
     def test_original_png_upload_route_and_size_guard(self):
-        self.assertIn(b"Upload &amp; analyze", urlopen(self.base).read())
+        self.assertIn(b"Analyze Jetson copy", urlopen(self.base).read())
         request = Request(self.base + "/api/replay", method="POST", data=b"png-fixture",
                           headers={"Origin": self.base, "Content-Type": "image/png",
                                    "X-Replay-Id": "BENT-001",
@@ -127,6 +133,21 @@ class LiveHttpTests(unittest.TestCase):
         request = Request(self.base + "/api/replay-local", method="POST",
                           data=b"{}", headers={"Origin": "http://elsewhere.invalid",
                                                  "Content-Type": "application/json"})
+        with self.assertRaises(HTTPError) as rejected:
+            urlopen(request)
+        self.assertEqual(rejected.exception.code, 403)
+
+    def test_own_png_diagnostic_route_accepts_binary_upload(self):
+        self.assertIn(b"Upload your own test PNG", urlopen(self.base).read())
+        request = Request(self.base + "/api/upload-diagnostic", method="POST",
+                          data=b"png-fixture", headers={"Origin": self.base,
+                          "Content-Type": "image/png", "X-Upload-Id": "USER-001"})
+        self.assertEqual(urlopen(request).status, 202)
+        self.assertEqual(self.service.requests[-1],
+                         ("diagnostic", "USER-001", b"png-fixture"))
+        request = Request(self.base + "/api/upload-diagnostic", method="POST",
+                          data=b"forbidden", headers={"Origin": "http://elsewhere.invalid",
+                          "Content-Type": "image/png", "X-Upload-Id": "USER-002"})
         with self.assertRaises(HTTPError) as rejected:
             urlopen(request)
         self.assertEqual(rejected.exception.code, 403)
@@ -183,6 +204,26 @@ class ReplayIntakeTests(unittest.TestCase):
                 service.replay_local("LOCAL-001", "test/bent/017.png")
             worker.return_value.start.assert_called_once()
             self.assertEqual(len(list((root / "runs").glob("replay_*/upload/test/bent/017.png"))), 1)
+
+    def test_user_png_diagnostic_accepts_non_manifest_rgb_png(self):
+        with TemporaryDirectory() as folder:
+            service = LiveService.__new__(LiveService)
+            service.args = SimpleNamespace(runs_root=Path(folder))
+            service.lock = Lock()
+            service.busy = False
+            service.latest = None
+            service.store = SimpleNamespace(has_part=lambda _part_id: False)
+            png = BytesIO()
+            Image.new("RGB", (700, 700), "gray").save(png, format="PNG")
+            with self.assertRaises(ValueError):
+                service.upload_diagnostic("USER-001", b"not-png")
+            with patch("forgesight.jetson_live_ui.Thread") as worker:
+                service.upload_diagnostic("USER-001", png.getvalue())
+            worker.return_value.start.assert_called_once()
+            saved = list(Path(folder).glob("user_upload_*/upload.png"))
+            self.assertEqual(len(saved), 1)
+            self.assertEqual(saved[0].read_bytes(), png.getvalue())
+            self.assertEqual(service.latest["source_mode"], "USER_UPLOADED_IMAGE_DIAGNOSTIC")
 
 
 if __name__ == "__main__":

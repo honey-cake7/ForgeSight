@@ -3,6 +3,7 @@
 import argparse
 import hashlib
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from io import BytesIO
 import json
 import os
 from pathlib import Path
@@ -12,6 +13,8 @@ import sys
 from threading import Event, Lock, Thread
 import time
 from uuid import uuid4
+
+from PIL import Image
 
 from forgesight.storage import InspectionStore
 from forgesight.vision_edge_live_once import MODEL_SHA256, sha256
@@ -184,6 +187,58 @@ class LiveService:
             raise ValueError("Selected Jetson image is missing or too large")
         self.replay(replay_id, dataset_path, image.read_bytes())
 
+    def upload_diagnostic(self, upload_id, data):
+        if not isinstance(upload_id, str) or not PART_ID.fullmatch(upload_id):
+            raise ValueError("Enter a new upload ID using letters, numbers, - or _")
+        if not isinstance(data, bytes) or not 0 < len(data) <= MAX_UPLOAD_BYTES:
+            raise ValueError("Choose one PNG under 8 MiB")
+        try:
+            with Image.open(BytesIO(data)) as source:
+                width, height = source.size
+                if (source.format != "PNG" or source.mode != "RGB"
+                        or not 64 <= width <= 1024 or not 64 <= height <= 1024):
+                    raise ValueError("Expected an RGB PNG between 64 and 1024 pixels per side")
+                source.load()
+        except OSError as error:
+            raise ValueError("The selected file is not a readable PNG") from error
+        with self.lock:
+            if self.busy:
+                raise ValueError("An inspection is already running")
+            if self.store.has_part(upload_id):
+                raise ValueError("This upload ID is already recorded; enter a new one")
+            root = self.args.runs_root / ("user_upload_" + uuid4().hex)
+            root.mkdir(parents=True, exist_ok=False)
+            image = root / "upload.png"
+            with image.open("xb") as stream:
+                stream.write(data)
+            self.busy = True
+            self.latest = {"status": "PROCESSING", "part_id": upload_id,
+                           "source_mode": "USER_UPLOADED_IMAGE_DIAGNOSTIC"}
+        Thread(target=self._run_upload, args=(upload_id, image, root), daemon=True).start()
+
+    def _run_upload(self, upload_id, image, root):
+        try:
+            command = [sys.executable, "-B", "-m", "forgesight.vision_edge_live_once",
+                       "--image", str(image), "--part-id", upload_id,
+                       "--vision-python", str(self.args.vision_python),
+                       "--model", str(self.args.model), "--model-sha256", MODEL_SHA256,
+                       "--grade-policy", str(self.args.grade_policy),
+                       "--database", str(self.args.database),
+                       "--output-dir", str(root / "result"),
+                       "--uploaded-image-diagnostic"]
+            result = subprocess.run(command, capture_output=True, text=True, timeout=180)
+            self._publish_result(upload_id, root / "result", image, result)
+        except Exception as error:
+            with self.lock:
+                self.latest_root = root
+                self.latest_source = image
+                self.latest = {"status": "ERROR", "part_id": upload_id,
+                               "source_mode": "USER_UPLOADED_IMAGE_DIAGNOSTIC",
+                               "error": str(error)}
+        finally:
+            with self.lock:
+                self.busy = False
+
     def _run_replay(self, replay_id, image, sample, root):
         try:
             command = [sys.executable, "-B", "-m", "forgesight.vision_edge_replay",
@@ -333,7 +388,8 @@ def handler_for(service):
                     "http://" + self.headers.get("Host", "")):
                 self.send(403, b"Forbidden", "text/plain")
                 return
-            if self.path not in ("/api/inspect", "/api/replay", "/api/replay-local"):
+            if self.path not in ("/api/inspect", "/api/replay", "/api/replay-local",
+                                 "/api/upload-diagnostic"):
                 self.send(400, b"Invalid request", "text/plain")
                 return
             try:
@@ -348,11 +404,15 @@ def handler_for(service):
                         raise ValueError("Upload one original PNG under 8 MiB")
                     service.replay(self.headers.get("X-Replay-Id"),
                                    self.headers.get("X-Dataset-Path"), self.rfile.read(length))
-                else:
+                elif self.path == "/api/replay-local":
                     if self.headers.get("Content-Type") != "application/json" or not 0 < length <= 512:
                         raise ValueError("Invalid local replay request")
                     body = json.loads(self.rfile.read(length))
                     service.replay_local(body.get("replay_id"), body.get("dataset_path"))
+                else:
+                    if self.headers.get("Content-Type") != "image/png" or not 0 < length <= MAX_UPLOAD_BYTES:
+                        raise ValueError("Upload one RGB PNG under 8 MiB")
+                    service.upload_diagnostic(self.headers.get("X-Upload-Id"), self.rfile.read(length))
             except (ValueError, RuntimeError, TypeError, AttributeError) as error:
                 self.send(409, json.dumps({"error": str(error)}).encode(), "application/json")
                 return
