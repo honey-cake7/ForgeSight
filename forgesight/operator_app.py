@@ -19,6 +19,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from forgesight.data_manifest import DEFAULT_ROOT, read_manifest
+from forgesight.assist_display import advice_for
 from forgesight.grade import DEFAULT_POLICY
 from forgesight.inspection import CaptureGate, inspect_one_image
 from forgesight.storage import DEFAULT_DATABASE, InspectionStore, PartAlreadyInspected
@@ -53,7 +54,7 @@ def _real_predictor(device):
 
 
 def create_app(*, database=DEFAULT_DATABASE, output=Path('artifacts/runtime/operator'),
-               data_root=DEFAULT_ROOT, device='cuda', predictor_factory=_real_predictor):
+               data_root=DEFAULT_ROOT, advice_root=None, device='cuda', predictor_factory=_real_predictor):
     """The injectable factory supports contract tests; the launcher always uses the real model."""
     output, data_root = Path(output).resolve(), Path(data_root).resolve()
     policy = json.loads(DEFAULT_POLICY.read_text())
@@ -159,6 +160,10 @@ def create_app(*, database=DEFAULT_DATABASE, output=Path('artifacts/runtime/oper
     def get_inspection(inspection_id: UUID):
         return envelope(lookup(inspection_id))
 
+    @app.get('/api/inspections/{inspection_id}/advice')
+    def get_advice(inspection_id: UUID):
+        return advice_for(lookup(inspection_id), advice_root)
+
     @app.get('/api/inspections/{inspection_id}/{kind}')
     def media(inspection_id: UUID, kind: Literal['source', 'overlay']):
         record = lookup(inspection_id)
@@ -214,9 +219,11 @@ def main():
     parser.add_argument('--output', type=Path, default=Path('artifacts/runtime/operator'))
     parser.add_argument('--port', type=int, default=8765)
     parser.add_argument('--device', choices=['cuda', 'cpu'], default='cuda')
+    parser.add_argument('--advice-root', type=Path, default=None)
     args = parser.parse_args()
     import uvicorn
-    uvicorn.run(create_app(database=args.database, output=args.output, device=args.device),
+    uvicorn.run(create_app(database=args.database, output=args.output,
+                           advice_root=args.advice_root, device=args.device),
                 host='127.0.0.1', port=args.port, workers=1)
 
 

@@ -2,14 +2,26 @@
 
 ## Current stage
 
-**Stage 9.2 bounded saved-replay advice queue VERIFIED on the physical Jetson;
-UI delivery PENDING.** A single worker accepted a replay advisory in 1.214 ms,
+**Stage 9.3 read-only saved-replay advisory display VERIFIED in a PC browser;
+live Jetson UI delivery PENDING.** The operator API reads a separate local
+advice report by inspection ID and checks its record/decision hashes before
+display. Chromium showed the actual copied Jetson `[E1][G1]` note beside the
+unchanged `REVIEW` decision and deterministic action, with no page errors or
+external requests. The proof server had no vision model or accessible Jetson
+image files, so this is display proof only. See
+`manifests/operator_advice_display_v1.json`. Next: connect queue states to a
+local Jetson UI and test failure behavior. Stage 8's physical-nut gate remains
+open.
+
+### Earlier checkpoint
+
+**Stage 9.2 bounded saved-replay advice queue VERIFIED on the physical Jetson.** A single worker accepted a replay advisory in 1.214 ms,
 refused an overlapping request in 0.0052 ms, and kept the original SQLite
 inspection readable while real ExecuTorch generation ran. The generated note
 remained separate from the unchanged `REVIEW` decision. The Jetson run exited
 successfully; its controller took 20.761 s and sampled 1,156,568 KiB peak
 child RSS. See `manifests/jetson_forgeassist_queue_v1.json`. Timeout/failure
-recovery has a local unit test, but a real Jetson timeout and UI behavior are
+recovery has a local unit test, but a real Jetson timeout and Jetson UI behavior are
 still unverified. Stage 8's physical-nut gate remains open.
 
 ### Earlier checkpoint

@@ -2,12 +2,20 @@
 
 No challenge requirement is marked satisfied by repository setup alone.
 
+Stage 9.3 displays the copied Jetson saved-replay advisory in a local PC
+browser as a separate, read-only panel. The API checks the report against the
+immutable inspection and decision hashes. The browser showed the real note
+beside the unchanged `REVIEW` grade and fixed action; no external requests or
+page errors occurred. This is not a live Jetson UI/camera event, physical-nut
+inspection, or disconnected offline proof. See
+`manifests/operator_advice_display_v1.json`.
+
 Stage 9.1 generated one real, strictly validated advisory on the Jetson from
 an already persisted saved-image inspection, using Llama 3.2 1B through
 ExecuTorch/XNNPACK. The separate payload cites `[E1][G1]` and keeps the
 deterministic `REVIEW` grade unchanged. Missing runtime produced no advice and
-left SQLite intact. This is a connected-device, replay-only proof; bounded
-asynchronous delivery, live physical-nut advice, UI integration, useful
+left SQLite intact. This is a connected-device, replay-only proof; live
+physical-nut advice, live Jetson UI delivery, useful
 factory-approved procedures and disconnected operation remain open. See
 `manifests/jetson_forgeassist_replay_v1.json`.
 

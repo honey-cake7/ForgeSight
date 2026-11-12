@@ -297,3 +297,27 @@ says `async_queue_implemented: false` because that controller remains a
 standalone synchronous command; the separate queue probe supplies this proof.
 The probe saved `queue_probe.json` beside the advisory report. See
 `manifests/jetson_forgeassist_queue_v1.json` for hashes and exact scope.
+
+## Stage 9.3 read-only operator display
+
+The operator API accepts an optional `--advice-root` directory. For inspection
+`<id>`, it reads `<advice-root>/<id>/advice_report.json` and returns
+`NOT_REQUESTED`, `PENDING`, `GENERATED_REQUIRES_HUMAN_REVIEW`, or
+`ADVICE_UNAVAILABLE`. A report is displayed only when its inspection and
+decision hashes, grade, source mode, advisory provenance and required citation
+markers match the immutable SQLite record. The browser renders the note with
+`textContent` in a separate panel; ForgeGrade's action and grade remain intact.
+The configured local report directory is a trusted input; this check does not
+cryptographically authenticate a report against a hostile local writer.
+
+For proof, one existing Jetson replay record and its real advice report were
+copied to an ignored temporary PC database and report directory. An isolated
+loopback server served that prior record with the vision model unavailable by
+design. Chromium showed the `[E1][G1]` note, `REVIEW`, and deterministic action,
+with zero page errors and zero external requests. The Jetson source/overlay
+paths are unavailable in the PC copy and the UI shows placeholders. No new
+vision or Llama inference happened in this browser check. See
+`manifests/operator_advice_display_v1.json` and the ignored browser screenshot.
+Live queue-to-UI delivery and actual timeout/recovery on Jetson remain open.
+A directory with no completed report stays `PENDING`; the next live integration
+must resolve stale jobs to `ADVICE_UNAVAILABLE` under a measured deadline.

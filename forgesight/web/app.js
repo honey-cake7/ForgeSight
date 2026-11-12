@@ -20,6 +20,20 @@ function showImage(kind, url) {
   img.onerror = () => { img.hidden = true; empty.hidden = false; empty.replaceChildren(element('span','Saved image unavailable'), element('small','The inspection record is still retained.')); };
   img.src = url;
 }
+async function showAdvice(id) {
+  $('advice-heading').textContent = 'Checking advice';
+  $('advice-note').textContent = 'Reading the separate local advisory report…';
+  $('advice-source').textContent = 'ForgeGrade remains the decision source.';
+  let data;
+  try { data = await api('/api/inspections/' + encodeURIComponent(id) + '/advice'); }
+  catch { data = {status:'ADVICE_UNAVAILABLE', advisory:null}; }
+  if (state.selected !== id) return;
+  const labels = {NOT_CONNECTED:'Advice not connected', NOT_REQUESTED:'No advice requested', PENDING:'Advice is being prepared', ADVICE_UNAVAILABLE:'Advice unavailable', GENERATED_REQUIRES_HUMAN_REVIEW:'AI note · human review required'};
+  $('advice-heading').textContent = labels[data.status] || 'Advice unavailable';
+  $('advice-note').textContent = data.advisory?.note || (data.status === 'PENDING' ? 'The inspection decision is already saved. Advice is still pending.' : 'Use the deterministic action above.');
+  $('advice-source').textContent = data.advisory ? 'Reported Jetson ExecuTorch · ' + data.advisory.source_mode.replaceAll('_',' ').toLowerCase() + ' · prototype guidance, not factory approved.' : 'ForgeGrade remains the decision source.';
+  if (data.status === 'PENDING') setTimeout(() => { if (state.selected === id) showAdvice(id); }, 2000);
+}
 function showInspection(item) {
   if (!item) return;
   const record = item.record, decision = record.decision;
@@ -38,6 +52,7 @@ function showInspection(item) {
   $('error-detail').hidden = record.status !== 'ERROR';
   $('error-detail').textContent = record.status === 'ERROR' ? record.error.message : '';
   showImage('source', item.media.source); showImage('overlay', item.media.overlay);
+  showAdvice(record.inspection_id);
   document.querySelectorAll('#history-body tr').forEach(row => row.classList.toggle('selected', row.dataset.inspection === state.selected));
 }
 async function refreshHistory() {
@@ -86,8 +101,11 @@ async function start() {
     $('sample-id').replaceChildren(...config.samples.map(sample => {const option = element('option',sample.label); option.value = sample.id; return option;}));
     await refreshHistory();
     const latest = await api('/api/latest'); showInspection(latest.inspection);
-    const health = await api('/api/health'); state.ready = health.model_ready;
-    $('health-label').textContent = 'Ready'; $('health-dot').className = 'status-dot ready';
+    const healthResponse = await fetch('/api/health', {cache:'no-store'});
+    const health = await healthResponse.json(); state.ready = health.model_ready;
+    $('health-label').textContent = state.ready ? 'Ready' : 'Vision unavailable';
+    $('health-dot').className = state.ready ? 'status-dot ready' : 'status-dot unavailable';
+    if (!state.ready) message('Vision model unavailable. Saved inspections and separate advice remain readable.');
   } catch (error) { $('health-label').textContent = 'Unavailable'; $('health-dot').className = 'status-dot unavailable'; message(error.message); }
   controls();
 }

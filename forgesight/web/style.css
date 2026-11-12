@@ -835,6 +835,10 @@ form small { font-size:11px; }
 .primary { font-size:14px; }
 .guidance h2 { font-size:18px; line-height:1.5; }
 .guidance #operator-action { font-size:13px; margin-bottom:0; }
+.advice { padding:22px; }
+.advice h2 { margin:8px 0; font-size:17px; }
+.advice p { white-space:pre-line; font-size:13px; line-height:1.6; margin:0 0 10px; }
+.advice small { color:var(--muted); line-height:1.5; }
 .history-section { margin-top:20px; }
 .history-section > summary {
   list-style:none;

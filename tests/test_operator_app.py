@@ -27,12 +27,25 @@ class OperatorAPITests(unittest.TestCase):
         self.database = self.root/'history.sqlite3'
         self.record = json.loads(Path('manifests/graded_inspection_replay_v1.json').read_text())['records'][0]
 
-    def client(self, factory=None):
+    def client(self, factory=None, advice_root=None):
         if factory is None:
             def factory(device):
                 raise RuntimeError('TEST: model intentionally unavailable')
         return TestClient(create_app(database=self.database, output=self.root/'output', data_root=self.root/'missing_data',
+                                    advice_root=advice_root,
                                     predictor_factory=factory), base_url='http://127.0.0.1')
+
+    def test_separate_advice_endpoint_does_not_change_inspection(self):
+        InspectionStore(self.database).save_inspection(self.record)
+        path = '/api/inspections/' + self.record['inspection_id'] + '/advice'
+        with self.client() as client:
+            self.assertEqual(client.get(path).json()['status'], 'NOT_CONNECTED')
+        advice_root = self.root/'advice'
+        with self.client(advice_root=advice_root) as client:
+            self.assertEqual(client.get(path).json()['status'], 'NOT_REQUESTED')
+            (advice_root/self.record['inspection_id']).mkdir(parents=True)
+            self.assertEqual(client.get(path).json()['status'], 'PENDING')
+            self.assertEqual(client.get('/api/inspections/'+self.record['inspection_id']).json()['record'], self.record)
 
     def metadata_only_predictor(self, device):
         # No detector method or generated prediction: missing-file error path only.

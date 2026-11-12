@@ -48,6 +48,7 @@
           </form>
         </section>
         <section class="card guidance" aria-label="Next action"><span class="field-label">Next action</span><h2 id="action-heading">Inspect a photo</h2><p id="operator-action">Your next action will appear here.</p></section>
+        <section class="card advice" aria-label="Separate AI advisory"><span class="field-label">Separate AI advisory</span><h2 id="advice-heading">No inspection selected</h2><p id="advice-note" aria-live="polite">Advice does not set the inspection grade.</p><small id="advice-source">ForgeGrade remains the decision source.</small></section>
       </aside>
     </section>
     <details id="history-panel" class="card history-section">
@@ -64,7 +65,7 @@
       <summary>About this prototype</summary>
       <p>Saved benchmark photos, not a live camera. PASS is provisional: two scratched nuts were missed in the reserved-image test. Defect names are unknown until classification is validated.</p>
       <p>Highlighted pixels are model responses, not verified physical damage measurements. There are no calibrated millimetres or certified acceptance limits.</p>
-      <p>Next actions come from fixed rules. Llama advice and verified cause information are not connected to this screen. Jetson and offline edge validation remain pending.</p>
+      <p>Next actions come from fixed rules. A separate prototype Llama note may appear when a matching local Jetson report is configured. It needs human review and is not a confirmed cause or approved factory procedure. Physical-nut and offline end-to-end validation remain pending.</p>
       <p>Profile: EfficientAD-S, FP32; 700 &times; 700 RGB photos resized to 256 &times; 256. History counts distinct declared part IDs and survives restarts.</p>
     </details>
   </main>

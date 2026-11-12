@@ -1,5 +1,18 @@
 # Local operator workflow — Stage 7
 
+## Stage 9.3 advisory display update
+
+The page now has a separate AI advisory panel. The fixed ForgeGrade next action
+remains authoritative. Start with `--advice-root PATH` to read local reports
+stored as `PATH/<inspection-id>/advice_report.json`. The new read-only endpoint
+is `GET /api/inspections/{id}/advice`; it returns explicit not-connected,
+not-requested, pending, generated or unavailable state. Pending state is polled
+by the page. Reports are checked against the saved inspection and decision
+before a note is shown. This is a PC display proof from a copied Jetson replay,
+not live Jetson UI integration. See `manifests/operator_advice_display_v1.json`.
+
+## Original Stage 7 workflow
+
 The operator screen now calls the real model, grading rules and SQLite save
 path. It runs locally with FastAPI and Uvicorn and serves plain HTML/CSS/JS.
 No frontend build, CDN, cloud service, hosted Site, camera or Llama advisory

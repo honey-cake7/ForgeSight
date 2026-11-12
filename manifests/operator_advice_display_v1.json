@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "stage": "9.3_read_only_saved_replay_advice_display",
+  "status": "PC_BROWSER_DISPLAY_OF_COPIED_JETSON_REPORT_VERIFIED",
+  "source_inspection_id": "be71d850-208a-4f74-acdf-d235207d54ec",
+  "source_mode": "SAVED_IMAGE_REPLAY",
+  "original_grade": "REVIEW",
+  "source_jetson_report_sha256": "01c34016d471fb20b06d4cf143a84420a423e7b6a917336d6dc055949e915525",
+  "verification": {
+    "read_only_api": "Copied Jetson report returned GENERATED_REQUIRES_HUMAN_REVIEW after inspection and decision hash checks; temporary SQLite record remained unchanged",
+    "browser": "Chromium 156.0.8078.4 on PC",
+    "rendered_note_matches_copied_jetson_report": true,
+    "rendered_grade": "REVIEW",
+    "deterministic_action_separate": true,
+    "page_errors": 0,
+    "external_requests": 0,
+    "vision_model_in_browser_proof": "UNAVAILABLE_BY_DESIGN; prior saved inspection was read only",
+    "jetson_media_in_pc_copy": "UNAVAILABLE; UI showed placeholders",
+    "test_commands": [
+      "python -B -m unittest tests.test_assist_display -q: 2 passed",
+      "WSL isolated app Python -B -m unittest tests.test_operator_app -q: 8 passed",
+      "WSL isolated app Python -B artifacts/assist_stage9_jetson_v1/verify_ui_api.py: passed",
+      "Windows isolated Playwright Chromium artifacts/assist_stage9_jetson_v1/verify_advice_browser.py: passed"
+    ]
+  },
+  "private_artifacts": {
+    "browser_report": "artifacts/assist_stage9_ui_proof_v1/browser_report.json",
+    "browser_report_sha256": "0377093190f399eb45044d2aaf9853768c7dfd15ff4fd019786bfebabf3872ef",
+    "screenshot": "artifacts/assist_stage9_ui_proof_v1/advice_browser.png",
+    "screenshot_sha256": "7a7953913380cc3ca51578cf0263ddf858eb54f9665176215e9a25f859bc52fc"
+  },
+  "not_verified": ["live queue-to-UI delivery on Jetson", "actual Jetson timeout shown in UI", "physical nut inspection", "network-disconnected operation"],
+  "next_step": "Connect queue state to a local Jetson UI and verify pending, generated and unavailable transitions without changing ForgeGrade"
+}
