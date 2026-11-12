@@ -74,3 +74,9 @@ be completed before this launch can be called physical-inspection verified.
   path. A fresh Jetson no-part diagnostic completed model inference, saved
   source map and overlay, and produced `REVIEW`; this still is not a nut
   inspection. See `manifests/jetson_live_ui_venv_fix_v1.json`.
+- The user then photographed a displayed MVTec nut image on a phone with the
+  C270. A screen-photo diagnostic was saved as `ANALYZED`/`REVIEW` with a
+  234,723-pixel response (76.4% of the 640×480 frame). This is a broad model
+  response, not confirmed damage or a physical nut inspection. The GUI now
+  explains broad responses and keeps the phone-screen source label visible.
+  See `manifests/jetson_phone_screen_diagnostic_v1.json`.

@@ -111,6 +111,7 @@ class GradeTests(unittest.TestCase):
         self.assertEqual(self.grade()['grade'], 'REVIEW')
         self.record['source']['mode'] = 'LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC'
         self.assertEqual(self.grade()['reason'], 'CAMERA_DOMAIN_UNVALIDATED')
+        self.assertIn('no physical part was inspected', self.grade()['operator_action'])
 
 
 if __name__ == '__main__':

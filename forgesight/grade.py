@@ -92,8 +92,12 @@ def grade_record(record: dict, policy: dict) -> dict:
 
     if record.get('status') != 'ANALYZED':
         return review('INSPECTION_ERROR_OR_INCOMPLETE')
-    if record.get('source', {}).get('mode') in (
-            'LIVE_CAMERA', 'LIVE_CAMERA_DIAGNOSTIC_NO_PART', 'LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC'):
+    if record.get('source', {}).get('mode') == 'LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC':
+        return decision('REVIEW', 'CAMERA_DOMAIN_UNVALIDATED', 'UNASSESSED',
+                        'Screen-photo diagnostic only; no physical part was inspected. Use the original saved image for benchmark evaluation.',
+                        score=record.get('score'),
+                        response_area_px=(record.get('geometry') or {}).get('total_area_px'))
+    if record.get('source', {}).get('mode') in ('LIVE_CAMERA', 'LIVE_CAMERA_DIAGNOSTIC_NO_PART'):
         return review('CAMERA_DOMAIN_UNVALIDATED',
                       score=record.get('score'),
                       response_area_px=(record.get('geometry') or {}).get('total_area_px'))

@@ -4,15 +4,19 @@
 
 The consolidated [Stage 10 verification ledger](STAGE10_VERIFICATION.md)
 lists measured Jetson results and every remaining acceptance gate. Stage 10
-is **INCOMPLETE**. The user clarified that only an MVTec nut photo on a screen
-is available, not a physical nut. Its camera diagnostic is still pending;
-physical-part and offline acceptance remain unverified.
+is **INCOMPLETE**. The user clarified that only an MVTec nut photo on a phone
+screen is available, not a physical nut. The C270 photographed that screen
+and the Jetson ran the model, ForgeGrade and SQLite. The broad response covered
+76.4% of the frame and was held at REVIEW. This is a screen-photo diagnostic,
+not physical-part defect evidence. See
+`manifests/jetson_phone_screen_diagnostic_v1.json`. Physical-part and offline
+acceptance remain unverified.
 
 The [Jetson live camera UI prototype](JETSON_LIVE_UI.md) was deployed to the
 physical Jetson. Its C270 preview and loopback page worked; a PC Edge browser
-rendered the room view through SSH. The scene contained no nut, so physical
-nut capture, model inference, ForgeGrade and SQLite inspection remain **NOT
-VERIFIED**. PC/WSL checks separately exercised a previously captured no-part
+rendered the room view through SSH. That preflight scene contained no nut;
+physical nut capture and its model decision remain **NOT VERIFIED**. PC/WSL
+checks separately exercised a previously captured no-part
 Jetson frame through those components. An operator click then persisted an
 ERROR/REVIEW record when the launcher bypassed the vision venv's NumPy. The
 path was fixed and a fresh Jetson no-part diagnostic ran EfficientAD and saved

@@ -50,11 +50,19 @@ function renderLatest(item, processing) {
   grade.textContent = item.grade || 'ERROR';
   grade.className = 'grade ' + (item.grade || '').toLowerCase();
   byId('source-mode').textContent = item.source_mode === 'LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC' ? 'Screen photo diagnostic · no physical nut inspected' : item.source_mode === 'LIVE_CAMERA' ? 'Operator-declared physical nut' : 'Camera capture';
-  byId('candidate').textContent = item.candidate === 'ANOMALY_CANDIDATE' ? 'Anomaly response' : item.candidate === 'NORMAL_CANDIDATE' ? 'Normal candidate' : 'Unavailable';
+  byId('candidate').textContent = item.candidate === 'ANOMALY_CANDIDATE' ? 'Above benchmark threshold' : item.candidate === 'NORMAL_CANDIDATE' ? 'At/below benchmark threshold' : 'Unavailable';
   byId('score').textContent = item.score == null ? '—' : Number(item.score).toFixed(4);
   byId('latency').textContent = item.model_forward_ms == null ? '—' : Math.round(item.model_forward_ms) + ' ms';
-  byId('area').textContent = item.response_area_px == null ? '—' : Number(item.response_area_px).toLocaleString() + ' px';
-  byId('reason').textContent = item.reason || (item.error && (item.error.message || item.error)) || 'Inspection could not complete';
+  const responseFraction = item.response_area_px == null ? null : Number(item.response_area_px) / (640 * 480);
+  byId('area').textContent = responseFraction == null ? '—' : Number(item.response_area_px).toLocaleString() + ' px · ' + (responseFraction * 100).toFixed(1) + '%';
+  byId('response-note').textContent = responseFraction != null && responseFraction > 0.5
+    ? (item.source_mode === 'LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC'
+      ? 'Broad model response. A phone-screen capture can change focus, color and texture; this does not identify a localized defect. Use the original saved image for benchmark evaluation.'
+      : 'Broad model response. Check the capture and camera setup; this does not identify a localized defect.')
+    : 'Highlighted pixels are model response, not confirmed physical damage.';
+  byId('reason').textContent = item.reason === 'CAMERA_DOMAIN_UNVALIDATED'
+    ? 'Camera setup not calibrated (CAMERA_DOMAIN_UNVALIDATED)'
+    : item.reason || (item.error && (item.error.message || item.error)) || 'Inspection could not complete';
   byId('action').textContent = item.action || '';
   byId('inspection-id').textContent = item.inspection_id ? 'Inspection ID: ' + item.inspection_id : '';
   if (item.status === 'ANALYZED') {

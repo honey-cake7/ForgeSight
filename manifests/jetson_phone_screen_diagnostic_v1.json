@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "stage": "8_phone_screen_camera_diagnostic",
+  "status": "SCREEN_PHOTO_CAMERA_TO_MODEL_TO_SQLITE_VERIFIED_PHYSICAL_NUT_UNVERIFIED",
+  "device": "NVIDIA Jetson Orin Nano 8GB with Logitech C270, frozen EfficientAD-S CPU runtime",
+  "operator_source": "MVTec nut photo displayed on a phone screen and photographed by the C270",
+  "record": {
+    "inspection_id": "bed7cc60-5b16-4459-9d53-4e8a68dbbaea",
+    "capture_id": "TEST_7",
+    "source_mode": "LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC",
+    "physical_part": false,
+    "status": "ANALYZED",
+    "grade": "REVIEW",
+    "reason": "CAMERA_DOMAIN_UNVALIDATED",
+    "candidate": "ANOMALY_CANDIDATE",
+    "raw_score": 3.3852436542510986,
+    "benchmark_image_threshold": 0.22776579856872559,
+    "thresholded_response_area_px": 234723,
+    "source_size_px": [640, 480],
+    "response_area_fraction": 0.764072265625,
+    "model_forward_ms": 1671.783965000941,
+    "saved_frame_to_record_ms": 6700.479715000256,
+    "timing_scope": "Single saved-frame inference and report generation; excludes preview age, JSON/SQLite commit and any Llama advice",
+    "sqlite_evidence": "Live UI returned this record as latest and history; the UI verifies its JSON equals the saved SQLite row before presenting success"
+  },
+  "private_evidence": {
+    "ignored_pc_frame": "artifacts/edge/live_ui_jetson_01/phone_screen_test7/frame.png",
+    "frame_sha256": "ce3399910653b3458dbd6697f92e4d16535ed104b076a1dde15efe3b903a85be",
+    "ignored_pc_overlay": "artifacts/edge/live_ui_jetson_01/phone_screen_test7/overlay.png",
+    "overlay_sha256": "188eb3328b4f607690a7224eb7e231c98aa84090338a28516ce32a032db29177",
+    "ignored_pc_browser_screenshot": "artifacts/edge/live_ui_jetson_01/phone_screen_test7/ui_final.png",
+    "browser_screenshot_sha256": "88675c780c8bde7b7aa0e9d525f6b93f403e897b3564736931afb3e2bd1d018b"
+  },
+  "updated_ui_source_sha256_pc_matches_jetson": {
+    "forgesight/grade.py": "1ba9bdddba5eeb56b134fb24a1c197c447370d36b8936839b1aec8089ee7fa37",
+    "forgesight/web/jetson_live.html": "4ce1f16ad216b5b85daffa5ababc954f5525c52d3e037f4390b8a3ad8c53486a",
+    "forgesight/web/jetson_live.css": "74ae484b61c8d858eed134f45a196f21efb1426c7341db85ad30d12455f3bae0",
+    "forgesight/web/jetson_live.js": "0199f73f2cd315c35c244815744d4fa899face3406ee42b010ba4fcc41de0a45"
+  },
+  "visual_review": "The saved camera image shows a soft-focused nut photo on a phone display. The response overlay covers most of the nut image. This is a broad response, not a localized or confirmed physical defect.",
+  "interpretation": "The benchmark threshold was calibrated on original MVTec images. The displayed photo has been recaptured through a phone screen and webcam, so the threshold does not establish defect status for this camera domain. The original displayed dataset file was not identified for paired comparison.",
+  "earlier_capture_warning": "An earlier UI record TEST_FOUR used LIVE_CAMERA mode, but the user later clarified their tests used a displayed photo. It is not physical-nut evidence and the immutable original record was not edited.",
+  "not_verified": ["physical nut inspection", "camera-domain accuracy", "defect subtype", "distinct physical parts per minute", "complete offline operation"]
+}
