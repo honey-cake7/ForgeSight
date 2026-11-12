@@ -6,6 +6,25 @@ vision-plus-advice replay while Wi-Fi was disconnected. See
 `manifests/jetson_offline_saved_replay_pilot_v1.json`; full physical-camera
 offline acceptance remains open.
 
+## Stage 10.7 disconnected ExecuTorch advisory latency
+
+`scripts/jetson_offline_advice_latency.py` verifies the prior saved REVIEW
+record, SQLite hash, isolated Llama runtime and Wi-Fi route. It schedules an
+independent seven-minute reconnect timer, disconnects Wi-Fi and runs eight
+fresh advisory processes through ExecuTorch. It checks each note's local
+evidence IDs and unchanged deterministic grade, samples route/memory/thermal
+state, then restores Wi-Fi. No new vision inference or inspection occurs.
+
+```sh
+cd /home/nvidia/.local/share/forgesight/vision_cpu_v1
+python3 -B scripts/jetson_offline_advice_latency.py --prefix "$PWD" --llama-root /home/nvidia/.local/share/forgesight/llama_cpu_v1 --output-dir "$PWD/runs/offline_advice_latency_01" --preflight-only
+sudo systemd-run --unit=forgesight-offline-advice-latency-v1 --collect /usr/bin/python3 -B "$PWD/scripts/jetson_offline_advice_latency.py" --prefix "$PWD" --llama-root /home/nvidia/.local/share/forgesight/llama_cpu_v1 --output-dir "$PWD/runs/offline_advice_latency_01"
+```
+
+Use fresh unit/output names for a repeat. Raw advice remains in the private
+Jetson runtime; the report is copied to ignored PC artifacts. See
+`manifests/jetson_offline_advice_latency_v1.json`.
+
 ## Stage 10.6 disconnected saved-replay vision latency
 
 `scripts/jetson_offline_vision_latency.py` checks the two known image hashes,

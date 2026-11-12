@@ -2,6 +2,18 @@
 
 ## Current stage
 
+**Stage 10.7 disconnected ExecuTorch advisory latency series VERIFIED on the
+physical Jetson; full Stage 10 acceptance PENDING.** Eight fresh-process
+Llama advisories from the same saved REVIEW inspection all completed with
+evidence-linked notes; the authoritative grade, record and SQLite remained
+unchanged. Native process-wall p50/p95 were 20.690/20.942 s and sampled
+native peak RSS p95 was 1,189,735 KiB. During the run, 169 roughly one-
+second network samples showed no Wi-Fi/ethernet IPv4 or default route; Wi-Fi
+recovered. This is repeated advice timing, not new image or operator
+usefulness evidence. See `manifests/jetson_offline_advice_latency_v1.json`.
+
+### Earlier checkpoint
+
 **Stage 10.6 disconnected saved-replay latency series VERIFIED on the
 physical Jetson; full Stage 10 acceptance PENDING.** Twenty cold-process
 replays of two already known images all completed, persisted in fresh SQLite,
@@ -546,7 +558,7 @@ device-only operation correctly exited 2. See `docs/EDGE_RUNTIME.md`.
 | Defect-type classification | NOT VERIFIED | Current predicted types remain unknown; need valid same-domain classification evidence |
 | Pixel-only decision rules | PC PROTOTYPE VERIFIED | Deterministic policy tests/replay; physical tolerances, severity and industrial certification open |
 | Local history and duplicates after restart | PC SQLITE REPLAY VERIFIED | Four original records survive writer exit, exact retries add zero rows; no physical identity or power-loss claim |
-| Offline end-to-end inspection | PARTIAL: saved-case replay, loopback UI service, input-failure paths, camera diagnostic recovery and saved-replay latency under disconnection | Physical camera part, rendered offline browser, decoder failure and physical throughput open |
+| Offline end-to-end inspection | PARTIAL: saved-case replay, loopback UI service, failure paths, camera diagnostic recovery and separate vision/advice latency under disconnection | Physical camera part, rendered offline browser, decoder failure and physical throughput open |
 
 Stage 1 input preparation is verified and its review gate was accepted. The
 Stage 2 device-generation gate is verified for one prompt. Desktop data work
@@ -554,6 +566,6 @@ and GPU availability still do not establish a Jetson camera-inspection system.
 
 ## Next exact task
 
-Continue Stage 10 with repeated advisory latency, decoder-level corrupt-input
-handling and any available offline browser proof. Physical-nut camera
-acceptance and distinct-parts throughput remain open until a nut is available.
+Continue Stage 10 with decoder-level corrupt-input handling and any available
+offline browser proof. Physical-nut camera acceptance and distinct-parts
+throughput remain open until a nut is available.

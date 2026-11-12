@@ -1,5 +1,14 @@
 # Hardware evidence
 
+Stage 10.7 completed eight disconnected, cold ExecuTorch advisory processes
+from one saved inspection. Native process-wall p50/p95 were 20.690/20.942 s;
+controller process-wall p50/p95 were 21.079/21.304 s. Sampled native peak
+RSS p95 was 1,189,735 KiB; minimum sampled system MemAvailable was
+3,591,692 KiB. Across 169 samples, CPU-therm ranged 47.031–50.062 °C and
+GPU-therm 47.375–49.750 °C. These are advisory-only observations, not
+simultaneous camera/vision/LLM pressure or factory throughput. See
+`manifests/jetson_offline_advice_latency_v1.json`.
+
 Stage 10.6 completed 20 disconnected cold saved-image replays on the Jetson.
 Model-forward p50/p95 were 1,585/1,684 ms; replay-to-SQLite p50/p95 were
 7,499/7,677 ms; cold process-wall p50/p95 were 8,015/8,276 ms. Vision

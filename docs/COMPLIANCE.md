@@ -2,6 +2,13 @@
 
 No challenge requirement is marked satisfied by repository setup alone.
 
+Stage 10.7 measured eight repeated, fresh-process Llama advisories through
+ExecuTorch while Jetson Wi-Fi was disconnected. Every note passed the local
+evidence contract; the saved REVIEW inspection and SQLite file were unchanged.
+Native process p50/p95 and memory/thermal observations are recorded separately
+from vision. These repeated prompts are not operator-usefulness evidence or a
+physical camera event. See `manifests/jetson_offline_advice_latency_v1.json`.
+
 Stage 10.6 measured 20 cold-process saved-image replays while the Jetson's
 Wi-Fi was disconnected. All 20 persisted in fresh SQLite and matched exact
 readbacks; model-forward and replay-to-SQLite p50/p95, process RSS, system

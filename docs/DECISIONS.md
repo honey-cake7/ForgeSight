@@ -1,5 +1,13 @@
 # Decisions and unresolved choices
 
+## Stage 10.7: Repeat one frozen advisory input for runtime statistics
+
+Use the same hash-checked saved REVIEW inspection eight times in separate
+ExecuTorch processes and fresh output folders. Require valid local evidence
+IDs, unchanged SQLite and deterministic grade, and an independent reconnect
+timer. Report the measured latency distribution for this advisory path only;
+do not turn repeated prompts into new inspection or advice-quality evidence.
+
 ## Stage 10.6: Measure the existing cold replay path without throughput claims
 
 Repeat one fitting normal image and one already exposed development image ten
