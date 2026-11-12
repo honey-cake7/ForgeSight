@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "stage": "10.3_disconnected_loopback_ui_pilot",
+  "status": "DISCONNECTED_LOOPBACK_UI_SUCCESS_TIMEOUT_RESTART_VERIFIED_FULL_STAGE_10_OPEN",
+  "device": "NVIDIA Jetson Orin Nano 8GB, aarch64",
+  "scope": "Jetson loopback saved-replay operator page and API exercised by a local HTTP client while Wi-Fi was disconnected; no browser rendering or new vision inference",
+  "source_mode": "SAVED_IMAGE_REPLAY",
+  "physical_part_inspected": false,
+  "inspection_id": "227c0236-0d9c-4323-bca7-54bc558b9ab7",
+  "authoritative_grade": "REVIEW",
+  "original_record_sha256": "fb31af0dcefb666ea4826aef0e78d9a6aa34e6cd0924c89195d40bb066f58a6a",
+  "original_sqlite_sha256_before_and_after": "e6a27fc55199c27932d59cd46f041f164263f11c84af160adc9e679f821a7b35",
+  "local_page_assets": {
+    "html_css_js_returned_200": true,
+    "html_sha256": "414fcd3c8b0bfc7f4aa0ae78719c22796eb8c7b1d99df035db16d13da0a759d7",
+    "javascript_sha256": "3f7d61fcdbff49e03c7dd8c0bd5b04f5c1a971b052a280bca428e4c1c62e55ce",
+    "css_sha256": "38e70ed5d9af09b8902efe960f38348e1fdf83f26ba7c9f18410f2b24752878b"
+  },
+  "success": {
+    "first_request": "PENDING",
+    "overlapping_request": "BUSY",
+    "final_ui_status": "GENERATED_REQUIRES_HUMAN_REVIEW",
+    "status_visible_ms": 21403.463587999795,
+    "evidence_ids_present": ["E1", "G1"],
+    "grade_unchanged": true,
+    "ui_process_restart_preserved_state": true,
+    "duplicate_advice_refused_after_restart": true,
+    "native_status": "JETSON_EXECUTORCH_LLAMA_GENERATION_VERIFIED",
+    "native_process_wall_seconds": 20.88762940400011,
+    "sampled_peak_child_rss_kib": 1191224
+  },
+  "deadline_failure": {
+    "native_deadline_seconds": 1,
+    "native_completion_reason": "TIMEOUT",
+    "native_process_wall_seconds": 1.014570901001207,
+    "final_ui_status": "ADVICE_UNAVAILABLE",
+    "status_visible_ms": 1536.9040739988122,
+    "note": null,
+    "grade_unchanged": true,
+    "ui_process_restart_preserved_state": true,
+    "duplicate_advice_refused_after_restart": true
+  },
+  "network": {
+    "samples": 33,
+    "sample_interval_target_seconds": 1,
+    "maximum_observed_sample_gap_seconds": 1.0010000000000012,
+    "all_samples_no_wifi_or_ethernet_ipv4_or_default_route": true,
+    "disconnected_before_recovery": true,
+    "independent_reconnect_watchdog_scheduled_seconds": 180,
+    "wifi_restored_with_default_route": true,
+    "watchdog_timer_inactive_after_run": true,
+    "limit": "Route/interface sampling cannot exclude a brief between-sample link or an unexamined interface; no packet trace was captured"
+  },
+  "sha256_device_matches_pc": {
+    "offline_ui_report.json": "9a8b74cb51cc4b2e0a0da7567255f4569134ed82015042c55b634b4631ddb1eb",
+    "source_inspections.sqlite3": "e6a27fc55199c27932d59cd46f041f164263f11c84af160adc9e679f821a7b35"
+  },
+  "sha256_pc_evidence": {
+    "success_advice_report.json": "92c54851d7377f668b3994467f7cbdbb55c60676ac5ced633912da33ab184179",
+    "timeout_advice_report.json": "e06bb6a0976bdcdf2f8f9b4775c12659a997545191eb7e35f32edbc477edf6b3",
+    "timeout_native_run.json": "ff1f0a235ef9d5240443f3aa65d0e85661ab940b19b3c477d4b39916cdca5217"
+  },
+  "script_sha256": "a806215d9189a6aab90e69fac2ac98f30e96af5bada3b66183b295f68a4dbeea",
+  "private_evidence": {
+    "jetson": "/home/nvidia/.local/share/forgesight/vision_cpu_v1/runs/offline_ui_01",
+    "ignored_pc_copy": "artifacts/offline_stage10_jetson_v1/offline_ui_01"
+  },
+  "focused_tests": "Existing UI queue and offline safety unit tests passed in the isolated WSL app environment",
+  "not_verified": [
+    "actual local browser rendering while disconnected",
+    "new vision inference through this UI",
+    "physical nut camera inspection",
+    "full application cold start or OS reboot recovery",
+    "camera failure, missing-model and corrupt-input recovery",
+    "complete Stage 10 offline acceptance"
+  ]
+}

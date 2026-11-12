@@ -1,5 +1,15 @@
 # Learning log
 
+## Stage 10.3: Local UI service under disconnection
+
+Serving page files and exercising the queue through Jetson loopback HTTP
+shows that the UI service needs no upstream route for those operations.
+It does not show that a browser rendered the page: this Jetson had no local
+browser executable. An advisory timeout must leave a visible unavailable
+state with no note, while the deterministic inspection remains readable.
+Restarting the UI process after both success and timeout checked that those
+states came from disk and could not trigger duplicate advice.
+
 ## Stage 10.2: Repeated saved cases under sampled disconnection
 
 A fitting image can verify that the runtime follows the normal branch, but it

@@ -2,6 +2,15 @@
 
 No challenge requirement is marked satisfied by repository setup alone.
 
+Stage 10.3 exercised the Jetson's saved-replay operator page over loopback
+HTTP with Wi-Fi disconnected. The local client received HTML/CSS/JavaScript,
+PENDING/BUSY states, a real ExecuTorch note and a separate native TIMEOUT that
+showed ADVICE_UNAVAILABLE. UI process restarts preserved the original REVIEW
+grade and stored advice state. Thirty-three route/interface samples supported
+the disconnected run. No local browser rendered the page, and no new image
+inference, physical camera event or full application cold start occurred. See
+`manifests/jetson_offline_loopback_ui_v1.json`.
+
 Stage 10.2 ran one fitting normal reference and two previously exposed
 development images through frozen EfficientAD, ForgeGrade and SQLite on the
 Jetson while Wi-Fi was disconnected. Forty-six interface/route samples at

@@ -6,6 +6,29 @@ vision-plus-advice replay while Wi-Fi was disconnected. See
 `manifests/jetson_offline_saved_replay_pilot_v1.json`; full physical-camera
 offline acceptance remains open.
 
+## Stage 10.3 disconnected loopback UI pilot
+
+`scripts/jetson_offline_ui_pilot.py` reads the prior saved REVIEW replay,
+checks its record and SQLite SHA-256, schedules an independent three-minute
+Wi-Fi recovery timer, and disconnects Wi-Fi. A local HTTP client on the Jetson
+fetches the operator page files and exercises the queue and status endpoints.
+It checks generated advice, a separate one-second native timeout, and UI
+process restart after each result. It then restores Wi-Fi and cancels the
+timer. The script uses a fresh output directory, does not install packages,
+and does not modify the original inspection. Device commands:
+
+```sh
+cd /home/nvidia/.local/share/forgesight/vision_cpu_v1
+python3 -B scripts/jetson_offline_ui_pilot.py --prefix "$PWD" --llama-root /home/nvidia/.local/share/forgesight/llama_cpu_v1 --output-dir "$PWD/runs/offline_ui_01" --preflight-only
+sudo systemd-run --unit=forgesight-offline-ui-pilot-v1 --collect /usr/bin/python3 -B "$PWD/scripts/jetson_offline_ui_pilot.py" --prefix "$PWD" --llama-root /home/nvidia/.local/share/forgesight/llama_cpu_v1 --output-dir "$PWD/runs/offline_ui_01"
+```
+
+The output directory and transient unit names must be changed for a repeat.
+Raw logs and advice live in the private runtime directory, with an ignored PC
+copy under `artifacts/offline_stage10_jetson_v1/offline_ui_01`. No Jetson
+browser executable was present, so this proves local HTTP/API behavior and
+assets, not offline browser rendering. See the Stage 10.3 manifest.
+
 ## Stage 10.2 disconnected saved-case series
 
 `scripts/jetson_offline_case_series.py` checks frozen local model/image hashes

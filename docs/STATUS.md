@@ -2,6 +2,21 @@
 
 ## Current stage
 
+**Stage 10.3 disconnected loopback operator-page service VERIFIED on the
+physical Jetson; full Stage 10 acceptance PENDING.** With Wi-Fi disconnected,
+a local HTTP client fetched the page's HTML, JavaScript and CSS and exercised
+the real queue/API against the saved REVIEW inspection. Advice progressed from
+PENDING to a real ExecuTorch note; overlapping requests returned BUSY. A
+one-second native deadline yielded ADVICE_UNAVAILABLE with no note. Restarting
+the UI process preserved both completed states and the original grade, and
+refused duplicate advice. Thirty-three roughly one-second network samples
+showed no Wi-Fi/ethernet IPv4 or default route; Wi-Fi recovered afterward.
+No browser was installed on the Jetson, so actual page rendering while
+disconnected was not tested. See
+`manifests/jetson_offline_loopback_ui_v1.json`.
+
+### Earlier checkpoint
+
 **Stage 10.2 disconnected saved-case series VERIFIED on the physical Jetson;
 full Stage 10 acceptance PENDING.** The frozen EfficientAD model and
 ForgeGrade processed a fitting normal reference and two previously exposed
@@ -495,7 +510,7 @@ device-only operation correctly exited 2. See `docs/EDGE_RUNTIME.md`.
 | Defect-type classification | NOT VERIFIED | Current predicted types remain unknown; need valid same-domain classification evidence |
 | Pixel-only decision rules | PC PROTOTYPE VERIFIED | Deterministic policy tests/replay; physical tolerances, severity and industrial certification open |
 | Local history and duplicates after restart | PC SQLITE REPLAY VERIFIED | Four original records survive writer exit, exact retries add zero rows; no physical identity or power-loss claim |
-| Offline end-to-end inspection | PARTIAL: saved-case disconnected Jetson replay | Physical camera part, full UI, longer-run metrics and failure/restart acceptance remain open |
+| Offline end-to-end inspection | PARTIAL: saved-case replay and loopback UI service under disconnection | Physical camera part, rendered offline browser, longer-run metrics and remaining failure checks open |
 
 Stage 1 input preparation is verified and its review gate was accepted. The
 Stage 2 device-generation gate is verified for one prompt. Desktop data work
@@ -503,6 +518,7 @@ and GPU availability still do not establish a Jetson camera-inspection system.
 
 ## Next exact task
 
-Continue Stage 10 with disconnected full operator UI and failure/restart checks
-using saved images. Physical-nut camera acceptance remains open until a nut is
-available. Measure longer runs before reporting p50/p95 or parts per minute.
+Continue Stage 10 with missing-model/corrupt-input and camera-failure recovery
+checks, then longer-run metrics. A true offline browser demonstration requires
+a locally available browser. Physical-nut camera acceptance remains open until
+a nut is available.

@@ -1,5 +1,13 @@
 # Decisions and unresolved choices
 
+## Stage 10.3: Prove local UI service behavior without a new browser install
+
+Use the existing saved-replay page and a local HTTP client on the Jetson for
+the disconnected proof. Check the page assets, queue states, real ExecuTorch
+success, native timeout and UI process restart against an unchanged SQLite
+record. The Jetson has no browser executable; record rendered offline UI as
+unverified and avoid changing system packages solely for this substep.
+
 ## Stage 10.2: Restrict the normal replay reference
 
 Use only the frozen manifest's `train/good/000.png` for a normal runtime

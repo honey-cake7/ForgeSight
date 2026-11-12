@@ -1,5 +1,14 @@
 # Hardware evidence
 
+Stage 10.3 served the saved-replay operator page over Jetson loopback while
+Wi-Fi was disconnected. One ExecuTorch advisory became visible through the
+local status API in 21.403 s; its native child took 20.888 s and sampled
+1,191,224 KiB peak RSS. A separate one-second native deadline yielded
+ADVICE_UNAVAILABLE in 1.537 s at the local status API, with no note. Thirty-
+three network samples had a maximum observed gap of 1.001 s. These are HTTP
+service observations, not a rendered browser or physical camera throughput.
+See `manifests/jetson_offline_loopback_ui_v1.json`.
+
 Stage 10.2 replayed three known saved images while the physical Jetson's
 Wi-Fi was disconnected. The first-forward times were 1,610, 1,663 and
 1,575 ms; individual vision-process peak RSS readings were 435,072,
