@@ -6,6 +6,28 @@ vision-plus-advice replay while Wi-Fi was disconnected. See
 `manifests/jetson_offline_saved_replay_pilot_v1.json`; full physical-camera
 offline acceptance remains open.
 
+## Stage 10.2 disconnected saved-case series
+
+`scripts/jetson_offline_case_series.py` checks frozen local model/image hashes
+and dataset roles, schedules an independent four-minute Wi-Fi reconnect timer,
+then runs three saved-image replays and one separate ExecuTorch advisory with
+Wi-Fi disconnected. It records interface and route state about once per
+second, reconnects Wi-Fi, and cancels the timer. One explicitly allowed fitting
+normal image is a runtime reference only; held-out evaluation samples remain
+blocked. It uses a fresh output directory and SQLite database. No Python
+packages or system environment were changed. A repeat requires fresh transient
+unit names and output path after checking systemd state. Device commands:
+
+```sh
+cd /home/nvidia/.local/share/forgesight/vision_cpu_v1
+python3 -B scripts/jetson_offline_case_series.py --prefix "$PWD" --llama-root /home/nvidia/.local/share/forgesight/llama_cpu_v1 --output-dir "$PWD/runs/offline_case_series_01" --preflight-only
+sudo systemd-run --unit=forgesight-offline-case-series-v1 --collect /usr/bin/python3 -B "$PWD/scripts/jetson_offline_case_series.py" --prefix "$PWD" --llama-root /home/nvidia/.local/share/forgesight/llama_cpu_v1 --output-dir "$PWD/runs/offline_case_series_01"
+```
+
+The raw report, SQLite file, maps and advice are in the private runtime path;
+a copy is ignored under `artifacts/offline_stage10_jetson_v1/offline_case_series_01`.
+The manifest contains measured results and limits.
+
 ## Stage 10.1 disconnected saved-image pilot
 
 `scripts/jetson_offline_replay_pilot.py` checked the local image/model hashes

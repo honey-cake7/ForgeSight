@@ -1,5 +1,15 @@
 # Decisions and unresolved choices
 
+## Stage 10.2: Restrict the normal replay reference
+
+Use only the frozen manifest's `train/good/000.png` for a normal runtime
+branch check, behind an explicit replay flag. Keep final holdout images
+unavailable to this workflow. Reuse two exposed development images to check
+the anomaly/REVIEW path while Wi-Fi is disconnected. Record the dataset role
+with every inspection, and do not count these three runs toward new accuracy
+or distinct physical-part throughput. Keep the independent Wi-Fi reconnect
+timer and sample interface/route state throughout the run.
+
 ## 001: Preserve the existing workspace in place
 
 The audited directory contains three project instruction documents and the

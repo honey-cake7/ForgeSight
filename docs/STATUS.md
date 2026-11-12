@@ -2,6 +2,20 @@
 
 ## Current stage
 
+**Stage 10.2 disconnected saved-case series VERIFIED on the physical Jetson;
+full Stage 10 acceptance PENDING.** The frozen EfficientAD model and
+ForgeGrade processed a fitting normal reference and two previously exposed
+development images with Wi-Fi disconnected. Their decisions were PASS, REVIEW,
+and REVIEW; all three records survived in fresh SQLite. ExecuTorch Llama
+generated a separate note for one REVIEW record without changing its grade.
+Forty-six roughly one-second network samples showed disconnected Wi-Fi, no
+Wi-Fi/ethernet IPv4 address and no default route. Wi-Fi recovered and the
+independent watchdog was canceled. These repeated saved images add no accuracy
+evidence or physical-part throughput. See
+`manifests/jetson_offline_case_series_v1.json`.
+
+### Earlier checkpoint
+
 **Stage 10.1 Wi-Fi-disconnected saved-image replay pilot VERIFIED on the
 physical Jetson; full Stage 10 acceptance PENDING.** A detached service
 scheduled an independent three-minute reconnect watchdog, disconnected
@@ -481,7 +495,7 @@ device-only operation correctly exited 2. See `docs/EDGE_RUNTIME.md`.
 | Defect-type classification | NOT VERIFIED | Current predicted types remain unknown; need valid same-domain classification evidence |
 | Pixel-only decision rules | PC PROTOTYPE VERIFIED | Deterministic policy tests/replay; physical tolerances, severity and industrial certification open |
 | Local history and duplicates after restart | PC SQLITE REPLAY VERIFIED | Four original records survive writer exit, exact retries add zero rows; no physical identity or power-loss claim |
-| Offline end-to-end inspection | NOT VERIFIED | Actual disconnected Jetson run |
+| Offline end-to-end inspection | PARTIAL: saved-case disconnected Jetson replay | Physical camera part, full UI, longer-run metrics and failure/restart acceptance remain open |
 
 Stage 1 input preparation is verified and its review gate was accepted. The
 Stage 2 device-generation gate is verified for one prompt. Desktop data work
@@ -489,8 +503,6 @@ and GPU availability still do not establish a Jetson camera-inspection system.
 
 ## Next exact task
 
-Stage 9.1's on-device advisory for a saved replay is verified. Next, add a
-bounded single-worker queue so inspection results stay available while
-ExecuTorch advice runs; verify immediate busy response and timeout handling.
-Stage 8's physical-nut camera proof remains open until a nut is available.
-Disconnected end-to-end proof remains Stage 10.
+Continue Stage 10 with disconnected full operator UI and failure/restart checks
+using saved images. Physical-nut camera acceptance remains open until a nut is
+available. Measure longer runs before reporting p50/p95 or parts per minute.

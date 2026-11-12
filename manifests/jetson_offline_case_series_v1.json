@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "stage": "10.2_disconnected_saved_case_series",
+  "status": "DISCONNECTED_SAVED_CASE_SERIES_VERIFIED_FULL_STAGE_10_OPEN",
+  "device": "NVIDIA Jetson Orin Nano 8GB, aarch64",
+  "scope": "Three known MVTec metal_nut saved images, fresh per-case processes and one fresh SQLite database; one ExecuTorch Llama advisory for the bent replay",
+  "source_mode": "SAVED_IMAGE_REPLAY",
+  "physical_part_inspected": false,
+  "new_accuracy_evidence": false,
+  "model_sha256": "8766c41a51a5444f57f564134427bbd2d2d95dd6ec5ff08b24698f00f7f55dcd",
+  "cases": [
+    {
+      "name": "normal_fit",
+      "dataset_path": "train/good/000.png",
+      "dataset_role": "fit",
+      "image_sha256": "b0309325bc305ae8b19246884f20397b951285786aecca0ebf1d009e9799e350",
+      "candidate": "NORMAL_CANDIDATE",
+      "score": 0.028453722596168518,
+      "grade": "PASS",
+      "model_forward_ms": 1609.8864210007378,
+      "replay_to_sqlite_commit_ms": 7668.5854590004965,
+      "vision_process_peak_rss_kib": 435072
+    },
+    {
+      "name": "bent_preview",
+      "dataset_path": "test/bent/017.png",
+      "dataset_role": "development_preview",
+      "image_sha256": "b49cc898143c46a8c3a8697411d04a078b36f60f4798ccc68aea33ea8fcac026",
+      "candidate": "ANOMALY_CANDIDATE",
+      "score": 0.6828088760375977,
+      "grade": "REVIEW",
+      "model_forward_ms": 1663.4750240000358,
+      "vision_process_peak_rss_kib": 434696
+    },
+    {
+      "name": "color_preview",
+      "dataset_path": "test/color/009.png",
+      "dataset_role": "development_preview",
+      "image_sha256": "4717a9a1124e824e578093d97d23e0e6e32d05e4e6369f4e2325be1335dc0b10",
+      "candidate": "ANOMALY_CANDIDATE",
+      "score": 0.8207129240036011,
+      "grade": "REVIEW",
+      "model_forward_ms": 1574.6655210004974,
+      "vision_process_peak_rss_kib": 435992
+    }
+  ],
+  "network": {
+    "wifi_disconnected_before_first_case": true,
+    "samples": 46,
+    "sample_interval_target_seconds": 1,
+    "maximum_observed_sample_gap_seconds": 1.0010000000000048,
+    "all_samples_no_wifi_or_ethernet_ipv4_or_default_route": true,
+    "disconnected_immediately_before_recovery": true,
+    "wifi_restored_with_default_route": true,
+    "independent_reconnect_watchdog_scheduled_seconds": 240,
+    "watchdog_cancel_returncode": 0,
+    "limit": "Interface and route sampling cannot exclude brief between-sample links or hidden network interfaces; no packet trace was captured"
+  },
+  "sqlite": {
+    "fresh_database_rows": 3,
+    "copied_database_exact_json_readback_for_all_cases": true,
+    "record_file_hashes_match_report": true
+  },
+  "advice": {
+    "case": "bent_preview",
+    "runtime": "Llama 3.2 1B through ExecuTorch XNNPACK CPU",
+    "status": "JETSON_ADVICE_GENERATED_REQUIRES_HUMAN_REVIEW",
+    "inspection_and_sqlite_unchanged": true,
+    "native_process_wall_seconds": 20.545745480999358,
+    "sampled_peak_child_rss_kib": 1151812
+  },
+  "metrics_limit": "Three reused images and cold per-case processes are too few for p95, throughput, accuracy or distinct physical parts per minute",
+  "sha256_pc_evidence": {
+    "offline_report.json": "14893659fe534842b171cf1ad634e6e56f0ba2ee6f014dceccbe8e2ce9c84d4c",
+    "inspections.sqlite3": "e6a27fc55199c27932d59cd46f041f164263f11c84af160adc9e679f821a7b35",
+    "normal_fit/record.json": "060305fd36f5ecee6f2ab5b34b366a7ed7720578b873f244c89f6255685838b0",
+    "bent_preview/record.json": "fb31af0dcefb666ea4826aef0e78d9a6aa34e6cd0924c89195d40bb066f58a6a",
+    "color_preview/record.json": "e0aca074f4b6387c9b400e2fc0329cd62a5a3d8e60d86ea5ba6d8c1ee7067a97",
+    "advice/advice_report.json": "180ac4f4b4b9350739fd1cc16ecfd978277853972ce0c545a9b7d55c315a8246"
+  },
+  "device_and_pc_hashes_match_for_report_and_sqlite": true,
+  "post_run_watchdog_timer_inactive": true,
+  "post_run_wifi_state": "100 (connected)",
+  "private_evidence": {
+    "jetson": "/home/nvidia/.local/share/forgesight/vision_cpu_v1/runs/offline_case_series_01",
+    "ignored_pc_copy": "artifacts/offline_stage10_jetson_v1/offline_case_series_01"
+  },
+  "focused_test": "Three replay-role guard tests passed in the isolated WSL app environment",
+  "not_verified": [
+    "physical nut camera inspection",
+    "full operator UI while disconnected",
+    "cold-start of complete application",
+    "meaningful p50/p95 and distinct physical parts per minute",
+    "camera failure, missing-model, corrupt-input and restart recovery",
+    "complete Stage 10 offline acceptance"
+  ]
+}

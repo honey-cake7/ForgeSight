@@ -35,6 +35,19 @@ def run_child(argv):
     return (time.perf_counter() - started) * 1000
 
 
+def select_replay_sample(samples, image_sha256, image_path, allow_fit_reference=False):
+    allowed_roles = {"development_preview"}
+    if allow_fit_reference:
+        allowed_roles.add("fit")
+    matches = [row for row in samples
+               if row["sha256"] == image_sha256 and row["role"] in allowed_roles
+               and (row["role"] != "fit" or row["path"] == "train/good/000.png")
+               and Path(image_path).as_posix().endswith(row["path"])]
+    if len(matches) != 1:
+        raise ValueError("Image is not a permitted, uniquely identified replay sample.")
+    return matches[0]
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--image", type=Path, required=True)
@@ -47,6 +60,8 @@ def main():
     parser.add_argument("--grade-policy", type=Path, required=True)
     parser.add_argument("--database", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--allow-fit-reference", action="store_true",
+                        help="Permit only train/good/000.png as a normal runtime reference; never accuracy evidence")
     args = parser.parse_args()
     if args.output_dir.exists():
         parser.error("Choose a new replay output directory.")
@@ -55,11 +70,11 @@ def main():
     if sha256(args.image) != args.image_sha256:
         parser.error("Saved image SHA-256 differs from the reviewed dataset manifest.")
     dataset = json.loads(args.dataset_manifest.read_text())
-    matches = [row for row in dataset["samples"]
-               if row["sha256"] == args.image_sha256 and row["role"] == "development_preview"
-               and args.image.as_posix().endswith(row["path"])]
-    if len(matches) != 1:
-        parser.error("Image is not a uniquely identified development-preview sample.")
+    try:
+        sample = select_replay_sample(dataset["samples"], args.image_sha256,
+                                      args.image, args.allow_fit_reference)
+    except ValueError as error:
+        parser.error(str(error))
     if args.model_sha256 != "8766c41a51a5444f57f564134427bbd2d2d95dd6ec5ff08b24698f00f7f55dcd":
         parser.error("Expected the verified frozen EfficientAD edge export.")
     policy = json.loads(args.grade_policy.read_text())
@@ -89,7 +104,7 @@ def main():
         "schema_version": 1, "inspection_id": str(uuid4()), "part_id": args.part_id,
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
         "source": {"path": str(args.image.resolve()), "mode": "SAVED_IMAGE_REPLAY",
-                   "dataset_role": matches[0]["role"], "dataset_path": matches[0]["path"],
+                   "dataset_role": sample["role"], "dataset_path": sample["path"],
                    "physical_part": False,
                    "sha256": args.image_sha256, "size_px": [700, 700]},
         "model": {"name": "EfficientAD-S", "input_size_px": [256, 256], "precision": "fp32",

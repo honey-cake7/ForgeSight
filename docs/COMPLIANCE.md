@@ -2,6 +2,18 @@
 
 No challenge requirement is marked satisfied by repository setup alone.
 
+Stage 10.2 ran one fitting normal reference and two previously exposed
+development images through frozen EfficientAD, ForgeGrade and SQLite on the
+Jetson while Wi-Fi was disconnected. Forty-six interface/route samples at
+about one-second intervals showed no Wi-Fi/ethernet IPv4 or default route;
+one ExecuTorch advisory also completed during the interval. The normal
+reference received PASS; both anomaly candidates received REVIEW because
+subtype classification is unvalidated. Three copied SQLite records matched
+their JSON files exactly. The samples do not prove the absence of a brief
+between-sample link, and these images do not provide new accuracy, physical
+part identity, full UI or end-to-end camera evidence. See
+`manifests/jetson_offline_case_series_v1.json`.
+
 Stage 10.1 ran one saved MVTec development image through frozen EfficientAD,
 ForgeGrade, SQLite and ExecuTorch Llama on the physical Jetson while its Wi-Fi
 was disconnected. Network snapshots before and after each inference step showed

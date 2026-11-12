@@ -1,5 +1,17 @@
 # Learning log
 
+## Stage 10.2: Repeated saved cases under sampled disconnection
+
+A fitting image can verify that the runtime follows the normal branch, but it
+cannot be counted as fresh normal accuracy evidence. The replay gate therefore
+requires an explicit flag and permits only `train/good/000.png`; final holdout
+remains blocked. Two already exposed development images exercised the anomaly
+branch. Both yielded REVIEW because defect subtype is unvalidated, not because
+the system identified their filename labels. Sampling network interfaces and
+routes every second gives stronger evidence than only entry/exit snapshots,
+but does not rule out brief changes between samples. Three first-forward
+measurements do not justify p95 latency or parts-per-minute claims.
+
 ## Stage 0.1: Learn what exists before changing it
 
 The PC is a Windows x86_64 workstation with an RTX 2000 Ada GPU. Its Ubuntu WSL

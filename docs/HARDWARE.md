@@ -1,5 +1,15 @@
 # Hardware evidence
 
+Stage 10.2 replayed three known saved images while the physical Jetson's
+Wi-Fi was disconnected. The first-forward times were 1,610, 1,663 and
+1,575 ms; individual vision-process peak RSS readings were 435,072,
+434,696 and 435,992 KiB. One separate ExecuTorch Llama native child took
+20.546 s and sampled 1,151,812 KiB peak RSS. Network state was sampled 46
+times, with a maximum observed interval of 1.001 s, and Wi-Fi was restored.
+These separate cold-process observations are not simultaneous memory use,
+p95 latency or physical camera throughput. See
+`manifests/jetson_offline_case_series_v1.json`.
+
 Stage 10.1 ran one fresh-process saved-image replay while the physical Jetson's
 Wi-Fi was disconnected. Network snapshots around vision and ExecuTorch advice
 showed no upstream route or Wi-Fi/ethernet IPv4 address; Wi-Fi was restored and
