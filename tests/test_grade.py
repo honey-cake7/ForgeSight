@@ -109,6 +109,8 @@ class GradeTests(unittest.TestCase):
         self.anomaly(width=200, height=200)
         self.assertEqual(self.grade()['reason'], 'CAMERA_DOMAIN_UNVALIDATED')
         self.assertEqual(self.grade()['grade'], 'REVIEW')
+        self.record['source']['mode'] = 'LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC'
+        self.assertEqual(self.grade()['reason'], 'CAMERA_DOMAIN_UNVALIDATED')
 
 
 if __name__ == '__main__':

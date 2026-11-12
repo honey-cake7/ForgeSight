@@ -2,12 +2,14 @@
 
 from http.server import ThreadingHTTPServer
 import json
+from pathlib import Path
 from threading import Thread
+from tempfile import TemporaryDirectory
 import unittest
 from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
-from forgesight.jetson_live_ui import handler_for
+from forgesight.jetson_live_ui import handler_for, vision_executable
 
 
 class StubCamera:
@@ -27,13 +29,24 @@ class StubService:
     def image(self, name):
         return None
 
-    def inspect(self, part_id, confirmed):
+    def inspect(self, part_id, confirmed, source_kind):
         if confirmed is not True:
             raise ValueError("Operator declaration required")
-        self.requests.append(part_id)
+        self.requests.append((part_id, source_kind))
 
 
 class LiveHttpTests(unittest.TestCase):
+    def test_venv_executable_symlink_is_preserved(self):
+        with TemporaryDirectory() as folder:
+            venv = Path(folder) / "venv" / "bin"
+            venv.mkdir(parents=True)
+            base = Path(folder) / "base-python"
+            base.write_text("test executable")
+            link = venv / "python"
+            link.symlink_to(base)
+            self.assertEqual(vision_executable(link), link)
+            self.assertNotEqual(vision_executable(link), link.resolve())
+
     def setUp(self):
         self.service = StubService()
         self.server = ThreadingHTTPServer(("127.0.0.1", 0), handler_for(self.service))
@@ -51,17 +64,19 @@ class LiveHttpTests(unittest.TestCase):
         self.assertEqual(urlopen(self.base + "/api/frame.jpg").headers.get_content_type(), "image/jpeg")
         self.assertTrue(json.loads(urlopen(self.base + "/api/state").read())["camera"]["ready"])
         request = Request(self.base + "/api/inspect", method="POST",
-                          data=json.dumps({"part_id": "NUT-001", "confirmed": True}).encode(),
+                          data=json.dumps({"part_id": "SCREEN-001", "confirmed": True,
+                                           "source_kind": "screen_photo"}).encode(),
                           headers={"Origin": self.base, "Content-Type": "application/json"})
         self.assertEqual(urlopen(request).status, 202)
-        self.assertEqual(self.service.requests, ["NUT-001"])
+        self.assertEqual(self.service.requests, [("SCREEN-001", "screen_photo")])
 
     def test_cross_origin_and_missing_declaration_are_rejected(self):
         for origin, confirmed, code in [("http://elsewhere.invalid", True, 403),
                                         (self.base, False, 409)]:
             with self.subTest(origin=origin, confirmed=confirmed):
                 request = Request(self.base + "/api/inspect", method="POST",
-                                  data=json.dumps({"part_id": "NUT-002", "confirmed": confirmed}).encode(),
+                                  data=json.dumps({"part_id": "NUT-002", "confirmed": confirmed,
+                                                   "source_kind": "physical_nut"}).encode(),
                                   headers={"Origin": origin, "Content-Type": "application/json"})
                 with self.assertRaises(HTTPError) as raised:
                     urlopen(request)

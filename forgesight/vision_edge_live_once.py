@@ -68,7 +68,9 @@ def inspect(args):
         "schema_version": 1, "inspection_id": str(uuid4()), "part_id": args.part_id,
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
         "source": {"path": str(args.image.resolve()),
-                   "mode": "LIVE_CAMERA" if args.operator_declared_part else "LIVE_CAMERA_DIAGNOSTIC_NO_PART",
+                   "mode": ("LIVE_CAMERA" if args.operator_declared_part else
+                            "LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC" if args.screen_photo_diagnostic else
+                            "LIVE_CAMERA_DIAGNOSTIC_NO_PART"),
                    "physical_part": "OPERATOR_DECLARED_UNVERIFIED" if args.operator_declared_part else False,
                    "sha256": source_hash,
                    "size_px": [640, 480], "camera_index": args.camera_index},
@@ -153,6 +155,7 @@ def main():
     parser.add_argument("--camera-index", type=int, default=0)
     declaration = parser.add_mutually_exclusive_group(required=True)
     declaration.add_argument("--operator-declared-part", action="store_true")
+    declaration.add_argument("--screen-photo-diagnostic", action="store_true")
     declaration.add_argument("--diagnostic-no-part", action="store_true")
     args = parser.parse_args()
     record = inspect(args)

@@ -49,6 +49,7 @@ function renderLatest(item, processing) {
   const grade = byId('grade');
   grade.textContent = item.grade || 'ERROR';
   grade.className = 'grade ' + (item.grade || '').toLowerCase();
+  byId('source-mode').textContent = item.source_mode === 'LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC' ? 'Screen photo diagnostic · no physical nut inspected' : item.source_mode === 'LIVE_CAMERA' ? 'Operator-declared physical nut' : 'Camera capture';
   byId('candidate').textContent = item.candidate === 'ANOMALY_CANDIDATE' ? 'Anomaly response' : item.candidate === 'NORMAL_CANDIDATE' ? 'Normal candidate' : 'Unavailable';
   byId('score').textContent = item.score == null ? '—' : Number(item.score).toFixed(4);
   byId('latency').textContent = item.model_forward_ms == null ? '—' : Math.round(item.model_forward_ms) + ' ms';
@@ -80,7 +81,7 @@ function renderHistory(rows) {
     const details = document.createElement('span');
     details.textContent = new Date(row.timestamp_utc).toLocaleString();
     const grade = document.createElement('span');
-    grade.textContent = row.grade + ' · ' + row.status;
+    grade.textContent = (row.source_mode === 'LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC' ? 'SCREEN PHOTO · ' : '') + row.grade + ' · ' + row.status;
     line.append(name, details, grade);
     list.append(line);
   }
@@ -95,7 +96,8 @@ byId('inspect').addEventListener('click', async () => {
   byId('request-status').textContent = 'Capturing one camera frame…';
   try {
     const response = await fetch('/api/inspect', {method: 'POST', headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({part_id: byId('part-id').value, confirmed: byId('confirmed').checked})});
+      body: JSON.stringify({part_id: byId('part-id').value, confirmed: byId('confirmed').checked,
+        source_kind: document.querySelector('input[name="source-kind"]:checked').value})});
     const result = await response.json();
     if (!response.ok) throw new Error(result.error || 'Inspection request rejected');
     byId('request-status').textContent = 'Analyzing captured frame…';

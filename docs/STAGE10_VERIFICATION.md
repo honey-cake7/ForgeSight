@@ -52,11 +52,11 @@ camera, vision and Llama pressure or establish absence of thermal throttling.
 
 | Roadmap gate | Current evidence gap |
 | --- | --- |
-| Physical nut camera inspection | The user now has a nut, but no physical nut has yet been presented to the C270 and inspected. The earlier C270 room frame is a diagnostic, not an inspection. |
+| Physical nut camera inspection | The user clarified that they only have a dataset nut photo displayed on a screen. No physical nut has been presented to the C270 or inspected. The earlier C270 room frame is a diagnostic, not an inspection. |
 | Disconnected complete application from cold start | Components ran locally in separate proven paths; one physical camera event through grade, SQLite, operator UI and ExecuTorch while disconnected has not run. |
 | Normal, defective and uncertain real cases | Saved MVTec references exercised PASS and REVIEW. They are repeated known images; real camera-domain outcomes remain unknown. |
 | Distinct parts per minute and physical false positives | Zero distinct physical parts were inspected; no rate or field false-positive estimate is valid. The PC benchmark result is a different domain and cannot fill this gate. |
-| Rendered operator page while disconnected | Jetson loopback HTML/API worked, but no browser executable was installed locally; the prior browser proof used a connected SSH tunnel. |
+| Rendered operator page while disconnected | Jetson loopback HTML/API worked and Firefox is now available on the Jetson, but disconnected local browser rendering has not been tested. The previous browser proof used a connected SSH tunnel. |
 | Unplug/replug and power restart | Unavailable camera index and UI process restarts were tested; physical USB unplug/replug, OS reboot and power-loss recovery were not. |
 
 The next physical acceptance run needs a declared nut in a stable, lit C270

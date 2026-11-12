@@ -3,6 +3,7 @@
 import argparse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -17,6 +18,11 @@ from forgesight.vision_edge_live_once import MODEL_SHA256, sha256
 
 WEB_ROOT = Path(__file__).with_name("web")
 PART_ID = re.compile(r"[A-Za-z0-9_-]{1,64}\Z")
+
+
+def vision_executable(path):
+    """Make the venv path absolute without following its Python symlinks."""
+    return Path(os.path.abspath(path))
 
 
 class CameraFeed:
@@ -118,6 +124,7 @@ class LiveService:
             busy = self.busy
         return {"camera": self.camera.state(), "busy": busy, "latest": latest,
                 "history": [{"part_id": r["part_id"], "inspection_id": r["inspection_id"],
+                             "source_mode": r["source"]["mode"],
                              "grade": r["decision"]["grade"], "status": r["status"],
                              "timestamp_utc": r["timestamp_utc"]}
                             for r in self.store.history(limit=10)]}
@@ -130,9 +137,10 @@ class LiveService:
         path = root / "response_overlay.png" if name == "overlay" else root.parent / "frame.png"
         return path.read_bytes() if path.is_file() else None
 
-    def inspect(self, part_id, confirmed):
-        if not isinstance(part_id, str) or not PART_ID.fullmatch(part_id) or confirmed is not True:
-            raise ValueError("Enter a part ID (letters, digits, _ or -) and confirm one nut is in view")
+    def inspect(self, part_id, confirmed, source_kind):
+        if (not isinstance(part_id, str) or not PART_ID.fullmatch(part_id)
+                or confirmed is not True or source_kind not in ("physical_nut", "screen_photo")):
+            raise ValueError("Enter a new capture ID, choose the source, and confirm it is in view")
         with self.lock:
             if self.busy:
                 raise ValueError("An inspection is already running")
@@ -141,9 +149,9 @@ class LiveService:
             frame = self.camera.snapshot()
             self.busy = True
             self.latest = {"status": "PROCESSING", "part_id": part_id}
-        Thread(target=self._run, args=(part_id, frame), daemon=True).start()
+        Thread(target=self._run, args=(part_id, frame, source_kind), daemon=True).start()
 
-    def _run(self, part_id, frame):
+    def _run(self, part_id, frame, source_kind):
         import cv2
 
         root = self.args.runs_root / ("part_" + uuid4().hex)
@@ -163,7 +171,7 @@ class LiveService:
                        "--database", str(self.args.database),
                        "--output-dir", str(root / "result"),
                        "--camera-index", str(self.args.camera_index),
-                       "--operator-declared-part"]
+                       "--operator-declared-part" if source_kind == "physical_nut" else "--screen-photo-diagnostic"]
             result = subprocess.run(command, capture_output=True, text=True, timeout=180)
             record_path = root / "result" / "record.json"
             if record_path.is_file():
@@ -173,6 +181,7 @@ class LiveService:
                 if result.returncode and record["status"] == "ANALYZED":
                     raise RuntimeError("Inspection process failed after writing an analyzed record")
                 latest = {"status": record["status"], "part_id": part_id,
+                          "source_mode": record["source"]["mode"],
                           "inspection_id": record["inspection_id"], "grade": record["decision"]["grade"],
                           "reason": record["decision"]["reason"],
                           "action": record["decision"]["operator_action"],
@@ -199,6 +208,10 @@ class LiveService:
 
 def handler_for(service):
     class Handler(BaseHTTPRequestHandler):
+        def log_request(self, code='-', size='-'):
+            if not isinstance(code, int) or code >= 400:
+                super().log_request(code, size)
+
         def send(self, status, content, mime):
             self.send_response(status)
             self.send_header("Content-Type", mime)
@@ -251,7 +264,7 @@ def handler_for(service):
                 if not 0 < length <= 512:
                     raise ValueError("Invalid request size")
                 body = json.loads(self.rfile.read(length))
-                service.inspect(body.get("part_id"), body.get("confirmed"))
+                service.inspect(body.get("part_id"), body.get("confirmed"), body.get("source_kind"))
             except (ValueError, RuntimeError, TypeError, AttributeError) as error:
                 self.send(409, json.dumps({"error": str(error)}).encode(), "application/json")
                 return
@@ -274,7 +287,7 @@ def main():
         parser.error("Use an unprivileged port")
     args.database = args.database.resolve()
     args.runs_root = args.runs_root.resolve()
-    args.vision_python = args.vision_python.resolve()
+    args.vision_python = vision_executable(args.vision_python)
     args.model = args.model.resolve()
     args.grade_policy = args.grade_policy.resolve()
     camera = CameraFeed(args.camera_index)

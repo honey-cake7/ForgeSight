@@ -1,10 +1,16 @@
 # Jetson live camera inspection prototype
 
 The live page shows the C270 camera feed and captures one frame when the operator
-clicks **Capture & inspect**. That frame is passed to the frozen EfficientAD-S
+clicks **Capture & analyze**. That frame is passed to the frozen EfficientAD-S
 TorchScript model. The source image, two anomaly maps, overlay, ForgeGrade
-decision and immutable SQLite record are saved locally. A new part ID is
-required for each distinct part; video frames do not create extra inspections.
+decision and immutable SQLite record are saved locally. A new capture ID is
+required for each capture; video frames do not create extra inspections.
+
+The operator chooses **Dataset photo on a screen** or **Physical nut** before
+capture. The former is saved as `LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC` with
+`physical_part: false`. A photograph displayed on a monitor is a useful
+camera-path diagnostic, but glare, screen pixels and camera perspective change
+the image. It cannot establish physical-part accuracy or real-nut acceptance.
 
 The MVTec score threshold has not been calibrated for the physical camera.
 ForgeGrade therefore assigns `REVIEW` with reason `CAMERA_DOMAIN_UNVALIDATED`
@@ -15,8 +21,8 @@ operation remain unverified.
 
 ## Launch after copying this source to the Jetson vision directory
 
-Keep the C270 attached. Place one nut on a plain stable surface under even
-lighting. Frame the entire nut without hands in view. In a Jetson terminal:
+Keep the C270 attached. Aim it at the selected source under even lighting;
+make the nut or displayed photo fill most of the preview. In a Jetson terminal:
 
 ```sh
 cd /home/nvidia/.local/share/forgesight/vision_cpu_v1
@@ -30,8 +36,9 @@ of `<JETSON_IP>`, run this on the PC in a separate terminal:
 ssh -N -L 8770:127.0.0.1:8770 nvidia@<JETSON_IP>
 ```
 
-Open `http://127.0.0.1:8770` in the PC browser. Enter a distinct part ID,
-check the operator declaration, then click **Capture & inspect**. The camera
+Open `http://127.0.0.1:8770` in the PC browser, or open the same address in
+Firefox on the Jetson desktop. Choose the correct source mode, enter a new
+capture ID, confirm it is visible, then click **Capture & analyze**. The camera
 preview stays visible while the saved frame is analyzed. Stop the server with
 Ctrl+C. Local output is under `runs/live_inspections_v1/` in the Jetson vision
 directory; the SQLite file is `runs/live_inspections_v1/inspections.sqlite3`.
@@ -61,3 +68,9 @@ be completed before this launch can be called physical-inspection verified.
   room view through a temporary SSH tunnel. The scene contained no nut, so
   physical capture, model inference and SQLite persistence remain pending.
   See `manifests/jetson_live_ui_preflight_v1.json`.
+- The first operator click produced a correctly persisted `ERROR`/`REVIEW`
+  record because the launcher followed the vision venv's Python symlink to
+  the base interpreter, bypassing NumPy. The launcher now preserves the venv
+  path. A fresh Jetson no-part diagnostic completed model inference, saved
+  source map and overlay, and produced `REVIEW`; this still is not a nut
+  inspection. See `manifests/jetson_live_ui_venv_fix_v1.json`.

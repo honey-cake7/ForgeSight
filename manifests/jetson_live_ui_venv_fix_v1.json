@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "stage": "8_live_ui_runtime_repair_and_screen_photo_mode",
+  "status": "JETSON_NO_PART_MODEL_DIAGNOSTIC_VERIFIED_SCREEN_PHOTO_CAPTURE_PENDING",
+  "device": "NVIDIA Jetson Orin Nano 8GB, C270 camera, system Python 3.8 host and isolated Python 3.12 vision venv",
+  "first_operator_attempt": {
+    "part_id": "1_test",
+    "inspection_id": "93ba235e-1d2b-4412-acb4-1fb969068bcb",
+    "status": "ERROR",
+    "grade": "REVIEW",
+    "cause": "The live UI used Path.resolve on venv/bin/python, following its symlink to the base Python interpreter without NumPy",
+    "saved_in_sqlite": true,
+    "physical_nut_proof": false
+  },
+  "repair": "Use os.path.abspath on the vision venv executable path without dereferencing symlinks; keep system Python and both isolated environments unchanged",
+  "jetson_runtime_check": {
+    "venv_python_symlink": "venv/bin/python -> python3.12",
+    "venv_numpy_version": "2.5.4",
+    "model_sha256": "8766c41a51a5444f57f564134427bbd2d2d95dd6ec5ff08b24698f00f7f55dcd"
+  },
+  "fresh_no_part_diagnostic": {
+    "source": "Existing C270 room frame at runs/camera_diagnostic_02/frame.png; no nut",
+    "source_mode": "LIVE_CAMERA_DIAGNOSTIC_NO_PART",
+    "physical_part": false,
+    "inspection_id": "cd0259a7-ad5d-4f86-8f07-be37d88103cb",
+    "status": "ANALYZED",
+    "grade": "REVIEW",
+    "reason": "CAMERA_DOMAIN_UNVALIDATED",
+    "score": 96.21212768554688,
+    "model_forward_ms": 1647.0907990005799,
+    "source_map_sha256": "84a5fdd6316e0ec644190e100ab7dcae3c833199f63def3efc639136d2b45d52",
+    "overlay_sha256": "73b1d5b5e1f51077c09be383017d23197c532ad01cfbe0057b0a95ac9c7228ce",
+    "record_sha256_pc_copy": "7cf7b3a1dc474513133c332f38224a28dd4802393ce49b429dea6f926490a8f3",
+    "fresh_sqlite_summary": {"inspection_count": 1, "distinct_part_count": 1, "ANALYZED": 1, "ERROR": 0},
+    "timing_scope": "One model forward in a no-part diagnostic, not FPS, physical throughput, or camera-domain accuracy"
+  },
+  "screen_photo_mode": "New UI choice records displayed dataset photos as LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC with physical_part false; UI page rendered through the PC browser tunnel, but no screen photo has yet been captured",
+  "source_sha256_pc_matches_jetson": {
+    "forgesight/grade.py": "b7c9418c5294a021afd0b031e3dd7f21489f98d3e5157e21e13c7cb34582c3eb",
+    "forgesight/jetson_live_ui.py": "c4b68b00893705e7e2c98cc0d52b9df78d0f5467b0374f71a9c82381316865af",
+    "forgesight/vision_edge_live_once.py": "d8b6b4baae09dec645a5b5c0d70c4bfbff2471b2ea3e2603d06e25a116f5db21",
+    "forgesight/web/jetson_live.html": "c6f8fd1368b501471ff107c6a206d313b0035f7ac52cbdebfc718cc2e187b7f8",
+    "forgesight/web/jetson_live.css": "02108da83045a289fb267f8fe39253e76b73070ae001ffd30d490442859b9426",
+    "forgesight/web/jetson_live.js": "9148fa4c3e66198678dc37bdeb48463c11fffec8b8f0e44bfa41bd5e51ad31a5"
+  },
+  "private_evidence": {
+    "ignored_pc_record": "artifacts/edge/live_ui_jetson_01/venv_fix_record.json",
+    "ignored_pc_browser_screenshot": "artifacts/edge/live_ui_jetson_01/ui_screen_mode.png"
+  },
+  "not_verified": ["dataset photo displayed in C270 view", "physical nut", "camera-domain defect accuracy", "offline end-to-end run"]
+}
