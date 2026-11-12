@@ -1,0 +1,5 @@
+body{font:16px system-ui,sans-serif;max-width:760px;margin:40px auto;padding:0 20px;color:#182d36;background:#f3f5f1}
+main{background:white;border:1px solid #dfe5e3;border-radius:12px;padding:24px}
+h1{font-size:24px}h2{font-size:18px}p{line-height:1.6}
+button{font:inherit;background:#126b64;color:white;border:0;border-radius:6px;padding:10px 16px;cursor:pointer}
+button:disabled{opacity:.5}small{color:#62737a}#note{white-space:pre-line}

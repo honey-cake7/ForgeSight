@@ -696,3 +696,15 @@ chat formatting to the verified ARM runner because a user-role-only probe
 omitted the required G1 citation and was withheld. The system-role run
 generated the reviewed cited note. This is one synchronous advice proof;
 the bounded queue, UI delivery and full offline gate remain separate.
+
+## 041: Use a standard-library loopback page for the Jetson replay gate
+
+The Jetson's system Python 3.8 has no FastAPI, while the working vision and
+ExecuTorch environments are separate. A small `http.server` page reads the
+saved SQLite inspection, starts one bounded advisory worker, and exposes
+not-requested, pending, generated and unavailable states. It binds only to
+Jetson loopback; an SSH tunnel supplied PC browser access for verification.
+This avoids changing system Python or the Llama runtime. The page is a Stage 9
+replay proof, not the final camera operator application. A bounded native
+timeout was added to the existing controller so a real device failure can be
+observed without changing the authoritative grade.

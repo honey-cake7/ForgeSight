@@ -27,7 +27,10 @@ def main():
     parser.add_argument("--guidance", type=Path, required=True)
     parser.add_argument("--llama-root", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--llama-timeout-seconds", type=float, default=240)
     args = parser.parse_args()
+    if not 0 < args.llama_timeout_seconds <= 240:
+        parser.error("Llama timeout must be greater than zero and at most 240 seconds.")
     if args.output_dir.exists():
         parser.error("Choose a new advisory output directory.")
     if args.record.stat().st_size > 1024 * 1024:
@@ -75,11 +78,12 @@ def main():
                    "--assets", str(model_dir / "llama3_2_1b_assets.json"),
                    "--prompt", str(root / "prompt.txt"), "--system-prompt", str(root / "system.txt"),
                    "--output", str(root / "native"), "--threads", "2",
-                   "--max-new-tokens", "64", "--timeout", "240"]
+                   "--max-new-tokens", "64", "--timeout", str(args.llama_timeout_seconds)]
         started = time.perf_counter()
         try:
             report["runtime_requested"] = True
-            process = subprocess.run(command, capture_output=True, text=True, timeout=270)
+            process = subprocess.run(command, capture_output=True, text=True,
+                                     timeout=args.llama_timeout_seconds + 30)
             report["controller_runtime_wall_ms"] = (time.perf_counter() - started) * 1000
             native_path = root / "native/run.json"
             if process.returncode != 0 or not native_path.is_file():

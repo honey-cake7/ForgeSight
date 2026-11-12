@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "stage": "9.4_live_jetson_saved_replay_queue_to_ui",
+  "status": "JETSON_REPLAY_UI_GENERATION_AND_NATIVE_TIMEOUT_VERIFIED",
+  "device": "NVIDIA Jetson Orin Nano 8GB, aarch64, system Python 3.8 loopback UI, separate isolated ExecuTorch Llama runtime",
+  "inspection_id": "be71d850-208a-4f74-acdf-d235207d54ec",
+  "source_mode": "SAVED_IMAGE_REPLAY",
+  "physical_part_inspected": false,
+  "authoritative_grade": "REVIEW",
+  "success": {
+    "pending_visible_ms": 259.6581999969203,
+    "second_request_status": "BUSY",
+    "status_get_while_pending_ms": 124.36220000381581,
+    "generated_visible_ms": 21916.073299973505,
+    "advice_status": "GENERATED_REQUIRES_HUMAN_REVIEW",
+    "native_process_wall_seconds": 20.548538062999796,
+    "sampled_peak_child_rss_kib": 1186168,
+    "inspection_and_sqlite_unchanged": true,
+    "browser_page_errors": 0,
+    "browser_external_requests": 0
+  },
+  "timeout": {
+    "native_deadline_seconds": 1,
+    "native_completion_reason": "TIMEOUT",
+    "native_process_wall_seconds": 1.0158948899997995,
+    "pending_visible_ms": 100.93570000026375,
+    "second_request_status": "BUSY",
+    "status_get_while_pending_ms": 13.076400005957112,
+    "unavailable_visible_ms": 2069.798400014406,
+    "advice_status": "ADVICE_UNAVAILABLE",
+    "note": null,
+    "inspection_and_sqlite_unchanged": true,
+    "browser_page_errors": 0,
+    "browser_external_requests": 0
+  },
+  "sha256_pc_matches_jetson": {
+    "forgesight/assist_jetson_replay_once.py": "8be9024ce2eb31dffaf9170fd16096a19c01f134d1a6004c316f30e0c7800ac4",
+    "forgesight/assist_jetson_ui.py": "12bdb04f8fc1668bb4d383cbcc0b90635047c987f45c455f3642211fa7565bf6",
+    "forgesight/assist_display.py": "fcc2549c7220c11e515fd7409ce599b3267d8354e057c37f4b24696b4418674f",
+    "forgesight/web/jetson_advice.html": "414fcd3c8b0bfc7f4aa0ae78719c22796eb8c7b1d99df035db16d13da0a759d7",
+    "forgesight/web/jetson_advice.js": "3f7d61fcdbff49e03c7dd8c0bd5b04f5c1a971b052a280bca428e4c1c62e55ce",
+    "forgesight/web/jetson_advice.css": "38e70ed5d9af09b8902efe960f38348e1fdf83f26ba7c9f18410f2b24752878b",
+    "success_advice_report.json": "6abdcacbba396f693c3087f7303a15a6e369c9bade767313fbbdccd1b633745d",
+    "timeout_advice_report.json": "7a548cd5fd5f9040f78699e93adac20fa2b071ec2a0ea0965c87931fc30aacc1",
+    "timeout_native_run.json": "1ec84b91623796b6e003f69dc005271ee33f7e97e8991dfc1407c016b3cc7b5d"
+  },
+  "private_browser_artifacts": {
+    "success_report": "artifacts/assist_stage9_jetson_v1/ui_browser_success/browser_report.json",
+    "success_report_sha256": "57b20d8c46eb21ab9452a55602f7062e6bbc420a248f3aae578a887ebd26e52d",
+    "timeout_report": "artifacts/assist_stage9_jetson_v1/ui_browser_timeout/browser_report.json",
+    "timeout_report_sha256": "ab1d70dd46a2b9163660607e7680a912761fae5826bd2edc3accf3cfc73ce25b",
+    "success_screenshot": "artifacts/assist_stage9_jetson_v1/ui_browser_success/jetson_ui.png",
+    "timeout_screenshot": "artifacts/assist_stage9_jetson_v1/ui_browser_timeout/jetson_ui.png"
+  },
+  "test_commands": ["python -B -m unittest tests.test_assist_jetson_ui tests.test_assist_display tests.test_assist_queue -q: 5 passed", "Chromium through SSH tunnel: success and timeout browser checks passed"],
+  "not_verified": ["physical camera event", "physical nut inspection", "continuous capture throughput while Llama runs", "network-disconnected operation", "approved factory guidance"],
+  "next_step": "Begin a Stage 10 network-disconnected saved-replay pilot while keeping the physical-part camera gate open"
+}

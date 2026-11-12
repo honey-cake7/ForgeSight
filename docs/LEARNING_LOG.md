@@ -694,3 +694,13 @@ missing-runtime trial saved an unavailable status instead. In both cases the
 original `REVIEW` decision and SQLite row stayed unchanged. This is a first
 device generation from inspection evidence, not proof of useful factory
 diagnosis, asynchronous delivery or offline operation.
+
+## Stage 9.4: keep a slow advisor outside the inspection decision
+
+The Jetson page returned the saved ForgeGrade decision before Llama finished.
+One worker ran the real ExecuTorch controller; another request got `BUSY`.
+The browser saw pending then a cited note, and status reads still worked.
+With a one-second native deadline, the worker recorded `TIMEOUT` and the page
+showed advice unavailable without touching the SQLite inspection. The visible
+state must come from the worker/report, while the grade remains independent.
+These runs use a saved image and do not measure physical capture throughput.

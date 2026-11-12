@@ -2,8 +2,22 @@
 
 ## Current stage
 
-**Stage 9.3 read-only saved-replay advisory display VERIFIED in a PC browser;
-live Jetson UI delivery PENDING.** The operator API reads a separate local
+**Stage 9.4 saved-replay queue-to-UI delivery VERIFIED on the physical Jetson;
+physical camera event PENDING.** A loopback-only page on Jetson system Python
+used the existing bounded queue and separate ExecuTorch controller. Chromium
+through an SSH tunnel observed `PENDING` then a real cited note; a second
+request was refused as `BUSY`, and a status read during generation returned
+in 124 ms. A separate one-second native deadline recorded `TIMEOUT`; the page
+showed `ADVICE_UNAVAILABLE` with no note in 2.07 s. Both runs kept the original
+`REVIEW` grade and SQLite record unchanged. See
+`manifests/jetson_advice_ui_replay_v1.json`. This is a saved MVTec image,
+not camera capture, physical-nut inspection or offline-disconnected proof.
+Next: a Stage 10 disconnected saved-replay pilot; the physical-part gate stays
+open until a nut is available.
+
+### Earlier checkpoint
+
+**Stage 9.3 read-only saved-replay advisory display VERIFIED in a PC browser.** The operator API reads a separate local
 advice report by inspection ID and checks its record/decision hashes before
 display. Chromium showed the actual copied Jetson `[E1][G1]` note beside the
 unchanged `REVIEW` decision and deterministic action, with no page errors or

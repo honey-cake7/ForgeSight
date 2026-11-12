@@ -321,3 +321,35 @@ vision or Llama inference happened in this browser check. See
 Live queue-to-UI delivery and actual timeout/recovery on Jetson remain open.
 A directory with no completed report stays `PENDING`; the next live integration
 must resolve stale jobs to `ADVICE_UNAVAILABLE` under a measured deadline.
+
+## Stage 9.4 live Jetson replay queue and status page
+
+The isolated Jetson vision directory now has a small Python 3.8 standard-library
+loopback page (`forgesight.assist_jetson_ui`). It reads the existing immutable
+SQLite replay record, starts the existing one-worker queue on request, and
+polls a separate advice report. It never changes the grade. The Llama
+ExecuTorch environment remains separate and unchanged. The page binds to
+`127.0.0.1` and was reached from the PC only through an SSH tunnel.
+
+From the Jetson vision directory, the successful replay command was:
+
+```sh
+/usr/bin/python3 -B -m forgesight.assist_jetson_ui --record runs/dev_bent_017_replay_02/record.json --database inspections_replay_v2.sqlite3 --guidance guidance/prototype_inspection_v1.json --llama-root /home/nvidia/.local/share/forgesight/llama_cpu_v1 --advice-root runs/ui_advice_success_01 --port 8768
+```
+
+Use a new `--advice-root` for another run. A second isolated run used
+`--advice-root runs/ui_advice_timeout_01 --llama-timeout-seconds 1 --port 8769`.
+The controller forwards that deadline to the native runner, which recorded
+`completion_reason: TIMEOUT` and killed its worker process group. The
+controller saved `ADVICE_UNAVAILABLE`; the page showed no note. Both reports
+confirmed the original inspection and SQLite row were unchanged.
+
+Through Chromium, the successful run showed pending in 260 ms, refused an
+overlapping request as `BUSY`, returned a status read in 124 ms while pending,
+and displayed the real cited note in 21.916 s. The timeout run showed pending
+in 101 ms, answered a status read in 13 ms, and displayed unavailable in
+2.070 s. Both had zero page errors and external browser requests. These are
+single observed events, not FPS or throughput estimates. The source remains a
+saved development-preview image; physical camera capture, a real nut, and a
+network-disconnected run remain open. Evidence and hashes are in
+`manifests/jetson_advice_ui_replay_v1.json`.

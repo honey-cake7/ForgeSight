@@ -2,6 +2,14 @@
 
 No challenge requirement is marked satisfied by repository setup alone.
 
+Stage 9.4 links the bounded queue to a loopback status page running on the
+physical Jetson. Browser proof through an SSH tunnel observed a real
+ExecuTorch-generated note and a separate native `TIMEOUT` that left advice
+unavailable. Both paths kept the original `REVIEW` inspection unchanged; the
+page stayed responsive to status reads while Llama ran. This is saved-image
+replay with connected hardware, so physical camera inspection and full offline
+operation remain unverified. See `manifests/jetson_advice_ui_replay_v1.json`.
+
 Stage 9.3 displays the copied Jetson saved-replay advisory in a local PC
 browser as a separate, read-only panel. The API checks the report against the
 immutable inspection and decision hashes. The browser showed the real note
