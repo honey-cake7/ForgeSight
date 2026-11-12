@@ -2,6 +2,17 @@
 
 No challenge requirement is marked satisfied by repository setup alone.
 
+Stage 10.1 ran one saved MVTec development image through frozen EfficientAD,
+ForgeGrade, SQLite and ExecuTorch Llama on the physical Jetson while its Wi-Fi
+was disconnected. Network snapshots before and after each inference step showed
+no upstream route or Wi-Fi/ethernet IPv4 address; a timed recovery watchdog was
+scheduled, Wi-Fi later reconnected, and the timer was canceled. This is a
+single replay pilot, not the required physical camera, normal/defective/uncertain
+case set, full UI flow, p50/p95, throughput or complete offline acceptance.
+The nested native runner still contains a historical default offline field;
+the external network report is the evidence for this run. See
+`manifests/jetson_offline_saved_replay_pilot_v1.json`.
+
 Stage 9.4 links the bounded queue to a loopback status page running on the
 physical Jetson. Browser proof through an SSH tunnel observed a real
 ExecuTorch-generated note and a separate native `TIMEOUT` that left advice

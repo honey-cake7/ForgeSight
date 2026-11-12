@@ -704,3 +704,13 @@ With a one-second native deadline, the worker recorded `TIMEOUT` and the page
 showed advice unavailable without touching the SQLite inspection. The visible
 state must come from the worker/report, while the grade remains independent.
 These runs use a saved image and do not measure physical capture throughput.
+
+## Stage 10.1: check the network boundary outside model reports
+
+The old Llama runner prints a connected-device default offline field even when
+called during a later disconnected run. Its field is historical metadata, not
+this run's network measurement. The detached pilot sampled NetworkManager,
+Wi-Fi/ethernet addresses and default route around the actual vision and advice
+processes. Both produced local results with no upstream route in those
+snapshots, then Wi-Fi returned through the recovery path. One replay cannot
+support accuracy, throughput or camera claims.

@@ -1,8 +1,35 @@
 # Jetson Llama runtime — Substeps 2.8 and 2.9
 
 Status: **Llama 3.2 1B generated real text through native ExecuTorch on the
-actual Orin Nano** in Substep 2.10. This is one connected-device functional run;
-camera inspection, integrated advice and disconnected operation remain open.
+actual Orin Nano** in Substep 2.10. Stage 10.1 later ran one saved-image
+vision-plus-advice replay while Wi-Fi was disconnected. See
+`manifests/jetson_offline_saved_replay_pilot_v1.json`; full physical-camera
+offline acceptance remains open.
+
+## Stage 10.1 disconnected saved-image pilot
+
+`scripts/jetson_offline_replay_pilot.py` checked the local image/model hashes
+and sole Wi-Fi route, scheduled a three-minute systemd reconnect watchdog,
+disconnected `wlan0`, ran the existing vision replay and advice controller as
+the Jetson user, sampled network state before and after each, and restored
+Wi-Fi. It used a fresh SQLite database and output directory. No Python package
+was installed or changed. The device and copied reports agree by SHA-256.
+The old native runner's default `offline_status` is not an observation for this
+pilot; the separate `offline_report.json` records the network evidence. This
+does not establish camera or full UI operation without a network.
+
+The device-side preflight and detached launch used these commands from the
+private vision directory (the launch briefly removes SSH access):
+
+```sh
+cd /home/nvidia/.local/share/forgesight/vision_cpu_v1
+/usr/bin/python3 -B jetson_offline_replay_pilot.py --prefix "$PWD" --llama-root /home/nvidia/.local/share/forgesight/llama_cpu_v1 --output-dir "$PWD/runs/offline_pilot_01" --preflight-only
+sudo systemd-run --unit=forgesight-offline-pilot-v1 --collect /usr/bin/python3 "$PWD/jetson_offline_replay_pilot.py" --prefix "$PWD" --llama-root /home/nvidia/.local/share/forgesight/llama_cpu_v1 --output-dir "$PWD/runs/offline_pilot_01"
+```
+
+The script refuses an existing output directory and refuses to disconnect if
+the watchdog cannot be scheduled. Its transient unit names are for this one
+pilot; use fresh names and output for a repeat after checking systemd state.
 
 ## Actual Llama generation: Substep 2.10
 

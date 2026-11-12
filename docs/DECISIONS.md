@@ -708,3 +708,15 @@ This avoids changing system Python or the Llama runtime. The page is a Stage 9
 replay proof, not the final camera operator application. A bounded native
 timeout was added to the existing controller so a real device failure can be
 observed without changing the authoritative grade.
+
+## 042: Use a detached offline pilot with independent Wi-Fi recovery
+
+The Stage 10 first gate uses a fresh saved-image replay because no physical nut
+is available. The Jetson is reached only through Wi-Fi, so an in-session
+disconnect would end SSH before recovery. A detached transient system service
+schedules a separate three-minute reconnect timer before dropping `wlan0`.
+The service runs vision and advice as the unprivileged Jetson user, restores
+Wi-Fi in `finally`, and cancels the timer after verifying a returned route.
+The watchdog provides a recovery path if the pilot crashes. A fresh database
+keeps earlier proof unchanged. The result is replay-only evidence and does not
+close the physical camera or full Stage 10 gates.

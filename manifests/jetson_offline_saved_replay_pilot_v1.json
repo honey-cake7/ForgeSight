@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "stage": "10.1_disconnected_saved_image_pilot",
+  "status": "DISCONNECTED_SAVED_REPLAY_VISION_AND_ADVICE_VERIFIED_FULL_STAGE_10_OPEN",
+  "scope": "One previously used MVTec metal_nut development-preview image on the physical Jetson, in fresh processes and a fresh SQLite database; no physical nut or camera event",
+  "device": "NVIDIA Jetson Orin Nano 8GB, aarch64",
+  "source": {
+    "dataset_path": "test/bent/017.png",
+    "role": "development_preview",
+    "image_sha256": "b49cc898143c46a8c3a8697411d04a078b36f60f4798ccc68aea33ea8fcac026",
+    "source_mode": "SAVED_IMAGE_REPLAY",
+    "physical_part_inspected": false,
+    "new_accuracy_evidence": false
+  },
+  "network": {
+    "before": "wlan0 connected with IPv4 and default route; eth0 had no IPv4",
+    "during_vision_start": "wlan0 disconnected; no Wi-Fi or ethernet IPv4 and no default route",
+    "after_vision": "wlan0 disconnected; no Wi-Fi or ethernet IPv4 and no default route",
+    "after_advice": "wlan0 disconnected; no Wi-Fi or ethernet IPv4 and no default route",
+    "recovery_watchdog_scheduled_seconds": 180,
+    "watchdog_schedule_returncode": 0,
+    "disconnect_returncode": 0,
+    "reconnect_returncode": 0,
+    "after_recovery": "wlan0 connected with IPv4 and default route",
+    "watchdog_cancel_returncode": 0,
+    "sampling_limit": "Interface and route snapshots bound the two inference steps; continuous packet tracing was not performed"
+  },
+  "vision": {
+    "inspection_id": "da28495d-3c01-4308-926a-fe6969e1409a",
+    "status": "PERSISTED_SAVED_IMAGE_REPLAY",
+    "model": "EfficientAD-S frozen TorchScript CPU",
+    "model_sha256": "8766c41a51a5444f57f564134427bbd2d2d95dd6ec5ff08b24698f00f7f55dcd",
+    "candidate": "ANOMALY_CANDIDATE",
+    "score": 0.6828088760375977,
+    "defect_type": "unknown",
+    "authoritative_grade": "REVIEW",
+    "model_load_ms": 313.9454749998549,
+    "model_forward_ms": 2683.343411000351,
+    "vision_child_wall_seconds": 21.200009178000073,
+    "replay_to_sqlite_commit_ms": 19332.353630000398,
+    "vision_process_peak_rss_kib": 436600,
+    "fresh_copied_sqlite_exact_record_readback": true
+  },
+  "advice": {
+    "status": "JETSON_ADVICE_GENERATED_REQUIRES_HUMAN_REVIEW",
+    "model": "Llama 3.2 1B Instruct through ExecuTorch XNNPACK CPU",
+    "inspection_and_sqlite_unchanged": true,
+    "generated_note_has_evidence_ids": ["E1", "G1"],
+    "native_process_wall_seconds": 20.659904746000393,
+    "controller_child_wall_seconds": 21.019616110999777,
+    "sampled_peak_child_rss_kib": 1182168
+  },
+  "legacy_inner_offline_fields": {
+    "native_offline_status": "NOT_VERIFIED_CONNECTED_WIFI",
+    "controller_offline_disconnection_verified": false,
+    "interpretation": "Hardcoded defaults from earlier single-run code; they were not updated by this pilot. The separate network report records this run's actual connection state."
+  },
+  "sha256_pc_matches_jetson": {
+    "scripts/jetson_offline_replay_pilot.py": "d19d538fa14f8a25e6672defb6ec9bad2119e6b4343aa762a0f9155d0a206fe8",
+    "offline_report.json": "deceb97027954f0cd53271598799a7843fb3cc7c1a18d6ae4cfc3b43e5e38124",
+    "vision/record.json": "b3e67ac21f6e605e28ca5575ad951e45dce3b708d8d1557c0ede42e284d0e60b",
+    "vision/run_report.json": "413ede5882663690087944cef74190cf0b673203ad1b4fdd2838f99d322c44be",
+    "advice/advice_report.json": "d8cd420d0430416039813ee91686295655ce05100f1bdbaa0960a954c2a646a6",
+    "advice/native/run.json": "eccfedf84eb0c97bf4ec0a2a341c357598023a5b1910e8c33686acc488c86422"
+  },
+  "private_evidence": {
+    "jetson": "/home/nvidia/.local/share/forgesight/vision_cpu_v1/runs/offline_pilot_01",
+    "ignored_pc_copy": "artifacts/offline_stage10_jetson_v1/offline_pilot_01"
+  },
+  "focused_test": "WSL python3 -B -m unittest tests.test_jetson_offline_pilot -q: 1 passed",
+  "not_verified": ["physical nut camera inspection", "normal and uncertain cases during disconnected operation", "full operator UI during disconnection", "continuous network observation", "p50/p95 latency", "distinct parts per minute", "camera failure and restart recovery", "complete Stage 10 acceptance"],
+  "next_step": "Add continuous network observation and multiple saved-case offline checks, then complete physical camera acceptance when a nut is available"
+}

@@ -1,5 +1,14 @@
 # Hardware evidence
 
+Stage 10.1 ran one fresh-process saved-image replay while the physical Jetson's
+Wi-Fi was disconnected. Network snapshots around vision and ExecuTorch advice
+showed no upstream route or Wi-Fi/ethernet IPv4 address; Wi-Fi was restored and
+the recovery timer canceled. EfficientAD first forward took 2,683 ms with
+436,600 KiB process peak RSS; native Llama child wall was 20.660 s with
+1,182,168 KiB sampled peak RSS. These are separate single-run measurements,
+not p50/p95, simultaneous peak use, camera throughput or complete offline
+acceptance. See `manifests/jetson_offline_saved_replay_pilot_v1.json`.
+
 Stage 9.1 ran the existing Llama 3.2 1B PTE through ExecuTorch/XNNPACK on the
 same Jetson for the saved nut replay. With two CPU threads, one run generated
 33 tokens from 82 prompt tokens; native load/inference took 3.041/1.955 s,

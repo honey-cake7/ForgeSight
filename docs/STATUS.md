@@ -2,8 +2,23 @@
 
 ## Current stage
 
-**Stage 9.4 saved-replay queue-to-UI delivery VERIFIED on the physical Jetson;
-physical camera event PENDING.** A loopback-only page on Jetson system Python
+**Stage 10.1 Wi-Fi-disconnected saved-image replay pilot VERIFIED on the
+physical Jetson; full Stage 10 acceptance PENDING.** A detached service
+scheduled an independent three-minute reconnect watchdog, disconnected
+`wlan0`, then ran the frozen EfficientAD replay, ForgeGrade, SQLite save, and
+ExecuTorch Llama advisory in fresh processes. Network snapshots before and
+after both inference steps showed Wi-Fi disconnected, no Wi-Fi/ethernet IPv4
+address and no default route. The saved grade was `REVIEW`; a fresh SQLite read
+matched the exact record. Wi-Fi reconnected and the timer was canceled. See
+`manifests/jetson_offline_saved_replay_pilot_v1.json`. This is one previously
+used development image, without physical camera capture, normal/uncertain
+cases, throughput distributions or a full UI run. The inner runner's old
+default offline field remains unverified; the separate network snapshots are
+the evidence for this pilot.
+
+### Earlier checkpoint
+
+**Stage 9.4 saved-replay queue-to-UI delivery VERIFIED on the physical Jetson.** A loopback-only page on Jetson system Python
 used the existing bounded queue and separate ExecuTorch controller. Chromium
 through an SSH tunnel observed `PENDING` then a real cited note; a second
 request was refused as `BUSY`, and a status read during generation returned
@@ -12,8 +27,7 @@ showed `ADVICE_UNAVAILABLE` with no note in 2.07 s. Both runs kept the original
 `REVIEW` grade and SQLite record unchanged. See
 `manifests/jetson_advice_ui_replay_v1.json`. This is a saved MVTec image,
 not camera capture, physical-nut inspection or offline-disconnected proof.
-Next: a Stage 10 disconnected saved-replay pilot; the physical-part gate stays
-open until a nut is available.
+The physical-part gate stays open until a nut is available.
 
 ### Earlier checkpoint
 
