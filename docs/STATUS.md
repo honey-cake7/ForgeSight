@@ -7,11 +7,13 @@ lists measured Jetson results and every remaining acceptance gate. Stage 10
 is **INCOMPLETE**. The user now has a physical nut, but its camera capture,
 model response, UI display and offline acceptance have not been verified.
 
-The [Jetson live camera UI prototype](JETSON_LIVE_UI.md) now exists in source.
-PC/WSL checks exercised a previously captured no-part Jetson frame through
-EfficientAD, ForgeGrade and SQLite, and served the new loopback page. The
-physical Jetson was unreachable at both previously known IP addresses during
-this step, so live device operation remains **NOT VERIFIED**.
+The [Jetson live camera UI prototype](JETSON_LIVE_UI.md) was deployed to the
+physical Jetson. Its C270 preview and loopback page worked; a PC Edge browser
+rendered the room view through SSH. The scene contained no nut, so physical
+nut capture, model inference, ForgeGrade and SQLite inspection remain **NOT
+VERIFIED**. PC/WSL checks separately exercised a previously captured no-part
+Jetson frame through those components. See
+`manifests/jetson_live_ui_preflight_v1.json`.
 
 **Stage 10.7 disconnected ExecuTorch advisory latency series VERIFIED on the
 physical Jetson; full Stage 10 acceptance PENDING.** Eight fresh-process

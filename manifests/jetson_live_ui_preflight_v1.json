@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "stage": "8_live_physical_part_ui_preflight",
+  "status": "LIVE_CAMERA_PREVIEW_AND_BROWSER_RENDER_VERIFIED_PHYSICAL_NUT_INSPECTION_PENDING",
+  "device": "NVIDIA Jetson Orin Nano 8GB, system Python 3.8, Logitech C270 at /dev/video0",
+  "deployment": "Six source files copied to the existing isolated vision_cpu_v1 directory; existing venv, model, system packages and Llama runtime unchanged",
+  "source_sha256_pc_matches_jetson": {
+    "forgesight/grade.py": "a35c439a26d08fdb5facb3ce251c6a1b9b8bfe784bf98e3e139cccaf805f9a21",
+    "forgesight/jetson_live_ui.py": "0958c4cd42729b2a608d216ab8a79d947795fee8fed3c984894dbac09f55d438",
+    "forgesight/vision_edge_live_once.py": "10512c8e42acb975da87a40a70f8cf300b51f8d5f26c05b11a94ed47d18b16e5",
+    "forgesight/web/jetson_live.html": "32174afe7c855e47533f022d94a4c60fa033e4db5542032bb55cd983614002d6",
+    "forgesight/web/jetson_live.css": "42ff488ad9c5a49f9233bdb71b8fd2a4a262401959fd32d12ead03dfbea22ace",
+    "forgesight/web/jetson_live.js": "344e232dc25d1f8243bb4e4cd34d15054e7f050323d8bf13742a97469e50963c"
+  },
+  "frozen_model_sha256_jetson": "8766c41a51a5444f57f564134427bbd2d2d95dd6ec5ff08b24698f00f7f55dcd",
+  "jetson_http": {
+    "page_status": 200,
+    "frame_jpeg_status": 200,
+    "camera_ready": true,
+    "history_count": 0,
+    "binding": "127.0.0.1:8770"
+  },
+  "pc_browser": "Microsoft Edge rendered the Jetson page through a temporary SSH localhost tunnel after JavaScript loaded; the live room view was visible",
+  "private_evidence": {
+    "ignored_pc_preview": "artifacts/edge/live_ui_jetson_01/preview.jpg",
+    "preview_sha256": "77f0c1a484eccf5c843ea9dd7cf9337c0163c5ed871bc2779977bce9a0fc401e",
+    "ignored_pc_browser_screenshot": "artifacts/edge/live_ui_jetson_01/ui_after_load.png",
+    "browser_screenshot_sha256": "e11aaa92d84057bbd5b8543be0fa13f742371891d8edc27c4f465bbb24f65458"
+  },
+  "scene_review": "Room and workstations; no nut was visible in the camera frame. The operator was asked to point the C270 at the nut on a plain lit surface.",
+  "not_verified": [
+    "physical nut capture",
+    "EfficientAD inference on a newly captured physical nut",
+    "ForgeGrade and SQLite physical-part record",
+    "camera-domain defect accuracy or defect type",
+    "offline complete application"
+  ]
+}

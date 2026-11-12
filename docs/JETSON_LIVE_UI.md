@@ -42,7 +42,7 @@ The source files needed in that directory are `forgesight/grade.py`,
 `venv/bin/python`, `efficientad_s_calibrated.ts`, and
 `configs/forgegrade_v1.json` are reused. The Llama runtime and system Python
 packages are unchanged. An SSH transfer and physical Jetson browser test must
-be completed before this launch can be called device verified.
+be completed before this launch can be called physical-inspection verified.
 
 ## Current proof
 
@@ -55,6 +55,9 @@ be completed before this launch can be called device verified.
   contained exactly one row.
 - The local loopback page, script and state endpoint returned HTTP 200. With
   no WSL camera attached, state correctly reported camera unavailable.
-- The real Jetson was unreachable at both previously known IP addresses when
-  this feature was prepared. Device deployment, live physical capture and
-  browser rendering are pending.
+- The six new source files were copied to the actual Jetson with matching
+  SHA-256 hashes. The UI started under system Python 3.8, its loopback page
+  and frame returned HTTP 200, and a PC Edge browser displayed the live C270
+  room view through a temporary SSH tunnel. The scene contained no nut, so
+  physical capture, model inference and SQLite persistence remain pending.
+  See `manifests/jetson_live_ui_preflight_v1.json`.
