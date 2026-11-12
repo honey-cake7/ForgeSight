@@ -52,7 +52,7 @@ camera, vision and Llama pressure or establish absence of thermal throttling.
 
 | Roadmap gate | Current evidence gap |
 | --- | --- |
-| Physical nut camera inspection | No nut or fixed inspection surface has been presented. The C270 room frame is a diagnostic, not an inspection. |
+| Physical nut camera inspection | The user now has a nut, but no physical nut has yet been presented to the C270 and inspected. The earlier C270 room frame is a diagnostic, not an inspection. |
 | Disconnected complete application from cold start | Components ran locally in separate proven paths; one physical camera event through grade, SQLite, operator UI and ExecuTorch while disconnected has not run. |
 | Normal, defective and uncertain real cases | Saved MVTec references exercised PASS and REVIEW. They are repeated known images; real camera-domain outcomes remain unknown. |
 | Distinct parts per minute and physical false positives | Zero distinct physical parts were inspected; no rate or field false-positive estimate is valid. The PC benchmark result is a different domain and cannot fill this gate. |

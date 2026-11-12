@@ -102,6 +102,14 @@ class GradeTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             validate_policy(self.policy)
 
+    def test_camera_domain_cannot_inherit_benchmark_pass_or_reject(self):
+        self.record['source']['mode'] = 'LIVE_CAMERA'
+        self.assertEqual(self.grade()['reason'], 'CAMERA_DOMAIN_UNVALIDATED')
+        self.assertEqual(self.grade()['grade'], 'REVIEW')
+        self.anomaly(width=200, height=200)
+        self.assertEqual(self.grade()['reason'], 'CAMERA_DOMAIN_UNVALIDATED')
+        self.assertEqual(self.grade()['grade'], 'REVIEW')
+
 
 if __name__ == '__main__':
     unittest.main()

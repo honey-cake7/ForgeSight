@@ -92,6 +92,10 @@ def grade_record(record: dict, policy: dict) -> dict:
 
     if record.get('status') != 'ANALYZED':
         return review('INSPECTION_ERROR_OR_INCOMPLETE')
+    if record.get('source', {}).get('mode') in ('LIVE_CAMERA', 'LIVE_CAMERA_DIAGNOSTIC_NO_PART'):
+        return review('CAMERA_DOMAIN_UNVALIDATED',
+                      score=record.get('score'),
+                      response_area_px=(record.get('geometry') or {}).get('total_area_px'))
     try:
         model, score = record['model'], record['score']
         if (model['checkpoint_sha256'] != policy['checkpoint_sha256']
