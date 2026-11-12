@@ -2,6 +2,10 @@
 
 ## Current stage
 
+The consolidated [Stage 10 verification ledger](STAGE10_VERIFICATION.md)
+lists measured Jetson results and every remaining acceptance gate. Stage 10
+is **INCOMPLETE** because the user has no physical nut for the camera proof.
+
 **Stage 10.7 disconnected ExecuTorch advisory latency series VERIFIED on the
 physical Jetson; full Stage 10 acceptance PENDING.** Eight fresh-process
 Llama advisories from the same saved REVIEW inspection all completed with
