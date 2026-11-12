@@ -101,7 +101,9 @@ class LiveHttpTests(unittest.TestCase):
         self.assertEqual(self.service.requests, [])
 
     def test_original_png_upload_route_and_size_guard(self):
-        self.assertIn(b"Analyze Jetson copy", urlopen(self.base).read())
+        page = urlopen(self.base).read()
+        self.assertNotIn(b"Test an original MVTec defect image", page)
+        self.assertIn(b"Upload your own test PNG", page)
         request = Request(self.base + "/api/replay", method="POST", data=b"png-fixture",
                           headers={"Origin": self.base, "Content-Type": "image/png",
                                    "X-Replay-Id": "BENT-001",
@@ -122,7 +124,7 @@ class LiveHttpTests(unittest.TestCase):
         self.assertEqual(len(self.service.requests), 1)
 
     def test_jetson_local_replay_route_needs_no_file_upload(self):
-        self.assertIn(b"Analyze Jetson copy", urlopen(self.base).read())
+        self.assertNotIn(b"Analyze Jetson copy", urlopen(self.base).read())
         request = Request(self.base + "/api/replay-local", method="POST",
                           data=json.dumps({"replay_id": "BENT-LOCAL-001",
                                            "dataset_path": "test/bent/017.png"}).encode(),
