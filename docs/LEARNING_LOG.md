@@ -1,5 +1,16 @@
 # Learning log
 
+## Stage 10.6: Separate model latency from whole replay latency
+
+The same Jetson run measured model forward, replay through SQLite commit, and
+fresh process wall time independently. These differ because image decode,
+Python/Torch startup, map creation and storage add work around the forward.
+Percentiles must name their sample count and interpolation rule. Repeating
+two benchmark images improves timing evidence but supplies zero distinct
+physical parts, so it cannot establish parts per minute or field accuracy.
+Thermal sensor ranges are observations, not evidence that throttling cannot
+occur under a longer workload.
+
 ## Stage 10.5: Test camera-open failure without altering hardware
 
 The V4L2 OpenCV build used by this project accepted camera indices; a named

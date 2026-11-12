@@ -1,5 +1,14 @@
 # Decisions and unresolved choices
 
+## Stage 10.6: Measure the existing cold replay path without throughput claims
+
+Repeat one fitting normal image and one already exposed development image ten
+times each, using fresh processes and a fresh SQLite database. Report
+interpolated p50/p95 for model forward, replay-to-commit and process wall
+separately. Sample memory and thermal sensors, but leave distinct physical
+parts per minute and camera-domain accuracy unverified. Keep Wi-Fi recovery
+independent of the measurement process.
+
 ## Stage 10.5: Keep camera failure injection reversible
 
 Use an absent V4L2 camera index, then the existing C270 index 0, to test

@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "stage": "10.6_disconnected_saved_replay_vision_latency",
+  "status": "DISCONNECTED_SAVED_REPLAY_VISION_LATENCY_SERIES_VERIFIED_FULL_STAGE_10_OPEN",
+  "device": "NVIDIA Jetson Orin Nano 8GB, aarch64",
+  "scope": "20 cold-process saved-image EfficientAD/ForgeGrade/SQLite replays: ten repetitions each of one fitting normal image and one exposed development anomaly image",
+  "source_mode": "SAVED_IMAGE_REPLAY",
+  "physical_part_inspected": false,
+  "distinct_physical_parts": 0,
+  "new_accuracy_evidence": false,
+  "all_replays_completed": 20,
+  "grade_counts": {"PASS": 10, "REVIEW": 10},
+  "fresh_sqlite_exact_record_readbacks": 20,
+  "percentile_method": "linear interpolation at (n-1)*p on 20 observed values",
+  "model_forward_ms": {"n": 20, "min": 1556.5794760004792, "p50": 1584.756025000388, "p95": 1683.6620243497239, "max": 1850.5215320001298},
+  "replay_to_sqlite_commit_ms": {"n": 20, "min": 7419.182282999827, "p50": 7499.053174000437, "p95": 7677.373785651616, "max": 7747.2288370008755},
+  "cold_replay_process_wall_ms": {"n": 20, "min": 7932.7976100030355, "p50": 8015.000103501734, "p95": 8275.996641550046, "max": 8366.835101001925},
+  "vision_process_peak_rss_kib": {"n": 20, "min": 434676, "p50": 436336.0, "p95": 437163.2, "max": 437376},
+  "minimum_sampled_system_mem_available_kib": 4263332,
+  "thermal_observations_celsius": {
+    "CPU-therm": {"min": 47.468, "max": 49.812, "samples": 162},
+    "GPU-therm": {"min": 47.687, "max": 49.437, "samples": 162},
+    "tj-therm": {"min": 47.937, "max": 49.812, "samples": 162}
+  },
+  "network": {
+    "samples": 162,
+    "maximum_observed_sample_gap_seconds": 1.0010000000000048,
+    "all_samples_no_wifi_or_ethernet_ipv4_or_default_route": true,
+    "disconnected_immediately_before_recovery": true,
+    "wifi_restored_with_default_route": true,
+    "independent_watchdog_scheduled_seconds": 480,
+    "watchdog_timer_inactive_after_run": true,
+    "sampling_limit": "Brief between-sample links and unexamined interfaces were not excluded"
+  },
+  "asset_integrity": {"frozen_model_unchanged": true, "both_source_images_unchanged": true},
+  "sha256_device_matches_pc": {
+    "latency_report.json": "e4a0e84598772fff8a7e7f262867affe58559e65c0c4f84c40a5e5a5052830a4",
+    "inspections.sqlite3": "616dad49a9b5995dbf505d8538379241bea5a076ff9bb6dee59b33f115acd41c"
+  },
+  "script_sha256": "555d687b2a16f0b1423a722805e7dd616695dd93d3af5e7d64ee122c8a8f2567",
+  "private_evidence": {
+    "jetson": "/home/nvidia/.local/share/forgesight/vision_cpu_v1/runs/offline_vision_latency_01",
+    "ignored_pc_copy": "artifacts/offline_stage10_jetson_v1/offline_vision_latency_01"
+  },
+  "focused_tests": "Two percentile and disconnected-state unit tests passed in the isolated WSL app environment",
+  "limits": [
+    "The p50/p95 values describe these repeated cold saved-image processes only",
+    "The 20 database IDs are repetitions of two images, not 20 physical parts",
+    "No parts-per-minute, false-positive rate, physical-camera latency or thermal-throttling conclusion follows",
+    "Llama advisory latency was measured separately in earlier single-run evidence, not in this series",
+    "Physical-nut inspection and complete Stage 10 acceptance remain open"
+  ]
+}

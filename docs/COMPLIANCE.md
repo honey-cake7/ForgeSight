@@ -2,6 +2,14 @@
 
 No challenge requirement is marked satisfied by repository setup alone.
 
+Stage 10.6 measured 20 cold-process saved-image replays while the Jetson's
+Wi-Fi was disconnected. All 20 persisted in fresh SQLite and matched exact
+readbacks; model-forward and replay-to-SQLite p50/p95, process RSS, system
+memory and thermal sensor observations are in the manifest. The two images
+were each repeated ten times, so the results do not measure distinct physical
+parts per minute, physical false positives or production camera throughput.
+See `manifests/jetson_offline_vision_latency_v1.json`.
+
 Stage 10.5 tested an unavailable camera index followed by actual C270 capture
 and frozen-model diagnostic while the Jetson's Wi-Fi was disconnected. The
 failure created no frame or grade; recovery saved a live frame and map. The

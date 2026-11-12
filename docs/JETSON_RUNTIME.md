@@ -6,6 +6,27 @@ vision-plus-advice replay while Wi-Fi was disconnected. See
 `manifests/jetson_offline_saved_replay_pilot_v1.json`; full physical-camera
 offline acceptance remains open.
 
+## Stage 10.6 disconnected saved-replay vision latency
+
+`scripts/jetson_offline_vision_latency.py` checks the two known image hashes,
+dataset roles, frozen model and Wi-Fi route. After scheduling an independent
+eight-minute reconnect timer, it disconnects Wi-Fi and runs 20 fresh
+EfficientAD/ForgeGrade/SQLite replay processes. It measures model forward,
+replay-to-commit and process-wall durations separately, then checks all 20
+SQLite records. Network, thermal sensors and MemAvailable are sampled about
+once per second. Wi-Fi is restored and the timer canceled. The two images
+repeat; no physical-part rate is calculated.
+
+```sh
+cd /home/nvidia/.local/share/forgesight/vision_cpu_v1
+python3 -B scripts/jetson_offline_vision_latency.py --prefix "$PWD" --output-dir "$PWD/runs/offline_vision_latency_01" --preflight-only
+sudo systemd-run --unit=forgesight-offline-vision-latency-v1 --collect /usr/bin/python3 -B "$PWD/scripts/jetson_offline_vision_latency.py" --prefix "$PWD" --output-dir "$PWD/runs/offline_vision_latency_01"
+```
+
+Use fresh unit/output names for a repeat. Raw maps and records stay in the
+private runtime; the report and SQLite copy are ignored PC artifacts. See
+`manifests/jetson_offline_vision_latency_v1.json`.
+
 ## Stage 10.5 disconnected camera recovery diagnostic
 
 `scripts/jetson_offline_camera_recovery.py` checks the physical Jetson,

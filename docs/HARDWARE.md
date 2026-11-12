@@ -1,5 +1,14 @@
 # Hardware evidence
 
+Stage 10.6 completed 20 disconnected cold saved-image replays on the Jetson.
+Model-forward p50/p95 were 1,585/1,684 ms; replay-to-SQLite p50/p95 were
+7,499/7,677 ms; cold process-wall p50/p95 were 8,015/8,276 ms. Vision
+process peak RSS p95 was 437,163 KiB; minimum sampled system MemAvailable
+was 4,263,332 KiB. Across 162 samples, CPU-therm ranged 47.468–49.812 °C
+and GPU-therm 47.687–49.437 °C. These values describe repeated saved-image
+processes, not physical-part throughput or proven absence of throttling. See
+`manifests/jetson_offline_vision_latency_v1.json`.
+
 Stage 10.5 disconnected camera recovery used C270 `/dev/video0` after an
 unavailable index failed. The live 640x480 MJPG frame required 17 reads;
 16 dark startup frames were skipped. Camera open took 850 ms, capture until
