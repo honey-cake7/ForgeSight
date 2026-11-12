@@ -52,7 +52,10 @@ function renderAdvice(advice, latest, inspectionBusy) {
     ADVICE_UNAVAILABLE: 'Llama advice was unavailable. The inspection grade is unchanged.',
     GENERATED_REQUIRES_HUMAN_REVIEW: 'ExecuTorch generation verified · human review required.'
   };
-  byId('advice-status').textContent = labels[status] || 'Llama advice status is unknown.';
+  byId('advice-status').textContent = status === 'NOT_ELIGIBLE' &&
+    latest?.source_mode === 'USER_DECLARED_MVTEC_METAL_NUT_UPLOAD'
+    ? 'Llama advice is not connected to provisional benchmark verdicts yet.'
+    : labels[status] || 'Llama advice status is unknown.';
   const note = advice?.advisory?.note;
   byId('advice-note').hidden = status !== 'GENERATED_REQUIRES_HUMAN_REVIEW' || !note;
   byId('advice-note').textContent = note || '';
@@ -60,28 +63,31 @@ function renderAdvice(advice, latest, inspectionBusy) {
 
 function renderLatest(item, processing) {
   if (processing || item.status === 'PROCESSING') {
-    if (item.source_mode === 'SAVED_IMAGE_REPLAY' || item.source_mode === 'USER_UPLOADED_IMAGE_DIAGNOSTIC') byId('diagnostic-status').textContent = 'Analyzing image…';
+    if (['SAVED_IMAGE_REPLAY', 'USER_UPLOADED_IMAGE_DIAGNOSTIC', 'USER_DECLARED_MVTEC_METAL_NUT_UPLOAD'].includes(item.source_mode)) byId('diagnostic-status').textContent = 'Analyzing image…';
     else byId('request-status').textContent = 'Analyzing captured frame… camera preview remains live.';
     return;
   }
   if (item.inspection_id === priorInspection && item.status !== 'ERROR') return;
   priorInspection = item.inspection_id || null;
   const statusText = item.status === 'ANALYZED' ? 'Result saved locally.' : 'Analysis failed; see error below.';
-  if (item.source_mode === 'SAVED_IMAGE_REPLAY' || item.source_mode === 'USER_UPLOADED_IMAGE_DIAGNOSTIC') byId('diagnostic-status').textContent = statusText;
+  if (['SAVED_IMAGE_REPLAY', 'USER_UPLOADED_IMAGE_DIAGNOSTIC', 'USER_DECLARED_MVTEC_METAL_NUT_UPLOAD'].includes(item.source_mode)) byId('diagnostic-status').textContent = statusText;
   else byId('request-status').textContent = statusText;
   byId('result-empty').hidden = true;
   byId('result-content').hidden = false;
   const grade = byId('grade');
-  grade.textContent = item.grade || 'ERROR';
+  const benchmark = item.source_mode === 'USER_DECLARED_MVTEC_METAL_NUT_UPLOAD';
+  grade.textContent = benchmark && item.grade ? 'BENCHMARK ' + item.grade : item.grade || 'ERROR';
   grade.className = 'grade ' + (item.grade || '').toLowerCase();
   const uploaded = item.source_mode === 'USER_UPLOADED_IMAGE_DIAGNOSTIC';
-  byId('source-mode').textContent = uploaded ? 'User uploaded PNG · diagnostic only · no physical nut inspected' : item.source_mode === 'SAVED_IMAGE_REPLAY' ? 'Original dataset replay · ' + item.dataset_path + ' · no physical nut inspected' : item.source_mode === 'LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC' ? 'Screen photo diagnostic · no physical nut inspected' : item.source_mode === 'LIVE_CAMERA' ? 'Marked physical by operator · not independently verified' : 'Camera capture';
+  byId('source-mode').textContent = benchmark ? 'User-declared MVTec metal_nut PNG · origin unverified · no physical nut inspected' : uploaded ? 'User uploaded PNG · diagnostic only · no physical nut inspected' : item.source_mode === 'SAVED_IMAGE_REPLAY' ? 'Original dataset replay · ' + item.dataset_path + ' · no physical nut inspected' : item.source_mode === 'LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC' ? 'Screen photo diagnostic · no physical nut inspected' : item.source_mode === 'LIVE_CAMERA' ? 'Marked physical by operator · not independently verified' : 'Camera capture';
   byId('candidate').textContent = item.candidate === 'ANOMALY_CANDIDATE' ? 'Above MVTec threshold' : item.candidate === 'NORMAL_CANDIDATE' ? 'At/below MVTec threshold' : 'Unavailable';
   byId('score').textContent = item.score == null ? '—' : Number(item.score).toFixed(4) + ' / MVTec reference ' + Number(item.threshold).toFixed(4);
   byId('latency').textContent = item.model_forward_ms == null ? '—' : Math.round(item.model_forward_ms) + ' ms';
   const responseFraction = item.response_area_px == null ? null : Number(item.response_area_px) / Number(item.source_area_px || 640 * 480);
   byId('area').textContent = responseFraction == null ? '—' : Number(item.response_area_px).toLocaleString() + ' px · ' + (responseFraction * 100).toFixed(1) + '%';
-  byId('response-note').textContent = uploaded
+  byId('response-note').textContent = benchmark
+    ? 'Provisional MVTec benchmark score verdict. This does not confirm a defect or grade a physical nut.'
+    : uploaded
     ? 'Uploaded-image diagnostic. The MVTec threshold has not been validated for this file; highlighted pixels are model response, not confirmed damage.'
     : responseFraction != null && responseFraction > 0.5
     ? (item.source_mode === 'LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC'
@@ -117,7 +123,7 @@ function renderHistory(rows) {
     const details = document.createElement('span');
     details.textContent = new Date(row.timestamp_utc).toLocaleString();
     const grade = document.createElement('span');
-    grade.textContent = (row.source_mode === 'USER_UPLOADED_IMAGE_DIAGNOSTIC' ? 'USER PNG · ' : row.source_mode === 'SAVED_IMAGE_REPLAY' ? 'DATASET REPLAY · ' : row.source_mode === 'LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC' ? 'SCREEN PHOTO · ' : '') + row.grade + ' · ' + row.status;
+    grade.textContent = (row.source_mode === 'USER_DECLARED_MVTEC_METAL_NUT_UPLOAD' ? 'BENCHMARK · ' : row.source_mode === 'USER_UPLOADED_IMAGE_DIAGNOSTIC' ? 'USER PNG · ' : row.source_mode === 'SAVED_IMAGE_REPLAY' ? 'DATASET REPLAY · ' : row.source_mode === 'LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC' ? 'SCREEN PHOTO · ' : '') + row.grade + ' · ' + row.status;
     line.append(name, details, grade);
     list.append(line);
   }
@@ -168,7 +174,8 @@ byId('diagnostic-submit').addEventListener('click', async () => {
   byId('diagnostic-status').textContent = 'Uploading your PNG…';
   try {
     const response = await fetch('/api/upload-diagnostic', {method: 'POST',
-      headers: {'Content-Type': 'image/png', 'X-Upload-Id': byId('diagnostic-id').value}, body: file});
+      headers: {'Content-Type': 'image/png', 'X-Upload-Id': byId('diagnostic-id').value,
+        'X-Mvtec-Benchmark': byId('mvtec-benchmark').checked ? 'yes' : 'no'}, body: file});
     const result = await response.json();
     if (!response.ok) throw new Error(result.error || 'Upload rejected');
     byId('diagnostic-status').textContent = 'Analyzing uploaded PNG…';

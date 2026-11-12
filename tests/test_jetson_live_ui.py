@@ -49,8 +49,8 @@ class StubService:
     def replay_local(self, replay_id, dataset_path):
         self.requests.append(("local", replay_id, dataset_path))
 
-    def upload_diagnostic(self, upload_id, data):
-        self.requests.append(("diagnostic", upload_id, data))
+    def upload_diagnostic(self, upload_id, data, benchmark=False):
+        self.requests.append(("diagnostic", upload_id, data, benchmark))
 
     def request_advice(self):
         self.requests.append(("advice",))
@@ -151,7 +151,14 @@ class LiveHttpTests(unittest.TestCase):
                           "Content-Type": "image/png", "X-Upload-Id": "USER-001"})
         self.assertEqual(urlopen(request).status, 202)
         self.assertEqual(self.service.requests[-1],
-                         ("diagnostic", "USER-001", b"png-fixture"))
+                         ("diagnostic", "USER-001", b"png-fixture", False))
+        benchmark = Request(self.base + "/api/upload-diagnostic", method="POST",
+                            data=b"benchmark-fixture", headers={"Origin": self.base,
+                            "Content-Type": "image/png", "X-Upload-Id": "BENCH-001",
+                            "X-Mvtec-Benchmark": "yes"})
+        self.assertEqual(urlopen(benchmark).status, 202)
+        self.assertEqual(self.service.requests[-1],
+                         ("diagnostic", "BENCH-001", b"benchmark-fixture", True))
         request = Request(self.base + "/api/upload-diagnostic", method="POST",
                           data=b"forbidden", headers={"Origin": "http://elsewhere.invalid",
                           "Content-Type": "image/png", "X-Upload-Id": "USER-002"})
@@ -243,6 +250,25 @@ class ReplayIntakeTests(unittest.TestCase):
             self.assertEqual(len(saved), 1)
             self.assertEqual(saved[0].read_bytes(), png.getvalue())
             self.assertEqual(service.latest["source_mode"], "USER_UPLOADED_IMAGE_DIAGNOSTIC")
+
+    def test_benchmark_upload_requires_original_size_and_declares_source(self):
+        with TemporaryDirectory() as folder:
+            service = LiveService.__new__(LiveService)
+            service.args = SimpleNamespace(runs_root=Path(folder))
+            service.lock = Lock()
+            service.busy = False
+            service.latest = None
+            service.store = SimpleNamespace(has_part=lambda _part_id: False)
+            small = BytesIO()
+            Image.new("RGB", (640, 480), "gray").save(small, format="PNG")
+            with self.assertRaises(ValueError):
+                service.upload_diagnostic("BENCH-001", small.getvalue(), True)
+            full = BytesIO()
+            Image.new("RGB", (700, 700), "gray").save(full, format="PNG")
+            with patch("forgesight.jetson_live_ui.Thread") as worker:
+                service.upload_diagnostic("BENCH-001", full.getvalue(), True)
+            worker.return_value.start.assert_called_once()
+            self.assertEqual(service.latest["source_mode"], "USER_DECLARED_MVTEC_METAL_NUT_UPLOAD")
 
 
 if __name__ == "__main__":

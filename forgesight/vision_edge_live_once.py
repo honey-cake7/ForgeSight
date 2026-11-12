@@ -47,7 +47,10 @@ def inspect(args):
         if image.format != "PNG" or image.mode != "RGB":
             raise ValueError("Expected an RGB PNG.")
         width, height = image.size
-        if args.uploaded_image_diagnostic:
+        if args.mvtec_benchmark_upload:
+            if image.size != (700, 700):
+                raise ValueError("The MVTec metal_nut benchmark upload must be an original-size 700x700 RGB PNG.")
+        elif args.uploaded_image_diagnostic:
             if not 64 <= width <= 1024 or not 64 <= height <= 1024:
                 raise ValueError("Expected an uploaded RGB PNG between 64 and 1024 pixels per side.")
         elif image.size != (640, 480):
@@ -74,14 +77,16 @@ def inspect(args):
         "schema_version": 1, "inspection_id": str(uuid4()), "part_id": args.part_id,
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
         "source": {"path": str(args.image.resolve()),
-                   "mode": ("USER_UPLOADED_IMAGE_DIAGNOSTIC" if args.uploaded_image_diagnostic else
+                   "mode": ("USER_DECLARED_MVTEC_METAL_NUT_UPLOAD" if args.mvtec_benchmark_upload else
+                            "USER_UPLOADED_IMAGE_DIAGNOSTIC" if args.uploaded_image_diagnostic else
                             "LIVE_CAMERA" if args.operator_declared_part else
                             "LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC" if args.screen_photo_diagnostic else
                             "LIVE_CAMERA_DIAGNOSTIC_NO_PART"),
                    "physical_part": "OPERATOR_DECLARED_UNVERIFIED" if args.operator_declared_part else False,
                    "sha256": source_hash,
                    "size_px": [width, height],
-                   "camera_index": None if args.uploaded_image_diagnostic else args.camera_index},
+                   "camera_index": None if (args.uploaded_image_diagnostic or args.mvtec_benchmark_upload) else args.camera_index,
+                   **({"dataset_origin_verified": False} if args.mvtec_benchmark_upload else {})},
         "model": {"name": "EfficientAD-S", "input_size_px": [256, 256], "precision": "fp32",
                   "checkpoint_sha256": policy["checkpoint_sha256"],
                   "export_sha256": args.model_sha256,
@@ -166,6 +171,7 @@ def main():
     declaration.add_argument("--screen-photo-diagnostic", action="store_true")
     declaration.add_argument("--diagnostic-no-part", action="store_true")
     declaration.add_argument("--uploaded-image-diagnostic", action="store_true")
+    declaration.add_argument("--mvtec-benchmark-upload", action="store_true")
     args = parser.parse_args()
     record = inspect(args)
     print(json.dumps({"inspection_id": record["inspection_id"], "status": record["status"],

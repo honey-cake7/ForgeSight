@@ -254,7 +254,9 @@ class LiveService:
             raise ValueError("Selected Jetson image is missing or too large")
         self.replay(replay_id, dataset_path, image.read_bytes())
 
-    def upload_diagnostic(self, upload_id, data):
+    def upload_diagnostic(self, upload_id, data, benchmark=False):
+        if type(benchmark) is not bool:
+            raise ValueError("Invalid benchmark declaration")
         if not isinstance(upload_id, str) or not PART_ID.fullmatch(upload_id):
             raise ValueError("Enter a new upload ID using letters, numbers, - or _")
         if not isinstance(data, bytes) or not 0 < len(data) <= MAX_UPLOAD_BYTES:
@@ -265,6 +267,8 @@ class LiveService:
                 if (source.format != "PNG" or source.mode != "RGB"
                         or not 64 <= width <= 1024 or not 64 <= height <= 1024):
                     raise ValueError("Expected an RGB PNG between 64 and 1024 pixels per side")
+                if benchmark and (width, height) != (700, 700):
+                    raise ValueError("MVTec benchmark mode requires an original-size 700x700 PNG")
                 source.load()
         except OSError as error:
             raise ValueError("The selected file is not a readable PNG") from error
@@ -279,11 +283,11 @@ class LiveService:
             with image.open("xb") as stream:
                 stream.write(data)
             self.busy = True
-            self.latest = {"status": "PROCESSING", "part_id": upload_id,
-                           "source_mode": "USER_UPLOADED_IMAGE_DIAGNOSTIC"}
-        Thread(target=self._run_upload, args=(upload_id, image, root), daemon=True).start()
+            mode = "USER_DECLARED_MVTEC_METAL_NUT_UPLOAD" if benchmark else "USER_UPLOADED_IMAGE_DIAGNOSTIC"
+            self.latest = {"status": "PROCESSING", "part_id": upload_id, "source_mode": mode}
+        Thread(target=self._run_upload, args=(upload_id, image, root, benchmark), daemon=True).start()
 
-    def _run_upload(self, upload_id, image, root):
+    def _run_upload(self, upload_id, image, root, benchmark):
         try:
             command = [sys.executable, "-B", "-m", "forgesight.vision_edge_live_once",
                        "--image", str(image), "--part-id", upload_id,
@@ -292,7 +296,7 @@ class LiveService:
                        "--grade-policy", str(self.args.grade_policy),
                        "--database", str(self.args.database),
                        "--output-dir", str(root / "result"),
-                       "--uploaded-image-diagnostic"]
+                       "--mvtec-benchmark-upload" if benchmark else "--uploaded-image-diagnostic"]
             result = subprocess.run(command, capture_output=True, text=True, timeout=180)
             self._publish_result(upload_id, root / "result", image, result)
         except Exception as error:
@@ -300,7 +304,8 @@ class LiveService:
                 self.latest_root = root
                 self.latest_source = image
                 self.latest = {"status": "ERROR", "part_id": upload_id,
-                               "source_mode": "USER_UPLOADED_IMAGE_DIAGNOSTIC",
+                               "source_mode": ("USER_DECLARED_MVTEC_METAL_NUT_UPLOAD" if benchmark
+                                               else "USER_UPLOADED_IMAGE_DIAGNOSTIC"),
                                "error": str(error)}
         finally:
             with self.lock:
@@ -491,7 +496,11 @@ def handler_for(service):
                 else:
                     if self.headers.get("Content-Type") != "image/png" or not 0 < length <= MAX_UPLOAD_BYTES:
                         raise ValueError("Upload one RGB PNG under 8 MiB")
-                    service.upload_diagnostic(self.headers.get("X-Upload-Id"), self.rfile.read(length))
+                    benchmark = self.headers.get("X-Mvtec-Benchmark")
+                    if benchmark not in (None, "yes", "no"):
+                        raise ValueError("Invalid benchmark declaration")
+                    service.upload_diagnostic(self.headers.get("X-Upload-Id"), self.rfile.read(length),
+                                              benchmark == "yes")
             except (ValueError, RuntimeError, TypeError, AttributeError) as error:
                 self.send(409, json.dumps({"error": str(error)}).encode(), "application/json")
                 return
@@ -504,7 +513,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--vision-python", type=Path, default=Path("venv/bin/python"))
     parser.add_argument("--model", type=Path, default=Path("efficientad_s_calibrated.ts"))
-    parser.add_argument("--grade-policy", type=Path, default=Path("configs/forgegrade_v1.json"))
+    parser.add_argument("--grade-policy", type=Path, default=Path("configs/forgegrade_benchmark_v1.json"))
     parser.add_argument("--dataset-manifest", type=Path, default=Path("manifests/metal_nut_v1.json"))
     parser.add_argument("--dataset-root", type=Path, default=Path("data/mvtec_ad/metal_nut"))
     parser.add_argument("--guidance", type=Path, default=Path("guidance/prototype_inspection_v1.json"))

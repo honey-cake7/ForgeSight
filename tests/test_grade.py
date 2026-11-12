@@ -121,6 +121,42 @@ class GradeTests(unittest.TestCase):
         self.assertEqual(self.grade()['reason'], 'UPLOADED_IMAGE_DOMAIN_UNVALIDATED')
         self.assertEqual(self.grade()['grade'], 'REVIEW')
 
+    def test_declared_mvtec_upload_uses_provisional_three_way_score_policy(self):
+        self.policy = json.loads(Path('configs/forgegrade_benchmark_v1.json').read_text())
+        p = self.policy
+        self.record['model'] = {k: p[k] for k in ('checkpoint_sha256', 'score_policy_sha256', 'image_threshold')}
+        self.record['geometry']['threshold'] = p['image_threshold']
+        self.record['source'].update(mode='USER_DECLARED_MVTEC_METAL_NUT_UPLOAD', physical_part=False)
+        low = self.grade()
+        self.assertEqual(low['grade'], 'PASS')
+        self.assertEqual(low['reason'], 'BENCHMARK_SCORE_BELOW_REVIEW_BAND')
+        self.assertFalse(low['industrial_certified'])
+        self.record['score'] = self.policy['image_threshold'] * .95
+        self.assertEqual(self.grade()['grade'], 'REVIEW')
+        self.record['score'] = self.policy['image_threshold']
+        self.assertEqual(self.grade()['grade'], 'REVIEW')
+        self.anomaly(width=10, height=10)
+        self.record.update(predicted_defect_type='unknown', type_status='NO_VALIDATED_SUBTYPE_CLASSIFIER')
+        self.assertEqual(self.grade()['reason'], 'BENCHMARK_SCORE_ABOVE_IMAGE_THRESHOLD')
+        self.assertEqual(self.grade()['grade'], 'REJECT')
+        self.record['source']['physical_part'] = 'OPERATOR_DECLARED_UNVERIFIED'
+        self.assertEqual(self.grade()['grade'], 'REVIEW')
+        self.record['source']['physical_part'] = False
+        self.record['model']['checkpoint_sha256'] = 'wrong'
+        self.assertEqual(self.grade()['grade'], 'REVIEW')
+
+    def test_old_policy_does_not_grant_benchmark_grade(self):
+        self.record['source'].update(mode='USER_DECLARED_MVTEC_METAL_NUT_UPLOAD', physical_part=False)
+        self.assertEqual(self.grade()['reason'], 'BENCHMARK_POLICY_NOT_SELECTED')
+        self.assertEqual(self.grade()['grade'], 'REVIEW')
+
+    def test_benchmark_policy_does_not_grade_generic_upload_or_camera(self):
+        self.policy = json.loads(Path('configs/forgegrade_benchmark_v1.json').read_text())
+        self.record['source']['mode'] = 'USER_UPLOADED_IMAGE_DIAGNOSTIC'
+        self.assertEqual(self.grade()['grade'], 'REVIEW')
+        self.record['source']['mode'] = 'LIVE_CAMERA'
+        self.assertEqual(self.grade()['grade'], 'REVIEW')
+
 
 if __name__ == '__main__':
     unittest.main()

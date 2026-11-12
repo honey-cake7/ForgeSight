@@ -35,6 +35,8 @@ def validate_policy(policy: dict):
     if (policy['required_type_status'] != 'VALIDATED_SAME_DOMAIN_RELIABLE'
             or not policy['accepted_types'] or 'unknown' in policy['accepted_types']):
         raise ValueError('Unknown types cannot be authorized for automatic rejection.')
+    if policy.get('benchmark_upload_scope') not in (None, 'USER_DECLARED_MVTEC_METAL_NUT_UPLOAD_ONLY'):
+        raise ValueError('Unrecognized benchmark grading scope.')
     for zone in policy['critical_zones']:
         x, y, zw, zh = zone['bbox_xywh_px']
         if (not zone['name'] or any(type(v) is not int for v in (x, y, zw, zh))
@@ -97,7 +99,8 @@ def grade_record(record: dict, policy: dict) -> dict:
                         'Screen-photo diagnostic only; no physical part was inspected. Use the original saved image for benchmark evaluation.',
                         score=record.get('score'),
                         response_area_px=(record.get('geometry') or {}).get('total_area_px'))
-    if record.get('source', {}).get('mode') == 'USER_UPLOADED_IMAGE_DIAGNOSTIC':
+    source_mode = record.get('source', {}).get('mode')
+    if source_mode == 'USER_UPLOADED_IMAGE_DIAGNOSTIC':
         return decision('REVIEW', 'UPLOADED_IMAGE_DOMAIN_UNVALIDATED', 'UNASSESSED',
                         'Uploaded-image diagnostic only; no physical part was inspected. The MVTec threshold may not apply to this image.',
                         score=record.get('score'),
@@ -118,6 +121,23 @@ def grade_record(record: dict, policy: dict) -> dict:
         anomaly = score > policy['image_threshold']
         if record['candidate'] != ('ANOMALY_CANDIDATE' if anomaly else 'NORMAL_CANDIDATE'):
             return review('INCONSISTENT_CANDIDATE')
+        if source_mode == 'USER_DECLARED_MVTEC_METAL_NUT_UPLOAD':
+            if policy.get('benchmark_upload_scope') != 'USER_DECLARED_MVTEC_METAL_NUT_UPLOAD_ONLY':
+                return review('BENCHMARK_POLICY_NOT_SELECTED')
+            if record['source'].get('physical_part') is not False:
+                return review('INVALID_BENCHMARK_SOURCE')
+            if not anomaly:
+                if geometry['total_area_px']:
+                    return review('INCONSISTENT_NORMAL_LOCALIZATION')
+                if score >= policy['image_threshold'] * (1 - policy['normal_review_margin_fraction']):
+                    return review('BENCHMARK_NEAR_IMAGE_THRESHOLD', score=score)
+                return decision('PASS', 'BENCHMARK_SCORE_BELOW_REVIEW_BAND', 'BENCHMARK_SCREEN_ONLY',
+                                'Provisional MVTec score result only; missed scratches were observed in the holdout. No physical part was inspected.',
+                                score=score, image_threshold=policy['image_threshold'])
+            return decision('REJECT', 'BENCHMARK_SCORE_ABOVE_IMAGE_THRESHOLD', 'BENCHMARK_SCREEN_ONLY',
+                            'Provisional MVTec anomaly flag only; false alarms were observed in the holdout. Verify the image and label; no physical part was inspected.',
+                            score=score, image_threshold=policy['image_threshold'],
+                            response_area_px=geometry['total_area_px'])
         if not anomaly:
             if geometry['total_area_px']:
                 return review('INCONSISTENT_NORMAL_LOCALIZATION')
