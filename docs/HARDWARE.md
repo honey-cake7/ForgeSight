@@ -1,5 +1,14 @@
 # Hardware evidence
 
+Stage 10.5 disconnected camera recovery used C270 `/dev/video0` after an
+unavailable index failed. The live 640x480 MJPG frame required 17 reads;
+16 dark startup frames were skipped. Camera open took 850 ms, capture until
+usable took 1,191 ms, frozen model forward took 1,756 ms, and the complete
+camera-to-diagnostic report took 9,842 ms. These are one room-scene diagnostic,
+not a nut inspection, frame rate or production throughput. Eleven network
+samples had a maximum observed 1.001 s gap. See
+`manifests/jetson_offline_camera_recovery_v1.json`.
+
 Stage 10.4 injected a missing model path and corrupt image copy into the
 Jetson saved-replay flow while Wi-Fi was disconnected. The valid recovery
 replay later ran a 1,777 ms frozen EfficientAD first forward and persisted

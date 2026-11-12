@@ -1,5 +1,14 @@
 # Learning log
 
+## Stage 10.5: Test camera-open failure without altering hardware
+
+The V4L2 OpenCV build used by this project accepted camera indices; a named
+device-path approach showed an incompatibility warning in the focused Linux
+test. Passing absent index 99 let the same capture code exercise an open
+failure without unplugging the user's C270. A later index-0 run captured a
+usable frame after 16 dark startup frames. The frame showed the room, so the
+model response is diagnostic data only and cannot be graded as a part.
+
 ## Stage 10.4: Intake rejection differs from an inspection error
 
 The replay accepts a hash-checked image before creating an inspection record.

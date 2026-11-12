@@ -1,5 +1,13 @@
 # Decisions and unresolved choices
 
+## Stage 10.5: Keep camera failure injection reversible
+
+Use an absent V4L2 camera index, then the existing C270 index 0, to test
+capture recovery without changing USB wiring or system packages. Keep the
+result in the diagnostic path with no grade or SQLite inspection because no
+physical nut is present. Do not infer part throughput or camera-domain
+accuracy from a room frame.
+
 ## Stage 10.4: Inject failures through arguments and copies
 
 Pass an absent model path rather than rename the working export. Use a

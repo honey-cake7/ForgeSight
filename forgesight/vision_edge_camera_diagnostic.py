@@ -19,14 +19,14 @@ def sha256(path):
     return digest.hexdigest()
 
 
-def capture_frame(path):
+def capture_frame(path, camera_index=0):
     import cv2
 
     opened_at = time.perf_counter()
-    camera = cv2.VideoCapture(0, cv2.CAP_V4L2)
+    camera = cv2.VideoCapture(camera_index, cv2.CAP_V4L2)
     try:
         if not camera.isOpened():
-            raise RuntimeError("C270 /dev/video0 did not open.")
+            raise RuntimeError("Camera index did not open: " + str(camera_index))
         camera.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"MJPG"))
         camera.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
         camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
@@ -84,6 +84,7 @@ def main():
     parser.add_argument("--model-sha256", required=True)
     parser.add_argument("--threshold", type=float, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--camera-index", type=int, default=0)
     args = parser.parse_args()
     if args.output_dir.exists() or not math.isfinite(args.threshold):
         parser.error("Output directory must be new and threshold finite.")
@@ -96,7 +97,8 @@ def main():
               "part_id": None, "grade": None, "image": str(image), "map": str(map_file),
               "limitations": "Camera scene has no declared physical nut; score is not a defect or quality finding."}
     try:
-        report["capture"] = capture_frame(image)
+        report["camera_index"] = args.camera_index
+        report["capture"] = capture_frame(image, args.camera_index)
         script_dir = Path(__file__).resolve().parent
         report["preprocess_process_ms"] = run_child([
             sys.executable, "-B", str(script_dir / "vision_edge_preprocess.py"),

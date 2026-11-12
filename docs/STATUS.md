@@ -2,6 +2,17 @@
 
 ## Current stage
 
+**Stage 10.5 disconnected camera failure/recovery diagnostic VERIFIED on the
+physical Jetson; full Stage 10 acceptance PENDING.** An unavailable V4L2
+camera index failed safely with no frame or grade. The still-connected C270
+then captured a live 640x480 MJPG frame and ran the frozen EfficientAD model,
+saving an anomaly map. The frame shows a room scene, so this is no physical
+nut inspection and no SQLite inspection row was created. Eleven network
+samples showed no Wi-Fi/ethernet IPv4 or default route; Wi-Fi recovered.
+See `manifests/jetson_offline_camera_recovery_v1.json`.
+
+### Earlier checkpoint
+
 **Stage 10.4 disconnected saved-replay failure recovery VERIFIED on the
 physical Jetson; full Stage 10 acceptance PENDING.** With Wi-Fi disconnected,
 an intentionally missing model path produced a persisted ERROR inspection and
@@ -523,7 +534,7 @@ device-only operation correctly exited 2. See `docs/EDGE_RUNTIME.md`.
 | Defect-type classification | NOT VERIFIED | Current predicted types remain unknown; need valid same-domain classification evidence |
 | Pixel-only decision rules | PC PROTOTYPE VERIFIED | Deterministic policy tests/replay; physical tolerances, severity and industrial certification open |
 | Local history and duplicates after restart | PC SQLITE REPLAY VERIFIED | Four original records survive writer exit, exact retries add zero rows; no physical identity or power-loss claim |
-| Offline end-to-end inspection | PARTIAL: saved-case replay, loopback UI service and two input-failure paths under disconnection | Physical camera part, rendered offline browser, decoder failure, longer-run metrics and remaining failure checks open |
+| Offline end-to-end inspection | PARTIAL: saved-case replay, loopback UI service, input-failure paths and camera diagnostic recovery under disconnection | Physical camera part, rendered offline browser, decoder failure and longer-run metrics open |
 
 Stage 1 input preparation is verified and its review gate was accepted. The
 Stage 2 device-generation gate is verified for one prompt. Desktop data work
@@ -531,6 +542,6 @@ and GPU availability still do not establish a Jetson camera-inspection system.
 
 ## Next exact task
 
-Continue Stage 10 with camera failure/recovery and longer-run metrics. A true
-offline browser demonstration requires a locally available browser. Physical-
-nut camera acceptance remains open until a nut is available.
+Continue Stage 10 with longer-run saved-replay latency and reliability
+measurements. A true offline browser demonstration requires a locally available
+browser. Physical-nut camera acceptance remains open until a nut is available.

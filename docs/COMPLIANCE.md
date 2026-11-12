@@ -2,6 +2,15 @@
 
 No challenge requirement is marked satisfied by repository setup alone.
 
+Stage 10.5 tested an unavailable camera index followed by actual C270 capture
+and frozen-model diagnostic while the Jetson's Wi-Fi was disconnected. The
+failure created no frame or grade; recovery saved a live frame and map. The
+frame was visually a room scene with no declared nut, so it was explicitly
+not an inspection and added no SQLite inspection row. Eleven route/interface
+samples supported the disconnected observation. This is not unplug/replug
+proof, camera-domain accuracy or real-part acceptance. See
+`manifests/jetson_offline_camera_recovery_v1.json`.
+
 Stage 10.4 tested two controlled failure inputs on the disconnected Jetson.
 A nonexistent model path caused an ERROR inspection with deterministic REVIEW
 and a persisted SQLite row; an invalid image copy failed the manifest hash

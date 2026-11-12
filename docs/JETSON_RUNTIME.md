@@ -6,6 +6,26 @@ vision-plus-advice replay while Wi-Fi was disconnected. See
 `manifests/jetson_offline_saved_replay_pilot_v1.json`; full physical-camera
 offline acceptance remains open.
 
+## Stage 10.5 disconnected camera recovery diagnostic
+
+`scripts/jetson_offline_camera_recovery.py` checks the physical Jetson,
+`/dev/video0` and frozen model hash, schedules an independent three-minute
+Wi-Fi reconnect timer, and disconnects Wi-Fi. The camera diagnostic first
+uses absent V4L2 index 99, then the connected C270 index 0. It verifies the
+error report, real frame and anomaly map, and records interface/route samples
+before restoring Wi-Fi. The camera stays connected; no unplug/replug is
+claimed. The frame contains no presented nut and is not an inspection.
+
+```sh
+cd /home/nvidia/.local/share/forgesight/vision_cpu_v1
+python3 -B scripts/jetson_offline_camera_recovery.py --prefix "$PWD" --output-dir "$PWD/runs/offline_camera_recovery_01" --preflight-only
+sudo systemd-run --unit=forgesight-offline-camera-recovery-v1 --collect /usr/bin/python3 -B "$PWD/scripts/jetson_offline_camera_recovery.py" --prefix "$PWD" --output-dir "$PWD/runs/offline_camera_recovery_01"
+```
+
+Use fresh output and transient unit names for a repeat. Raw camera imagery
+stays private under the Jetson runtime and the ignored PC artifact directory.
+See `manifests/jetson_offline_camera_recovery_v1.json`.
+
 ## Stage 10.4 disconnected failure recovery
 
 `scripts/jetson_offline_failure_recovery.py` checks the source image/model

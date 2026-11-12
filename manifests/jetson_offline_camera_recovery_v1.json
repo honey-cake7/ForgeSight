@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "stage": "10.5_disconnected_camera_failure_recovery",
+  "status": "DISCONNECTED_CAMERA_OPEN_FAILURE_AND_DIAGNOSTIC_RECOVERY_VERIFIED_FULL_STAGE_10_OPEN",
+  "device": "NVIDIA Jetson Orin Nano 8GB, aarch64",
+  "camera": "Logitech C270 at /dev/video0, OpenCV V4L2",
+  "source_mode": "LIVE_CAMERA_DIAGNOSTIC_NO_PART",
+  "physical_part_inspected": false,
+  "inspection_row_created": false,
+  "visual_check": "Copied frame shows a room scene, not a presented nut or controlled inspection surface",
+  "unavailable_camera": {
+    "injection": "Capture from absent camera index 99; C270 remains connected",
+    "process_exit_code": 1,
+    "status": "ERROR",
+    "frame_created": false,
+    "grade": null,
+    "diagnostic_sha256": "e8ba8f12ad99aa5cc1315ab325df6e1e43d88103fc9638e778fcb203ff89d0e4"
+  },
+  "live_recovery": {
+    "camera_index": 0,
+    "process_exit_code": 0,
+    "status": "CAMERA_MODEL_DIAGNOSTIC_VERIFIED_NO_PART",
+    "frame_shape_hwc": [480, 640, 3],
+    "format": "MJPG",
+    "frames_read": 17,
+    "rejected_dark_startup_frames": 16,
+    "selected_mean_luma": 118.23702473958333,
+    "camera_open_ms": 849.6442830000888,
+    "capture_until_usable_ms": 1191.3790649996372,
+    "model_forward_ms": 1756.4403870019305,
+    "camera_to_report_ms": 9841.9367839997,
+    "grade": null,
+    "frame_sha256": "67723f3b2b6d7af395ce8c11646aa58053c77a2ef0ba44129e31d97ad163664e",
+    "anomaly_map_sha256": "38cf3f17e5cfba601a5c0cfd5c876a8ae652fb52754ec88823da61d97f0d6fbc",
+    "diagnostic_sha256": "88453a018f0a001e913001ac271e7d02927473e4e6e18e6e4a8e190e3b840a8c"
+  },
+  "network": {
+    "samples": 11,
+    "maximum_observed_gap_seconds": 1.0010000000000003,
+    "all_samples_no_wifi_or_ethernet_ipv4_or_default_route": true,
+    "wifi_restored": true,
+    "recovery_timer_inactive_after_run": true,
+    "sampling_limit": "Brief between-sample links and unexamined interfaces were not excluded"
+  },
+  "sha256_device_matches_pc": {
+    "camera_recovery_report.json": "19362fcbd5321010d60e3ac6632995239e4bc4377ed0030b33a9b5e44a6860f1",
+    "frame.png": "67723f3b2b6d7af395ce8c11646aa58053c77a2ef0ba44129e31d97ad163664e",
+    "anomaly_map.npy": "38cf3f17e5cfba601a5c0cfd5c876a8ae652fb52754ec88823da61d97f0d6fbc"
+  },
+  "code_sha256": {
+    "forgesight/vision_edge_camera_diagnostic.py": "6775d39bea4fa1d33d464a98dfa26b789aa1a8663e680ccf2bbc956fb9b37eff",
+    "scripts/jetson_offline_camera_recovery.py": "7c56148ee9b42a57d8cee72b4bf1471f96cb4e36c4e0f413e9c14148a87a3761"
+  },
+  "private_evidence": {
+    "jetson": "/home/nvidia/.local/share/forgesight/vision_cpu_v1/runs/offline_camera_recovery_01",
+    "ignored_pc_copy": "artifacts/offline_stage10_jetson_v1/offline_camera_recovery_01"
+  },
+  "focused_test": "An unavailable V4L2 camera index created no frame in the isolated WSL OpenCV environment",
+  "not_verified": ["actual unplug/replug of C270", "physical nut camera inspection", "camera-domain defect accuracy", "complete Stage 10 acceptance"]
+}
