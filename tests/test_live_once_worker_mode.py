@@ -161,5 +161,63 @@ class LiveOnceWorkerModeTests(unittest.TestCase):
         self.assertTrue(record["artifacts"]["response_overlay"].endswith(".png"))
 
 
+class InlineInspectionTests(unittest.TestCase):
+    """jetson_live_ui._inspect_inline publishes exactly what inspect() recorded."""
+
+    def setUp(self):
+        self._tmp = TemporaryDirectory()
+        self.root = Path(self._tmp.name)
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def test_inline_publishes_record(self):
+        from threading import Lock
+        from forgesight import jetson_live_ui as ui
+        
+        service = ui.LiveService.__new__(ui.LiveService)
+        service.args = argparse.Namespace(
+            vision_python=Path("python"), model=self.root / "model.ts",
+            grade_policy=POLICY, database=self.root / "db.sqlite3",
+            camera_index=0, vision_worker_socket=Path("/tmp/worker.sock"),
+            overlay_format="png")
+        class StubStore:
+            def get_inspection(self, identifier):
+                return record
+        service.store = StubStore()
+        service.lock = Lock()
+        service.latest = service.latest_root = service.latest_source = None
+        image = self.root / "image.png"
+        Image.new("RGB", (700, 700), "gray").save(image)
+
+        record = {"schema_version": 1, "inspection_id": "123e4567-e89b-42d3-a456-426614174000", "part_id": "part-t1",
+                  "timestamp_utc": "2026-11-14T00:00:00+00:00", "status": "ANALYZED",
+                  "score": 0.9, "candidate": "ANOMALY_CANDIDATE",
+                  "source": {"mode": "USER_DECLARED_MVTEC_METAL_NUT_UPLOAD",
+                             "size_px": [700, 700]},
+                  "model": {"image_threshold": 0.2277658},
+                  "geometry": None, "decision": {"grade": "REVIEW", "reason": "r",
+                                                 "operator_action": "check"},
+                  "timings": {}, "error": None, "artifacts": {}}
+
+        def fake_inspect(args):
+            root = args.output_dir
+            root.mkdir(parents=True)
+            with (root / "record.json").open("x") as stream:
+                json.dump(record, stream)
+            return record
+
+        with mock.patch("forgesight.vision_edge_live_once.inspect", side_effect=fake_inspect):
+            service._inspect_inline(image, "part-t1", self.root / "run",
+                                    {"mvtec_benchmark_upload": True,
+                                     "uploaded_image_diagnostic": False,
+                                     "operator_declared_part": False,
+                                     "screen_photo_diagnostic": False,
+                                     "diagnostic_no_part": False})
+        self.assertEqual(service.latest["status"], "ANALYZED")
+        self.assertEqual(service.latest["inspection_id"], "123e4567-e89b-42d3-a456-426614174000")
+        self.assertEqual(service.latest["grade"], "REVIEW")
+
+
 if __name__ == "__main__":
     unittest.main()

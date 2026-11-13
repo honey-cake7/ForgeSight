@@ -33,6 +33,49 @@ def vision_executable(path):
     return Path(os.path.abspath(path))
 
 
+def launch_vision_worker(args, worker_script=None):
+    """Start the persistent vision worker and wait for its READY line.
+
+    stderr is drained on a daemon thread into a small ring buffer: a worker
+    whose stderr pipe fills (torch warnings are chatty) would otherwise block
+    mid-inference with no error. The buffer tail is included in boot errors.
+    """
+    from collections import deque
+    script = worker_script or (Path(__file__).resolve().parent / "vision_edge_worker.py")
+    command = [str(args.vision_python), "-B", str(script),
+               "--model", str(args.model), "--model-sha256", MODEL_SHA256,
+               "--socket", str(args.vision_worker_socket),
+               "--threads", str(args.vision_worker_threads),
+               "--idle-timeout-seconds", str(args.vision_worker_idle_timeout_seconds)]
+    worker = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    stderr_tail = deque(maxlen=50)
+
+    def drain_stderr():
+        for line in worker.stderr:
+            stderr_tail.append(line.rstrip())
+
+    Thread(target=drain_stderr, daemon=True).start()
+    ready_holder = []
+
+    def read_ready():
+        ready_holder.append(worker.stdout.readline())
+
+    reader = Thread(target=read_ready, daemon=True)
+    reader.start()
+    reader.join(timeout=120)
+    ready = ready_holder[0] if ready_holder else ""
+    try:
+        status = json.loads(ready)
+    except ValueError:
+        status = {}
+    if status.get("status") != "WORKER_READY":
+        worker.terminate()
+        detail = "; worker stderr tail: " + " | ".join(stderr_tail) if stderr_tail else ""
+        raise ValueError(
+            "Vision worker failed to start with the frozen model within 120 seconds" + detail)
+    return worker
+
+
 class CameraFeed:
     def __init__(self, index=0):
         self.index = index
@@ -130,6 +173,11 @@ class LiveService:
             if (args.dataset_root / path).is_file()
             and sha256(args.dataset_root / path) == row["sha256"])
         self.store = InspectionStore(args.database)
+        self.vision_worker = None
+        self.worker_respawn_lock = Lock()
+        self.worker_respawning = False
+        if args.vision_worker_socket is not None:
+            self.vision_worker = launch_vision_worker(args)
         self.lock = Lock()
         self.busy = False
         self.latest = None
@@ -142,8 +190,67 @@ class LiveService:
                             and (args.llama_root / "venv/bin/python").is_file()
                             and (args.llama_root / "model/llama3_2_1b_xnnpack.pte").is_file())
 
+    def _inspect_inline(self, image, part_id, root, mode_flags):
+        """Run the same inspection in this long-lived process; worker mode only.
+
+        Identical gates and artifacts to the vision_edge_live_once.py subprocess,
+        without paying a fresh interpreter plus numpy/Pillow import per image.
+        """
+        import argparse
+        from forgesight import vision_edge_live_once as live_once
+        args = argparse.Namespace(
+            image=image, part_id=part_id,
+            vision_python=self.args.vision_python, model=self.args.model,
+            model_sha256=MODEL_SHA256, grade_policy=self.args.grade_policy,
+            database=self.args.database, output_dir=root / "result",
+            camera_index=self.args.camera_index,
+            vision_worker_socket=self.args.vision_worker_socket,
+            overlay_format=self.args.overlay_format,
+            **mode_flags)
+        record = live_once.inspect(args)
+
+        class Done:
+            returncode = 0 if record["status"] == "ANALYZED" else 1
+            stdout = stderr = ""
+        self._publish_result(part_id, root / "result", image, Done())
+        if record["timings"].get("vision_mode") == "COLD_PROCESS_AFTER_WORKER_UNAVAILABLE":
+            # The worker died (idle timeout or crash). Bring it back so the next
+            # inspection is warm instead of silently running cold forever.
+            self._respawn_vision_worker()
+
+    def _respawn_vision_worker(self):
+        with self.worker_respawn_lock:
+            if self.worker_respawning:
+                return
+            self.worker_respawning = True
+
+        def respawn():
+            try:
+                old = self.vision_worker
+                if old is not None and old.poll() is None:
+                    old.terminate()
+                    try:
+                        old.wait(timeout=10)
+                    except subprocess.TimeoutExpired:
+                        old.kill()
+                self.vision_worker = launch_vision_worker(self.args)
+            except Exception:
+                # Next inspection cold-falls-back again and retries the respawn.
+                pass
+            finally:
+                with self.worker_respawn_lock:
+                    self.worker_respawning = False
+
+        Thread(target=respawn, daemon=True).start()
+
     def close(self):
         self.advice_queue.close()
+        if self.vision_worker is not None:
+            self.vision_worker.terminate()
+            try:
+                self.vision_worker.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                self.vision_worker.kill()
 
     def advice_state(self):
         with self.lock:
@@ -314,6 +421,14 @@ class LiveService:
 
     def _run_upload(self, upload_id, image, root, benchmark):
         try:
+            if self.args.vision_worker_socket is not None:
+                self._inspect_inline(image, upload_id, root,
+                                     {"mvtec_benchmark_upload": benchmark,
+                                      "uploaded_image_diagnostic": not benchmark,
+                                      "operator_declared_part": False,
+                                      "screen_photo_diagnostic": False,
+                                      "diagnostic_no_part": False})
+                return
             command = [sys.executable, "-B", "-m", "forgesight.vision_edge_live_once",
                        "--image", str(image), "--part-id", upload_id,
                        "--vision-python", str(self.args.vision_python),
@@ -322,6 +437,8 @@ class LiveService:
                        "--database", str(self.args.database),
                        "--output-dir", str(root / "result"),
                        "--mvtec-benchmark-upload" if benchmark else "--uploaded-image-diagnostic"]
+            if self.args.vision_worker_socket is not None:
+                command += ["--vision-worker-socket", str(self.args.vision_worker_socket)]
             result = subprocess.run(command, capture_output=True, text=True, timeout=180)
             self._publish_result(upload_id, root / "result", image, result)
         except Exception as error:
@@ -347,6 +464,8 @@ class LiveService:
                        "--grade-policy", str(self.args.grade_policy),
                        "--database", str(self.args.database),
                        "--output-dir", str(root / "result")]
+            if self.args.vision_worker_socket is not None:
+                command += ["--vision-worker-socket", str(self.args.vision_worker_socket)]
             result = subprocess.run(command, capture_output=True, text=True, timeout=180)
             self._publish_result(replay_id, root / "result", image, result)
         except Exception as error:
@@ -416,6 +535,14 @@ class LiveService:
                 raise RuntimeError("Camera frame could not be saved")
             with image.open("xb") as stream:
                 stream.write(encoded.tobytes())
+            if self.args.vision_worker_socket is not None:
+                self._inspect_inline(image, part_id, root,
+                                     {"mvtec_benchmark_upload": False,
+                                      "uploaded_image_diagnostic": False,
+                                      "operator_declared_part": source_kind == "physical_nut",
+                                      "screen_photo_diagnostic": source_kind != "physical_nut",
+                                      "diagnostic_no_part": False})
+                return
             command = [sys.executable, "-B", "-m", "forgesight.vision_edge_live_once",
                        "--image", str(image), "--part-id", part_id,
                        "--vision-python", str(self.args.vision_python),
@@ -425,6 +552,8 @@ class LiveService:
                        "--output-dir", str(root / "result"),
                        "--camera-index", str(self.args.camera_index),
                        "--operator-declared-part" if source_kind == "physical_nut" else "--screen-photo-diagnostic"]
+            if self.args.vision_worker_socket is not None:
+                command += ["--vision-worker-socket", str(self.args.vision_worker_socket)]
             result = subprocess.run(command, capture_output=True, text=True, timeout=180)
             self._publish_result(part_id, root / "result", image, result)
         except Exception as error:
@@ -560,12 +689,23 @@ def main():
     parser.add_argument("--database", type=Path, default=Path("runs/live_inspections_v1/inspections.sqlite3"))
     parser.add_argument("--runs-root", type=Path, default=Path("runs/live_inspections_v1"))
     parser.add_argument("--camera-index", type=int, default=0)
+    parser.add_argument("--vision-worker-socket", type=Path, default=None,
+                        help="Keep one hash-checked EfficientAD worker process alive at this Unix socket; inspections reuse it instead of a fresh model process each time.")
+    parser.add_argument("--vision-worker-threads", type=int, default=2)
+    parser.add_argument("--overlay-format", choices=("png", "jpeg"), default="png",
+                        help="Overlay encoding for inline inspections; jpeg is much faster to encode, lossy pixels.")
+    parser.add_argument("--vision-worker-idle-timeout-seconds", type=float, default=3600,
+                        help="Worker exits after this long without a request, freeing model memory; default 3600.")
     parser.add_argument("--port", type=int, default=8770)
     args = parser.parse_args()
     if not 1024 <= args.port <= 65535:
         parser.error("Use an unprivileged port")
     if not 0 < args.llama_timeout_seconds <= 240:
         parser.error("Use a Llama timeout between 0 and 240 seconds")
+    if not 1 <= args.vision_worker_threads <= 4:
+        parser.error("Use one to four vision worker threads")
+    if args.vision_worker_socket is not None and args.vision_worker_idle_timeout_seconds < 60:
+        parser.error("Use a vision worker idle timeout of at least 60 seconds")
     args.database = args.database.resolve()
     args.runs_root = args.runs_root.resolve()
     args.vision_python = vision_executable(args.vision_python)
@@ -576,6 +716,9 @@ def main():
     args.guidance = args.guidance.resolve()
     args.llama_root = args.llama_root.resolve()
     args.advice_root = args.advice_root.resolve()
+    if args.vision_worker_socket is not None:
+        # The worker itself refuses only a live socket and reclaims a stale one.
+        args.vision_worker_socket = args.vision_worker_socket.resolve()
     camera = CameraFeed(args.camera_index)
     service = LiveService(args, camera)
     server = ThreadingHTTPServer(("127.0.0.1", args.port), handler_for(service))
