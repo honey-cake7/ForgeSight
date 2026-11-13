@@ -12,11 +12,11 @@ from unittest import mock
 from forgesight.jetson_live_ui import LiveService, launch_vision_worker
 
 STUB_READY = textwrap.dedent("""
-    import json, sys
+    import json, sys, time
     sys.stderr.write("x" * 524288)  # 512 KiB: far beyond the 64 KiB pipe buffer
     sys.stderr.flush()
     print(json.dumps({"status": "WORKER_READY"}), flush=True)
-    sys.stdout.readline()
+    time.sleep(30)  # stay alive until the test terminates the worker
 """)
 
 STUB_FAIL = textwrap.dedent("""
