@@ -191,9 +191,14 @@ def inspect(args):
             for region in record["geometry"]["regions"]:
                 x, y, width, height = region["bbox_xywh_px"]
                 draw.rectangle([x, y, x + width - 1, y + height - 1], outline="yellow", width=2)
-            overlay.save(root / "response_overlay.png")
-        record["artifacts"]["response_overlay"] = str(root / "response_overlay.png")
-        record["artifacts"]["response_overlay_sha256"] = sha256(root / "response_overlay.png")
+            overlay_name = "response_overlay.jpg" if args.overlay_format == "jpeg" else "response_overlay.png"
+            overlay_path = root / overlay_name
+            if args.overlay_format == "jpeg":
+                overlay.save(overlay_path, quality=85)
+            else:
+                overlay.save(overlay_path)
+        record["artifacts"]["response_overlay"] = str(overlay_path)
+        record["artifacts"]["response_overlay_sha256"] = sha256(overlay_path)
         record["timings"]["model_forward_ms"] = inference["model_forward_ms"]
         record["timings"]["model_peak_rss_kib"] = inference["process_peak_rss_kib"]
         record["status"] = "ANALYZED"
@@ -222,6 +227,8 @@ def main():
     parser.add_argument("--camera-index", type=int, default=0)
     parser.add_argument("--vision-worker-socket", type=Path, default=None,
                         help="Use a running vision_edge_worker.py socket instead of a fresh model process per inspection.")
+    parser.add_argument("--overlay-format", choices=("png", "jpeg"), default="png",
+                        help="Overlay image encoding; jpeg cuts encode time roughly 20x, lossy pixels (maps stay exact .npy).")
     declaration = parser.add_mutually_exclusive_group(required=True)
     declaration.add_argument("--operator-declared-part", action="store_true")
     declaration.add_argument("--screen-photo-diagnostic", action="store_true")
