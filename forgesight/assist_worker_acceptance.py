@@ -11,6 +11,11 @@ asserted: this gate proves correctness, and the latency manifests prove speed.
 
 Runs on the Jetson against real reports; the comparison logic is unit-tested
 on PC with synthetic reports.
+
+Scope: these are operational checks over trusted local reports, not a security
+root. Either report file can be tampered with on-device; the gate binds the
+warm worker to the independently verified cold path, it does not make either
+report cryptographic proof.
 """
 
 import argparse
@@ -36,6 +41,21 @@ def compare_reports(warm: dict, cold: dict) -> dict:
         and warm.get("decision_sha256") == cold.get("decision_sha256"))
     checks["immutability_rechecked"] = bool(
         warm.get("inspection_and_sqlite_unchanged") and cold.get("inspection_and_sqlite_unchanged"))
+    warm_native = warm.get("native") or {}
+    cold_native = cold.get("native") or {}
+    # Bind each report to the runtime that actually produced it: without these
+    # checks two cold runs (or two warm runs) with identical notes would pass
+    # the gate without the warm worker ever being exercised.
+    checks["warm_is_persistent_worker"] = (
+        warm.get("llama_runtime_mode") == "PERSISTENT_WORKER"
+        and warm_native.get("worker_mode") == "PERSISTENT_PROCESS"
+        and warm_native.get("worker_started_utc") is not None)
+    checks["cold_is_cold_subprocess"] = cold.get("llama_runtime_mode") == "COLD_SUBPROCESS"
+    checks["same_verified_model"] = (
+        warm_native.get("model_sha256") is not None
+        and warm_native.get("model_sha256") == cold_native.get("model_sha256")
+        and warm_native.get("tokenizer_sha256") is not None
+        and warm_native.get("tokenizer_sha256") == cold_native.get("tokenizer_sha256"))
     warm_wall = (warm.get("controller_runtime_wall_ms")
                  or (warm.get("native") or {}).get("process_wall_seconds"))
     cold_wall = (cold.get("controller_runtime_wall_ms")

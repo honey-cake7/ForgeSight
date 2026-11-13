@@ -11,12 +11,17 @@ NOTE = ("[E1] Anomaly flagged; grade REVIEW; defect type and cause unknown. "
 
 
 def report(mode, note=NOTE, wall=None, status="JETSON_ADVICE_GENERATED_REQUIRES_HUMAN_REVIEW"):
+    native = {"process_wall_seconds": None,
+              "model_sha256": "m" * 64, "tokenizer_sha256": "t" * 64}
+    if mode == "PERSISTENT_WORKER":
+        native.update(worker_mode="PERSISTENT_PROCESS",
+                      worker_started_utc="2026-11-14T00:00:00Z")
     return {"status": status, "llama_runtime_mode": mode,
             "inspection_sha256": "i" * 64, "decision_sha256": "d" * 64,
             "authoritative_grade": "REVIEW",
             "inspection_and_sqlite_unchanged": True,
             "controller_runtime_wall_ms": wall,
-            "native": {"process_wall_seconds": None},
+            "native": native,
             "advisory": {"response": {"generated_note": note}}}
 
 
@@ -50,6 +55,32 @@ class AcceptanceTests(unittest.TestCase):
         warm = report("PERSISTENT_WORKER")
         warm["authoritative_grade"] = "PASS"
         verdict = compare_reports(warm, report("COLD_SUBPROCESS"))
+        self.assertFalse(verdict["adoption_accepted"])
+
+    def test_two_cold_runs_reject(self):
+        # Regression: the gate approved two cold runs as warm-worker proof
+        # because llama_runtime_mode was recorded but never checked.
+        verdict = compare_reports(report("COLD_SUBPROCESS"), report("COLD_SUBPROCESS"))
+        self.assertFalse(verdict["checks"]["warm_is_persistent_worker"])
+        self.assertFalse(verdict["adoption_accepted"])
+
+    def test_two_warm_runs_reject(self):
+        verdict = compare_reports(report("PERSISTENT_WORKER"), report("PERSISTENT_WORKER"))
+        self.assertFalse(verdict["checks"]["cold_is_cold_subprocess"])
+        self.assertFalse(verdict["adoption_accepted"])
+
+    def test_warm_without_worker_evidence_rejects(self):
+        warm = report("PERSISTENT_WORKER")
+        del warm["native"]["worker_mode"]
+        verdict = compare_reports(warm, report("COLD_SUBPROCESS"))
+        self.assertFalse(verdict["checks"]["warm_is_persistent_worker"])
+        self.assertFalse(verdict["adoption_accepted"])
+
+    def test_model_hash_mismatch_rejects(self):
+        warm = report("PERSISTENT_WORKER")
+        warm["native"]["model_sha256"] = "x" * 64
+        verdict = compare_reports(warm, report("COLD_SUBPROCESS"))
+        self.assertFalse(verdict["checks"]["same_verified_model"])
         self.assertFalse(verdict["adoption_accepted"])
 
     def test_missing_immutability_recheck_rejects(self):
