@@ -145,8 +145,9 @@ class SocketTests(unittest.TestCase):
     def tearDown(self):
         self.dir.cleanup()
 
-    def start_server(self, **kwargs):
-        worker = aew.Worker(self.runtime)
+    def start_server(self, worker=None, **kwargs):
+        if worker is None:
+            worker = aew.Worker(self.runtime)
         thread = threading.Thread(
             target=aew.serve,
             args=(self.socket_path, worker),
@@ -201,6 +202,44 @@ class SocketTests(unittest.TestCase):
                              {"prompt_text": "check lighting", "max_new_tokens": 16},
                              timeout_seconds=5)
         self.assertIn("check lighting", report["generated_text"])
+
+    def test_reply_write_uses_fresh_timeout_after_slow_read(self):
+        # Deterministic leftover-vs-fresh discriminator: a request dripped in
+        # over ~0.6s of the 0.8s read deadline leaves ~0.2s on the socket. The
+        # reply (2 MB) far exceeds the socket buffers and the client delays
+        # reading 0.5s, so sendall blocks. Leftover budget loses the reply
+        # (timeout at ~0.2s, before the client reads at ~0.5s); the restored
+        # fresh timeout covers the blocked write and the full reply arrives.
+        class PadWorker(aew.Worker):
+            def handle(self, request):
+                report = super().handle(request)
+                report["pad"] = "x" * 2_000_000
+                return report
+
+        self.start_server(worker=PadWorker(self.runtime),
+                          request_read_timeout_seconds=0.8)
+        client = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        try:
+            client.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 4096)
+            client.connect(str(self.socket_path))
+            body = json.dumps({"prompt_text": "hi", "max_new_tokens": 4},
+                              separators=(",", ":")).encode() + b"\n"
+            for byte in body:
+                client.sendall(bytes([byte]))
+                time.sleep(0.015)
+            time.sleep(0.5)  # server sendall blocks on full buffers
+            client.settimeout(10)
+            chunks = b""
+            while b"\n" not in chunks:
+                block = client.recv(65536)
+                if not block:
+                    break
+                chunks += block
+        finally:
+            client.close()
+        payload = json.loads(chunks.split(b"\n", 1)[0].decode("utf-8"))
+        self.assertEqual(payload["status"], "OK")
+        self.assertEqual(len(payload["report"]["pad"]), 2_000_000)
 
     def test_malformed_and_oversized_requests_error_not_crash(self):
         self.start_server()
