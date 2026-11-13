@@ -9,7 +9,7 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-from forgesight.jetson_live_ui import LiveService, launch_vision_worker
+from forgesight.jetson_live_ui import LiveService, launch_advice_worker, launch_vision_worker
 
 STUB_READY = textwrap.dedent("""
     import json, sys, time
@@ -22,6 +22,12 @@ STUB_READY = textwrap.dedent("""
 STUB_FAIL = textwrap.dedent("""
     import sys
     sys.stderr.write("hash mismatch on frozen model")
+    sys.exit(1)
+""")
+
+STUB_CRASH = textwrap.dedent("""
+    import sys
+    sys.stderr.write("Traceback (most recent call last): KeyError: 'prompt'")
     sys.exit(1)
 """)
 
@@ -60,6 +66,30 @@ class LaunchVisionWorkerTests(unittest.TestCase):
             launch_vision_worker(make_args(self.dir / "b.sock"),
                                  worker_script=self.write_stub("fail.py", STUB_FAIL))
         self.assertIn("hash mismatch on frozen model", str(raised.exception))
+
+
+class LaunchAdviceWorkerTests(unittest.TestCase):
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.dir = Path(self._tmp.name)
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def make_args(self):
+        return argparse.Namespace(
+            llama_root=self.dir, llama_worker_socket=self.dir / "worker.sock",
+            llama_worker_idle_timeout_seconds=1)
+
+    def test_boot_crash_reports_exit_and_stderr_not_timeout(self):
+        stub = self.dir / "crash.py"
+        stub.write_text(STUB_CRASH)
+        with self.assertRaises(ValueError) as raised:
+            launch_advice_worker(self.make_args(), python_command=[sys.executable, str(stub)])
+        message = str(raised.exception)
+        self.assertIn("exited during startup", message)
+        self.assertIn("KeyError", message)
+        self.assertNotIn("180 seconds", message)
 
 
 def bare_service():

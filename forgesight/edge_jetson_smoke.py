@@ -77,7 +77,11 @@ def verify_target(root):
 def verify_inputs(request):
     root = Path(request['root']).resolve()
     host = verify_target(root)
-    files = {name: Path(request[name]).resolve() for name in ('profile', 'export', 'assets', 'prompt', 'model', 'tokenizer')}
+    # 'prompt' belongs to one smoke generation, not to asset verification:
+    # callers that only verify and load (the persistent worker) have none yet.
+    files = {name: Path(request[name]).resolve()
+             for name in ('profile', 'export', 'assets', 'prompt', 'model', 'tokenizer')
+             if name in request}
     if files['model'].parent != root/'model' or files['tokenizer'].parent != root/'model':
         raise ValueError('Model/tokenizer must stay in the private runtime model directory.')
     profile = json.loads(files['profile'].read_text())
