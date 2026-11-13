@@ -36,26 +36,45 @@ def _valid_utc_timestamp(value):
 
 
 def _pinned_asset_hashes(llama_root):
-    """Expected artifact hashes from the pinned assets manifest, when present.
+    """Expected (artifact, tokenizer) hash sets from the pinned manifests.
 
-    Same trust root the cold path verifies against; None when the manifest is
-    unavailable (e.g. PC-side tests), in which case only presence/format are
-    enforced. Membership, not key position, is checked so schema detail stays
-    with edge_jetson_smoke.
+    Same trust root the cold path verifies against: the exported artifact hash
+    comes from the export manifest, and the source-assets manifest (which pins
+    the tokenizer) is itself pinned by hash from the export manifest. Returns
+    None only when llama_root is None - a unit-test path; the CLI always
+    supplies a root. With a root supplied, any missing, unreadable, malformed
+    or inconsistent manifest fails closed: the gate is never silently weakened.
     """
     if llama_root is None:
         return None
-    manifest = Path(llama_root) / "model" / "llama3_2_1b_assets.json"
+    model_dir = Path(llama_root) / "model"
     try:
-        assets = json.loads(manifest.read_text())
-    except (OSError, ValueError):
-        return None
-    files = assets.get("files") if isinstance(assets, dict) else None
-    if not isinstance(files, dict):
-        return None
-    pinned = {entry.get("sha256") for entry in files.values() if isinstance(entry, dict)}
-    pinned = {value for value in pinned if _valid_sha256(value)}
-    return pinned or None
+        export = json.loads((model_dir / "llama3_2_1b_export.json").read_text())
+        assets_bytes = (model_dir / "llama3_2_1b_assets.json").read_bytes()
+        assets = json.loads(assets_bytes)
+    except (OSError, ValueError) as error:
+        raise RuntimeError(
+            f"Pinned export/assets manifests are missing or unreadable: {error}") from error
+    if not isinstance(export, dict) or not isinstance(assets, dict):
+        raise RuntimeError("Pinned export/assets manifests have an unexpected schema.")
+    inputs = export.get("inputs_sha256")
+    pinned_assets_file = (inputs.get("manifests/llama3_2_1b_assets.json")
+                          if isinstance(inputs, dict) else None)
+    if not _valid_sha256(pinned_assets_file):
+        raise RuntimeError("Pinned export manifest does not pin the source-assets manifest.")
+    if hashlib.sha256(assets_bytes).hexdigest() != pinned_assets_file:
+        raise RuntimeError("Pinned export/assets manifests are inconsistent.")
+    artifact_entry = export.get("artifact")
+    artifact = artifact_entry.get("sha256") if isinstance(artifact_entry, dict) else None
+    if not _valid_sha256(artifact):
+        raise RuntimeError("Pinned export manifest has no valid artifact hash.")
+    files = assets.get("files")
+    tokenizer_pins = {entry.get("sha256") for entry in files.values()
+                      if isinstance(entry, dict)} if isinstance(files, dict) else set()
+    tokenizer_pins = {value for value in tokenizer_pins if _valid_sha256(value)}
+    if not tokenizer_pins:
+        raise RuntimeError("Pinned source-assets manifest has no valid asset hashes.")
+    return {artifact}, tokenizer_pins
 
 
 def _generate_via_worker(args, context, root, report, source_mode):
@@ -92,8 +111,10 @@ def _generate_via_worker(args, context, root, report, source_mode):
                 or not _valid_sha256(tokenizer_sha)):
             raise RuntimeError("Persistent worker response lacks verified runtime evidence; refusing to attest it.")
         pinned = _pinned_asset_hashes(args.llama_root)
-        if pinned is not None and (artifact_sha not in pinned or tokenizer_sha not in pinned):
-            raise RuntimeError("Persistent worker evidence does not match the pinned asset manifest.")
+        if pinned is not None:
+            artifact_pins, tokenizer_pins = pinned
+            if artifact_sha not in artifact_pins or tokenizer_sha not in tokenizer_pins:
+                raise RuntimeError("Persistent worker evidence does not match the pinned asset manifest.")
         report["native"] = {"status": native.get("status"),
                             "worker_mode": native.get("worker_mode"),
                             "worker_started_utc": native.get("worker_started_utc"),

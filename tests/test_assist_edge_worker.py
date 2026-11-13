@@ -252,7 +252,9 @@ class ControllerWiringTests(unittest.TestCase):
     def tearDown(self):
         self.dir.cleanup()
 
-    def fake_worker(self, reply_report):
+    def fake_worker(self, reply_report, evidence=None):
+        evidence = evidence or {"artifact": {"sha256": "1" * 64},
+                                "tokenizer": {"sha256": "2" * 64}}
         server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         server.bind(str(self.socket_path))
         server.listen(1)
@@ -267,33 +269,98 @@ class ControllerWiringTests(unittest.TestCase):
                 "status": "GENERATED_BY_PERSISTENT_WORKER",
                 "worker_mode": "PERSISTENT_PROCESS",
                 "worker_started_utc": "2026-11-14T00:00:00Z",
-                "runtime_evidence": {"artifact": {"sha256": "1" * 64},
-                                     "tokenizer": {"sha256": "2" * 64}},
+                "runtime_evidence": evidence,
                 "prompt_token_count": 40,
                 "stats": {"prompt_tokens": 40, "generated_tokens": 33},
                 "generated_text": self.REVIEW_NOTE}}
             connection.sendall(json.dumps(payload).encode() + b"\n")
         server.close()
 
-    def run_controller(self):
+    def run_controller(self, llama_root=None):
         import sys
         from unittest import mock
         from forgesight import assist_jetson_replay_once as replay
         argv = ["prog", "--record", str(self.record_path),
                 "--database", str(self.database),
                 "--guidance", "guidance/prototype_inspection_v1.json",
-                "--llama-root", str(Path(self.dir.name) / "unused_llama_root"),
+                "--llama-root", str(llama_root or Path(self.dir.name) / "unused_llama_root"),
                 "--output-dir", str(self.output),
                 "--llama-worker-socket", str(self.socket_path)]
         with mock.patch.object(sys, "argv", argv), \
              mock.patch("subprocess.run", side_effect=AssertionError("cold subprocess spawned")):
             replay.main()
 
+    def shipped_llama_root(self):
+        """A llama_root carrying the real shipped manifests (not synthetic hashes)."""
+        import shutil
+        llama_root = Path(self.dir.name) / "shipped_llama"
+        (llama_root / "model").mkdir(parents=True)
+        for name in ("llama3_2_1b_export.json", "llama3_2_1b_assets.json"):
+            shutil.copy(Path("manifests") / name, llama_root / "model" / name)
+        return llama_root
+
+    def shipped_evidence(self, artifact_sha=None):
+        export = json.loads(Path("manifests/llama3_2_1b_export.json").read_text())
+        assets = json.loads(Path("manifests/llama3_2_1b_assets.json").read_text())
+        return {"artifact": {"sha256": artifact_sha or export["artifact"]["sha256"]},
+                "tokenizer": {"sha256": assets["files"]["original/tokenizer.model"]["sha256"]}}
+
+    def test_shipped_manifest_gate_accepts_real_evidence(self):
+        # The pinned-asset gate must accept the hashes the shipped manifests
+        # actually record: the exported PTE hash lives in the export manifest,
+        # the tokenizer hash in the source-assets manifest it pins by hash.
+        seen = {}
+        thread = threading.Thread(target=self.fake_worker,
+                                  args=(seen, self.shipped_evidence()), daemon=True)
+        thread.start()
+        self.run_controller(llama_root=self.shipped_llama_root())
+        thread.join(timeout=10)
+        report = json.loads((self.output / "advice_report.json").read_text())
+        self.assertEqual(report["status"], "JETSON_ADVICE_GENERATED_REQUIRES_HUMAN_REVIEW")
+        self.assertEqual(report["llama_runtime_mode"], "PERSISTENT_WORKER")
+        self.assertEqual(report["native"]["model_sha256"], self.shipped_evidence()["artifact"]["sha256"])
+
+    def test_shipped_manifest_gate_rejects_unpinned_evidence(self):
+        # Same shipped manifests, but the worker reports an artifact hash the
+        # export manifest does not pin: hard failure, never a cold fallback.
+        args_seen = {}
+        thread = threading.Thread(target=self.fake_worker,
+                                  args=(args_seen, self.shipped_evidence(artifact_sha="3" * 64)),
+                                  daemon=True)
+        thread.start()
+        with self.assertRaises(SystemExit):  # withheld advice exits nonzero
+            self.run_controller(llama_root=self.shipped_llama_root())
+        thread.join(timeout=10)
+        report = json.loads((self.output / "advice_report.json").read_text())
+        self.assertEqual(report["status"], "ADVICE_UNAVAILABLE")
+        self.assertIn("pinned asset manifest", report["runtime_error"])
+        self.assertNotIn("persistent_worker_transport_error", report)
+        self.assertEqual(report["llama_runtime_mode"], "PERSISTENT_WORKER")
+
+    def test_shipped_manifest_gate_fails_closed_on_inconsistent_pair(self):
+        # A source-assets manifest whose hash differs from the one the export
+        # manifest pins is tampering, not "manifest unavailable": fail closed.
+        llama_root = self.shipped_llama_root()
+        assets_path = llama_root / "model" / "llama3_2_1b_assets.json"
+        assets_path.write_text(assets_path.read_text() + "\n")
+        seen = {}
+        thread = threading.Thread(target=self.fake_worker,
+                                  args=(seen, self.shipped_evidence()), daemon=True)
+        thread.start()
+        with self.assertRaises(SystemExit):  # inconsistent manifests fail closed
+            self.run_controller(llama_root=llama_root)
+        thread.join(timeout=10)
+        report = json.loads((self.output / "advice_report.json").read_text())
+        self.assertEqual(report["status"], "ADVICE_UNAVAILABLE")
+        self.assertIn("inconsistent", report["runtime_error"])
+        self.assertNotIn("persistent_worker_transport_error", report)
+
     def test_worker_path_end_to_end(self):
         seen = {}
-        thread = threading.Thread(target=self.fake_worker, args=(seen,), daemon=True)
+        thread = threading.Thread(target=self.fake_worker,
+                                  args=(seen, self.shipped_evidence()), daemon=True)
         thread.start()
-        self.run_controller()
+        self.run_controller(llama_root=self.shipped_llama_root())
         thread.join(timeout=10)
         report = json.loads((self.output / "advice_report.json").read_text())
         self.assertEqual(report["status"], "JETSON_ADVICE_GENERATED_REQUIRES_HUMAN_REVIEW")
@@ -309,7 +376,7 @@ class ControllerWiringTests(unittest.TestCase):
         self.assertEqual(shown["status"], "GENERATED_REQUIRES_HUMAN_REVIEW")
         self.assertEqual(shown["advisory"]["note"], self.REVIEW_NOTE)
         self.assertTrue(report["inspection_and_sqlite_unchanged"])
-        self.assertEqual(report["native"]["model_sha256"], "1" * 64)
+        self.assertEqual(report["native"]["model_sha256"], self.shipped_evidence()["artifact"]["sha256"])
         self.assertIsNone(report["native"]["process_wall_seconds"])
         self.assertEqual(report["advisory"]["authoritative_grade"], "REVIEW")
         # The worker received only prompt/system text and the token budget:
