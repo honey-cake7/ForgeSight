@@ -230,7 +230,16 @@ def request(socket_path, request_dict, timeout_seconds=180, connect_retries=50):
         connection.close()
     if not chunks:
         raise ConnectionError("Advisory worker closed without a response")
-    payload = json.loads(b"".join(chunks).split(b"\n", 1)[0].decode("utf-8"))
+    try:
+        payload = json.loads(b"".join(chunks).split(b"\n", 1)[0].decode("utf-8"))
+    except ValueError as error:
+        # Transport corruption (truncated or undecodable bytes), not a
+        # validation failure: the caller may retry on the cold path.
+        raise ConnectionError("Advisory worker reply was not valid JSON") from error
+    if not isinstance(payload, dict):
+        # Valid JSON from something not speaking the worker protocol: fail
+        # closed rather than misread it or retry around it.
+        raise RuntimeError("Advisory worker reply was not a JSON object")
     if payload.get("status") != "OK":
         error = payload.get("error") or {}
         raise RuntimeError(f"Advisory worker error: {error.get('type')}: {error.get('message')}")
