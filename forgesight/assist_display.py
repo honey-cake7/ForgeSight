@@ -42,7 +42,9 @@ def advice_for(record, root):
                 or advisory.get("jetson_verified") is not True
                 or advisory.get("source_mode") != record["source"]["mode"]
                 or not isinstance(report.get("native"), dict)
-                or report["native"].get("status") != "JETSON_EXECUTORCH_LLAMA_GENERATION_VERIFIED"):
+                or report["native"].get("status") not in (
+                    "JETSON_EXECUTORCH_LLAMA_GENERATION_VERIFIED",
+                    "GENERATED_BY_PERSISTENT_WORKER")):
             raise ValueError("Advisory provenance is invalid")
         response = advisory.get("response")
         if not isinstance(response, dict):
