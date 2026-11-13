@@ -63,7 +63,16 @@ function renderAdvice(advice, latest, inspectionBusy) {
     ADVICE_UNAVAILABLE: 'Llama advice was unavailable. The inspection grade is unchanged.',
     GENERATED_REQUIRES_HUMAN_REVIEW: 'ExecuTorch generation verified · human review required.'
   };
-  byId('advice-status').textContent = labels[status] || 'Llama advice status is unknown.';
+  let label = labels[status] || 'Llama advice status is unknown.';
+  if (advice?.llama_runtime === 'PERSISTENT_WORKER') {
+    label += ' Warm worker: the model stays loaded between notes.';
+  } else if (advice?.llama_runtime === 'COLD_SUBPROCESS') {
+    label += ' Cold process: the model loads for each note.';
+  }
+  if (advice?.advice_worker_boot_error) {
+    label += ' The persistent worker did not start, so advice uses the slower cold path.';
+  }
+  byId('advice-status').textContent = label;
   const note = advice?.advisory?.note;
   byId('advice-note').hidden = status !== 'GENERATED_REQUIRES_HUMAN_REVIEW' || !note;
   byId('advice-note').textContent = note || '';
