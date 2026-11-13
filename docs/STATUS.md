@@ -2,6 +2,13 @@
 
 ## Current stage
 
+**Jetson GPU probe PARTIAL.** The hash-checked frozen EfficientAD-S model was
+exported to ONNX and TensorRT 8.5.2.2 built a separate FP32 GPU engine on the
+Jetson (exit 0). The GPU inference command was stopped before execution by an
+automatic tool approval usage limit, so there is no GPU score, map, parity or
+speed result yet. The working CPU vision and ExecuTorch Llama runtimes remain
+unchanged. See `manifests/jetson_gpu_probe_v1.json`.
+
 **Full 111-image MVTec holdout score batch VERIFIED on the physical Jetson.**
 Every original image SHA-256 matched the frozen manifest. At the fixed image
 threshold, 87 of 89 defect-folder images were flagged, 20 of 22 good images

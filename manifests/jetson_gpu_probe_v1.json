@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "TENSORRT_ENGINE_BUILT_INFERENCE_NOT_VERIFIED",
+  "device": "NVIDIA Jetson Orin Nano 8GB, aarch64, JetPack 5.1.5 family",
+  "scope": "Frozen EfficientAD-S fixed-shape FP32 GPU feasibility probe",
+  "source_model_sha256": "8766c41a51a5444f57f564134427bbd2d2d95dd6ec5ff08b24698f00f7f55dcd",
+  "onnx_sha256": "f06b7eef93547deb9b1416bb28b6022535cb6af1ccdfb481f7aa8e22f9e30433",
+  "onnx_export": {
+    "opset": 17,
+    "input": "image: float32[1,3,256,256]",
+    "outputs": ["anomaly_map", "score"],
+    "onnx_checker_passed": true,
+    "jetson_transfer_sha256_matched": true
+  },
+  "jetson_runtime": {
+    "tensorrt_version": "8.5.2.2",
+    "fast_fp16_supported": true,
+    "tool": "/usr/src/tensorrt/bin/trtexec",
+    "engine_mode": "FP32; no --fp16 flag",
+    "build_command": "trtexec --onnx=efficientad_s.onnx --saveEngine=efficientad_fp32.plan --workspace=1024 --buildOnly",
+    "build_exit_code": 0,
+    "build_log_observation": "TensorRT listed GPU convolution, resize, pointwise and reduce layers. Some tactics were skipped because available device memory was below their request."
+  },
+  "parity_input": {
+    "source": "artifacts/vision/edge_replay_pc_check_01/input.npy",
+    "raw_float32_sha256": "b1922d167d0c83de8b8e10f2e2491ba45f53e95f2e1c9b7c50e11768b315c0ce",
+    "raw_bytes": 786432,
+    "pc_torchscript_score": 0.6828089952468872
+  },
+  "gpu_output": null,
+  "gpu_latency_ms": null,
+  "gpu_cpu_parity": null,
+  "blocker": "The automatic approval review rejected the SSH command to run the engine because the tool usage limit was reached. That command did not execute. Resume the GPU inference and output comparison after tool access is restored.",
+  "limits": [
+    "A successful engine build establishes TensorRT conversion, not GPU inference correctness or speed.",
+    "No GPU anomaly map, score, latency, full-pipeline timing or physical-nut result has been measured.",
+    "The production UI and isolated CPU and ExecuTorch runtimes were not changed."
+  ]
+}
