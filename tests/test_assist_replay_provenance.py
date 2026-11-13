@@ -9,6 +9,7 @@ _generate_via_worker against a stub socket server; no model executes.
 """
 
 import json
+import hashlib
 import socket
 import threading
 import unittest
@@ -39,6 +40,18 @@ def serve_once(sock_path, worker_report):
             data += block
         connection.sendall(json.dumps({"status": "OK", "report": worker_report}).encode() + b"\n")
     server.close()
+
+
+def write_pinned_manifests(model_dir, artifact_sha, tokenizer_sha):
+    """A consistent synthetic manifest pair in the real shipped schema: the
+    export manifest pins the artifact and, by hash, the source-assets manifest
+    that pins the tokenizer."""
+    assets_bytes = json.dumps({"files": {"original/tokenizer.model": {"sha256": tokenizer_sha}}}).encode()
+    export = {"artifact": {"sha256": artifact_sha},
+              "inputs_sha256": {"manifests/llama3_2_1b_assets.json":
+                                hashlib.sha256(assets_bytes).hexdigest()}}
+    (model_dir / "llama3_2_1b_assets.json").write_bytes(assets_bytes)
+    (model_dir / "llama3_2_1b_export.json").write_text(json.dumps(export))
 
 
 class WarmPathProvenanceTests(unittest.TestCase):
@@ -110,9 +123,7 @@ class WarmPathProvenanceTests(unittest.TestCase):
     def test_pinned_manifest_mismatch_is_refused(self):
         llama_root = self.dir / "llama"
         (llama_root / "model").mkdir(parents=True)
-        (llama_root / "model" / "llama3_2_1b_assets.json").write_text(json.dumps({
-            "files": {"original/llama3_2_1b_xnnpack.pte": {"sha256": "c" * 64},
-                      "original/tokenizer.model": {"sha256": "d" * 64}}}))
+        write_pinned_manifests(llama_root / "model", "c" * 64, "d" * 64)
         args = Namespace(llama_worker_socket=self.dir / "pin.sock",
                          llama_timeout_seconds=30, llama_root=llama_root)
         report = {}
@@ -137,9 +148,7 @@ class WarmPathProvenanceTests(unittest.TestCase):
     def test_pinned_manifest_match_is_accepted(self):
         llama_root = self.dir / "llama-ok"
         (llama_root / "model").mkdir(parents=True)
-        (llama_root / "model" / "llama3_2_1b_assets.json").write_text(json.dumps({
-            "files": {"original/llama3_2_1b_xnnpack.pte": {"sha256": "a" * 64},
-                      "original/tokenizer.model": {"sha256": "b" * 64}}}))
+        write_pinned_manifests(llama_root / "model", "a" * 64, "b" * 64)
         args = Namespace(llama_worker_socket=self.dir / "pin-ok.sock",
                          llama_timeout_seconds=30, llama_root=llama_root)
         report = {}

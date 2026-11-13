@@ -36,26 +36,41 @@ def _valid_utc_timestamp(value):
 
 
 def _pinned_asset_hashes(llama_root):
-    """Expected artifact hashes from the pinned assets manifest, when present.
+    """Expected (artifact, tokenizer) hash sets from the pinned manifests.
 
-    Same trust root the cold path verifies against; None when the manifest is
-    unavailable (e.g. PC-side tests), in which case only presence/format are
-    enforced. Membership, not key position, is checked so schema detail stays
-    with edge_jetson_smoke.
+    Same trust root the cold path verifies against: the exported artifact hash
+    comes from the export manifest, and the source-assets manifest (which pins
+    the tokenizer) is itself pinned by hash from the export manifest. None
+    when the manifests are unavailable (e.g. PC-side tests), in which case
+    only presence/format are enforced. A present-but-inconsistent pair is
+    tampering, not unavailability, and fails closed.
     """
     if llama_root is None:
         return None
-    manifest = Path(llama_root) / "model" / "llama3_2_1b_assets.json"
+    model_dir = Path(llama_root) / "model"
     try:
-        assets = json.loads(manifest.read_text())
+        export = json.loads((model_dir / "llama3_2_1b_export.json").read_text())
+        assets_bytes = (model_dir / "llama3_2_1b_assets.json").read_bytes()
+        assets = json.loads(assets_bytes)
     except (OSError, ValueError):
         return None
-    files = assets.get("files") if isinstance(assets, dict) else None
-    if not isinstance(files, dict):
+    if not isinstance(export, dict) or not isinstance(assets, dict):
         return None
-    pinned = {entry.get("sha256") for entry in files.values() if isinstance(entry, dict)}
-    pinned = {value for value in pinned if _valid_sha256(value)}
-    return pinned or None
+    pinned_assets_file = (export.get("inputs_sha256") or {}).get(
+        "manifests/llama3_2_1b_assets.json")
+    if not _valid_sha256(pinned_assets_file):
+        return None
+    if hashlib.sha256(assets_bytes).hexdigest() != pinned_assets_file:
+        raise RuntimeError("Pinned export/assets manifests are inconsistent.")
+    artifact = (export.get("artifact") or {}).get("sha256")
+    files = assets.get("files")
+    tokenizer_pins = {entry.get("sha256") for entry in files.values()
+                      if isinstance(entry, dict)} if isinstance(files, dict) else set()
+    tokenizer_pins = {value for value in tokenizer_pins if _valid_sha256(value)}
+    artifact_pins = {artifact} if _valid_sha256(artifact) else set()
+    if not artifact_pins or not tokenizer_pins:
+        return None
+    return artifact_pins, tokenizer_pins
 
 
 def _generate_via_worker(args, context, root, report, source_mode):
@@ -92,8 +107,10 @@ def _generate_via_worker(args, context, root, report, source_mode):
                 or not _valid_sha256(tokenizer_sha)):
             raise RuntimeError("Persistent worker response lacks verified runtime evidence; refusing to attest it.")
         pinned = _pinned_asset_hashes(args.llama_root)
-        if pinned is not None and (artifact_sha not in pinned or tokenizer_sha not in pinned):
-            raise RuntimeError("Persistent worker evidence does not match the pinned asset manifest.")
+        if pinned is not None:
+            artifact_pins, tokenizer_pins = pinned
+            if artifact_sha not in artifact_pins or tokenizer_sha not in tokenizer_pins:
+                raise RuntimeError("Persistent worker evidence does not match the pinned asset manifest.")
         report["native"] = {"status": native.get("status"),
                             "worker_mode": native.get("worker_mode"),
                             "worker_started_utc": native.get("worker_started_utc"),
