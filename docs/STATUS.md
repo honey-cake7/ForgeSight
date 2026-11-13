@@ -2,6 +2,19 @@
 
 ## Current stage
 
+**Full 111-image MVTec holdout score batch VERIFIED on the physical Jetson.**
+Every original image SHA-256 matched the frozen manifest. At the fixed image
+threshold, 87 of 89 defect-folder images were flagged, 20 of 22 good images
+were unflagged, two good images were false alarms, and two scratch images were
+missed and received provisional PASS. The three REVIEW-band images were good.
+Jetson and both PC references had zero candidate disagreements (largest score
+difference under 0.00001). Two-thread single-process model-forward p50/p95
+were 1,520.5/1,611.2 ms; total score-only batch wall time was 182.0 s;
+worker peak RSS was 459,772 KiB. This excludes UI, maps, SQLite, camera and
+Llama. The result does not validate real-part decisions. Next: inspect the
+four error images with anomaly maps and ground-truth masks before any policy
+or speed changes. See `manifests/jetson_holdout_batch_v1.json`.
+
 **Combined MVTec upload and on-device Llama advisory VERIFIED for one saved
 defect image.** The Jetson UI was updated from a hash-checked source bundle
 with its prior files backed up privately. A new upload of the original
@@ -629,7 +642,7 @@ device-only operation correctly exited 2. See `docs/EDGE_RUNTIME.md`.
 | Meta Llama access and local source assets | VERIFIED | User-confirmed access; five files match pinned publisher metadata |
 | Desktop Llama export and artifact metadata | VERIFIED, not inference | Recorded PTE hash and program metadata; generation has separate evidence and quality remains open |
 | Desktop Llama generation via ExecuTorch | VERIFIED, PC-only smoke | Real native runner output and provenance; no device or advice-quality claim |
-| Vision benchmark anomaly detection | VERIFIED on PC only | Frozen 111-image evaluation: 87/89 defects flagged, 2/22 false alarms; physical camera/edge proof open |
+| Vision benchmark anomaly detection | VERIFIED on PC and Jetson saved-image score batches | Frozen 111-image evaluation: 87/89 defect-folder images flagged, 2/22 good-image false alarms; physical camera accuracy open |
 | Defect-type classification | NOT VERIFIED | Current predicted types remain unknown; need valid same-domain classification evidence |
 | Pixel-only decision rules | PC PROTOTYPE VERIFIED | Deterministic policy tests/replay; physical tolerances, severity and industrial certification open |
 | Local history and duplicates after restart | PC SQLITE REPLAY VERIFIED | Four original records survive writer exit, exact retries add zero rows; no physical identity or power-loss claim |
@@ -641,6 +654,7 @@ and GPU availability still do not establish a Jetson camera-inspection system.
 
 ## Next exact task
 
-Continue Stage 10 with decoder-level corrupt-input handling and any available
-offline browser proof. Physical-nut camera acceptance and distinct-parts
-throughput remain open until a nut is available.
+Inspect the four MVTec score errors with saved anomaly maps and ground-truth
+masks. Keep the frozen threshold unchanged; any subsequent tuning needs a new
+untouched evaluation set. Physical-nut camera acceptance, UI throughput and
+offline browser proof remain separate open gates.

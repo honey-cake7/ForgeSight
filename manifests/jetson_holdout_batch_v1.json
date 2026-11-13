@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "status": "JETSON_SCORE_ONLY_HOLDOUT_BATCH_VERIFIED",
+  "scope": "111 original MVTec metal_nut final-holdout PNGs; saved-image scores only",
+  "device": "NVIDIA Jetson Orin Nano aarch64, Linux 5.10.216-tegra",
+  "runtime": "isolated vision_cpu_v1 Python with PyTorch 2.14.0+cpu, two CPU threads",
+  "jetson_command": "/usr/bin/python3 -B -m forgesight.vision_edge_batch --dataset-root staging/holdout_batch_v1/work/data/mvtec_ad/metal_nut --manifest staging/holdout_batch_v1/work/manifests/metal_nut_v1.json --policy staging/holdout_batch_v1/work/configs/forgegrade_benchmark_v1.json --vision-python /home/nvidia/.local/share/forgesight/vision_cpu_v1/venv/bin/python --model /home/nvidia/.local/share/forgesight/vision_cpu_v1/efficientad_s_calibrated.ts --threads 2 --output staging/holdout_batch_v1/run_01",
+  "local_analysis_script": "scripts/analyze_jetson_holdout_batch.py",
+  "transfer_bundle_sha256": "35c5e9085cf18678dcbc20aeb2de0dbfbcdf1f91e892830f91592cc6f210280c",
+  "results_bundle_sha256": "f9adcc79af13b98f7a1c357004735421002f468c79a798b6feabee42283f26fb",
+  "report_sha256": "a0b67430760a28468d8d866f1bcc75f692c5270eda068ece9c57f13e6bee893d",
+  "predictions_sha256": "38873f103139ef6c5dfc3af96ecf3b2ede2c2f3ef8b3563e5387d439daee0abe",
+  "analysis_sha256": "3cbba7476703b025feeeff2846fa1543ca07fe87541754456cf06c83f8376271",
+  "model_sha256": "8766c41a51a5444f57f564134427bbd2d2d95dd6ec5ff08b24698f00f7f55dcd",
+  "dataset_manifest_sha256": "14b11ebd03d5107c7ef3478e1c4d20887237e2fbef58601ac043014b8f0e340f",
+  "benchmark_policy_sha256": "22edb41921f2f4c94ec2e5ab417508d54e4e4169845f4b3aa375b64904b55ab6d",
+  "image_threshold": 0.22776579856872559,
+  "review_band_start": 0.20498921871185302,
+  "all_111_source_hashes_matched_manifest": true,
+  "images": 111,
+  "candidate_confusion": {"tp": 87, "tn": 20, "fp": 2, "fn": 2},
+  "benchmark_grade_counts": {"PASS": 19, "REVIEW": 3, "REJECT": 89},
+  "by_truth_folder": {
+    "bent": {"flagged": 24, "images": 24},
+    "color": {"flagged": 21, "images": 21},
+    "flip": {"flagged": 22, "images": 22},
+    "good": {"unflagged": 20, "flagged": 2, "images": 22},
+    "scratch": {"flagged": 20, "missed": 2, "images": 22}
+  },
+  "wrong_candidate_images": [
+    {"path": "test/good/007.png", "score": 0.26956164836883545, "grade": "REJECT"},
+    {"path": "test/good/016.png", "score": 0.8085193037986755, "grade": "REJECT"},
+    {"path": "test/scratch/000.png", "score": 0.1989695131778717, "grade": "PASS"},
+    {"path": "test/scratch/022.png", "score": 0.14797410368919373, "grade": "PASS"}
+  ],
+  "review_band_images": ["test/good/006.png", "test/good/011.png", "test/good/012.png"],
+  "pc_batch_comparison": {
+    "reference_sha256": "4572b9b9ca427310b36e9ac364a51772bf5ba472b992f36749e16a0199f9f51a",
+    "max_absolute_score_difference": 0.0000095367431640625,
+    "candidate_disagreements": []
+  },
+  "pc_original_evaluation_comparison": {
+    "reference_sha256": "42c13562a15e6da3fae172c76392ac5c503d47a4f3cbbf5fbcd57578ef19f106",
+    "max_absolute_score_difference": 0.00000667572021484375,
+    "candidate_disagreements": []
+  },
+  "timing_and_memory": {
+    "model_load_ms": 113.05112599984568,
+    "model_forward_p50_ms": 1520.5410530015797,
+    "model_forward_p95_ms": 1611.233643500782,
+    "worker_image_p50_ms": 1525.8919590014557,
+    "worker_image_p95_ms": 1627.3079299999154,
+    "preprocess_wall_ms": 5366.7616749989975,
+    "vision_process_wall_ms": 176345.1048240004,
+    "controller_total_wall_ms": 182040.2949899999,
+    "worker_peak_rss_kib": 459772
+  },
+  "limits": [
+    "This is image-level MVTec benchmark evidence, not physical-nut accuracy.",
+    "Batch timing excludes UI, camera, anomaly maps, overlay, SQLite, and Llama.",
+    "The two missed scratch images received provisional PASS, so this threshold is not acceptable as a final physical-part safety policy.",
+    "No threshold was changed using the final holdout; error causes need separate map and ground-truth inspection."
+  ]
+}
