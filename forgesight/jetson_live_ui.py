@@ -362,7 +362,7 @@ class LiveService:
         record = json.loads(record_path.read_text())
         advice = advice_for(record, self.advice_root)
         if future is not None and not future.done():
-            return {"status": "PENDING", "advisory": None}
+            return {"status": "PENDING", "advisory": None, **mode}
         if future is not None and advice["status"] in ("NOT_REQUESTED", "PENDING"):
             return {"status": "ADVICE_UNAVAILABLE", "advisory": None, **mode}
         if isinstance(advice, dict):
