@@ -17,6 +17,7 @@ from PIL import Image, ImageDraw
 from forgesight.grade import grade_record, validate_policy
 from forgesight.regions import response_regions
 from forgesight.storage import InspectionStore
+from forgesight.vision_edge_worker import request as worker_request
 
 
 def sha256(path):
@@ -60,6 +61,8 @@ def main():
     parser.add_argument("--grade-policy", type=Path, required=True)
     parser.add_argument("--database", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--vision-worker-socket", type=Path, default=None,
+                        help="Use a running vision_edge_worker.py socket instead of a fresh model process per replay.")
     parser.add_argument("--allow-fit-reference", action="store_true",
                         help="Permit only train/good/000.png as a normal runtime reference; never accuracy evidence")
     args = parser.parse_args()
@@ -113,25 +116,58 @@ def main():
                   "score_policy_sha256": policy["score_policy_sha256"],
                   "image_threshold": policy["image_threshold"],
                   "runtime_device": "jetson_cpu" if jetson else "non_jetson_cpu",
-                  "jetson_verified": jetson},
+                  "jetson_verified": jetson,
+                  "export_sha256_verified_at": ("WORKER_START_FROZEN_MODEL"
+                                                if args.vision_worker_socket is not None
+                                                else "THIS_INSPECTION")},
         "status": "ERROR", "score": None, "candidate": None,
         "predicted_defect_type": "unknown", "type_status": "NO_VALIDATED_SUBTYPE_CLASSIFIER",
         "geometry": None, "decision": None, "advice_status": "NOT_REQUESTED_STAGE_9_PENDING",
         "error": None, "artifacts": {}, "timings": {}
     }
     try:
-        record["timings"]["preprocess_process_ms"] = run_child([
-            sys.executable, "-B", str(script_dir / "vision_edge_preprocess.py"),
-            "--image", str(args.image), "--tensor", str(tensor)])
+        if args.vision_worker_socket is not None:
+            from forgesight.vision_edge_live_once import preprocess_inprocess
+            preprocess_started = time.perf_counter()
+            preprocess_inprocess(args.image, tensor)
+            record["timings"]["preprocess_process_ms"] = (time.perf_counter() - preprocess_started) * 1000
+            record["timings"]["preprocess_mode"] = "IN_PROCESS_SAME_ALGORITHM"
+        else:
+            record["timings"]["preprocess_process_ms"] = run_child([
+                sys.executable, "-B", str(script_dir / "vision_edge_preprocess.py"),
+                "--image", str(args.image), "--tensor", str(tensor)])
         record["artifacts"]["input_tensor_sha256"] = sha256(tensor)
-        record["timings"]["vision_process_ms"] = run_child([
-            str(args.vision_python), "-B", str(script_dir / "vision_edge_once.py"),
-            "--model", str(args.model), "--model-sha256", args.model_sha256,
-            "--tensor", str(tensor), "--tensor-sha256", sha256(tensor),
-            "--threshold", str(policy["image_threshold"]),
-            "--output", str(root / "inference.json"),
-            "--map-output", str(model_map),
-            "--source-map-output", str(source_map), "--source-size", "700", "700"])
+        use_worker = args.vision_worker_socket is not None
+        if use_worker:
+            try:
+                vision_started = time.perf_counter()
+                worker_request(str(args.vision_worker_socket), {
+                    "tensor": str(tensor), "tensor_sha256": sha256(tensor),
+                    "threshold": policy["image_threshold"],
+                    "output": str(root / "inference.json"),
+                    "map_output": str(model_map),
+                    "source_map_output": str(source_map), "source_size": [700, 700]})
+                record["timings"]["vision_process_ms"] = (time.perf_counter() - vision_started) * 1000
+            except OSError:
+                # Transport failure only (worker gone/hung); a request REJECTION
+                # must not fall back - the cold path would reject it identically.
+                use_worker = False  # worker exited (idle timeout); fall back to the cold process once
+                (root / "inference.json").unlink(missing_ok=True)
+                model_map.unlink(missing_ok=True)
+                source_map.unlink(missing_ok=True)
+        if not use_worker:
+            record["timings"]["vision_process_ms"] = run_child([
+                str(args.vision_python), "-B", str(script_dir / "vision_edge_once.py"),
+                "--model", str(args.model), "--model-sha256", args.model_sha256,
+                "--tensor", str(tensor), "--tensor-sha256", sha256(tensor),
+                "--threshold", str(policy["image_threshold"]),
+                "--output", str(root / "inference.json"),
+                "--map-output", str(model_map),
+                "--source-map-output", str(source_map), "--source-size", "700", "700"])
+            if args.vision_worker_socket is not None:
+                record["timings"]["vision_mode"] = "COLD_PROCESS_AFTER_WORKER_UNAVAILABLE"
+                # The cold child verified the current model bytes this run.
+                record["model"]["export_sha256_verified_at"] = "THIS_INSPECTION"
         inference = json.loads((root / "inference.json").read_text())
         if (inference["model_sha256"] != args.model_sha256
                 or inference["tensor_sha256"] != sha256(tensor)
