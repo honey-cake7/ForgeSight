@@ -76,7 +76,7 @@ def launch_vision_worker(args, worker_script=None):
     return worker
 
 
-def launch_advice_worker(args):
+def launch_advice_worker(args, python_command=None):
     """Start the persistent advisory worker and wait for its READY line.
 
     Runs the Llama venv Python with the repo root on PYTHONPATH so the venv
@@ -84,8 +84,10 @@ def launch_advice_worker(args):
     failure raises; the caller keeps the cold subprocess path available.
     """
     from collections import deque
-    command = [str(args.llama_root / "venv/bin/python"), "-B",
-               "-m", "forgesight.assist_edge_worker",
+    command = (python_command if python_command is not None
+               else [str(args.llama_root / "venv/bin/python"), "-B",
+                     "-m", "forgesight.assist_edge_worker"])
+    command = list(command) + [
                "--socket", str(args.llama_worker_socket),
                "--llama-root", str(args.llama_root),
                "--idle-timeout-seconds", str(args.llama_worker_idle_timeout_seconds)]
@@ -99,7 +101,8 @@ def launch_advice_worker(args):
         for line in worker.stderr:
             stderr_tail.append(line.rstrip())
 
-    Thread(target=drain_stderr, daemon=True).start()
+    drain = Thread(target=drain_stderr, daemon=True)
+    drain.start()
     ready_holder = []
 
     def read_ready():
@@ -113,8 +116,14 @@ def launch_advice_worker(args):
     except ValueError:
         status = {}
     if status.get("status") != "WORKER_READY":
+        exited = worker.poll()
         worker.terminate()
+        drain.join(timeout=2)  # collect the worker's own error output first
         detail = "; worker stderr tail: " + " | ".join(stderr_tail) if stderr_tail else ""
+        if exited is not None:
+            raise ValueError(
+                "Advisory worker exited during startup (code " + str(exited) +
+                ") before reporting ready" + detail)
         raise ValueError(
             "Advisory worker failed to verify and load the model within 180 seconds" + detail)
     return worker
