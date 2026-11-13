@@ -124,7 +124,8 @@ def inspect(args):
             raise ValueError("Invalid source anomaly map.")
         record["score"] = inference["score"]
         record["candidate"] = inference["candidate"]
-        record["geometry"] = response_regions(values, policy["image_threshold"])
+        record["geometry"] = response_regions(
+            values, policy["image_threshold"], mvtec_nut_layout=args.mvtec_benchmark_upload)
         record["artifacts"].update({"score_map_model": str(model_map),
                                     "score_map_model_sha256": sha256(model_map),
                                     "score_map_source": str(source_map),

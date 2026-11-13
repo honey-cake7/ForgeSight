@@ -19,39 +19,32 @@ overlay marks model response, not confirmed damage. Defect type remains
 `unknown`; physical quality accuracy, throughput and offline end-to-end
 operation remain unverified.
 
-## Test the original defect PNG without the camera
+## Upload, model response and manual review
 
-The same loopback page now has **Test an original MVTec defect image**. Select
-one of the four development-preview paths, enter a fresh replay ID, and click
-**Analyze Jetson copy**. This reads the original PNG already stored in the
-Jetson runtime; no file picker or camera is needed. If the selected file is
-missing or its hash changed, the button is unavailable or the request is
-rejected. The server checks the frozen manifest SHA-256, sample role, selected
-path and PNG SHA-256 before accepting it.
+Use **Upload your own test PNG** to choose a file on the computer running the
+browser. Enter a fresh upload ID. For an original-size 700x700 MVTec metal_nut
+PNG, check the MVTec declaration to show the provisional benchmark grade.
+This declaration is not proof of file origin. Other PNGs remain diagnostic
+REVIEW; camera results also remain REVIEW pending camera-domain validation.
 
-The optional **Upload the matching PNG from this browser's computer** section
-uses a file picker. That picker sees the computer running the browser: PC
-files if Firefox/Edge is on the PC, Jetson files if Firefox is on the Jetson.
-The Jetson dataset is under hidden `.local`, which can make it hard to browse
-to. If needed, press Ctrl+L in the picker and paste the full directory path
-below, or use **Analyze Jetson copy**. Uploads accept only the exact selected
-MVTec file. A personal photo or a different test image will be rejected by the
-current replay path; this is a deliberate boundary around the frozen
-benchmark. It does not mean EfficientAD has inspected or rejected that photo.
+The result shows the largest connected model response, its image-pixel area,
+other response regions and an overlay. For 700x700 MVTec-layout results, an
+image-centered radial rule may describe the central opening, inner rim,
+annular face or outer perimeter. It may report two adjacent areas or leave the
+area undetermined. Camera views receive no anatomical label. These approximate
+locations and the response-pixel percentage do not measure physical damage
+or establish a defect type; the pixel threshold has not been validated against
+ground-truth masks. The predicted defect type remains `unknown`.
 
-The result panel shows the raw EfficientAD score, benchmark threshold,
-candidate, response area, overlay and ForgeGrade decision. The SQLite record
-uses `SAVED_IMAGE_REPLAY` and `physical_part: false`. Camera availability does
-not control either replay button. These four images were already exposed during
-development; repeat uploads test the runtime, not new accuracy.
-
-For the first check, select `test/bent/017.png`, enter a unique ID such as
-`BENT-TEST-001`, then click **Analyze Jetson copy**. The Jetson directory is
-`/home/nvidia/.local/share/forgesight/vision_cpu_v1/data/mvtec_ad/metal_nut/test/bent/`.
-The tested local replay measured score `0.682808876` against
-threshold `0.227765799` and showed `ANOMALY_CANDIDATE`/`REVIEW`; a rerun
-should be compared against those numbers, with small runtime differences
-possible. See `manifests/jetson_ui_local_replay_v1.json`.
+In **Manual review**, open the saved original image and compare it with the
+overlay. Enter an operator ID, choose **No visible issue**, **Visible issue**,
+or **Uncertain / capture again**, and describe what you observed. SQLite saves
+an append-only, unverified claim linked to that inspection. The choice proposes
+PASS, REJECT or REVIEW respectively; the original ForgeGrade grade never
+changes. Reviewing the image helps identify bad captures and disagreements for
+later analysis, but it is not certified ground truth or a trained defect-type
+label. Llama advice remains a separate optional note for eligible saved-image
+REVIEW events and does not change the grade.
 
 ## Launch after copying this source to the Jetson vision directory
 

@@ -16,6 +16,7 @@ from urllib.request import Request, urlopen
 from PIL import Image
 
 from forgesight.jetson_live_ui import LiveService, handler_for, vision_executable
+from forgesight.storage import InspectionStore
 
 
 class StubCamera:
@@ -55,6 +56,10 @@ class StubService:
     def request_advice(self):
         self.requests.append(("advice",))
         return "PENDING"
+
+    def manual_review(self, inspection_id, actor, outcome, reason):
+        self.requests.append(("review", inspection_id, actor, outcome, reason))
+        return {"verification_status": "UNVERIFIED_OPERATOR_CLAIM"}
 
 
 class LiveHttpTests(unittest.TestCase):
@@ -177,6 +182,45 @@ class LiveHttpTests(unittest.TestCase):
         with self.assertRaises(HTTPError) as rejected:
             urlopen(request)
         self.assertEqual(rejected.exception.code, 400)
+
+    def test_manual_review_route_requires_same_origin_and_bounded_json(self):
+        self.assertIn(b"Manual review", urlopen(self.base).read())
+        body = json.dumps({"inspection_id": "fixture", "actor": "Operator-1",
+                           "outcome": "visible_issue", "reason": "Visible response"}).encode()
+        request = Request(self.base + "/api/manual-review", method="POST", data=body,
+                          headers={"Origin": self.base, "Content-Type": "application/json"})
+        self.assertEqual(urlopen(request).status, 201)
+        self.assertEqual(self.service.requests[-1],
+                         ("review", "fixture", "Operator-1", "visible_issue", "Visible response"))
+        request = Request(self.base + "/api/manual-review", method="POST", data=body,
+                          headers={"Origin": "http://elsewhere.invalid", "Content-Type": "application/json"})
+        with self.assertRaises(HTTPError) as rejected:
+            urlopen(request)
+        self.assertEqual(rejected.exception.code, 403)
+
+
+class ManualReviewStoreTests(unittest.TestCase):
+    def test_operator_findings_are_append_only_claims_and_do_not_change_grade(self):
+        with TemporaryDirectory() as folder:
+            store = InspectionStore(Path(folder) / "inspections.sqlite3")
+            original = json.loads(Path("manifests/graded_inspection_replay_v1.json").read_text())["records"][0]
+            store.save_inspection(original)
+            service = LiveService.__new__(LiveService)
+            service.store = store
+            service.lock = Lock()
+            service.busy = False
+            service.latest = {"inspection_id": original["inspection_id"], "status": "ANALYZED"}
+            for outcome, grade in (("visible_issue", "REJECT"), ("uncertain_or_recapture", "REVIEW")):
+                review = service.manual_review(original["inspection_id"], "Operator-1", outcome,
+                                               "Checked the saved original and overlay")
+                self.assertEqual(review["proposed_grade"], grade)
+                self.assertEqual(review["verification_status"], "UNVERIFIED_OPERATOR_CLAIM")
+            self.assertEqual(len(store.corrections(original["inspection_id"])), 2)
+            self.assertEqual(store.get_inspection(original["inspection_id"]), original)
+            with self.assertRaises(ValueError):
+                service.manual_review("stale-id", "Operator-1", "visible_issue", "Checked image")
+            with self.assertRaises(ValueError):
+                service.manual_review(original["inspection_id"], "Operator-1", "fabricated", "Checked image")
 
 
 class ReplayIntakeTests(unittest.TestCase):

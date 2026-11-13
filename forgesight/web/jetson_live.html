@@ -33,6 +33,13 @@
       <p id="advice-note" hidden></p>
       <p class="replay-footnote">Advice is a checked operator note. It cannot change the saved grade or identify a confirmed defect cause.</p>
     </section>
+    <section class="panel review-panel">
+      <div class="panel-head"><div><h2>Manual review</h2><p>Operator finding saved separately from the model result</p></div></div>
+      <p>Compare the <a href="/api/source.png" target="_blank" rel="noopener">saved original image</a> with the red overlay. Record what you can see; this does not change the original grade or confirm a defect type.</p>
+      <div class="review-fields"><label>Your name or operator ID<input id="review-actor" maxlength="64" autocomplete="off" placeholder="Example: Operator-1"></label><label>What did you observe?<select id="review-outcome"><option value="">Choose a finding</option><option value="no_visible_issue">No visible issue</option><option value="visible_issue">Visible issue</option><option value="uncertain_or_recapture">Uncertain / capture again</option></select></label><label class="review-reason">Observation<textarea id="review-reason" maxlength="500" rows="3" placeholder="Describe what you checked in the saved image"></textarea></label></div>
+      <button id="review-submit" disabled>Save review finding</button><p id="review-status" role="status" aria-live="polite">Analyze an image before reviewing it.</p><div id="review-history" class="review-history"></div>
+      <p class="replay-footnote">Reviews are unverified operator claims in the local SQLite audit log. A visible issue proposes REJECT; no visible issue proposes PASS; uncertainty proposes REVIEW. No proposal changes the model grade.</p>
+    </section>
     <section class="panel history"><div class="panel-head"><div><h2>Recent inspections</h2><p>Stored locally in SQLite</p></div></div><div id="history">No inspections yet.</div></section>
   </main>
 </body>

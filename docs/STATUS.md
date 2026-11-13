@@ -2,6 +2,17 @@
 
 ## Current stage
 
+**Local area-description and manual-review substep VERIFIED in PC/WSL tests;
+Jetson deployment pending.** The UI can show the largest response region, its
+image-pixel area, other regions, and approximate nut-centered area for an
+original-size MVTec upload. A real local EfficientAD scratch-image run saved
+the map, overlay and SQLite record; the largest response crossed the inner rim
+and annular face. Manual review now records an append-only, unverified operator
+claim while preserving the original grade. Fifty-four focused tests passed.
+Defect type remains unknown; area labels, pixel threshold and operator findings
+are not validated physical damage evidence. Next: deploy this update to the
+Jetson, verify one review there, then run the planned 111-image device batch.
+
 **Jetson-copy replay button VERIFIED.** The earlier upload picker caused
 confusion because it browses the browser computer and the Jetson runtime lives
 under hidden `.local`. The UI now offers **Analyze Jetson copy** for the four

@@ -4,11 +4,19 @@ const overlay = byId('overlay');
 let priorInspection = null;
 let cameraReady = false;
 let busy = false;
+let currentLatest = null;
+const regionNote = document.createElement('p');
+regionNote.id = 'response-regions';
+regionNote.className = 'response-note';
+byId('response-note').before(regionNote);
 
 function updateButton() {
   byId('inspect').disabled = !cameraReady || busy || !byId('confirmed').checked || !/^[A-Za-z0-9_-]{1,64}$/.test(byId('part-id').value);
   byId('diagnostic-submit').disabled = busy || !byId('diagnostic-file').files.length ||
     !/^[A-Za-z0-9_-]{1,64}$/.test(byId('diagnostic-id').value);
+  byId('review-submit').disabled = busy || currentLatest?.status !== 'ANALYZED' ||
+    !/^[A-Za-z0-9 _.-]{1,64}$/.test(byId('review-actor').value) ||
+    !byId('review-outcome').value || byId('review-reason').value.trim().length < 3;
 }
 
 async function refreshState() {
@@ -18,6 +26,7 @@ async function refreshState() {
     const state = await response.json();
     cameraReady = !!state.camera.ready;
     busy = !!state.busy;
+    currentLatest = state.latest;
     const badge = byId('camera-status');
     badge.textContent = state.camera.message;
     badge.classList.toggle('ready', cameraReady);
@@ -29,6 +38,7 @@ async function refreshState() {
     }
     updateButton();
     if (state.latest) renderLatest(state.latest, state.busy);
+    renderReviews(state.manual_reviews || [], state.latest);
     renderAdvice(state.advice, state.latest, state.busy);
     renderHistory(state.history);
   } catch (error) {
@@ -70,6 +80,9 @@ function renderLatest(item, processing) {
   if (item.inspection_id === priorInspection && item.status !== 'ERROR') return;
   priorInspection = item.inspection_id || null;
   const statusText = item.status === 'ANALYZED' ? 'Result saved locally.' : 'Analysis failed; see error below.';
+  byId('review-status').textContent = item.status === 'ANALYZED'
+    ? 'Compare the saved original and overlay, then record your observation.'
+    : 'Manual review is available after a completed analysis.';
   if (['SAVED_IMAGE_REPLAY', 'USER_UPLOADED_IMAGE_DIAGNOSTIC', 'USER_DECLARED_MVTEC_METAL_NUT_UPLOAD'].includes(item.source_mode)) byId('diagnostic-status').textContent = statusText;
   else byId('request-status').textContent = statusText;
   byId('result-empty').hidden = true;
@@ -85,6 +98,19 @@ function renderLatest(item, processing) {
   byId('latency').textContent = item.model_forward_ms == null ? '—' : Math.round(item.model_forward_ms) + ' ms';
   const responseFraction = item.response_area_px == null ? null : Number(item.response_area_px) / Number(item.source_area_px || 640 * 480);
   byId('area').textContent = responseFraction == null ? '—' : Number(item.response_area_px).toLocaleString() + ' px · ' + (responseFraction * 100).toFixed(1) + '%';
+  const regions = item.response_regions || [];
+  if (!regions.length) regionNote.textContent = 'No pixels above the provisional response threshold.';
+  else {
+    const first = regions[0];
+    const area = first.approximate_nut_area || 'nut area unavailable for this source';
+    const otherArea = regions.slice(1).reduce((sum, region) => sum + region.area_px, 0);
+    const otherLabels = regions.slice(1, 4).map(region => region.approximate_nut_area || 'area unavailable');
+    regionNote.textContent = 'Approximate area of largest response: ' + area + ' / ' +
+      first.area_px.toLocaleString() + ' px. Other regions: ' + (regions.length - 1) +
+      ' / ' + otherArea.toLocaleString() + ' px combined' +
+      (otherLabels.length ? ' / ' + otherLabels.join(', ') : '') +
+      '. Percent is of the full image; response pixels are not measured damage.';
+  }
   byId('response-note').textContent = benchmark
     ? 'Provisional MVTec benchmark score verdict. This does not confirm a defect or grade a physical nut.'
     : uploaded
@@ -130,10 +156,30 @@ function renderHistory(rows) {
   host.append(list);
 }
 
+function renderReviews(reviews, latest) {
+  const host = byId('review-history');
+  host.replaceChildren();
+  if (!reviews.length) {
+    host.textContent = latest?.status === 'ANALYZED' ? 'No operator finding recorded for this image.' : '';
+    return;
+  }
+  for (const review of reviews) {
+    const row = document.createElement('p');
+    const label = {no_visible_issue: 'No visible issue', visible_issue: 'Visible issue',
+      uncertain_or_recapture: 'Uncertain / capture again'}[review.review_outcome] || 'Operator finding';
+    row.textContent = new Date(review.timestamp_utc).toLocaleString() + ' / ' + review.actor +
+      ' / ' + label + ' / proposed ' + review.proposed_grade + ' / unverified: ' + review.reason;
+    host.append(row);
+  }
+}
+
 byId('confirmed').addEventListener('change', updateButton);
 byId('part-id').addEventListener('input', updateButton);
 byId('diagnostic-file').addEventListener('change', updateButton);
 byId('diagnostic-id').addEventListener('input', updateButton);
+byId('review-actor').addEventListener('input', updateButton);
+byId('review-outcome').addEventListener('change', updateButton);
+byId('review-reason').addEventListener('input', updateButton);
 for (const choice of document.querySelectorAll('input[name="source-kind"]')) {
   choice.addEventListener('change', () => {
     const physical = document.querySelector('input[name="source-kind"]:checked').value === 'physical_nut';
@@ -196,6 +242,25 @@ byId('advice-request').addEventListener('click', async () => {
     byId('advice-status').textContent = 'Llama is generating on this Jetson through ExecuTorch…';
   } catch (error) {
     byId('advice-status').textContent = error.message;
+  } finally {
+    await refreshState();
+  }
+});
+
+byId('review-submit').addEventListener('click', async () => {
+  byId('review-submit').disabled = true;
+  try {
+    const response = await fetch('/api/manual-review', {method: 'POST',
+      headers: {'Content-Type': 'application/json'}, body: JSON.stringify({inspection_id: currentLatest?.inspection_id,
+        actor: byId('review-actor').value, outcome: byId('review-outcome').value,
+        reason: byId('review-reason').value})});
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'Review could not be saved');
+    byId('review-status').textContent = 'Operator finding saved. Original model grade is unchanged.';
+    byId('review-reason').value = '';
+    byId('review-outcome').value = '';
+  } catch (error) {
+    byId('review-status').textContent = error.message;
   } finally {
     await refreshState();
   }

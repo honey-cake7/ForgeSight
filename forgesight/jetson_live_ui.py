@@ -18,7 +18,7 @@ from PIL import Image
 
 from forgesight.assist_display import advice_for
 from forgesight.assist_queue import AdvisoryQueue
-from forgesight.storage import InspectionStore
+from forgesight.storage import InspectionStore, new_correction
 from forgesight.vision_edge_live_once import MODEL_SHA256, sha256
 
 
@@ -204,7 +204,10 @@ class LiveService:
         with self.lock:
             latest = self.latest
             busy = self.busy
+        reviews = (self.store.corrections(latest["inspection_id"])
+                   if latest and latest.get("inspection_id") else [])
         return {"camera": self.camera.state(), "busy": busy, "latest": latest,
+                "manual_reviews": reviews,
                 "advice": self.advice_state(),
                 "replay_samples": sorted(self.replay_samples),
                 "local_replay_samples": self.local_replay_samples,
@@ -213,6 +216,26 @@ class LiveService:
                              "grade": r["decision"]["grade"], "status": r["status"],
                              "timestamp_utc": r["timestamp_utc"]}
                             for r in self.store.history(limit=10)]}
+
+    def manual_review(self, inspection_id, actor, outcome, reason):
+        choices = {"no_visible_issue": "PASS", "visible_issue": "REJECT",
+                   "uncertain_or_recapture": "REVIEW"}
+        if (not isinstance(inspection_id, str) or not isinstance(actor, str)
+                or not re.fullmatch(r"[A-Za-z0-9 _.-]{1,64}", actor)
+                or not isinstance(reason, str) or not 3 <= len(reason.strip()) <= 500
+                or outcome not in choices):
+            raise ValueError("Choose a review finding and enter your name and a short observation")
+        with self.lock:
+            if (self.busy or not self.latest or self.latest.get("inspection_id") != inspection_id
+                    or self.latest.get("status") != "ANALYZED"):
+                raise ValueError("Review the latest completed inspection")
+            original = self.store.get_inspection(inspection_id)
+            if original is None:
+                raise ValueError("Inspection record is missing")
+            correction = new_correction(inspection_id, actor.strip(), reason.strip(), choices[outcome])
+            correction["review_outcome"] = outcome
+            self.store.save_correction(correction)
+            return correction
 
     def image(self, name):
         with self.lock:
@@ -350,6 +373,8 @@ class LiveService:
                       "score": record["score"], "candidate": record["candidate"],
                       "threshold": record["model"]["image_threshold"],
                       "response_area_px": (record["geometry"] or {}).get("total_area_px"),
+                      "response_regions": (record["geometry"] or {}).get("regions", []),
+                      "zone_method": (record["geometry"] or {}).get("zone_method"),
                       "source_area_px": record["source"]["size_px"][0] * record["source"]["size_px"][1],
                       "model_forward_ms": record["timings"].get("model_forward_ms"),
                       "inspection_ms": (record["timings"].get("capture_file_to_record_ms")
@@ -473,12 +498,20 @@ def handler_for(service):
                           json.dumps({"status": status}).encode(), "application/json")
                 return
             if self.path not in ("/api/inspect", "/api/replay", "/api/replay-local",
-                                 "/api/upload-diagnostic"):
+                                 "/api/upload-diagnostic", "/api/manual-review"):
                 self.send(400, b"Invalid request", "text/plain")
                 return
             try:
                 length = int(self.headers.get("Content-Length", "-1"))
-                if self.path == "/api/inspect":
+                if self.path == "/api/manual-review":
+                    if self.headers.get("Content-Type") != "application/json" or not 0 < length <= 1024:
+                        raise ValueError("Invalid manual review request")
+                    body = json.loads(self.rfile.read(length))
+                    review = service.manual_review(body.get("inspection_id"), body.get("actor"),
+                                                   body.get("outcome"), body.get("reason"))
+                    self.send(201, json.dumps(review).encode(), "application/json")
+                    return
+                elif self.path == "/api/inspect":
                     if self.headers.get("Content-Type") != "application/json" or not 0 < length <= 512:
                         raise ValueError("Invalid camera request")
                     body = json.loads(self.rfile.read(length))
