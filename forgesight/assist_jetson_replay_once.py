@@ -40,10 +40,10 @@ def _pinned_asset_hashes(llama_root):
 
     Same trust root the cold path verifies against: the exported artifact hash
     comes from the export manifest, and the source-assets manifest (which pins
-    the tokenizer) is itself pinned by hash from the export manifest. None
-    when the manifests are unavailable (e.g. PC-side tests), in which case
-    only presence/format are enforced. A present-but-inconsistent pair is
-    tampering, not unavailability, and fails closed.
+    the tokenizer) is itself pinned by hash from the export manifest. Returns
+    None only when llama_root is None - a unit-test path; the CLI always
+    supplies a root. With a root supplied, any missing, unreadable, malformed
+    or inconsistent manifest fails closed: the gate is never silently weakened.
     """
     if llama_root is None:
         return None
@@ -52,25 +52,29 @@ def _pinned_asset_hashes(llama_root):
         export = json.loads((model_dir / "llama3_2_1b_export.json").read_text())
         assets_bytes = (model_dir / "llama3_2_1b_assets.json").read_bytes()
         assets = json.loads(assets_bytes)
-    except (OSError, ValueError):
-        return None
+    except (OSError, ValueError) as error:
+        raise RuntimeError(
+            f"Pinned export/assets manifests are missing or unreadable: {error}") from error
     if not isinstance(export, dict) or not isinstance(assets, dict):
-        return None
-    pinned_assets_file = (export.get("inputs_sha256") or {}).get(
-        "manifests/llama3_2_1b_assets.json")
+        raise RuntimeError("Pinned export/assets manifests have an unexpected schema.")
+    inputs = export.get("inputs_sha256")
+    pinned_assets_file = (inputs.get("manifests/llama3_2_1b_assets.json")
+                          if isinstance(inputs, dict) else None)
     if not _valid_sha256(pinned_assets_file):
-        return None
+        raise RuntimeError("Pinned export manifest does not pin the source-assets manifest.")
     if hashlib.sha256(assets_bytes).hexdigest() != pinned_assets_file:
         raise RuntimeError("Pinned export/assets manifests are inconsistent.")
-    artifact = (export.get("artifact") or {}).get("sha256")
+    artifact_entry = export.get("artifact")
+    artifact = artifact_entry.get("sha256") if isinstance(artifact_entry, dict) else None
+    if not _valid_sha256(artifact):
+        raise RuntimeError("Pinned export manifest has no valid artifact hash.")
     files = assets.get("files")
     tokenizer_pins = {entry.get("sha256") for entry in files.values()
                       if isinstance(entry, dict)} if isinstance(files, dict) else set()
     tokenizer_pins = {value for value in tokenizer_pins if _valid_sha256(value)}
-    artifact_pins = {artifact} if _valid_sha256(artifact) else set()
-    if not artifact_pins or not tokenizer_pins:
-        return None
-    return artifact_pins, tokenizer_pins
+    if not tokenizer_pins:
+        raise RuntimeError("Pinned source-assets manifest has no valid asset hashes.")
+    return {artifact}, tokenizer_pins
 
 
 def _generate_via_worker(args, context, root, report, source_mode):

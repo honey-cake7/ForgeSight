@@ -66,9 +66,9 @@ class WarmPathProvenanceTests(unittest.TestCase):
     def tearDown(self):
         self._tmp.cleanup()
 
-    def run_warm(self, name, worker_report):
+    def run_warm(self, name, worker_report, llama_root=None):
         args = Namespace(llama_worker_socket=self.dir / f"{name}.sock",
-                         llama_timeout_seconds=30, llama_root=None)
+                         llama_timeout_seconds=30, llama_root=llama_root)
         report = {}
         root = self.dir / name
         root.mkdir()
@@ -119,6 +119,105 @@ class WarmPathProvenanceTests(unittest.TestCase):
         self.assertIsNone(report.get("advisory"))
         self.assertIn("runtime_error", report)
         self.assertFalse((root / "advisory.json").exists())
+
+    VALID_EVIDENCE = {"status": "GENERATED_BY_PERSISTENT_WORKER",
+                      "worker_mode": "PERSISTENT_PROCESS",
+                      "worker_started_utc": "2026-11-14T00:00:00Z",
+                      "runtime_evidence": {"artifact": {"sha256": "a" * 64},
+                                           "tokenizer": {"sha256": "b" * 64}},
+                      "generated_text": NOTE}
+
+    def manifest_root(self, name, export=None, assets=None):
+        """A llama_root whose model dir holds exactly the given file bodies."""
+        root = self.dir / (name + "-manifests")
+        (root / "model").mkdir(parents=True)
+        if export is not None:
+            (root / "model" / "llama3_2_1b_export.json").write_text(export)
+        if assets is not None:
+            (root / "model" / "llama3_2_1b_assets.json").write_text(assets)
+        return root
+
+    def assert_gate_fails_closed(self, name, llama_root, needle="Pinned"):
+        report, root = self.run_warm(name, dict(self.VALID_EVIDENCE), llama_root=llama_root)
+        self.assertIsNone(report.get("advisory"))
+        self.assertIn(needle, report.get("runtime_error", ""))
+        self.assertNotIn("persistent_worker_transport_error", report)
+        self.assertFalse((root / "advisory.json").exists())
+
+    def test_no_root_keeps_test_only_presence_semantics(self):
+        from forgesight.assist_jetson_replay_once import _pinned_asset_hashes
+        self.assertIsNone(_pinned_asset_hashes(None))
+
+    def test_missing_export_manifest_fails_closed(self):
+        self.assert_gate_fails_closed("m-exp", self.manifest_root(
+            "m-exp", assets=Path("manifests/llama3_2_1b_assets.json").read_text()))
+
+    def test_missing_assets_manifest_fails_closed(self):
+        self.assert_gate_fails_closed("m-ass", self.manifest_root(
+            "m-ass", export=Path("manifests/llama3_2_1b_export.json").read_text()))
+
+    def test_malformed_export_manifest_fails_closed(self):
+        self.assert_gate_fails_closed("m-badexp", self.manifest_root(
+            "m-badexp", export="{not json",
+            assets=Path("manifests/llama3_2_1b_assets.json").read_text()))
+
+    def test_malformed_assets_manifest_fails_closed(self):
+        self.assert_gate_fails_closed("m-badass", self.manifest_root(
+            "m-badass", export=Path("manifests/llama3_2_1b_export.json").read_text(),
+            assets="{broken"))
+
+    def test_non_object_manifest_schema_fails_closed(self):
+        self.assert_gate_fails_closed("m-list", self.manifest_root(
+            "m-list", export="[]",
+            assets=Path("manifests/llama3_2_1b_assets.json").read_text()))
+
+    def test_missing_chain_entry_fails_closed(self):
+        export = json.loads(Path("manifests/llama3_2_1b_export.json").read_text())
+        del export["inputs_sha256"]["manifests/llama3_2_1b_assets.json"]
+        self.assert_gate_fails_closed("m-nochain", self.manifest_root(
+            "m-nochain", export=json.dumps(export),
+            assets=Path("manifests/llama3_2_1b_assets.json").read_text()),
+            needle="does not pin")
+
+    def test_invalid_artifact_hash_format_fails_closed(self):
+        export = json.loads(Path("manifests/llama3_2_1b_export.json").read_text())
+        export["artifact"]["sha256"] = "not-a-sha"
+        self.assert_gate_fails_closed("m-badfmt", self.manifest_root(
+            "m-badfmt", export=json.dumps(export),
+            assets=Path("manifests/llama3_2_1b_assets.json").read_text()),
+            needle="no valid artifact hash")
+
+    def test_assets_without_valid_hashes_fails_closed(self):
+        export = json.loads(Path("manifests/llama3_2_1b_export.json").read_text())
+        assets = json.dumps({"files": {}})
+        export["inputs_sha256"]["manifests/llama3_2_1b_assets.json"] = (
+            hashlib.sha256(assets.encode()).hexdigest())
+        self.assert_gate_fails_closed("m-empty", self.manifest_root(
+            "m-empty", export=json.dumps(export), assets=assets),
+            needle="no valid asset hashes")
+
+    def test_unreadable_manifest_fails_closed(self):
+        root = self.manifest_root(
+            "m-unread", export=Path("manifests/llama3_2_1b_export.json").read_text(),
+            assets=Path("manifests/llama3_2_1b_assets.json").read_text())
+        (root / "model" / "llama3_2_1b_export.json").chmod(0)
+        self.assert_gate_fails_closed("m-unread", root)
+
+    def test_non_dict_inputs_sha256_fails_closed_not_crash(self):
+        export = json.loads(Path("manifests/llama3_2_1b_export.json").read_text())
+        export["inputs_sha256"] = ["truthy", "but", "not", "a", "mapping"]
+        self.assert_gate_fails_closed("m-inputslist", self.manifest_root(
+            "m-inputslist", export=json.dumps(export),
+            assets=Path("manifests/llama3_2_1b_assets.json").read_text()),
+            needle="does not pin")
+
+    def test_non_dict_artifact_fails_closed_not_crash(self):
+        export = json.loads(Path("manifests/llama3_2_1b_export.json").read_text())
+        export["artifact"] = ["truthy", "not", "a", "mapping"]
+        self.assert_gate_fails_closed("m-artlist", self.manifest_root(
+            "m-artlist", export=json.dumps(export),
+            assets=Path("manifests/llama3_2_1b_assets.json").read_text()),
+            needle="no valid artifact hash")
 
     def test_pinned_manifest_mismatch_is_refused(self):
         llama_root = self.dir / "llama"

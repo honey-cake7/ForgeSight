@@ -357,9 +357,10 @@ class ControllerWiringTests(unittest.TestCase):
 
     def test_worker_path_end_to_end(self):
         seen = {}
-        thread = threading.Thread(target=self.fake_worker, args=(seen,), daemon=True)
+        thread = threading.Thread(target=self.fake_worker,
+                                  args=(seen, self.shipped_evidence()), daemon=True)
         thread.start()
-        self.run_controller()
+        self.run_controller(llama_root=self.shipped_llama_root())
         thread.join(timeout=10)
         report = json.loads((self.output / "advice_report.json").read_text())
         self.assertEqual(report["status"], "JETSON_ADVICE_GENERATED_REQUIRES_HUMAN_REVIEW")
@@ -375,7 +376,7 @@ class ControllerWiringTests(unittest.TestCase):
         self.assertEqual(shown["status"], "GENERATED_REQUIRES_HUMAN_REVIEW")
         self.assertEqual(shown["advisory"]["note"], self.REVIEW_NOTE)
         self.assertTrue(report["inspection_and_sqlite_unchanged"])
-        self.assertEqual(report["native"]["model_sha256"], "1" * 64)
+        self.assertEqual(report["native"]["model_sha256"], self.shipped_evidence()["artifact"]["sha256"])
         self.assertIsNone(report["native"]["process_wall_seconds"])
         self.assertEqual(report["advisory"]["authoritative_grade"], "REVIEW")
         # The worker received only prompt/system text and the token budget:
