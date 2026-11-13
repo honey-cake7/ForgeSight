@@ -28,6 +28,12 @@ import time
 
 MAX_REQUEST_BYTES = 1024 * 1024
 MAX_SOURCE_SIDE = 4096
+# A prepared tensor is one FP32 256x256 RGB image: 786,432 data bytes, 786,560
+# as written by np.save here. The 1 MiB bound leaves room for .npy header
+# format/version differences while refusing anything that is not a one-image
+# tensor before hashing or loading the whole file.
+MAX_TENSOR_BYTES = 1024 * 1024
+MAX_REPLY_BYTES = 16 * 1024 * 1024
 
 
 def sha256(path):
@@ -58,6 +64,8 @@ def validate_request(request):
     tensor = Path(request.get("tensor", ""))
     if not tensor.is_file():
         raise ValueError("Prepared tensor is missing.")
+    if tensor.stat().st_size > MAX_TENSOR_BYTES:
+        raise ValueError("Prepared tensor exceeds the one-image size bound.")
     tensor_sha = request.get("tensor_sha256")
     if not isinstance(tensor_sha, str) or len(tensor_sha) != 64:
         raise ValueError("Expected a tensor SHA-256.")
@@ -244,14 +252,17 @@ def request(socket_path, request_dict, timeout_seconds=180, connect_retries=50):
                     raise
                 time.sleep(0.02)
         connection.sendall(json.dumps(request_dict, allow_nan=False).encode("utf-8") + b"\n")
-        chunks = []
-        while True:
-            block = connection.recv(65536)
+        chunks, remaining = [], MAX_REPLY_BYTES
+        while remaining > 0:
+            block = connection.recv(min(65536, remaining))
             if not block:
                 break
             chunks.append(block)
+            remaining -= len(block)
             if b"\n" in block:
                 break
+        else:
+            raise ConnectionError("Vision worker reply exceeded the size bound")
     finally:
         connection.close()
     if not chunks:
