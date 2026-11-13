@@ -11,6 +11,9 @@ record per declared part, adds deterministic pixel-only decisions and saves
 local SQLite history. A local screen runs real inspection and browses saved
 results. Jetson/camera deployment and complete offline edge operation remain open.
 
+- [Merged runtime changes and Jetson latency](docs/MERGE_LATENCY_REPORT.md):
+  what PRs #1–#12 added, measured CPU vision and persistent ExecuTorch advice,
+  and the limits of the speed comparisons. PR #8 was not merged.
 - [Vision training and choice](docs/VISION_BASELINE.md): EfficientAD-S 256x256,
   10,000 FP32 training steps on 176 normal images; [training evidence](docs/VISION_TRAINING.md).
 - [Frozen calibration](docs/VISION_CALIBRATION.md): threshold 0.2277658; cached

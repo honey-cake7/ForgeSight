@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "status": "JETSON_SAVED_IMAGE_AND_PERSISTENT_EXECUTORCH_ADVICE_VERIFIED_ONE_REQUEST",
+  "source_commit": "ca499bd3ab048f54e53ac53f45c6a76238028f2b",
+  "source_archive_sha256": "ede53fcd20ee40e41d5b5e715e9803ff6c219f13fef39cf8a14ab3afb3b59002",
+  "source_archive_sha256_matched_on_jetson": true,
+  "device": "NVIDIA Jetson Orin Nano 8GB, aarch64",
+  "deployment_root": "/home/nvidia/.local/share/forgesight/vision_cpu_v1/staging/run_ca499bd",
+  "ui_port": 8770,
+  "camera_preview_ready": true,
+  "vision": {
+    "source": "test/bent/017.png",
+    "source_sha256": "b49cc898143c46a8c3a8697411d04a078b36f60f4798ccc68aea33ea8fcac026",
+    "upload_id": "ASSET-FIX-JETSON-A",
+    "inspection_id": "9884dda0-2e6e-4f6b-83b1-5a054aecbf0e",
+    "runtime": "Frozen EfficientAD-S TorchScript CPU FP32 persistent worker",
+    "model_sha256": "8766c41a51a5444f57f564134427bbd2d2d95dd6ec5ff08b24698f00f7f55dcd",
+    "score": 0.6828088760375977,
+    "provisional_benchmark_grade": "REJECT",
+    "model_forward_ms": 1767.5430140006938,
+    "capture_file_to_record_ms": 2336.6756469986285
+  },
+  "advice": {
+    "status": "JETSON_ADVICE_GENERATED_REQUIRES_HUMAN_REVIEW",
+    "runtime_mode": "PERSISTENT_WORKER",
+    "worker_mode": "PERSISTENT_PROCESS",
+    "runtime": "Llama 3.2 1B Instruct through on-device ExecuTorch XNNPACK CPU",
+    "model_sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739",
+    "controller_runtime_wall_ms": 5310.978399000305,
+    "reported_first_model_load_ms": 2939,
+    "reported_native_inference_ms": 2367,
+    "prompt_tokens": 89,
+    "generated_tokens": 40,
+    "generated_note": "[E1] Anomaly flagged; provisional benchmark grade REJECT; defect type and cause unknown.\n\n[G2] Prototype checklist: Hold the provisional benchmark result for human review; check image clarity and lighting.",
+    "inspection_and_sqlite_unchanged": true,
+    "raw_report_sha256": "ff829a1b76c8d6556b79b9802b0a3baefc103d138713d6bea2d40108eedbfcad",
+    "raw_report_path": "/home/nvidia/.local/share/forgesight/vision_cpu_v1/staging/jetson_worker_probe_v1/source/runs/live_inspections_v1/advice/9884dda0-2e6e-4f6b-83b1-5a054aecbf0e/advice_report.json"
+  },
+  "earlier_deployment_failures": [
+    {"source_commit": "dac2e82", "observation": "Persistent Llama worker startup failed with KeyError: 'prompt'."},
+    {"source_commit": "e6e4799", "observation": "Worker startup succeeded; advisory was refused with Persistent worker evidence does not match the pinned asset manifest."}
+  ],
+  "limits": [
+    "This is one saved-image inspection and the first advisory request after startup, including reported model loading.",
+    "Vision inspection time excludes camera capture, UI polling, SQLite write and Llama; the forward measurement is narrower.",
+    "Advisory controller-runtime time excludes vision and is not full browser interaction latency.",
+    "No warm steady-state percentiles, new accuracy, physical-part, GPU, memory-peak or offline acceptance result follows."
+  ]
+}

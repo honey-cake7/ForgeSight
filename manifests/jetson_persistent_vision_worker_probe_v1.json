@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "status": "JETSON_STAGED_PERSISTENT_VISION_WORKER_VERIFIED",
+  "scope": "Original MVTec metal_nut saved-image upload through the merged Jetson GUI and persistent EfficientAD CPU worker",
+  "device": "NVIDIA Jetson Orin Nano 8GB, aarch64, Linux 5.10.216-tegra",
+  "source_commit": "a3e64a52373e22ad1323aff1c480b457390422d3",
+  "source_archive_sha256": "17e0e4f2f9c1334f168cd4adc2fa4c5a3029cbf25c3be566213056bbfce58887",
+  "source_archive_sha256_matched_on_jetson": true,
+  "staging_root": "/home/nvidia/.local/share/forgesight/vision_cpu_v1/staging/jetson_worker_probe_v1",
+  "test_ui_port": 8771,
+  "existing_ui_port_8770_left_running": true,
+  "model_sha256": "8766c41a51a5444f57f564134427bbd2d2d95dd6ec5ff08b24698f00f7f55dcd",
+  "image": "test/bent/017.png",
+  "image_sha256": "b49cc898143c46a8c3a8697411d04a078b36f60f4798ccc68aea33ea8fcac026",
+  "image_threshold": 0.22776579856872559,
+  "checks": {
+    "two_original_png_replay_smokes_passed": true,
+    "bad_replay_bytes_rejected": true,
+    "four_declared_mvtec_uploads_analyzed": true,
+    "four_sqlite_records_matched": true,
+    "served_javascript_sha256": "b1cd1b25b788459c8b80875fd604723e2d8dabd48153e2f3f59530160838f82e",
+    "worker_reused_before_forced_stop": true,
+    "worker_restarted_after_forced_stop": true,
+    "staged_server_stopped_after_test": true
+  },
+  "declared_mvtec_uploads": [
+    {"id_suffix": "A", "mode": "PERSISTENT_PROCESS", "score": 0.6828088760375977, "grade": "REJECT", "model_forward_ms": 1535.2940039992973, "saved_image_inspection_ms": 2094.0594249987043},
+    {"id_suffix": "B", "mode": "PERSISTENT_PROCESS", "score": 0.6828088760375977, "grade": "REJECT", "model_forward_ms": 1483.5381350021635, "saved_image_inspection_ms": 2052.6840980019188},
+    {"id_suffix": "C", "mode": "COLD_PROCESS_AFTER_WORKER_UNAVAILABLE", "score": 0.6828088760375977, "grade": "REJECT", "model_forward_ms": 1675.2568369993242, "saved_image_inspection_ms": 8219.096156000887},
+    {"id_suffix": "D", "mode": "PERSISTENT_PROCESS", "score": 0.6828088760375977, "grade": "REJECT", "model_forward_ms": 1687.5151329986693, "saved_image_inspection_ms": 2242.835874996672}
+  ],
+  "recovery_proof": "The staged worker was stopped after B. C used a cold model process and the GUI started a new worker. D used that persistent worker.",
+  "evidence_bundle_sha256": "ae39d2b1166e6b8b75a5f1dc962b94c7bd590c237434e2619f2898dc07eab178",
+  "evidence_bundle_local_ignored_path": "artifacts/edge/jetson_worker_probe_evidence_v1.tar.gz",
+  "timing_scope": "Saved image to inspection record, excluding UI polling, camera capture, SQLite write and Llama; model forward is a narrower submeasurement.",
+  "limits": [
+    "The test used one original saved MVTec image repeatedly, so it adds no accuracy evidence.",
+    "The staging camera index was intentionally unavailable; live camera capture and browser rendering were not tested.",
+    "The tested worker uses TorchScript on Jetson CPU. TensorRT GPU inference remains unverified.",
+    "The active port 8770 GUI still runs the earlier deployed source; this test ran on isolated port 8771."
+  ]
+}
