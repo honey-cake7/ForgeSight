@@ -149,6 +149,21 @@ class LiveOnceWorkerModeTests(unittest.TestCase):
         self.assertEqual(record["status"], "ERROR")
         self.assertIn("Inconsistent inference evidence", record["error"]["message"])
 
+    def test_jpeg_overlay_artifact(self):
+        args = self.make_args(worker_socket=Path("/tmp/worker.sock"), overlay_format="jpeg")
+        with mock.patch.object(live, "worker_request") as call:
+            def serve_request(sock, req):
+                root = Path(req["output"]).parent
+                fake_inference_outputs(root, Path(req["tensor"]), 700, 700)
+                return {}
+            call.side_effect = serve_request
+            record = live.inspect(args)
+        self.assertEqual(record["status"], "ANALYZED")
+        overlay = Path(record["artifacts"]["response_overlay"])
+        self.assertEqual(overlay.suffix, ".jpg")
+        self.assertTrue(overlay.is_file())
+        self.assertEqual(record["artifacts"]["response_overlay_sha256"], live.sha256(overlay))
+
     def test_default_overlay_stays_png(self):
         args = self.make_args(worker_socket=Path("/tmp/worker.sock"))
         with mock.patch.object(live, "worker_request") as call:

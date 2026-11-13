@@ -352,8 +352,11 @@ class LiveService:
             source = self.latest_source
         if root is None:
             return None
-        path = root / "response_overlay.png" if name == "overlay" else source
-        return path.read_bytes() if path.is_file() else None
+        if name == "overlay":
+            path = next(iter(sorted(root.glob("response_overlay.*"))), root / "response_overlay.png")
+        else:
+            path = source
+        return path.read_bytes() if path is not None and path.is_file() else None
 
     def replay(self, replay_id, dataset_path, data):
         if not isinstance(replay_id, str) or not PART_ID.fullmatch(replay_id):

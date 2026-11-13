@@ -264,8 +264,12 @@ byId('review-submit').addEventListener('click', async () => {
   }
 });
 
-refreshState();
-setInterval(refreshState, 700);
+async function pollState() {
+  await refreshState();
+  setTimeout(pollState, busy ? 250 : 1500);
+}
+
+pollState();
 setInterval(() => {
   if (cameraReady) preview.src = '/api/frame.jpg?t=' + Date.now();
 }, 250);
