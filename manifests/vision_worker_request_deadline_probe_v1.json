@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "status": "TOTAL_REQUEST_DEADLINE_VERIFIED_WSL_AND_JETSON_STAGING",
+  "parent_pr_head": "9ee29e742d7529969a9cc20de18d3becb60ed352",
+  "worker_sha256": "d718db1d542cebbf1fb791068e1bde91712f951a909b164e72eb61d965f6bb3f",
+  "protocol_tests_sha256": "fd26d3dc3dbaf08c8aa0e62113591e8599f2bca664d58a35c2b7196626825d99",
+  "regression": {
+    "scenario": "A partial request sends another byte every 0.05 seconds while a valid client waits behind it.",
+    "request_read_deadline_seconds": 0.5,
+    "valid_client_timeout_seconds": 1.5,
+    "before_fix": "Valid client raised TimeoutError on the original PR #4 code.",
+    "after_fix": "Valid request and subsequent request succeeded within the regression's 1.25-second wait bound."
+  },
+  "wsl_focused_tests": {"passed": 49, "failed": 0},
+  "jetson_protocol_tests": {"passed": 14, "failed": 0, "python": "/usr/bin/python3", "includes_slow_client_regression": true},
+  "jetson_source_archive_sha256": "a4f8c32bdfbc110c11c64aa792513205f19e6b402eb63bb2b3bb3d648fc41057",
+  "jetson_source_archive_hash_matched": true,
+  "jetson_staging_root": "/home/nvidia/.local/share/forgesight/vision_cpu_v1/staging/pr4_deadline_v1",
+  "jetson_test_ui_port": 8772,
+  "saved_image": "test/bent/017.png",
+  "image_sha256": "b49cc898143c46a8c3a8697411d04a078b36f60f4798ccc68aea33ea8fcac026",
+  "model_sha256": "8766c41a51a5444f57f564134427bbd2d2d95dd6ec5ff08b24698f00f7f55dcd",
+  "jetson_uploads": [
+    {"id": "PR4-DEADLINE-A", "mode": "PERSISTENT_PROCESS", "score": 0.6828088760375977, "provisional_grade": "REJECT", "inspection_ms": 2286.360883997986, "model_forward_ms": 1732.60424199907, "sqlite_match": true},
+    {"id": "PR4-DEADLINE-B", "mode": "COLD_PROCESS_AFTER_WORKER_UNAVAILABLE", "score": 0.6828088760375977, "provisional_grade": "REJECT", "inspection_ms": 8210.802786001295, "model_forward_ms": 1678.8367720000679, "inference_report": "inference_cold.json", "sqlite_match": true},
+    {"id": "PR4-DEADLINE-C", "mode": "PERSISTENT_PROCESS", "score": 0.6828088760375977, "provisional_grade": "REJECT", "inspection_ms": 2257.563481998659, "model_forward_ms": 1704.949723000027, "sqlite_match": true}
+  ],
+  "recovery": "The staged worker was stopped after A. B used separate cold output names and the GUI started a replacement worker. C used the replacement worker.",
+  "evidence_metadata_bundle_sha256": "8738bdda48250de49c0164983344459f8d2bc05ed9f0085f6f8f4ab728b8d656",
+  "local_ignored_evidence": "artifacts/edge/pr4_deadline_evidence_v1.tar.gz",
+  "limits": [
+    "Socket protocol tests use a stub worker. Saved-image uploads separately use the real frozen EfficientAD CPU model.",
+    "Inspection timing excludes camera capture, UI polling, SQLite write and Llama.",
+    "One repeated saved image establishes no new accuracy, physical-part, GPU or offline acceptance result.",
+    "Only the separate staged UI was started and stopped for this test."
+  ]
+}

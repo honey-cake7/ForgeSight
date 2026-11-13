@@ -191,12 +191,16 @@ def serve(socket_path, worker, idle_timeout_seconds=None, request_read_timeout_s
                     continue
                 if peer_uid != os.getuid():
                     continue  # same-user only; the socket mode already restricts this
-                # A client that stalls mid-request must not block every later
-                # request: bound the read, then drop the stalled connection.
-                connection.settimeout(request_read_timeout_seconds)
+                # Bound the whole request transfer, including clients that keep
+                # sending bytes just before an individual recv would time out.
+                read_deadline = time.monotonic() + request_read_timeout_seconds
                 chunks, remaining = [], MAX_REQUEST_BYTES
                 try:
                     while remaining > 0:
+                        seconds_left = read_deadline - time.monotonic()
+                        if seconds_left <= 0:
+                            raise socket.timeout("Request read deadline exceeded")
+                        connection.settimeout(seconds_left)
                         block = connection.recv(min(65536, remaining))
                         if not block:
                             break
@@ -206,6 +210,9 @@ def serve(socket_path, worker, idle_timeout_seconds=None, request_read_timeout_s
                             break
                 except socket.timeout:
                     continue  # stalled client; serve the next connection
+                # The transfer deadline does not bound model inference or reply
+                # writes. Preserve the separate reply timeout after reading.
+                connection.settimeout(request_read_timeout_seconds)
                 raw = b"".join(chunks).split(b"\n", 1)[0]
                 try:
                     request = json.loads(raw.decode("utf-8"))

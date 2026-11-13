@@ -3,6 +3,7 @@
 import json
 import socket
 import threading
+import time
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -122,6 +123,51 @@ class ProtocolTests(unittest.TestCase):
 
 class StalledClientTests(unittest.TestCase):
     """A client that stops mid-request must not block every later request."""
+
+    def test_trickling_client_cannot_extend_total_read_deadline(self):
+        with TemporaryDirectory() as tmp:
+            socket_path = Path(tmp) / "worker.sock"
+            worker = StubWorker()
+            server = threading.Thread(
+                target=serve, args=(socket_path, worker, 1.0, 0.5), daemon=True)
+            server.start()
+            request(socket_path, {"tensor": "ready", "threshold": 0.1},
+                    timeout_seconds=5, connect_retries=200)
+            worker.requests.clear()
+            stalled = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            stop = threading.Event()
+
+            def send_slowly():
+                while not stop.wait(0.05):
+                    try:
+                        stalled.sendall(b" ")
+                    except OSError:
+                        return
+
+            sender = threading.Thread(target=send_slowly, daemon=True)
+            try:
+                stalled.connect(str(socket_path))
+                stalled.sendall(b'{"tensor":')
+                sender.start()
+                started = time.monotonic()
+                report = request(socket_path, {"tensor": "x", "threshold": 0.1},
+                                 timeout_seconds=1.5, connect_retries=1)
+                waited = time.monotonic() - started
+                self.assertEqual(report["score"], 0.5)
+                self.assertLess(waited, 1.25, "request bytes extended the total deadline")
+                again = request(socket_path, {"tensor": "y", "threshold": 0.1},
+                                timeout_seconds=1.5, connect_retries=1)
+                self.assertEqual(again["score"], 0.5)
+                self.assertEqual(worker.requests, [
+                    {"tensor": "x", "threshold": 0.1},
+                    {"tensor": "y", "threshold": 0.1}])
+            finally:
+                stop.set()
+                stalled.close()
+                if sender.ident is not None:
+                    sender.join(timeout=2)
+                server.join(timeout=2)
+            self.assertFalse(server.is_alive(), "test worker did not shut down")
 
     def test_stalled_client_dropped_and_next_request_served(self):
         import time
