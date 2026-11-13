@@ -17,6 +17,7 @@ from PIL import Image, ImageDraw
 from forgesight.grade import grade_record, validate_policy
 from forgesight.regions import response_regions
 from forgesight.storage import InspectionStore
+from forgesight.vision_edge_worker import request as worker_request
 
 
 MODEL_SHA256 = "8766c41a51a5444f57f564134427bbd2d2d95dd6ec5ff08b24698f00f7f55dcd"
@@ -28,6 +29,17 @@ def sha256(path):
         for block in iter(lambda: stream.read(1024 * 1024), b""):
             digest.update(block)
     return digest.hexdigest()
+
+
+def preprocess_inprocess(image_path, tensor_path):
+    """Same deterministic tensor as vision_edge_preprocess.py, without a fresh process."""
+    import numpy as np
+    with Image.open(image_path) as source:
+        image = source.convert("RGB").resize((256, 256), Image.BILINEAR)
+        array = np.asarray(image, dtype=np.uint8)
+    tensor = np.transpose(array, (2, 0, 1)).astype(np.float32)[None] / 255.0
+    with open(tensor_path, "xb") as stream:
+        np.save(stream, tensor, allow_pickle=False)
 
 
 def child(argv):
@@ -55,9 +67,20 @@ def inspect(args):
                 raise ValueError("Expected an uploaded RGB PNG between 64 and 1024 pixels per side.")
         elif image.size != (640, 480):
             raise ValueError("Expected a 640x480 RGB camera PNG.")
-        image.load()
-    if args.model_sha256 != MODEL_SHA256 or sha256(args.model) != MODEL_SHA256:
+        try:
+            image.load()
+        except (OSError, SyntaxError) as error:
+            raise ValueError("Image could not be decoded as a PNG.") from error
+    if args.model_sha256 != MODEL_SHA256:
         raise ValueError("Frozen EfficientAD export hash mismatch.")
+    if args.vision_worker_socket is None:
+        if sha256(args.model) != MODEL_SHA256:
+            raise ValueError("Frozen EfficientAD export hash mismatch.")
+        model_verified_at = "THIS_INSPECTION"
+    else:
+        # The persistent worker verified the frozen export hash at boot and holds
+        # the loaded model; re-hashing the full file per inspection is redundant.
+        model_verified_at = "WORKER_START_FROZEN_MODEL"
     policy = json.loads(args.grade_policy.read_text())
     validate_policy(policy)
     store = InspectionStore(args.database)
@@ -93,7 +116,8 @@ def inspect(args):
                   "score_policy_sha256": policy["score_policy_sha256"],
                   "image_threshold": policy["image_threshold"],
                   "runtime_device": "jetson_cpu" if jetson else "non_jetson_cpu",
-                  "jetson_verified": jetson},
+                  "jetson_verified": jetson,
+                  "export_sha256_verified_at": model_verified_at},
         "status": "ERROR", "score": None, "candidate": None,
         "predicted_defect_type": "unknown", "type_status": "NO_VALIDATED_SUBTYPE_CLASSIFIER",
         "geometry": None, "decision": None, "advice_status": "NOT_REQUESTED",
@@ -102,18 +126,47 @@ def inspect(args):
     try:
         script_dir = Path(__file__).resolve().parent
         tensor, model_map, source_map = root / "input.npy", root / "map_model.npy", root / "map_source.npy"
-        record["timings"]["preprocess_process_ms"] = child([
-            sys.executable, "-B", str(script_dir / "vision_edge_preprocess.py"),
-            "--image", str(args.image), "--tensor", str(tensor)])
+        if args.vision_worker_socket is not None:
+            preprocess_started = time.perf_counter()
+            preprocess_inprocess(args.image, tensor)
+            record["timings"]["preprocess_process_ms"] = (time.perf_counter() - preprocess_started) * 1000
+            record["timings"]["preprocess_mode"] = "IN_PROCESS_SAME_ALGORITHM"
+        else:
+            record["timings"]["preprocess_process_ms"] = child([
+                sys.executable, "-B", str(script_dir / "vision_edge_preprocess.py"),
+                "--image", str(args.image), "--tensor", str(tensor)])
         tensor_hash = sha256(tensor)
         record["artifacts"]["input_tensor_sha256"] = tensor_hash
-        record["timings"]["vision_process_ms"] = child([
-            str(args.vision_python), "-B", str(script_dir / "vision_edge_once.py"),
-            "--model", str(args.model), "--model-sha256", args.model_sha256,
-            "--tensor", str(tensor), "--tensor-sha256", tensor_hash,
-            "--threshold", str(policy["image_threshold"]),
-            "--output", str(root / "inference.json"), "--map-output", str(model_map),
-            "--source-map-output", str(source_map), "--source-size", str(height), str(width)])
+        use_worker = args.vision_worker_socket is not None
+        if use_worker:
+            try:
+                vision_started = time.perf_counter()
+                worker_request(str(args.vision_worker_socket), {
+                    "tensor": str(tensor), "tensor_sha256": tensor_hash,
+                    "threshold": policy["image_threshold"],
+                    "output": str(root / "inference.json"),
+                    "map_output": str(model_map),
+                    "source_map_output": str(source_map), "source_size": [height, width]})
+                record["timings"]["vision_process_ms"] = (time.perf_counter() - vision_started) * 1000
+            except OSError:
+                # Transport failure only (worker gone/hung); a request REJECTION
+                # must not fall back - the cold path would reject it identically.
+                use_worker = False  # worker exited (idle timeout); fall back to the cold process once
+                (root / "inference.json").unlink(missing_ok=True)
+                model_map.unlink(missing_ok=True)
+                source_map.unlink(missing_ok=True)
+        if not use_worker:
+            record["timings"]["vision_process_ms"] = child([
+                str(args.vision_python), "-B", str(script_dir / "vision_edge_once.py"),
+                "--model", str(args.model), "--model-sha256", args.model_sha256,
+                "--tensor", str(tensor), "--tensor-sha256", tensor_hash,
+                "--threshold", str(policy["image_threshold"]),
+                "--output", str(root / "inference.json"), "--map-output", str(model_map),
+                "--source-map-output", str(source_map), "--source-size", str(height), str(width)])
+            if args.vision_worker_socket is not None:
+                record["timings"]["vision_mode"] = "COLD_PROCESS_AFTER_WORKER_UNAVAILABLE"
+                # The cold child verified the current model bytes this run.
+                record["model"]["export_sha256_verified_at"] = "THIS_INSPECTION"
         inference = json.loads((root / "inference.json").read_text())
         if (inference["model_sha256"] != args.model_sha256
                 or inference["tensor_sha256"] != tensor_hash
@@ -138,9 +191,14 @@ def inspect(args):
             for region in record["geometry"]["regions"]:
                 x, y, width, height = region["bbox_xywh_px"]
                 draw.rectangle([x, y, x + width - 1, y + height - 1], outline="yellow", width=2)
-            overlay.save(root / "response_overlay.png")
-        record["artifacts"]["response_overlay"] = str(root / "response_overlay.png")
-        record["artifacts"]["response_overlay_sha256"] = sha256(root / "response_overlay.png")
+            overlay_name = "response_overlay.jpg" if args.overlay_format == "jpeg" else "response_overlay.png"
+            overlay_path = root / overlay_name
+            if args.overlay_format == "jpeg":
+                overlay.save(overlay_path, quality=85)
+            else:
+                overlay.save(overlay_path)
+        record["artifacts"]["response_overlay"] = str(overlay_path)
+        record["artifacts"]["response_overlay_sha256"] = sha256(overlay_path)
         record["timings"]["model_forward_ms"] = inference["model_forward_ms"]
         record["timings"]["model_peak_rss_kib"] = inference["process_peak_rss_kib"]
         record["status"] = "ANALYZED"
@@ -167,6 +225,10 @@ def main():
     parser.add_argument("--database", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--camera-index", type=int, default=0)
+    parser.add_argument("--vision-worker-socket", type=Path, default=None,
+                        help="Use a running vision_edge_worker.py socket instead of a fresh model process per inspection.")
+    parser.add_argument("--overlay-format", choices=("png", "jpeg"), default="png",
+                        help="Overlay image encoding; jpeg cuts encode time roughly 20x, lossy pixels (maps stay exact .npy).")
     declaration = parser.add_mutually_exclusive_group(required=True)
     declaration.add_argument("--operator-declared-part", action="store_true")
     declaration.add_argument("--screen-photo-diagnostic", action="store_true")
