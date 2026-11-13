@@ -52,6 +52,14 @@ def _generate_via_worker(args, context, root, report, source_mode):
         (root / "advisory.json").write_text(json.dumps(advice, indent=2) + "\n")
     except (ValueError, TypeError, KeyError) as error:
         report["validation_error"] = str(error)
+    except (ConnectionError, FileNotFoundError) as error:
+        # Transport failure only: the worker is gone or unreachable. The cold
+        # path re-verifies every asset itself, so tampering is never masked.
+        # A worker-reported ERROR (validation or artifact change) above is a
+        # hard failure and never falls back.
+        report["persistent_worker_transport_error"] = type(error).__name__ + ": " + str(error)
+        _generate_via_subprocess(args, context, root, report, source_mode)
+        report["llama_runtime_mode"] = "PERSISTENT_WORKER_UNREACHABLE_COLD_FALLBACK"
     except (OSError, RuntimeError) as error:
         report["runtime_error"] = type(error).__name__ + ": " + str(error)
 

@@ -30,6 +30,10 @@ class StandInRuntime:
         self.evidence = {"artifact": {"sha256": "standin"}}
         self.generate_calls = 0
         self.seen_prompts = []
+        self.events = []
+
+    def reset(self):
+        self.events.append("reset")
 
     def artifact_state(self):
         info = self.artifact.stat()
@@ -39,6 +43,7 @@ class StandInRuntime:
         return len(text.split())
 
     def generate(self, formatted, max_new_tokens):
+        self.events.append("generate")
         self.generate_calls += 1
         self.seen_prompts.append(formatted)
         user_line = [line for line in formatted.splitlines()
@@ -76,6 +81,11 @@ class WorkerTests(unittest.TestCase):
         # Same prompt twice still generates twice: no output is cached.
         self.ask("hold part for review")
         self.assertEqual(self.runtime.generate_calls, 3)
+
+    def test_reset_precedes_every_generate(self):
+        self.ask("hold part for review")
+        self.ask("check lighting and clarity")
+        self.assertEqual(self.runtime.events, ["reset", "generate", "reset", "generate"])
 
     def test_no_cross_request_state_in_prompts(self):
         self.ask("alpha request")
@@ -142,10 +152,19 @@ class SocketTests(unittest.TestCase):
             args=(self.socket_path, worker),
             kwargs=kwargs, daemon=True)
         thread.start()
-        for _ in range(100):
-            if self.socket_path.exists():
+        # The socket file appears at bind(), before listen(): probe-connect
+        # (retried) so callers never race the listen backlog.
+        for _ in range(200):
+            if not self.socket_path.exists():
+                time.sleep(0.01)
+                continue
+            try:
+                probe = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+                probe.connect(str(self.socket_path))
+                probe.close()
                 return thread
-            time.sleep(0.01)
+            except (ConnectionRefusedError, FileNotFoundError):
+                time.sleep(0.01)
         raise RuntimeError("server did not start")
 
     def test_end_to_end_and_idle_lifecycle(self):
@@ -160,16 +179,23 @@ class SocketTests(unittest.TestCase):
 
     def test_stalled_then_dripping_clients_do_not_block(self):
         self.start_server(request_read_timeout_seconds=0.4)
-        # Stalled: connects, sends nothing.
+
+        def wait_dropped(connection):
+            # Deterministic: wait until the worker closes the connection.
+            connection.settimeout(5)
+            while connection.recv(65536):
+                pass
+
+        # Stalled: connects, sends nothing; the total deadline drops it.
         stalled = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         stalled.connect(str(self.socket_path))
-        time.sleep(0.6)
+        wait_dropped(stalled)
         stalled.close()
         # Dripping: one byte, then silence past the total deadline.
         drip = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         drip.connect(str(self.socket_path))
         drip.sendall(b"{")
-        time.sleep(0.6)
+        wait_dropped(drip)
         drip.close()
         report = aew.request(self.socket_path,
                              {"prompt_text": "check lighting", "max_new_tokens": 16},
@@ -280,3 +306,63 @@ class ControllerWiringTests(unittest.TestCase):
         # the inspection record, paths and guidance never leave the host.
         self.assertEqual(set(seen["request_seen"]),
                          {"prompt_text", "system_text", "max_new_tokens"})
+
+    def test_transport_failure_falls_back_cold(self):
+        # No worker listening: connect raises FileNotFoundError, the cold
+        # subprocess path runs instead, and the mode is recorded honestly.
+        import sys
+        from unittest import mock
+        from forgesight import assist_jetson_replay_once as replay
+        argv = ["prog", "--record", str(self.record_path),
+                "--database", str(self.database),
+                "--guidance", "guidance/prototype_inspection_v1.json",
+                "--llama-root", str(Path(self.dir.name) / "unused_llama_root"),
+                "--output-dir", str(self.output),
+                "--llama-worker-socket", str(self.socket_path)]
+        with mock.patch.object(sys, "argv", argv), \
+             mock.patch.object(replay, "_generate_via_subprocess") as cold:
+            with self.assertRaises(SystemExit):  # cold path is mocked, so no advice completes
+                replay.main()
+        cold.assert_called_once()
+        report = json.loads((self.output / "advice_report.json").read_text())
+        self.assertEqual(report["llama_runtime_mode"], "PERSISTENT_WORKER_UNREACHABLE_COLD_FALLBACK")
+        self.assertIn("persistent_worker_transport_error", report)
+
+    def test_worker_error_never_falls_back(self):
+        # A worker-reported ERROR (validation or artifact tamper) is a hard
+        # failure: no cold retry that could mask it.
+        def error_server():
+            server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            server.bind(str(self.socket_path))
+            server.listen(1)
+            connection, _ = server.accept()
+            with connection:
+                while b"\n" not in (raw := connection.recv(65536)):
+                    if not raw:
+                        break
+                payload = {"status": "ERROR",
+                           "error": {"type": "RuntimeError",
+                                     "message": "Model/tokenizer/runtime artifact changed; restart the worker."}}
+                connection.sendall(json.dumps(payload).encode() + b"\n")
+            server.close()
+
+        import sys
+        from unittest import mock
+        from forgesight import assist_jetson_replay_once as replay
+        thread = threading.Thread(target=error_server, daemon=True)
+        thread.start()
+        argv = ["prog", "--record", str(self.record_path),
+                "--database", str(self.database),
+                "--guidance", "guidance/prototype_inspection_v1.json",
+                "--llama-root", str(Path(self.dir.name) / "unused_llama_root"),
+                "--output-dir", str(self.output),
+                "--llama-worker-socket", str(self.socket_path)]
+        with mock.patch.object(sys, "argv", argv), \
+             mock.patch.object(replay, "_generate_via_subprocess") as cold:
+            with self.assertRaises(SystemExit):
+                replay.main()
+        thread.join(timeout=10)
+        cold.assert_not_called()
+        report = json.loads((self.output / "advice_report.json").read_text())
+        self.assertEqual(report["status"], "ADVICE_UNAVAILABLE")
+        self.assertIn("artifact changed", report["runtime_error"])

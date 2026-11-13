@@ -124,3 +124,72 @@ class RespawnTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class AdviceWorkerWiringTests(unittest.TestCase):
+    """The warm advisory path reaches the actual UI flow: request_advice
+    passes the worker socket only while the worker lives, respawns when it
+    dies, and close() stops it."""
+
+    def service(self, worker):
+        from forgesight.jetson_live_ui import LiveService
+        from forgesight.assist_queue import AdvisoryQueue
+        from threading import Lock
+        with mock.patch.object(LiveService, "__init__", lambda self, *a, **k: None):
+            service = LiveService()
+        service.args = argparse.Namespace(
+            database=Path("db.sqlite3"), guidance=Path("guidance.json"),
+            llama_root=Path("/llama"), llama_timeout_seconds=240,
+            llama_worker_socket=Path("/tmp/assist-test.sock"))
+        service.llama_ready = True
+        service.advice_worker = worker
+        service.advice_worker_respawning = False
+        service.advice_worker_respawn_lock = Lock()
+        service.advice_queue = AdvisoryQueue()
+        service.advice_futures = {}
+        service.lock = Lock()
+        service.busy = False
+        service.advice_root = Path(tempfile.mkdtemp())
+        root = Path(tempfile.mkdtemp())
+        record = {"inspection_id": "insp-1", "status": "ANALYZED",
+                  "candidate": "ANOMALY_CANDIDATE",
+                  "source": {"mode": "SAVED_IMAGE_REPLAY"}}
+        (root / "record.json").write_text(json.dumps(record))
+        service.latest = {**record, "source_mode": "SAVED_IMAGE_REPLAY"}
+        service.latest_root = root
+        service.store = mock.Mock()
+        service.store.get_inspection.return_value = record
+        return service
+
+    def captured_command(self, service):
+        with mock.patch("forgesight.jetson_live_ui.subprocess.run") as run:
+            assert service.request_advice() == "PENDING"
+            future = service.advice_futures["insp-1"]
+            future.result(timeout=10)
+        service.advice_queue.close()
+        run.assert_called_once()
+        return run.call_args.args[0]
+
+    def test_live_worker_socket_reaches_advice_command(self):
+        worker = mock.Mock()
+        worker.poll.return_value = None  # alive
+        command = self.captured_command(self.service(worker))
+        self.assertIn("--llama-worker-socket", command)
+        self.assertIn("/tmp/assist-test.sock", command)
+
+    def test_dead_worker_cold_path_and_respawn(self):
+        worker = mock.Mock()
+        worker.poll.return_value = 1  # dead
+        service = self.service(worker)
+        service._respawn_advice_worker = mock.Mock()
+        command = self.captured_command(service)
+        self.assertNotIn("--llama-worker-socket", command)
+        service._respawn_advice_worker.assert_called_once()
+
+    def test_close_terminates_advice_worker(self):
+        worker = mock.Mock()
+        worker.wait.return_value = 0
+        service = self.service(worker)
+        service.vision_worker = None
+        service.close()
+        worker.terminate.assert_called_once()

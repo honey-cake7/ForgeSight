@@ -76,6 +76,50 @@ def launch_vision_worker(args, worker_script=None):
     return worker
 
 
+def launch_advice_worker(args):
+    """Start the persistent advisory worker and wait for its READY line.
+
+    Runs the Llama venv Python with the repo root on PYTHONPATH so the venv
+    (which only holds the runtime packages) can import forgesight. A boot
+    failure raises; the caller keeps the cold subprocess path available.
+    """
+    from collections import deque
+    command = [str(args.llama_root / "venv/bin/python"), "-B",
+               "-m", "forgesight.assist_edge_worker",
+               "--socket", str(args.llama_worker_socket),
+               "--llama-root", str(args.llama_root),
+               "--idle-timeout-seconds", str(args.llama_worker_idle_timeout_seconds)]
+    env = dict(os.environ)
+    env["PYTHONPATH"] = str(Path(__file__).resolve().parent.parent)
+    worker = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                              text=True, env=env)
+    stderr_tail = deque(maxlen=50)
+
+    def drain_stderr():
+        for line in worker.stderr:
+            stderr_tail.append(line.rstrip())
+
+    Thread(target=drain_stderr, daemon=True).start()
+    ready_holder = []
+
+    def read_ready():
+        ready_holder.append(worker.stdout.readline())
+
+    reader = Thread(target=read_ready, daemon=True)
+    reader.start()
+    reader.join(timeout=180)
+    try:
+        status = json.loads(ready_holder[0]) if ready_holder else {}
+    except ValueError:
+        status = {}
+    if status.get("status") != "WORKER_READY":
+        worker.terminate()
+        detail = "; worker stderr tail: " + " | ".join(stderr_tail) if stderr_tail else ""
+        raise ValueError(
+            "Advisory worker failed to verify and load the model within 180 seconds" + detail)
+    return worker
+
+
 class CameraFeed:
     def __init__(self, index=0):
         self.index = index
@@ -189,6 +233,17 @@ class LiveService:
         self.llama_ready = (args.guidance.is_file()
                             and (args.llama_root / "venv/bin/python").is_file()
                             and (args.llama_root / "model/llama3_2_1b_xnnpack.pte").is_file())
+        self.advice_worker = None
+        self.advice_worker_boot_error = None
+        self.advice_worker_respawning = False
+        self.advice_worker_respawn_lock = Lock()
+        if self.llama_ready and getattr(args, "llama_worker_socket", None) is not None:
+            try:
+                self.advice_worker = launch_advice_worker(args)
+            except ValueError as error:
+                # Advice is optional: keep serving inspections cold; the boot
+                # error stays visible in advice_state instead of crashing the UI.
+                self.advice_worker_boot_error = str(error)
 
     def _inspect_inline(self, image, part_id, root, mode_flags):
         """Run the same inspection in this long-lived process; worker mode only.
@@ -218,6 +273,33 @@ class LiveService:
             # inspection is warm instead of silently running cold forever.
             self._respawn_vision_worker()
 
+    def _respawn_advice_worker(self):
+        with self.advice_worker_respawn_lock:
+            if self.advice_worker_respawning:
+                return
+            self.advice_worker_respawning = True
+
+        def respawn():
+            try:
+                old = self.advice_worker
+                if old is not None and old.poll() is None:
+                    old.terminate()
+                    try:
+                        old.wait(timeout=10)
+                    except subprocess.TimeoutExpired:
+                        old.kill()
+                if self.llama_ready:
+                    self.advice_worker = launch_advice_worker(self.args)
+                    self.advice_worker_boot_error = None
+            except Exception:
+                # Next request cold-falls-back again and retries the respawn.
+                pass
+            finally:
+                with self.advice_worker_respawn_lock:
+                    self.advice_worker_respawning = False
+
+        Thread(target=respawn, daemon=True).start()
+
     def _respawn_vision_worker(self):
         with self.worker_respawn_lock:
             if self.worker_respawning:
@@ -245,6 +327,12 @@ class LiveService:
 
     def close(self):
         self.advice_queue.close()
+        if self.advice_worker is not None:
+            self.advice_worker.terminate()
+            try:
+                self.advice_worker.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                self.advice_worker.kill()
         if self.vision_worker is not None:
             self.vision_worker.terminate()
             try:
@@ -258,6 +346,9 @@ class LiveService:
             future = self.advice_futures.get(latest.get("inspection_id")) if latest else None
         if not self.llama_ready:
             return {"status": "NOT_CONNECTED", "advisory": None}
+        mode = {"llama_runtime": "PERSISTENT_WORKER" if self.advice_worker is not None
+                and self.advice_worker.poll() is None else "COLD_SUBPROCESS",
+                "advice_worker_boot_error": self.advice_worker_boot_error}
         if (not latest or latest.get("status") != "ANALYZED"
                 or latest.get("candidate") != "ANOMALY_CANDIDATE"
                 or latest.get("source_mode") not in
@@ -273,7 +364,9 @@ class LiveService:
         if future is not None and not future.done():
             return {"status": "PENDING", "advisory": None}
         if future is not None and advice["status"] in ("NOT_REQUESTED", "PENDING"):
-            return {"status": "ADVICE_UNAVAILABLE", "advisory": None}
+            return {"status": "ADVICE_UNAVAILABLE", "advisory": None, **mode}
+        if isinstance(advice, dict):
+            advice = {**advice, **mode}
         return advice
 
     def request_advice(self):
@@ -301,6 +394,13 @@ class LiveService:
                        "--llama-root", str(self.args.llama_root),
                        "--output-dir", str(output), "--llama-timeout-seconds",
                        str(self.args.llama_timeout_seconds)]
+            if getattr(self.args, "llama_worker_socket", None) is not None:
+                if self.advice_worker is not None and self.advice_worker.poll() is None:
+                    command += ["--llama-worker-socket", str(self.args.llama_worker_socket)]
+                else:
+                    # Dead or never started: this request takes the cold path
+                    # (which re-verifies every asset) while the worker respawns.
+                    self._respawn_advice_worker()
             future = self.advice_queue.submit(lambda: subprocess.run(
                 command, capture_output=True, text=True,
                 timeout=self.args.llama_timeout_seconds + 45))
@@ -684,6 +784,10 @@ def main():
     parser.add_argument("--dataset-manifest", type=Path, default=Path("manifests/metal_nut_v1.json"))
     parser.add_argument("--dataset-root", type=Path, default=Path("data/mvtec_ad/metal_nut"))
     parser.add_argument("--guidance", type=Path, default=Path("guidance/prototype_inspection_v1.json"))
+    parser.add_argument("--llama-worker-socket", type=Path, default=None,
+                        help="Optional persistent advisory worker socket; omit for the per-request cold path")
+    parser.add_argument("--llama-worker-idle-timeout-seconds", type=float, default=900,
+                        help="Idle advisory worker exit so its memory is released (default 900)")
     parser.add_argument("--llama-root", type=Path,
                         default=Path("/home/nvidia/.local/share/forgesight/llama_cpu_v1"))
     parser.add_argument("--advice-root", type=Path,
@@ -703,6 +807,8 @@ def main():
     args = parser.parse_args()
     if not 1024 <= args.port <= 65535:
         parser.error("Use an unprivileged port")
+    if not 60 <= args.llama_worker_idle_timeout_seconds <= 3600:
+        parser.error("Advisory worker idle timeout must be 60-3600 seconds.")
     if not 0 < args.llama_timeout_seconds <= 240:
         parser.error("Use a Llama timeout between 0 and 240 seconds")
     if not 1 <= args.vision_worker_threads <= 4:

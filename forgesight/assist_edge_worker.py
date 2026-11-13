@@ -14,10 +14,16 @@ inspection/SQLite immutability re-check stays in the controller.
 
 State isolation: nothing about one request is carried into the next. The
 worker keeps no reply cache; every request re-tokenizes and re-generates.
-The ExecuTorch TextLLMRunner starts each generate() call at position 0, but
-that is an upstream behavior assumption: the device acceptance check must
-compare one worker-mode advisory against the cold-process output for the same
-prompt (temperature 0) before relying on it.
+Grounded in the installed runtime source (executorch 1.5.1,
+extension/llm/runner/text_llm_runner.cpp): generate() does NOT reset state -
+pos_ accumulates across calls, so a naive second call would continue inside
+the previous prompt's KV cache. TextLLMRunner::reset() (pos_ = 0, stats
+reset) is Python-bound as "Reset the runner state and KV cache"
+(extension/llm/runner/pybindings.cpp). The worker therefore calls the
+runtime's reset() before EVERY request; KV rows past a sequence's length are
+never attended after prefill restarts at position 0. As belt and braces, the
+device acceptance check still compares one worker-mode advisory against the
+cold-process output for the same prompt (temperature 0) before adoption.
 
 Artifact safety: the model/tokenizer are stat-checked on every request
 (size, mtime, inode). A replaced artifact fails the request and the worker
@@ -78,9 +84,10 @@ class Worker:
 
     def __init__(self, runtime):
         # The runtime object owns target/asset verification, imports and the
-        # loaded runner. Interface: token_count(text) -> int,
-        # generate(formatted, max_new_tokens) -> (text, stats dict),
-        # evidence -> dict, artifact_state() -> hashable, profile -> dict.
+        # loaded runner. Interface: reset() (drops generation state between
+        # requests), token_count(text) -> int, generate(formatted,
+        # max_new_tokens) -> (text, stats dict), evidence -> dict,
+        # artifact_state() -> hashable, profile -> dict.
         self.runtime = runtime
         self.startup_state = runtime.artifact_state()
         self.started_utc = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
@@ -88,7 +95,10 @@ class Worker:
     def handle(self, raw_request):
         request = validate_request(raw_request)
         if self.runtime.artifact_state() != self.startup_state:
-            raise RuntimeError("Model/tokenizer artifact changed; restart the worker.")
+            raise RuntimeError("Model/tokenizer/runtime artifact changed; restart the worker.")
+        # Drop any generation state before this request; see the module
+        # docstring for why generate() alone does not isolate requests.
+        self.runtime.reset()
         formatted = chat_prompt(request["prompt_text"], request["system_text"])
         prompt_tokens = self.runtime.token_count(formatted)
         profile = self.runtime.profile
@@ -253,9 +263,14 @@ def build_jetson_runtime(root):
     for relative in ("lib/libexecutorch_kernels_quantized.so",
                      "extension/llm/custom_ops/libcustom_ops_aot_lib.so"):
         torch.ops.load_library(str(Path(next(iter(executorch.__path__))) / relative))
+    import executorch.extension.llm.runner._llm_runner as native_runner
     tokenizer = CppTiktoken()
     tokenizer.load(str(files["tokenizer"]))
     runner = TextLLMRunner(str(files["model"]), str(files["tokenizer"]))
+    watched = [files["model"], files["tokenizer"], Path(native_runner.__file__)]
+    watched += [Path(next(iter(executorch.__path__))) / relative
+                for relative in ("lib/libexecutorch_kernels_quantized.so",
+                                 "extension/llm/custom_ops/libcustom_ops_aot_lib.so")]
 
     class JetsonRuntime:
         def __init__(self):
@@ -266,9 +281,12 @@ def build_jetson_runtime(root):
                              "model_revision": profile["model_revision"],
                              "backend_requested": profile["backend"]}
 
+        def reset(self):
+            runner.reset()
+
         def artifact_state(self):
             state = []
-            for path in (files["model"], files["tokenizer"]):
+            for path in watched:
                 info = Path(path).stat()
                 state.append((str(path), info.st_size, info.st_mtime_ns, info.st_ino))
             return tuple(state)
@@ -299,6 +317,8 @@ def main():
     if args.idle_timeout_seconds is not None and not 0 < args.idle_timeout_seconds <= 3600:
         parser.error("Idle timeout must be between 0 and 3600 seconds.")
     runtime = build_jetson_runtime(args.llama_root)
+    print(json.dumps({"status": "WORKER_READY",
+                      "model_sha256": runtime.evidence["artifact"]["sha256"]}), flush=True)
     serve(args.socket, Worker(runtime), args.idle_timeout_seconds,
           args.request_read_timeout_seconds)
 
