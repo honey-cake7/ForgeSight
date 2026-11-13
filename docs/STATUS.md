@@ -2,6 +2,14 @@
 
 ## Current stage
 
+**Merged persistent vision worker VERIFIED on the physical Jetson in staging.**
+Four uploads of one saved MVTec image returned the same score and provisional
+REJECT. Three used the persistent CPU worker (2.05–2.24 s saved-image inspection);
+one forced worker failure used the cold fallback (8.22 s), followed by worker
+recovery. SQLite records, anomaly maps, and the served JavaScript were checked.
+The active port 8770 GUI was not updated; camera and GPU inference were not
+part of this test. See `manifests/jetson_persistent_vision_worker_probe_v1.json`.
+
 **Jetson GPU probe PARTIAL.** The hash-checked frozen EfficientAD-S model was
 exported to ONNX and TensorRT 8.5.2.2 built a separate FP32 GPU engine on the
 Jetson (exit 0). The GPU inference command was stopped before execution by an
