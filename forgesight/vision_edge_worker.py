@@ -155,7 +155,9 @@ class Worker:
         return report
 
 
-def serve(socket_path, worker, idle_timeout_seconds=None):
+def serve(socket_path, worker, idle_timeout_seconds=None, request_read_timeout_seconds=30):
+    if not 0 < request_read_timeout_seconds <= 300:
+        raise ValueError("Request read timeout must be between 0 and 300 seconds.")
     socket_path = Path(socket_path)
     if socket_path.exists():
         probe = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
@@ -189,15 +191,28 @@ def serve(socket_path, worker, idle_timeout_seconds=None):
                     continue
                 if peer_uid != os.getuid():
                     continue  # same-user only; the socket mode already restricts this
+                # Bound the whole request transfer, including clients that keep
+                # sending bytes just before an individual recv would time out.
+                read_deadline = time.monotonic() + request_read_timeout_seconds
                 chunks, remaining = [], MAX_REQUEST_BYTES
-                while remaining > 0:
-                    block = connection.recv(min(65536, remaining))
-                    if not block:
-                        break
-                    chunks.append(block)
-                    remaining -= len(block)
-                    if b"\n" in block:
-                        break
+                try:
+                    while remaining > 0:
+                        seconds_left = read_deadline - time.monotonic()
+                        if seconds_left <= 0:
+                            raise socket.timeout("Request read deadline exceeded")
+                        connection.settimeout(seconds_left)
+                        block = connection.recv(min(65536, remaining))
+                        if not block:
+                            break
+                        chunks.append(block)
+                        remaining -= len(block)
+                        if b"\n" in block:
+                            break
+                except socket.timeout:
+                    continue  # stalled client; serve the next connection
+                # The transfer deadline does not bound model inference or reply
+                # writes. Preserve the separate reply timeout after reading.
+                connection.settimeout(request_read_timeout_seconds)
                 raw = b"".join(chunks).split(b"\n", 1)[0]
                 try:
                     request = json.loads(raw.decode("utf-8"))
@@ -256,13 +271,17 @@ def main():
     parser.add_argument("--threads", type=int, default=2)
     parser.add_argument("--idle-timeout-seconds", type=float, default=None,
                         help="Exit after this many seconds without a connection; default runs forever.")
+    parser.add_argument("--request-read-timeout-seconds", type=float, default=30,
+                        help="Drop a client whose request line takes longer than this to arrive; default 30.")
     args = parser.parse_args()
     if not 1 <= args.threads <= 4:
         parser.error("Expected one to four Torch threads")
+    if not 0 < args.request_read_timeout_seconds <= 300:
+        parser.error("Request read timeout must be between 0 and 300 seconds")
     worker = Worker(args.model, args.model_sha256, args.threads)
     print(json.dumps({"status": "WORKER_READY", "model_sha256": args.model_sha256,
                       "model_load_ms": worker.model_load_ms, "socket": str(args.socket)}), flush=True)
-    serve(args.socket, worker, args.idle_timeout_seconds)
+    serve(args.socket, worker, args.idle_timeout_seconds, args.request_read_timeout_seconds)
 
 
 if __name__ == "__main__":
