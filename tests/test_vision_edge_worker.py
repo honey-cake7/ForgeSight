@@ -120,5 +120,51 @@ class ProtocolTests(unittest.TestCase):
         self.assertEqual(len(self.worker.requests), 3)
 
 
+class StalledClientTests(unittest.TestCase):
+    """A client that stops mid-request must not block every later request."""
+
+    def test_stalled_client_dropped_and_next_request_served(self):
+        import time
+        with TemporaryDirectory() as tmp:
+            socket_path = Path(tmp) / "worker.sock"
+            worker = StubWorker()
+            thread = threading.Thread(
+                target=serve, args=(socket_path, worker, None, 0.5), daemon=True)
+            thread.start()
+            deadline = time.monotonic() + 5
+            ready = False
+            while time.monotonic() < deadline:
+                if socket_path.exists():
+                    try:
+                        probe = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+                        probe.connect(str(socket_path))
+                    except OSError:
+                        time.sleep(0.01)
+                        continue
+                    probe.close()
+                    ready = True
+                    break
+                time.sleep(0.01)
+            self.assertTrue(ready, "worker socket was not accepting")
+            stalled = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            try:
+                stalled.connect(str(socket_path))
+                stalled.sendall(b'{"tensor":')  # partial request line, then silence
+                started = time.monotonic()
+                report = request(socket_path, {"tensor": "x", "threshold": 0.1},
+                                 timeout_seconds=10, connect_retries=1)
+                waited = time.monotonic() - started
+            finally:
+                stalled.close()
+            self.assertEqual(report["score"], 0.5)
+            self.assertLess(waited, 8, "legit request waited far beyond the read timeout")
+            # The server is still healthy after dropping the stalled client.
+            again = request(socket_path, {"tensor": "y", "threshold": 0.1},
+                            timeout_seconds=10, connect_retries=1)
+            self.assertEqual(again["score"], 0.5)
+            self.assertEqual(worker.requests, [{"tensor": "x", "threshold": 0.1},
+                                               {"tensor": "y", "threshold": 0.1}])
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -76,6 +76,7 @@ class LiveOnceAdversarialTests(unittest.TestCase):
             overlay_format="png")
 
     def fake_cold_child(self, child, score=0.9):
+        from tests.test_live_once_worker_mode import fake_cold_vision_child
         def run_child(argv):
             if "--tensor" in argv and "--output" not in argv:
                 tensor_path = Path(argv[argv.index("--tensor") + 1])
@@ -83,11 +84,12 @@ class LiveOnceAdversarialTests(unittest.TestCase):
                     np.save(stream, np.zeros((1, 3, 256, 256), dtype=np.float32), allow_pickle=False)
             elif "--output" in argv:
                 root = Path(argv[argv.index("--output") + 1]).parent
-                fake_inference_outputs(root, root / "input.npy", 700, 700)
-                report = json.loads((root / "inference.json").read_text())
+                fake_cold_vision_child(argv, root / "input.npy")
+                output = Path(argv[argv.index("--output") + 1])
+                report = json.loads(output.read_text())
                 report["score"] = score
                 report["candidate"] = "ANOMALY_CANDIDATE" if score > THRESHOLD else "NORMAL_CANDIDATE"
-                (root / "inference.json").write_text(json.dumps(report))
+                output.write_text(json.dumps(report))
             return 1.0
         child.side_effect = run_child
 
@@ -120,7 +122,47 @@ class LiveOnceAdversarialTests(unittest.TestCase):
         self.assertEqual(record["status"], "ANALYZED")
         self.assertEqual(record["timings"]["vision_mode"], "COLD_PROCESS_AFTER_WORKER_UNAVAILABLE")
         self.assertEqual(record["model"]["export_sha256_verified_at"], "THIS_INSPECTION")
-        saved = json.loads((args.output_dir / "inference.json").read_text())
+        self.assertFalse((args.output_dir / "inference.json").exists())  # partial cleared
+        saved = json.loads((args.output_dir / "inference_cold.json").read_text())
+        self.assertEqual(saved["status"], "ONE_IMAGE_INFERENCE_VERIFIED")
+
+    def test_late_worker_write_cannot_corrupt_cold_fallback(self):
+        """A worker that finishes after the client timed out writes the ORIGINAL
+        names late; the cold fallback's fresh names keep the record correct."""
+        args = self.make_args(Path("/tmp/worker.sock"))
+        def timed_out_worker(sock, req):
+            raise TimeoutError("worker still busy past the client timeout")
+        base_cold_child = self.fake_cold_child
+        with mock.patch.object(live, "worker_request", side_effect=timed_out_worker), \
+             mock.patch.object(live, "child") as child:
+            def run_child(argv):
+                if "--tensor" in argv and "--output" not in argv:
+                    tensor_path = Path(argv[argv.index("--tensor") + 1])
+                    with tensor_path.open("xb") as stream:
+                        np.save(stream, np.zeros((1, 3, 256, 256), dtype=np.float32),
+                                allow_pickle=False)
+                elif "--output" in argv:
+                    root = Path(argv[argv.index("--output") + 1]).parent
+                    # The slow worker finishes DURING the cold fallback, writing
+                    # the original paths late - before the fix this collided with
+                    # the cold child's exclusive creates and failed the inspection.
+                    root.mkdir(parents=True, exist_ok=True)
+                    (root / "inference.json").write_text('{"late_worker": true}')
+                    (root / "map_model.npy").write_bytes(b"late")
+                    (root / "map_source.npy").write_bytes(b"late")
+                    from tests.test_live_once_worker_mode import fake_cold_vision_child
+                    fake_cold_vision_child(argv, root / "input.npy")
+                return 1.0
+            child.side_effect = run_child
+            record = live.inspect(args)
+        self.assertEqual(record["status"], "ANALYZED")
+        self.assertEqual(record["timings"]["vision_mode"], "COLD_PROCESS_AFTER_WORKER_UNAVAILABLE")
+        self.assertTrue(record["artifacts"]["score_map_model"].endswith("map_model_cold.npy"))
+        self.assertTrue(record["artifacts"]["score_map_source"].endswith("map_source_cold.npy"))
+        # The late writes exist but are unreferenced and did not overwrite the result.
+        self.assertEqual(json.loads((args.output_dir / "inference.json").read_text()),
+                         {"late_worker": True})
+        saved = json.loads((args.output_dir / "inference_cold.json").read_text())
         self.assertEqual(saved["status"], "ONE_IMAGE_INFERENCE_VERIFIED")
 
     def test_request_rejection_never_falls_back(self):

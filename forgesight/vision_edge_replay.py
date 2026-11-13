@@ -137,6 +137,7 @@ def main():
                 sys.executable, "-B", str(script_dir / "vision_edge_preprocess.py"),
                 "--image", str(args.image), "--tensor", str(tensor)])
         record["artifacts"]["input_tensor_sha256"] = sha256(tensor)
+        inference_path = root / "inference.json"
         use_worker = args.vision_worker_socket is not None
         if use_worker:
             try:
@@ -144,7 +145,7 @@ def main():
                 worker_request(str(args.vision_worker_socket), {
                     "tensor": str(tensor), "tensor_sha256": sha256(tensor),
                     "threshold": policy["image_threshold"],
-                    "output": str(root / "inference.json"),
+                    "output": str(inference_path),
                     "map_output": str(model_map),
                     "source_map_output": str(source_map), "source_size": [700, 700]})
                 record["timings"]["vision_process_ms"] = (time.perf_counter() - vision_started) * 1000
@@ -152,23 +153,29 @@ def main():
                 # Transport failure only (worker gone/hung); a request REJECTION
                 # must not fall back - the cold path would reject it identically.
                 use_worker = False  # worker exited (idle timeout); fall back to the cold process once
-                (root / "inference.json").unlink(missing_ok=True)
+                inference_path.unlink(missing_ok=True)
                 model_map.unlink(missing_ok=True)
                 source_map.unlink(missing_ok=True)
+                # A merely-slow worker may still finish and write its outputs late;
+                # the cold attempt uses fresh names so a late worker write can
+                # never collide with its exclusive creates or be read as its result.
+                inference_path = root / "inference_cold.json"
+                model_map = root / "map_model_cold.npy"
+                source_map = root / "map_source_cold.npy"
         if not use_worker:
             record["timings"]["vision_process_ms"] = run_child([
                 str(args.vision_python), "-B", str(script_dir / "vision_edge_once.py"),
                 "--model", str(args.model), "--model-sha256", args.model_sha256,
                 "--tensor", str(tensor), "--tensor-sha256", sha256(tensor),
                 "--threshold", str(policy["image_threshold"]),
-                "--output", str(root / "inference.json"),
+                "--output", str(inference_path),
                 "--map-output", str(model_map),
                 "--source-map-output", str(source_map), "--source-size", "700", "700"])
             if args.vision_worker_socket is not None:
                 record["timings"]["vision_mode"] = "COLD_PROCESS_AFTER_WORKER_UNAVAILABLE"
                 # The cold child verified the current model bytes this run.
                 record["model"]["export_sha256_verified_at"] = "THIS_INSPECTION"
-        inference = json.loads((root / "inference.json").read_text())
+        inference = json.loads(inference_path.read_text())
         if (inference["model_sha256"] != args.model_sha256
                 or inference["tensor_sha256"] != sha256(tensor)
                 or inference["threshold"] != policy["image_threshold"]):

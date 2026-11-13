@@ -31,7 +31,9 @@ def model_file_sha(path):
 
 
 def fake_inference_outputs(root, tensor, height, width, model_sha=None,
-                           tensor_sha=None, threshold=THRESHOLD):
+                           tensor_sha=None, threshold=THRESHOLD,
+                           report_name="inference.json", map_model_name="map_model.npy",
+                           map_source_name="map_source.npy"):
     if model_sha is None:
         model_sha = live.MODEL_SHA256
     """Write the artifacts a real vision child/worker would, with valid shapes."""
@@ -42,12 +44,22 @@ def fake_inference_outputs(root, tensor, height, width, model_sha=None,
               "score": 0.9, "candidate": "ANOMALY_CANDIDATE",
               "model_forward_ms": 1.0, "process_peak_rss_kib": 1000,
               "map_min": 0.0, "map_max": 1.0, "map_shape": [1, 1, 256, 256]}
-    (root / "inference.json").write_text(json.dumps(report))
-    np.save(root / "map_model.npy", np.zeros((256, 256), dtype=np.float32))
+    (root / report_name).write_text(json.dumps(report))
+    np.save(root / map_model_name, np.zeros((256, 256), dtype=np.float32))
     source = np.zeros((height, width), dtype=np.float32)
     source[100:200, 100:200] = 1.0  # one strong region for geometry
-    np.save(root / "map_source.npy", source)
+    np.save(root / map_source_name, source)
     return report
+
+
+def fake_cold_vision_child(argv, tensor, height=700, width=700, **kwargs):
+    """Honor the exact output paths the cold child was given (fresh names on fallback)."""
+    output = Path(argv[argv.index("--output") + 1])
+    return fake_inference_outputs(output.parent, tensor, height, width,
+                                  report_name=output.name,
+                                  map_model_name=Path(argv[argv.index("--map-output") + 1]).name,
+                                  map_source_name=Path(argv[argv.index("--source-map-output") + 1]).name,
+                                  **kwargs)
 
 
 class LiveOnceWorkerModeTests(unittest.TestCase):
@@ -88,7 +100,7 @@ class LiveOnceWorkerModeTests(unittest.TestCase):
                         np.save(stream, np.zeros((1, 3, 256, 256), dtype=np.float32), allow_pickle=False)
                 elif "--output" in argv:  # vision child
                     root = Path(argv[argv.index("--output") + 1]).parent
-                    fake_inference_outputs(root, root / "input.npy", 700, 700)
+                    fake_cold_vision_child(argv, root / "input.npy")
                 return 1.0
             child.side_effect = run_child
             record = live.inspect(args)
@@ -127,7 +139,7 @@ class LiveOnceWorkerModeTests(unittest.TestCase):
                         np.save(stream, np.zeros((1, 3, 256, 256), dtype=np.float32), allow_pickle=False)
                 elif "--output" in argv:
                     root = Path(argv[argv.index("--output") + 1]).parent
-                    fake_inference_outputs(root, root / "input.npy", 700, 700)
+                    fake_cold_vision_child(argv, root / "input.npy")
                 return 1.0
             child.side_effect = run_child
             record = live.inspect(args)
