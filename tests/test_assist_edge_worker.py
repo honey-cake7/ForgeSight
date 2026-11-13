@@ -298,6 +298,16 @@ class ControllerWiringTests(unittest.TestCase):
         report = json.loads((self.output / "advice_report.json").read_text())
         self.assertEqual(report["status"], "JETSON_ADVICE_GENERATED_REQUIRES_HUMAN_REVIEW")
         self.assertEqual(report["llama_runtime_mode"], "PERSISTENT_WORKER")
+        from forgesight.assist_display import advice_for
+        record = json.loads(self.record_path.read_text())
+        shown = advice_for(record, Path(self.dir.name) / "advice_root")
+        self.assertEqual(shown["status"], "NOT_REQUESTED")  # sanity: wrong root
+        import shutil
+        root = Path(self.dir.name) / "advice_root"
+        shutil.copytree(self.output, root / record["inspection_id"])
+        shown = advice_for(record, root)
+        self.assertEqual(shown["status"], "GENERATED_REQUIRES_HUMAN_REVIEW")
+        self.assertEqual(shown["advisory"]["note"], self.REVIEW_NOTE)
         self.assertTrue(report["inspection_and_sqlite_unchanged"])
         self.assertEqual(report["native"]["model_sha256"], "m" * 64)
         self.assertIsNone(report["native"]["process_wall_seconds"])

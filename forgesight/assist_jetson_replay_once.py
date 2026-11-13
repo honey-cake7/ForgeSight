@@ -35,7 +35,8 @@ def _generate_via_worker(args, context, root, report, source_mode):
                                 timeout_seconds=args.llama_timeout_seconds + 30)
         report["controller_runtime_wall_ms"] = (time.perf_counter() - started) * 1000
         evidence = native.get("runtime_evidence") or {}
-        report["native"] = {"worker_mode": native.get("worker_mode"),
+        report["native"] = {"status": native.get("status"),
+                            "worker_mode": native.get("worker_mode"),
                             "worker_started_utc": native.get("worker_started_utc"),
                             "model_sha256": (evidence.get("artifact") or {}).get("sha256"),
                             "tokenizer_sha256": (evidence.get("tokenizer") or {}).get("sha256"),
