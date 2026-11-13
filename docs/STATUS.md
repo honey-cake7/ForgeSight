@@ -2,6 +2,16 @@
 
 ## Current stage
 
+**Merged CPU vision and persistent ExecuTorch advice VERIFIED for one saved
+image on the Jetson at `ca499bd`.** Inspection work took 2.337 s (model forward
+1.768 s); the first advisory worker request took 5.311 s, including reported
+model loading, and produced an accepted 40-token note. The grade and SQLite
+inspection were unchanged by advice; the C270 preview was available. These
+are separate timing scopes, not steady-state percentiles or physical-part
+acceptance. See [the merge and latency report](MERGE_LATENCY_REPORT.md) and
+`manifests/jetson_persistent_advice_success_v1.json`. The report also restores
+the earlier vision worker evidence removed during the PR #4 merge.
+
 **Jetson GPU probe PARTIAL.** The hash-checked frozen EfficientAD-S model was
 exported to ONNX and TensorRT 8.5.2.2 built a separate FP32 GPU engine on the
 Jetson (exit 0). The GPU inference command was stopped before execution by an
