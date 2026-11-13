@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 import hashlib
 import json
 from pathlib import Path
+import re
 import subprocess
 import time
 
@@ -18,6 +19,44 @@ def sha256(path):
         for block in iter(lambda: stream.read(1024 * 1024), b""):
             digest.update(block)
     return digest.hexdigest()
+
+_SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+
+
+def _valid_sha256(value):
+    return isinstance(value, str) and _SHA256_RE.match(value) is not None
+
+
+def _valid_utc_timestamp(value):
+    try:
+        datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ")
+    except (ValueError, TypeError):
+        return False
+    return True
+
+
+def _pinned_asset_hashes(llama_root):
+    """Expected artifact hashes from the pinned assets manifest, when present.
+
+    Same trust root the cold path verifies against; None when the manifest is
+    unavailable (e.g. PC-side tests), in which case only presence/format are
+    enforced. Membership, not key position, is checked so schema detail stays
+    with edge_jetson_smoke.
+    """
+    if llama_root is None:
+        return None
+    manifest = Path(llama_root) / "model" / "llama3_2_1b_assets.json"
+    try:
+        assets = json.loads(manifest.read_text())
+    except (OSError, ValueError):
+        return None
+    files = assets.get("files") if isinstance(assets, dict) else None
+    if not isinstance(files, dict):
+        return None
+    pinned = {entry.get("sha256") for entry in files.values() if isinstance(entry, dict)}
+    pinned = {value for value in pinned if _valid_sha256(value)}
+    return pinned or None
+
 
 def _generate_via_worker(args, context, root, report, source_mode):
     """Warm path: reuse the verified persistent worker; no process spawn or
@@ -35,6 +74,26 @@ def _generate_via_worker(args, context, root, report, source_mode):
                                 timeout_seconds=args.llama_timeout_seconds + 30)
         report["controller_runtime_wall_ms"] = (time.perf_counter() - started) * 1000
         evidence = native.get("runtime_evidence") or {}
+        # Attestation gate: only a response carrying the worker's verified
+        # startup evidence may be marked jetson_verified. A bare or fabricated
+        # reply (no status, no mode, no artifact/tokenizer hashes) is a hard
+        # failure, never a fallback: the cold path stays the trusted route.
+        # These are operational trusted-local checks, not cryptographic
+        # verification: a same-uid impostor can fabricate evidence, so the
+        # acceptance gate's warm-vs-cold cross-check remains the binding.
+        artifact_sha = (evidence.get("artifact") or {}).get("sha256")
+        tokenizer_sha = (evidence.get("tokenizer") or {}).get("sha256")
+        started_utc = native.get("worker_started_utc")
+        if (native.get("status") != "GENERATED_BY_PERSISTENT_WORKER"
+                or native.get("worker_mode") != "PERSISTENT_PROCESS"
+                or not isinstance(started_utc, str)
+                or not _valid_utc_timestamp(started_utc)
+                or not _valid_sha256(artifact_sha)
+                or not _valid_sha256(tokenizer_sha)):
+            raise RuntimeError("Persistent worker response lacks verified runtime evidence; refusing to attest it.")
+        pinned = _pinned_asset_hashes(args.llama_root)
+        if pinned is not None and (artifact_sha not in pinned or tokenizer_sha not in pinned):
+            raise RuntimeError("Persistent worker evidence does not match the pinned asset manifest.")
         report["native"] = {"status": native.get("status"),
                             "worker_mode": native.get("worker_mode"),
                             "worker_started_utc": native.get("worker_started_utc"),

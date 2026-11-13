@@ -267,8 +267,8 @@ class ControllerWiringTests(unittest.TestCase):
                 "status": "GENERATED_BY_PERSISTENT_WORKER",
                 "worker_mode": "PERSISTENT_PROCESS",
                 "worker_started_utc": "2026-11-14T00:00:00Z",
-                "runtime_evidence": {"artifact": {"sha256": "m" * 64},
-                                     "tokenizer": {"sha256": "t" * 64}},
+                "runtime_evidence": {"artifact": {"sha256": "1" * 64},
+                                     "tokenizer": {"sha256": "2" * 64}},
                 "prompt_token_count": 40,
                 "stats": {"prompt_tokens": 40, "generated_tokens": 33},
                 "generated_text": self.REVIEW_NOTE}}
@@ -309,7 +309,7 @@ class ControllerWiringTests(unittest.TestCase):
         self.assertEqual(shown["status"], "GENERATED_REQUIRES_HUMAN_REVIEW")
         self.assertEqual(shown["advisory"]["note"], self.REVIEW_NOTE)
         self.assertTrue(report["inspection_and_sqlite_unchanged"])
-        self.assertEqual(report["native"]["model_sha256"], "m" * 64)
+        self.assertEqual(report["native"]["model_sha256"], "1" * 64)
         self.assertIsNone(report["native"]["process_wall_seconds"])
         self.assertEqual(report["advisory"]["authoritative_grade"], "REVIEW")
         # The worker received only prompt/system text and the token budget:
