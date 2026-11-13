@@ -154,7 +154,8 @@ class LiveService:
         if (not latest or latest.get("status") != "ANALYZED"
                 or latest.get("candidate") != "ANOMALY_CANDIDATE"
                 or latest.get("source_mode") not in
-                ("SAVED_IMAGE_REPLAY", "USER_UPLOADED_IMAGE_DIAGNOSTIC")
+                ("SAVED_IMAGE_REPLAY", "USER_UPLOADED_IMAGE_DIAGNOSTIC",
+                 "USER_DECLARED_MVTEC_METAL_NUT_UPLOAD")
                 or root is None):
             return {"status": "NOT_ELIGIBLE", "advisory": None}
         record_path = root / "record.json"
@@ -175,7 +176,8 @@ class LiveService:
                     or latest.get("status") != "ANALYZED"
                     or latest.get("candidate") != "ANOMALY_CANDIDATE"
                     or latest.get("source_mode") not in
-                    ("SAVED_IMAGE_REPLAY", "USER_UPLOADED_IMAGE_DIAGNOSTIC")
+                    ("SAVED_IMAGE_REPLAY", "USER_UPLOADED_IMAGE_DIAGNOSTIC",
+                     "USER_DECLARED_MVTEC_METAL_NUT_UPLOAD")
                     or root is None):
                 raise ValueError("Llama advice is available after a flagged saved-image result")
             record_path = root / "record.json"

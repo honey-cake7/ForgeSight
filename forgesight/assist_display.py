@@ -25,7 +25,8 @@ def advice_for(record, root):
                 or report.get("authoritative_grade") != record["decision"]["grade"]
                 or report.get("inspection_and_sqlite_unchanged") is not True
                 or report.get("source_mode") != record["source"]["mode"]
-                or report.get("source_mode") not in ("SAVED_IMAGE_REPLAY", "USER_UPLOADED_IMAGE_DIAGNOSTIC")
+                or report.get("source_mode") not in ("SAVED_IMAGE_REPLAY", "USER_UPLOADED_IMAGE_DIAGNOSTIC",
+                                                      "USER_DECLARED_MVTEC_METAL_NUT_UPLOAD")
                 or report.get("physical_part_inspected") is not False):
             raise ValueError("Advice does not match saved inspection")
         if report.get("status") != "JETSON_ADVICE_GENERATED_REQUIRES_HUMAN_REVIEW":
@@ -47,9 +48,10 @@ def advice_for(record, root):
         if not isinstance(response, dict):
             raise ValueError("Advisory response is invalid")
         note = response.get("generated_note")
+        guide_id = "G2" if record["source"]["mode"] == "USER_DECLARED_MVTEC_METAL_NUT_UPLOAD" else "G1"
         if (not isinstance(note, str) or not note.strip() or len(note) > 2000
-                or response.get("evidence_ids") != ["E1", "G1"]
-                or "[E1]" not in note or "[G1]" not in note):
+                or response.get("evidence_ids") != ["E1", guide_id]
+                or "[E1]" not in note or "[" + guide_id + "]" not in note):
             raise ValueError("Advisory note is invalid")
         return {"status": "GENERATED_REQUIRES_HUMAN_REVIEW", "advisory": {
             "note": note, "evidence_ids": response["evidence_ids"],

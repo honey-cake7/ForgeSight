@@ -38,7 +38,8 @@ def main():
     original_bytes = args.record.read_bytes()
     record = json.loads(original_bytes)
     source_mode = record.get("source", {}).get("mode")
-    if (source_mode not in ("SAVED_IMAGE_REPLAY", "USER_UPLOADED_IMAGE_DIAGNOSTIC")
+    if (source_mode not in ("SAVED_IMAGE_REPLAY", "USER_UPLOADED_IMAGE_DIAGNOSTIC",
+                            "USER_DECLARED_MVTEC_METAL_NUT_UPLOAD")
             or record["source"].get("physical_part") is not False
             or record.get("model", {}).get("jetson_verified") is not True):
         parser.error("Jetson advisory requires a saved replay or uploaded-image diagnostic record.")

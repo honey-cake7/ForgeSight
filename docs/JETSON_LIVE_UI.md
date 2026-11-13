@@ -43,8 +43,15 @@ an append-only, unverified claim linked to that inspection. The choice proposes
 PASS, REJECT or REVIEW respectively; the original ForgeGrade grade never
 changes. Reviewing the image helps identify bad captures and disagreements for
 later analysis, but it is not certified ground truth or a trained defect-type
-label. Llama advice remains a separate optional note for eligible saved-image
-REVIEW events and does not change the grade.
+label. For an above-threshold saved image, including a provisional benchmark
+REJECT, click **Generate Llama advice** after analysis finishes. The separate
+ExecuTorch note does not change the grade. Normal candidates do not trigger
+Llama. The note currently gives a basic image-verification instruction; the
+approximate nut area is displayed by the result panel, not inferred by Llama.
+
+After a source update, restart the UI server and refresh the browser page so
+the new JavaScript loads. If the terminal already shows repeated `/api/state`
+requests, the server is running; a second copy cannot bind the same port.
 
 ## Launch after copying this source to the Jetson vision directory
 
@@ -71,15 +78,13 @@ preview stays visible while the saved frame is analyzed. Stop the server with
 Ctrl+C. Local output is under `runs/live_inspections_v1/` in the Jetson vision
 directory; the SQLite file is `runs/live_inspections_v1/inspections.sqlite3`.
 
-The source files needed in that directory are `forgesight/grade.py`,
-`forgesight/vision_edge_live_once.py`, `forgesight/vision_edge_replay.py`,
-`forgesight/jetson_live_ui.py`, and
-`forgesight/web/jetson_live.{html,css,js}`. Existing `forgesight` modules,
-`venv/bin/python`, `efficientad_s_calibrated.ts`, and
-`configs/forgegrade_v1.json` are reused. The Llama runtime and system Python
-packages are unchanged. The frozen `manifests/metal_nut_v1.json` and original
-development-preview PNGs are required for replay. A physical nut inspection
-remains unverified.
+Keep `forgesight/jetson_live_ui.py`, `vision_edge_live_once.py`, `regions.py`,
+`assist_contract.py`, `assist_display.py`, `assist_jetson_replay_once.py`, the
+three `forgesight/web/jetson_live.*` files and
+`guidance/prototype_inspection_v1.json` at matching versions. The existing
+isolated vision and Llama runtimes, model, benchmark policy and system Python
+packages were not changed by the combined-advice update. A physical nut
+inspection remains unverified.
 
 ## Current proof
 

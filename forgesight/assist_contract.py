@@ -11,11 +11,11 @@ from forgesight.grade import grade_record
 
 
 DEFAULT_GUIDANCE = Path('guidance/prototype_inspection_v1.json')
-PROMPT_VERSION = 'forgeassist-system-cited-note-v1'
-OUTPUT_POLICY_VERSION = 'forgeassist-reviewed-note-forms-v2'
+PROMPT_VERSION = 'forgeassist-system-cited-note-v2'
+OUTPUT_POLICY_VERSION = 'forgeassist-reviewed-note-forms-v3'
 # Canonical document hash, independent of JSON whitespace/Windows line endings.
 # A changed procedure requires deliberate review/versioning, not just the same ID.
-GUIDANCE_DOCUMENT_SHA256 = '60238ff09a2453786e81e1a9fd1e905d53ca3b5c5ad7c368c8a2972fe31c7825'
+GUIDANCE_DOCUMENT_SHA256 = 'c532cb1ebd447508c5459e442f453dc2c96aea6d3ba82aa7269eb0efd2b63896'
 
 
 class AdvisoryRefusal(ValueError):
@@ -51,22 +51,34 @@ def _prepare_advisory(record: dict, guidance: dict) -> dict:
     if record.get('candidate') != 'ANOMALY_CANDIDATE':
         raise AdvisoryRefusal('UNSUPPORTED_CANDIDATE', 'Unrecognized anomaly evidence; advice is withheld.')
     decision = record['decision']
-    if (decision['grade'] != 'REVIEW' or record['predicted_defect_type'] != 'unknown'
+    source_mode = record.get('source', {}).get('mode')
+    if (decision['grade'] not in ('REVIEW', 'REJECT')
+            or (decision['grade'] == 'REJECT'
+                and source_mode != 'USER_DECLARED_MVTEC_METAL_NUT_UPLOAD')
+            or record['predicted_defect_type'] != 'unknown'
             or record['type_status'] != 'NO_VALIDATED_SUBTYPE_CLASSIFIER'):
-        raise AdvisoryRefusal('UNSUPPORTED_TYPE_OR_GRADE', 'Expected the current unknown-type REVIEW prototype, not a different grading/type policy.')
+        raise AdvisoryRefusal('UNSUPPORTED_TYPE_OR_GRADE', 'The grade or defect type is outside the reviewed advisory scope.')
     if grade_record(record, decision['policy_snapshot']) != decision:
         raise AdvisoryRefusal('INCONSISTENT_DECISION', 'Decision does not match its recorded deterministic evidence/policy.')
-    source_mode = record.get('source', {}).get('mode')
-    supported_reason = (decision['reason'] == 'UNKNOWN_UNSEEN_OR_UNRELIABLE_TYPE'
-                        or (source_mode == 'USER_UPLOADED_IMAGE_DIAGNOSTIC'
-                            and record['source'].get('physical_part') is False
-                            and decision['reason'] == 'UPLOADED_IMAGE_DOMAIN_UNVALIDATED'))
+    benchmark = (source_mode == 'USER_DECLARED_MVTEC_METAL_NUT_UPLOAD'
+                 and record['source'].get('physical_part') is False
+                 and record['source'].get('dataset_origin_verified') is False
+                 and record['source'].get('size_px') == [700, 700]
+                 and decision['grade'] == 'REJECT'
+                 and decision['reason'] == 'BENCHMARK_SCORE_ABOVE_IMAGE_THRESHOLD')
+    supported_reason = (benchmark or
+                        (decision['grade'] == 'REVIEW' and
+                         (decision['reason'] == 'UNKNOWN_UNSEEN_OR_UNRELIABLE_TYPE'
+                          or (source_mode == 'USER_UPLOADED_IMAGE_DIAGNOSTIC'
+                              and record['source'].get('physical_part') is False
+                              and decision['reason'] == 'UPLOADED_IMAGE_DOMAIN_UNVALIDATED'))))
     if not supported_reason:
         raise AdvisoryRefusal('INVALID_EVIDENCE_FOR_ADVICE', 'Invalid evidence cannot be presented as an analyzed defect event.')
     if canonical_hash(guidance) != GUIDANCE_DOCUMENT_SHA256:
         raise AdvisoryRefusal('UNRECOGNIZED_GUIDANCE', 'Guidance content differs from the reviewed prototype document; advice is withheld.')
     entries = [entry for entry in guidance['entries'] if entry['candidate'] == record['candidate'] and entry['grade'] == decision['grade']]
-    if len(entries) != 1 or entries[0]['id'] != 'G1':
+    guide_id = 'G2' if benchmark else 'G1'
+    if len(entries) != 1 or entries[0]['id'] != guide_id:
         raise ValueError('No single permitted guidance entry matches this inspection.')
     entry = entries[0]
     if not isinstance(entry['text'], str) or not entry['text'].strip() or len(entry['text']) > 160 or '<|' in entry['text'] or '|>' in entry['text']:
@@ -78,8 +90,9 @@ def _prepare_advisory(record: dict, guidance: dict) -> dict:
     # E1 aliases the full immutable record outside the tight model prefill budget.
     # Numbers are response pixels, not physical damage or probabilities.
     prompt = (
-        '[E1] Anomaly flagged; grade REVIEW; defect type and cause unknown.\n'
-        f'[G1] Prototype checklist: {entry["text"]}'
+        ('[E1] Anomaly flagged; provisional benchmark grade REJECT; defect type and cause unknown.\n'
+         if benchmark else '[E1] Anomaly flagged; grade REVIEW; defect type and cause unknown.\n')
+        + f'[{guide_id}] Prototype checklist: {entry["text"]}'
     )
     return {'schema_version': 1, 'prompt_version': PROMPT_VERSION, 'output_policy_version': OUTPUT_POLICY_VERSION,
             'source_mode': source_mode,
@@ -90,11 +103,13 @@ def _prepare_advisory(record: dict, guidance: dict) -> dict:
                                'candidate': record['candidate'], 'predicted_defect_type': 'unknown',
                                'severity': decision['severity'], 'total_response_area_px': area,
                                'measurement': 'model_response_not_verified_physical_damage'},
-                         'G1': {'document_id': guidance['document_id'], 'document_sha256': canonical_hash(guidance),
-                                'approval_status': guidance['approval_status'], 'text': entry['text']}},
+                         guide_id: {'document_id': guidance['document_id'], 'document_sha256': canonical_hash(guidance),
+                                    'approval_status': guidance['approval_status'], 'text': entry['text']}},
             'recurrence': 'NOT_SUPPLIED_NO_PATTERN_ANALYSIS', 'prompt_text': prompt,
-            'system_text': 'You are an inspection assistant. Reply with only one short operator instruction. State unknown type and cause. Use only supplied facts. Cite [E1][G1].',
-            'model_received_fields': ['anomaly_flag', 'fixed_REVIEW_grade', 'unknown_type_and_cause', 'prototype_G1_text'],
+            'system_text': ('You are an inspection assistant. Reply with only one short operator instruction. '
+                            'State unknown type and cause. Use only supplied facts. Cite [E1][' + guide_id + '].'),
+            'model_received_fields': ['anomaly_flag', 'fixed_' + decision['grade'] + '_grade',
+                                      'unknown_type_and_cause', 'prototype_' + guide_id + '_text'],
             'score_and_geometry_in_prompt': False,
             'image_supplied_to_llama': False, 'quality_grade_authority': 'DETERMINISTIC_RULES_ONLY'}
 
@@ -109,9 +124,10 @@ def parse_advisory(raw: str, context: dict) -> dict:
     if not 1 <= len(cleaned) <= 600 or any(mark in cleaned for mark in ('{', '}', '```')):
         raise ValueError('Expected a bounded plain-text advisory, not JSON or formatting instructions.')
     citations = re.findall(r'\[([^\]]*)\]', cleaned)
-    if set(citations) != {'E1', 'G1'}:
+    guide_id = 'G2' if context['authoritative_decision']['grade'] == 'REJECT' else 'G1'
+    if set(citations) != {'E1', guide_id}:
         raise ValueError('Advisory cites unknown or missing evidence.')
-    text = re.sub(r'\[(E1|G1)\]', '', cleaned)
+    text = re.sub(r'\[(E1|G1|G2)\]', '', cleaned)
     if re.search(r'\d', text):
         raise ValueError('The compact note is not permitted to invent measurements or confidence.')
     words = re.findall(r'[a-z]+', text.lower())
@@ -136,16 +152,24 @@ def parse_advisory(raw: str, context: dict) -> dict:
         'prototype checklist: hold for human review; check image clarity and lighting.',
         'an anomaly is flagged; type and cause are unknown. '
         'hold for human review and check image clarity and lighting.',
+        'anomaly flagged; provisional benchmark grade reject; defect type and cause unknown. '
+        'prototype checklist: hold the provisional benchmark result for human review; check image clarity and lighting.',
+        'an anomaly is flagged; type and cause are unknown. '
+        'hold the provisional benchmark result for human review and check image clarity and lighting.',
     }
     # Citations may precede a final period or follow it.
     normalized = normalized.replace(' .', '.')
     if normalized not in reviewed_forms:
         raise ValueError('Generated note is outside the reviewed statement forms; advice is withheld.')
+    if context['authoritative_decision']['grade'] == 'REJECT' and 'grade review' in normalized:
+        raise ValueError('Generated note contradicts the benchmark grade.')
+    if context['authoritative_decision']['grade'] == 'REVIEW' and ('benchmark' in normalized or 'grade reject' in normalized):
+        raise ValueError('Generated note contradicts the review grade.')
     return {'schema_version': 1, 'status': 'GENERATED_REQUIRES_HUMAN_REVIEW',
             'inspection_id': context['inspection_id'], 'inspection_sha256': context['inspection_sha256'],
             'authoritative_grade': context['authoritative_decision']['grade'],
             'decision_sha256': context['decision_sha256'],
-            'response': {'generated_note': cleaned, 'evidence_ids': ['E1', 'G1'],
+            'response': {'generated_note': cleaned, 'evidence_ids': ['E1', guide_id],
                          'possible_explanation': None,
                          'possible_explanation_origin': 'HOST_WITHHELD_NO_CAUSAL_EVIDENCE'},
             'guidance_approval': 'PROTOTYPE_NOT_FACTORY_APPROVED',

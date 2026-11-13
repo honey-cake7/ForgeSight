@@ -52,7 +52,8 @@ async function refreshState() {
 function renderAdvice(advice, latest, inspectionBusy) {
   const status = advice?.status || 'NOT_CONNECTED';
   const eligible = latest?.status === 'ANALYZED' && latest?.candidate === 'ANOMALY_CANDIDATE' &&
-    ['SAVED_IMAGE_REPLAY', 'USER_UPLOADED_IMAGE_DIAGNOSTIC'].includes(latest?.source_mode);
+    ['SAVED_IMAGE_REPLAY', 'USER_UPLOADED_IMAGE_DIAGNOSTIC',
+      'USER_DECLARED_MVTEC_METAL_NUT_UPLOAD'].includes(latest?.source_mode);
   byId('advice-request').disabled = inspectionBusy || !eligible || status !== 'NOT_REQUESTED';
   const labels = {
     NOT_CONNECTED: 'On-device Llama runtime is unavailable.',
@@ -62,10 +63,7 @@ function renderAdvice(advice, latest, inspectionBusy) {
     ADVICE_UNAVAILABLE: 'Llama advice was unavailable. The inspection grade is unchanged.',
     GENERATED_REQUIRES_HUMAN_REVIEW: 'ExecuTorch generation verified · human review required.'
   };
-  byId('advice-status').textContent = status === 'NOT_ELIGIBLE' &&
-    latest?.source_mode === 'USER_DECLARED_MVTEC_METAL_NUT_UPLOAD'
-    ? 'Llama advice is not connected to provisional benchmark verdicts yet.'
-    : labels[status] || 'Llama advice status is unknown.';
+  byId('advice-status').textContent = labels[status] || 'Llama advice status is unknown.';
   const note = advice?.advisory?.note;
   byId('advice-note').hidden = status !== 'GENERATED_REQUIRES_HUMAN_REVIEW' || !note;
   byId('advice-note').textContent = note || '';

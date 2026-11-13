@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "scope": "one original MVTec development-preview image on the physical Jetson; no physical nut",
+  "deployment": {
+    "source_bundle_sha256": "610ff60497e7a7abf430c73464592fccfe892f144cb881864874b69b6bc76caf",
+    "prior_files_backup_sha256": "6fbbbd04e444c08627f087cde45e279a56de250e72c862e5d4bf140fc6d539f7",
+    "runtime_root": "/home/nvidia/.local/share/forgesight/vision_cpu_v1",
+    "ui_server": "/usr/bin/python3 -B -m forgesight.jetson_live_ui --port 8770",
+    "system_python_packages_changed": false,
+    "llama_runtime_changed": false
+  },
+  "inspection": {
+    "inspection_id": "e2693bf7-664a-4e69-9289-2546d369562b",
+    "source_mode": "USER_DECLARED_MVTEC_METAL_NUT_UPLOAD",
+    "dataset_path": "test/bent/017.png",
+    "source_sha256": "b49cc898143c46a8c3a8697411d04a078b36f60f4798ccc68aea33ea8fcac026",
+    "input_inspection_file_sha256": "7f801cc613d6d964cd759c515e52b5d87d5580e91249a0f5310a796540a57709",
+    "jetson_verified": true,
+    "status": "ANALYZED",
+    "score": 0.6828088760375977,
+    "image_threshold": 0.22776579856872559,
+    "grade": "REJECT",
+    "grade_scope": "provisional MVTec benchmark screening only",
+    "primary_response_area_px": 8977,
+    "additional_region_count": 1,
+    "approximate_nut_area": "annular face / outer perimeter or nearby background",
+    "zone_method": "approximate_centered_mvtec_radial_bands_v1",
+    "pixel_threshold_validated": false,
+    "model_forward_ms": 1710.0579349998952,
+    "file_to_record_ms": 7763.151182999991
+  },
+  "advisory": {
+    "status": "JETSON_ADVICE_GENERATED_REQUIRES_HUMAN_REVIEW",
+    "report_file_sha256": "ad9dfaa47e56070652cbc0b44d79b8506e2995a628676f216d49549d34a321e6",
+    "runtime": "on-device ExecuTorch Llama",
+    "evidence_ids": ["E1", "G2"],
+    "native_process_wall_seconds": 54.30243915400024,
+    "sampled_peak_child_rss_kib": 1178864,
+    "inspection_and_sqlite_unchanged": true,
+    "runtime_error": null,
+    "validation_error": null
+  },
+  "ui_checks": {
+    "state_endpoint_returned_grade_and_response_regions": true,
+    "manual_review_page_served": true,
+    "development_manual_review_post_status": 201,
+    "development_review_proposed_grade": "REVIEW",
+    "development_review_verification_status": "UNVERIFIED_OPERATOR_CLAIM",
+    "original_grade_after_manual_review": "REJECT",
+    "area_rendering_script_served": true,
+    "advice_endpoint_returned_generated_note": true,
+    "browser_visual_check": false
+  },
+  "limits": [
+    "Single already exposed development-preview image; no full test-set accuracy result.",
+    "Area names are provisional image-centered descriptions, not verified part segmentation or damage area.",
+    "No physical nut or live-camera inspection acceptance was tested in this run.",
+    "One Llama timing sample does not establish repeatable throughput or 1-2 second advice."
+  ]
+}

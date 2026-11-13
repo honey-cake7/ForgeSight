@@ -2,7 +2,7 @@
   "schema_version": 1,
   "document_id": "forgesight-prototype-image-review-v1",
   "approval_status": "PROTOTYPE_NOT_FACTORY_APPROVED",
-  "origin": "Developer-authored checklist for the existing saved-image REVIEW workflow; not a factory SOP or standard.",
+  "origin": "Developer-authored checklists for saved-image REVIEW and provisional MVTec benchmark REJECT workflows; not a factory SOP or standard.",
   "scope": "Explain recorded image evidence and request human verification. No machine adjustments, repair instructions, physical tolerances or confirmed causes are authorized.",
   "entries": [
     {
@@ -10,6 +10,12 @@
       "candidate": "ANOMALY_CANDIDATE",
       "grade": "REVIEW",
       "text": "Hold for human review; check image clarity and lighting."
+    },
+    {
+      "id": "G2",
+      "candidate": "ANOMALY_CANDIDATE",
+      "grade": "REJECT",
+      "text": "Hold the provisional benchmark result for human review; check image clarity and lighting."
     }
   ]
 }

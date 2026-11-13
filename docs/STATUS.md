@@ -2,6 +2,20 @@
 
 ## Current stage
 
+**Combined MVTec upload and on-device Llama advisory VERIFIED for one saved
+defect image.** The Jetson UI was updated from a hash-checked source bundle
+with its prior files backed up privately. A new upload of the original
+`test/bent/017.png` returned EfficientAD score 0.682808876 and provisional
+benchmark REJECT. Its largest thresholded response was 8,977 image pixels,
+described approximately as annular face / outer perimeter or nearby background.
+The separate ExecuTorch Llama request generated a checked [E1][G2] note;
+its native process took 54.302 s with sampled peak 1,178,864 KiB. The
+inspection and SQLite grade remained unchanged. A development-only manual
+review claim also returned HTTP 201 and left the original REJECT intact.
+This is one saved-image
+integration proof, not physical-nut, full-holdout accuracy or speed acceptance.
+See `manifests/jetson_combined_benchmark_advice_v1.json`.
+
 **Local area-description and manual-review substep VERIFIED in PC/WSL tests;
 Jetson deployment pending.** The UI can show the largest response region, its
 image-pixel area, other regions, and approximate nut-centered area for an
