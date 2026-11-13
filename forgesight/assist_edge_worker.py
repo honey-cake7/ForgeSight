@@ -179,6 +179,11 @@ def serve(socket_path, worker, idle_timeout_seconds=None, request_read_timeout_s
                             break
                 except socket.timeout:
                     continue  # stalled or dripping client; serve the next connection
+                # The read deadline bounds only the request read; it must not
+                # bound model inference or the reply write. Restore a fresh full
+                # timeout so a legitimately slow read cannot leave the reply
+                # with ~0s of budget (same rule as the vision worker).
+                connection.settimeout(request_read_timeout_seconds)
                 raw = b"".join(chunks).split(b"\n", 1)[0]
                 try:
                     request = json.loads(raw.decode("utf-8"))
