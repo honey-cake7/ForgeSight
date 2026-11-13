@@ -161,30 +161,114 @@ class AdviceWorkerWiringTests(unittest.TestCase):
         service.store.get_inspection.return_value = record
         return service
 
-    def captured_command(self, service):
-        with mock.patch("forgesight.jetson_live_ui.subprocess.run") as run:
+    def captured_call(self, service):
+        with mock.patch("forgesight.assist_jetson_replay_once.run_advisory") as run:
             assert service.request_advice() == "PENDING"
             future = service.advice_futures["insp-1"]
             future.result(timeout=10)
         service.advice_queue.close()
         run.assert_called_once()
-        return run.call_args.args[0]
+        return run.call_args
 
-    def test_live_worker_socket_reaches_advice_command(self):
+    def test_live_worker_socket_reaches_advice_call(self):
         worker = mock.Mock()
         worker.poll.return_value = None  # alive
-        command = self.captured_command(self.service(worker))
-        self.assertIn("--llama-worker-socket", command)
-        self.assertIn("/tmp/assist-test.sock", command)
+        call = self.captured_call(self.service(worker))
+        self.assertEqual(call.kwargs["llama_worker_socket"], Path("/tmp/assist-test.sock"))
 
     def test_dead_worker_cold_path_and_respawn(self):
         worker = mock.Mock()
         worker.poll.return_value = 1  # dead
         service = self.service(worker)
         service._respawn_advice_worker = mock.Mock()
-        command = self.captured_command(service)
-        self.assertNotIn("--llama-worker-socket", command)
+        call = self.captured_call(service)
+        self.assertIsNone(call.kwargs["llama_worker_socket"])
         service._respawn_advice_worker.assert_called_once()
+
+    def test_advice_runs_in_process_without_spawn(self):
+        """The in-process path writes the same report files and never spawns
+        the controller interpreter: real run_advisory against a fake worker."""
+        import socket as socket_module
+        import threading
+        worker = mock.Mock()
+        worker.poll.return_value = None
+        service = self.service(worker)
+        # Real fixtures: immutable record in a real store + real guidance doc.
+        record = json.loads(Path("manifests/operator_app_verification_v1.json").read_text()
+                            )["browser_proof"]["inspections"][1]["record"]
+        record["model"]["jetson_verified"] = True
+        record["source"]["physical_part"] = False
+        (service.latest_root / "record.json").write_text(json.dumps(record, indent=2) + "\n")
+        service.latest = {**record, "source_mode": "SAVED_IMAGE_REPLAY"}
+        from forgesight.storage import InspectionStore
+        database = service.advice_root / "inspections.db"
+        InspectionStore(database).save_inspection(record)
+        service.args = argparse.Namespace(
+            database=database, guidance=Path("guidance/prototype_inspection_v1.json"),
+            llama_root=Path("/unused"), llama_timeout_seconds=240,
+            llama_worker_socket=Path("/tmp/assist-test.sock"))
+        service.store = InspectionStore(database, create=False)
+
+        note = ("[E1] Anomaly flagged; grade REVIEW; defect type and cause unknown. "
+                "[G1] Prototype checklist: hold for human review; check image clarity and lighting.")
+
+        def fake_worker():
+            server = socket_module.socket(socket_module.AF_UNIX, socket_module.SOCK_STREAM)
+            server.bind("/tmp/assist-test.sock")
+            server.listen(1)
+            connection, _ = server.accept()
+            with connection:
+                raw = b""
+                while b"\n" not in raw:
+                    raw += connection.recv(65536)
+                payload = {"status": "OK", "report": {
+                    "status": "GENERATED_BY_PERSISTENT_WORKER",
+                    "worker_mode": "PERSISTENT_PROCESS",
+                    "worker_started_utc": "2026-11-14T00:00:00Z",
+                    "runtime_evidence": {"artifact": {"sha256": "m" * 64},
+                                         "tokenizer": {"sha256": "t" * 64}},
+                    "prompt_token_count": 40,
+                    "stats": {"prompt_tokens": 40, "generated_tokens": 33},
+                    "generated_text": note}}
+                connection.sendall(json.dumps(payload).encode() + b"\n")
+            server.close()
+
+        thread = threading.Thread(target=fake_worker, daemon=True)
+        thread.start()
+        try:
+            with mock.patch("forgesight.jetson_live_ui.subprocess.run",
+                            side_effect=AssertionError("spawned a subprocess")):
+                assert service.request_advice() == "PENDING"
+                service.advice_futures[record["inspection_id"]].result(timeout=10)
+        finally:
+            service.advice_queue.close()
+            Path("/tmp/assist-test.sock").unlink(missing_ok=True)
+        thread.join(timeout=10)
+        report = json.loads((service.advice_root / record["inspection_id"]
+                             / "advice_report.json").read_text())
+        self.assertEqual(report["status"], "JETSON_ADVICE_GENERATED_REQUIRES_HUMAN_REVIEW")
+        self.assertEqual(report["llama_runtime_mode"], "PERSISTENT_WORKER")
+        self.assertTrue(report["inspection_and_sqlite_unchanged"])
+
+    def test_advice_wall_deadline_bounds_a_hung_controller(self):
+        """A controller that never returns does not block the advice thread
+        past llama_timeout + slack; no report file appears (killed-subprocess
+        parity)."""
+        import time as time_module
+        worker = mock.Mock()
+        worker.poll.return_value = None
+        service = self.service(worker)
+        service.args.llama_timeout_seconds = 0.2
+        with mock.patch("forgesight.assist_jetson_replay_once.run_advisory",
+                        side_effect=lambda *a, **k: time_module.sleep(30)), \
+             mock.patch("forgesight.jetson_live_ui.ADVICE_WALL_SLACK_SECONDS", 0.2):
+            started = time_module.monotonic()
+            assert service.request_advice() == "PENDING"
+            service.advice_futures["insp-1"].result(timeout=10)
+            elapsed = time_module.monotonic() - started
+        service.advice_queue.close()
+        self.assertLess(elapsed, 5)
+        self.assertFalse((service.advice_root / "insp-1" / "advice_report.json").exists())
 
     def test_close_terminates_advice_worker(self):
         worker = mock.Mock()

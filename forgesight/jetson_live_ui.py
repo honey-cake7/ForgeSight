@@ -21,6 +21,11 @@ from forgesight.assist_queue import AdvisoryQueue
 from forgesight.storage import InspectionStore, new_correction
 from forgesight.vision_edge_live_once import MODEL_SHA256, sha256
 
+# Wall slack added to the Llama timeout for one advisory, matching the
+# killed-subprocess bound the in-process path replaced.
+ADVICE_WALL_SLACK_SECONDS = 45
+
+
 
 WEB_ROOT = Path(__file__).with_name("web")
 PART_ID = re.compile(r"[A-Za-z0-9_-]{1,64}\Z")
@@ -388,26 +393,56 @@ class LiveService:
             output = self.advice_root / record["inspection_id"]
             if output.exists() or record["inspection_id"] in self.advice_futures:
                 return "ALREADY_REQUESTED"
-            command = [sys.executable, "-B", "-m", "forgesight.assist_jetson_replay_once",
-                       "--record", str(record_path), "--database", str(self.args.database),
-                       "--guidance", str(self.args.guidance),
-                       "--llama-root", str(self.args.llama_root),
-                       "--output-dir", str(output), "--llama-timeout-seconds",
-                       str(self.args.llama_timeout_seconds)]
+            worker_socket = None
             if getattr(self.args, "llama_worker_socket", None) is not None:
                 if self.advice_worker is not None and self.advice_worker.poll() is None:
-                    command += ["--llama-worker-socket", str(self.args.llama_worker_socket)]
+                    worker_socket = Path(self.args.llama_worker_socket)
                 else:
                     # Dead or never started: this request takes the cold path
                     # (which re-verifies every asset) while the worker respawns.
                     self._respawn_advice_worker()
-            future = self.advice_queue.submit(lambda: subprocess.run(
-                command, capture_output=True, text=True,
-                timeout=self.args.llama_timeout_seconds + 45))
+            # In-process advisory: the controller imports no torch/executorch
+            # (the native runner stays a subprocess or the persistent worker),
+            # so the UI skips a fresh Python spawn per note. The saving on the
+            # Jetson is unmeasured for this path; the p50 controller-vs-native
+            # wall difference in manifests/jetson_offline_advice_latency_v1.json
+            # (~0.4 s) is a lead for its scale, not a measurement. Report files
+            # and failure visibility are unchanged: advice_state reads the
+            # output directory, never the future's return value. The old outer
+            # subprocess hard-kill is preserved as a wall deadline in
+            # _run_advice: the UI never waits past llama_timeout + slack, and
+            # the abandoned call is still inside its own bounded waits (worker
+            # socket read, cold subprocess, SQLite busy timeout) so it exits
+            # on its own; the residual unbounded surface is local file IO,
+            # which cannot hang on healthy storage.
+            future = self.advice_queue.submit(lambda: self._run_advice(record_path, output, worker_socket))
             if future is None:
                 return "BUSY"
             self.advice_futures[record["inspection_id"]] = future
             return "PENDING"
+
+    def _run_advice(self, record_path, output, worker_socket):
+        from forgesight.assist_jetson_replay_once import run_advisory
+
+        def call():
+            try:
+                run_advisory(record_path, self.args.database, self.args.guidance,
+                             self.args.llama_root, output, self.args.llama_timeout_seconds,
+                             llama_worker_socket=worker_socket)
+            except Exception:
+                # Same visible outcome as a failed controller subprocess: no
+                # report file, so advice_state keeps showing the pre-request
+                # state. The cold path inside still re-verifies every asset.
+                pass
+
+        # Wall deadline matching the killed-subprocess semantics: the UI never
+        # waits past llama_timeout + slack. An abandoned call remains inside
+        # its own bounded waits and exits on its own; a late report write can
+        # only collide with a retry through the output-dir-exists check, which
+        # fails closed.
+        call_thread = Thread(target=call, daemon=True)
+        call_thread.start()
+        call_thread.join(timeout=self.args.llama_timeout_seconds + ADVICE_WALL_SLACK_SECONDS)
 
     def state(self):
         with self.lock:
