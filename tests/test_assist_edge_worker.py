@@ -317,6 +317,75 @@ class ControllerWiringTests(unittest.TestCase):
         self.assertEqual(set(seen["request_seen"]),
                          {"prompt_text", "system_text", "max_new_tokens"})
 
+    def reply_server(self, body):
+        """Accept one request and send back the exact bytes given."""
+        server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        server.bind(str(self.socket_path))
+        server.listen(1)
+        connection, _ = server.accept()
+        with connection:
+            data = b""
+            while b"\n" not in data:
+                block = connection.recv(65536)
+                if not block:
+                    break
+                data += block
+            connection.sendall(body)
+        server.close()
+
+    def run_controller_with_mocked_cold(self):
+        """Run the controller with the cold subprocess path mocked; return (cold, report)."""
+        import sys
+        from unittest import mock
+        from forgesight import assist_jetson_replay_once as replay
+        argv = ["prog", "--record", str(self.record_path),
+                "--database", str(self.database),
+                "--guidance", "guidance/prototype_inspection_v1.json",
+                "--llama-root", str(Path(self.dir.name) / "unused_llama_root"),
+                "--output-dir", str(self.output),
+                "--llama-worker-socket", str(self.socket_path)]
+        with mock.patch.object(sys, "argv", argv), \
+             mock.patch.object(replay, "_generate_via_subprocess") as cold:
+            with self.assertRaises(SystemExit):  # cold path is mocked, so no advice completes
+                replay.main()
+        return cold, json.loads((self.output / "advice_report.json").read_text())
+
+    def test_truncated_reply_falls_back_cold(self):
+        # Transport corruption (a reply cut mid-JSON) is not a validation
+        # failure: it takes the transport-only cold fallback.
+        thread = threading.Thread(target=self.reply_server,
+                                  args=(b'{"status": "OK", "report": {"status": "GENERATED_BY_PERSIST',),
+                                  daemon=True)
+        thread.start()
+        cold, report = self.run_controller_with_mocked_cold()
+        thread.join(timeout=10)
+        cold.assert_called_once()
+        self.assertEqual(report["llama_runtime_mode"], "PERSISTENT_WORKER_UNREACHABLE_COLD_FALLBACK")
+        self.assertIn("persistent_worker_transport_error", report)
+        self.assertIsNone(report["validation_error"])
+
+    def test_non_object_reply_fails_closed(self):
+        # Syntactically valid JSON that is not the protocol object is not
+        # transport corruption: hard failure, no fallback.
+        thread = threading.Thread(target=self.reply_server, args=(b'[1, 2, 3]\n',), daemon=True)
+        thread.start()
+        cold, report = self.run_controller_with_mocked_cold()
+        thread.join(timeout=10)
+        cold.assert_not_called()
+        self.assertIn("not a JSON object", report["runtime_error"])
+        self.assertNotIn("persistent_worker_transport_error", report)
+
+    def test_statusless_reply_fails_closed(self):
+        # A valid JSON object without the protocol status is untrusted
+        # content, not transport corruption: hard failure, no fallback.
+        thread = threading.Thread(target=self.reply_server, args=(b'{"unexpected": true}\n',), daemon=True)
+        thread.start()
+        cold, report = self.run_controller_with_mocked_cold()
+        thread.join(timeout=10)
+        cold.assert_not_called()
+        self.assertIn("Advisory worker error", report["runtime_error"])
+        self.assertNotIn("persistent_worker_transport_error", report)
+
     def test_transport_failure_falls_back_cold(self):
         # No worker listening: connect raises FileNotFoundError, the cold
         # subprocess path runs instead, and the mode is recorded honestly.
