@@ -217,9 +217,11 @@ def serve(socket_path, worker, idle_timeout_seconds=None, request_read_timeout_s
                         if b"\n" in block:
                             break
                 except socket.timeout:
-                    continue  # stalled client; serve the next connection
-                # The transfer deadline does not bound model inference or reply
-                # writes. Preserve the separate reply timeout after reading.
+                    continue  # stalled or dripping client; serve the next connection
+                # The transfer deadline bounds only the request read; it must not
+                # bound model inference or the reply write. Restore a fresh full
+                # timeout so a legitimately slow read cannot leave the reply with
+                # ~0s of budget (matches the fork's fix/worker-total-request-deadline).
                 connection.settimeout(request_read_timeout_seconds)
                 raw = b"".join(chunks).split(b"\n", 1)[0]
                 try:

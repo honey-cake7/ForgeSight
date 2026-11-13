@@ -270,6 +270,89 @@ class StalledClientTests(unittest.TestCase):
             self.assertLess(held, 1.2, "drip client held the worker past the total deadline")
             self.assertEqual(report["score"], 0.5)
 
+    def test_slow_read_still_gets_full_reply(self):
+        # A legitimate request that consumes most of the total read deadline
+        # must still receive its full reply: the transfer deadline bounds only
+        # the request read, and a fresh full timeout covers inference + reply.
+        import time
+        with TemporaryDirectory() as tmp:
+            socket_path = Path(tmp) / "worker.sock"
+            worker = StubWorker()
+            thread = threading.Thread(
+                target=serve, args=(socket_path, worker, None, 0.8), daemon=True)
+            thread.start()
+            deadline = time.monotonic() + 5
+            while time.monotonic() < deadline and not socket_path.exists():
+                time.sleep(0.01)
+            time.sleep(0.05)  # let listen() follow bind()
+            client = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            try:
+                client.connect(str(socket_path))
+                body = json.dumps({"tensor": "x", "threshold": 0.1}).encode() + b"\n"
+                for byte in body:
+                    client.sendall(bytes([byte]))
+                    time.sleep(0.02)  # ~0.6s of the 0.8s read deadline
+                client.settimeout(5)
+                chunks = b""
+                while b"\n" not in chunks:
+                    block = client.recv(65536)
+                    if not block:
+                        break
+                    chunks += block
+            finally:
+                client.close()
+            payload = json.loads(chunks.split(b"\n", 1)[0].decode("utf-8"))
+            self.assertEqual(payload["status"], "OK")
+            self.assertEqual(payload["report"]["score"], 0.5)
+            self.assertEqual(worker.requests, [{"tensor": "x", "threshold": 0.1}])
+
+    def test_reply_write_uses_fresh_timeout_after_slow_read(self):
+        # Deterministic leftover-vs-fresh discriminator: a request dripped in
+        # over ~0.6s of the 0.8s read deadline leaves ~0.2s on the socket. The
+        # reply (2 MB) far exceeds the socket buffers and the client delays
+        # reading 0.5s, so sendall blocks. Leftover budget loses the reply
+        # (timeout at ~0.8s, before the client reads at ~1.1s); the restored
+        # fresh timeout covers the blocked write and the full reply arrives.
+        import time
+
+        class PadWorker(StubWorker):
+            def handle(self, raw):
+                self.requests.append(raw)
+                return {"score": 0.5, "pad": "x" * 2_000_000}
+
+        with TemporaryDirectory() as tmp:
+            socket_path = Path(tmp) / "worker.sock"
+            worker = PadWorker()
+            thread = threading.Thread(
+                target=serve, args=(socket_path, worker, None, 0.8), daemon=True)
+            thread.start()
+            deadline = time.monotonic() + 5
+            while time.monotonic() < deadline and not socket_path.exists():
+                time.sleep(0.01)
+            time.sleep(0.05)  # let listen() follow bind()
+            client = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            try:
+                client.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 4096)
+                client.connect(str(socket_path))
+                body = json.dumps({"tensor": "x", "threshold": 0.1}).encode() + b"\n"
+                for byte in body:
+                    client.sendall(bytes([byte]))
+                    time.sleep(0.02)
+                time.sleep(0.5)  # server sendall blocks on full buffers
+                client.settimeout(10)
+                chunks = b""
+                while b"\n" not in chunks:
+                    block = client.recv(65536)
+                    if not block:
+                        break
+                    chunks += block
+            finally:
+                client.close()
+            payload = json.loads(chunks.split(b"\n", 1)[0].decode("utf-8"))
+            self.assertEqual(payload["status"], "OK")
+            self.assertEqual(payload["report"]["score"], 0.5)
+            self.assertEqual(len(payload["report"]["pad"]), 2_000_000)
+
     def test_unbounded_reply_stream_rejected(self):
         import time
         with TemporaryDirectory() as tmp:
