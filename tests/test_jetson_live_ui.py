@@ -113,7 +113,7 @@ class LiveHttpTests(unittest.TestCase):
     def test_original_png_upload_route_and_size_guard(self):
         page = urlopen(self.base).read()
         self.assertNotIn(b"Test an original MVTec defect image", page)
-        self.assertIn(b"Upload your own test PNG", page)
+        self.assertIn(b'id="diagnostic-file"', page)
         request = Request(self.base + "/api/replay", method="POST", data=b"png-fixture",
                           headers={"Origin": self.base, "Content-Type": "image/png",
                                    "X-Replay-Id": "BENT-001",
@@ -150,7 +150,7 @@ class LiveHttpTests(unittest.TestCase):
         self.assertEqual(rejected.exception.code, 403)
 
     def test_own_png_diagnostic_route_accepts_binary_upload(self):
-        self.assertIn(b"Upload your own test PNG", urlopen(self.base).read())
+        self.assertIn(b'id="diagnostic-file"', urlopen(self.base).read())
         request = Request(self.base + "/api/upload-diagnostic", method="POST",
                           data=b"png-fixture", headers={"Origin": self.base,
                           "Content-Type": "image/png", "X-Upload-Id": "USER-001"})
@@ -184,7 +184,7 @@ class LiveHttpTests(unittest.TestCase):
         self.assertEqual(rejected.exception.code, 400)
 
     def test_manual_review_route_requires_same_origin_and_bounded_json(self):
-        self.assertIn(b"Manual review", urlopen(self.base).read())
+        self.assertIn(b'id="review-submit"', urlopen(self.base).read())
         body = json.dumps({"inspection_id": "fixture", "actor": "Operator-1",
                            "outcome": "visible_issue", "reason": "Visible response"}).encode()
         request = Request(self.base + "/api/manual-review", method="POST", data=body,

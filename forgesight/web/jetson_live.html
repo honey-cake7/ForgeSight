@@ -3,44 +3,83 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ForgeSight · Live inspection</title>
+  <title>ForgeSight · Inspection station</title>
   <link rel="stylesheet" href="/style.css">
   <script src="/app.js" defer></script>
 </head>
 <body>
-  <header class="topbar"><div class="brand"><span class="mark">F</span><div><strong>ForgeSight</strong><small>Jetson inspection station</small></div></div><span class="tag">LOCAL CAMERA</span></header>
-  <main>
-    <section class="intro"><div><p class="eyebrow">LIVE WORKSPACE</p><h1>Inspect a camera view</h1><p>Choose a physical nut or a dataset photo shown on a screen. Each capture saves a frame, response map, overlay, and local record.</p></div><span id="camera-status" class="status">Connecting…</span></section>
-    <div class="grid">
-      <section class="panel camera-panel"><div class="panel-head"><div><h2>Camera preview</h2><p>Logitech C270 · 640 × 480</p></div><span class="live-dot">LIVE</span></div><div class="image-shell"><img id="preview" alt="Live C270 camera preview"><div id="preview-empty" class="empty">Waiting for camera…</div></div><div class="camera-foot"><span>Preview continues during analysis</span><span>Captured frame saved per inspection</span></div></section>
-      <section class="panel controls"><div class="panel-head"><div><h2>Analyze this view</h2><p>One click creates one record</p></div></div><fieldset class="source-choice"><legend>What is the camera viewing?</legend><label><input type="radio" name="source-kind" value="screen_photo" checked><span>Dataset photo on a screen <small>Diagnostic only · no physical part</small></span></label><label><input type="radio" name="source-kind" value="physical_nut"><span>Physical nut <small>Requires an actual nut in view</small></span></label></fieldset><label for="part-id">New capture ID</label><input id="part-id" maxlength="64" autocomplete="off" placeholder="Example: SCREEN-001"><label class="confirm"><input id="confirmed" type="checkbox"><span id="confirm-text">I confirm a displayed nut photo, not a physical part, is in view.</span></label><button id="inspect" disabled>Capture & analyze</button><p id="request-status" role="status" aria-live="polite">Waiting for camera.</p><div class="note"><strong>Prototype decision rule</strong><p>The model was calibrated on MVTec metal_nut images. A screen photo and a physical camera view both change the image. Camera results are held for human review until this setup is validated.</p></div></section>
-      <section class="panel result"><div class="panel-head"><div><h2>Latest result</h2><p>Frozen EfficientAD-S · ForgeGrade</p></div><span id="grade" class="grade">NO RESULT</span></div><div id="result-empty" class="result-empty">Capture a view or upload a PNG to see the model response and saved decision.</div><div id="result-content" hidden><p id="source-mode" class="source-mode"></p><div class="metrics"><div><small>Candidate</small><strong id="candidate">—</strong></div><div><small>Raw score</small><strong id="score">—</strong></div><div><small>Model forward</small><strong id="latency">—</strong></div><div><small>Response area</small><strong id="area">—</strong></div></div><p id="response-note" class="response-note"></p><p id="reason" class="reason"></p><p id="action" class="action"></p><p id="inspection-id" class="subtle"></p></div></section>
-      <section class="panel overlay"><div class="panel-head"><div><h2>Model response overlay</h2><p>Red pixels are thresholded model response, not confirmed damage</p></div></div><div class="image-shell"><img id="overlay" alt="Captured nut with model response overlay" hidden><div id="overlay-empty" class="empty">No captured image yet</div></div></section>
+  <a class="skip-link" href="#workspace">Skip to inspection</a>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="ForgeSight inspection station"><span class="mark" aria-hidden="true">F</span><strong>ForgeSight</strong><span class="brand-divider">Inspection station</span></a>
+    <nav aria-label="Station sections"><a href="#upload-panel">Upload PNG</a><a href="#history-panel">History</a></nav>
+    <span id="connection-status" class="connection" role="status">Connecting to station…</span>
+  </header>
+  <main id="workspace">
+    <div class="workspace-heading"><div><p class="eyebrow">QUALITY CONTROL / METAL NUT</p><h1>Inspection workspace</h1></div><p class="workflow">Position part <span aria-hidden="true">→</span> Capture <span aria-hidden="true">→</span> Check result <span aria-hidden="true">→</span> Record review</p></div>
+    <p id="connection-error" class="error-banner" role="alert" hidden></p>
+    <div class="evidence-grid">
+      <section class="panel camera-panel" aria-labelledby="camera-title">
+        <div class="panel-head"><div><h2 id="camera-title">Camera preview</h2><p id="camera-detail">Waiting for a camera frame</p></div><span id="camera-status" class="status connecting" role="status">CONNECTING</span></div>
+        <div class="image-shell"><img id="preview" alt="Live camera view; not the saved inspection" hidden><div id="preview-empty" class="empty">Connecting to the camera…</div></div>
+        <div class="camera-toolbar"><div class="button-group" aria-label="Camera controls"><button type="button" class="secondary" disabled aria-describedby="camera-control-help">Start Camera</button><button type="button" class="secondary" disabled aria-describedby="camera-control-help">Stop Camera</button></div><span class="subtle">Automatic camera service</span></div>
+        <p id="camera-control-help" class="help">Camera starts with the station. Start / stop is unavailable in this version; the backend has no camera control API.</p>
+      </section>
+      <section class="panel overlay-panel" aria-labelledby="evidence-title">
+        <div class="panel-head"><div><h2 id="evidence-title">Anomaly response</h2><p id="evidence-caption">Latest saved inspection · EfficientAD</p></div><div class="view-switch" role="group" aria-label="Saved image view"><button id="show-overlay" class="view-button" type="button" aria-pressed="true">Response map</button><button id="show-source" class="view-button" type="button" aria-pressed="false">Original</button></div></div>
+        <div class="image-shell"><img id="overlay" alt="Saved image with thresholded EfficientAD response highlighted in red" hidden><img id="source-image" alt="Original image saved for this inspection" hidden><div id="overlay-empty" class="empty">No image inspected yet.<small>Capture a camera view or upload a PNG below.</small></div></div>
+        <div class="evidence-foot"><span><i class="response-key" aria-hidden="true"></i> Red = response above the pixel threshold</span><a id="source-link" href="/api/source.png" target="_blank" rel="noopener" hidden>Open original ↗</a></div>
+        <p class="help">Highlights show model response, not confirmed damage. This saved image does not update with the live camera.</p>
+      </section>
     </div>
-    <section class="panel user-upload-panel">
-      <div class="panel-head"><div><h2>Upload your own test PNG</h2><p>Diagnostic score · no preset file match required</p></div></div>
-      <p>Choose an RGB PNG from the computer running this browser, including another MVTec test image. The file must be 64–1024 pixels per side and under 8 MiB.</p>
-      <div class="replay-fields"><label>Choose PNG<input id="diagnostic-file" type="file" accept="image/png,.png"></label><label>New upload ID<input id="diagnostic-id" maxlength="64" autocomplete="off" placeholder="Example: MY-TEST-001"></label></div>
-      <label class="confirm"><input id="mvtec-benchmark" type="checkbox"><span>I declare this is an original-size MVTec metal_nut PNG. Show provisional benchmark PASS/REVIEW/REJECT.</span></label>
-      <button id="diagnostic-submit" disabled>Analyze uploaded PNG</button>
-      <p id="diagnostic-status" role="status" aria-live="polite">Choose a PNG and enter a new upload ID.</p>
-      <p class="replay-footnote">Benchmark mode uses the frozen MVTec cutoff and a 10% review band. File origin is user-declared, not verified. Grades describe dataset screening only, never a physical-part decision. In the recorded 111-image holdout, two scratches fell below the cutoff and two good images exceeded it. Other uploads remain REVIEW.</p>
+    <section class="panel capture-panel" aria-labelledby="capture-title">
+      <div class="capture-heading"><h2 id="capture-title">Capture one inspection</h2><span class="subtle">One capture · one saved record</span></div>
+      <form id="capture-form" class="capture-form">
+        <fieldset class="source-choice"><legend>Camera is viewing</legend><label><input type="radio" name="source-kind" value="screen_photo" checked> Photo on a screen</label><label><input type="radio" name="source-kind" value="physical_nut"> Physical nut</label></fieldset>
+        <label class="field">New capture ID<input id="part-id" maxlength="64" autocomplete="off" placeholder="e.g. NUT-001" pattern="[A-Za-z0-9_-]{1,64}" required aria-describedby="id-help"></label>
+        <label class="confirm"><input id="confirmed" type="checkbox"><span id="confirm-text">I confirm a displayed nut photo, not a physical part, is in view.</span></label>
+        <button id="inspect" type="submit" disabled>Capture &amp; analyze</button>
+      </form>
+      <div class="capture-foot"><p id="request-status" role="status" aria-live="polite">Waiting for camera.</p><span id="id-help" class="help">IDs: letters, numbers, hyphens or underscores.</span></div>
     </section>
-    <section class="panel advice-panel">
-      <div class="panel-head"><div><h2>Llama advice</h2><p>On-device ExecuTorch · separate from ForgeGrade</p></div></div>
-      <p id="advice-status" role="status" aria-live="polite">Analyze an image to see whether advice is available.</p>
-      <button id="advice-request" disabled>Generate Llama advice</button>
-      <p id="advice-note" hidden></p>
-      <p class="replay-footnote">Advice is a checked operator note. It cannot change the saved grade or identify a confirmed defect cause.</p>
+    <section class="panel result" aria-labelledby="result-title">
+      <div class="panel-head"><div><h2 id="result-title">Latest inspection</h2><p id="result-part">No saved result selected</p></div><span id="inspection-status" class="subtle" role="status">AWAITING IMAGE</span></div>
+      <div id="result-empty" class="result-empty">The saved decision and next action will appear here after analysis.</div>
+      <div id="result-content" hidden>
+        <div class="decision-row"><div class="decision"><span class="field-label">ForgeGrade decision</span><span id="grade" class="grade">NO RESULT</span><span id="decision-context" class="help"></span></div><div class="next-action"><span class="field-label">Recommended operator action</span><p id="action" class="action"></p></div></div>
+        <div class="metrics"><div><span class="field-label">Anomaly score</span><strong id="score">—</strong></div><div><span class="field-label">Response area</span><strong id="area">—</strong></div><div><span class="field-label">Model processing</span><strong id="latency">—</strong><small>Forward pass only · excludes saving</small></div><div><span class="field-label">Largest response region</span><strong id="region-summary">—</strong><small>Approximate image location</small></div></div>
+        <p id="source-mode" class="source-mode"></p>
+        <details class="technical-details"><summary>Inspection evidence &amp; limitations</summary><p id="candidate"></p><p id="response-regions"></p><p id="response-note"></p><p id="reason"></p><p id="inspection-id" class="subtle"></p></details>
+      </div>
     </section>
-    <section class="panel review-panel">
-      <div class="panel-head"><div><h2>Manual review</h2><p>Operator finding saved separately from the model result</p></div></div>
-      <p>Compare the <a href="/api/source.png" target="_blank" rel="noopener">saved original image</a> with the red overlay. Record what you can see; this does not change the original grade or confirm a defect type.</p>
-      <div class="review-fields"><label>Your name or operator ID<input id="review-actor" maxlength="64" autocomplete="off" placeholder="Example: Operator-1"></label><label>What did you observe?<select id="review-outcome"><option value="">Choose a finding</option><option value="no_visible_issue">No visible issue</option><option value="visible_issue">Visible issue</option><option value="uncertain_or_recapture">Uncertain / capture again</option></select></label><label class="review-reason">Observation<textarea id="review-reason" maxlength="500" rows="3" placeholder="Describe what you checked in the saved image"></textarea></label></div>
-      <button id="review-submit" disabled>Save review finding</button><p id="review-status" role="status" aria-live="polite">Analyze an image before reviewing it.</p><div id="review-history" class="review-history"></div>
-      <p class="replay-footnote">Reviews are unverified operator claims in the local SQLite audit log. A visible issue proposes REJECT; no visible issue proposes PASS; uncertainty proposes REVIEW. No proposal changes the model grade.</p>
+    <div class="support-grid">
+      <section id="upload-panel" class="panel user-upload-panel" aria-labelledby="upload-title">
+        <div class="panel-head"><div><h2 id="upload-title">Inspect a saved PNG</h2><p>Use an original file for dataset testing</p></div><span class="section-label">IMAGE INPUT</span></div>
+        <p class="help">Choose a file from this browser’s computer. RGB PNG · 64–1024 pixels per side · under 8 MiB.</p>
+        <form id="upload-form"><div class="replay-fields"><label class="field">Choose PNG<input id="diagnostic-file" type="file" accept="image/png,.png" required></label><label class="field">New upload ID<input id="diagnostic-id" maxlength="64" autocomplete="off" placeholder="e.g. TEST-001" pattern="[A-Za-z0-9_-]{1,64}" required></label></div>
+          <label class="confirm"><input id="mvtec-benchmark" type="checkbox"><span>This is an original-size MVTec metal_nut PNG.<small>Show provisional benchmark PASS / REVIEW / REJECT.</small></span></label>
+          <button id="diagnostic-submit" type="submit" disabled>Analyze uploaded PNG</button>
+        </form>
+        <p id="diagnostic-status" role="status" aria-live="polite">Choose a PNG and enter a new upload ID.</p>
+        <details class="technical-details"><summary>About benchmark decisions</summary><p>Benchmark mode requires a 700 × 700 RGB PNG. It uses the frozen MVTec cutoff and 10% review band. File origin is user-declared, not verified. Other uploads remain REVIEW. Grades describe dataset screening, never physical-part acceptance. In the recorded 111-image holdout, two scratch images fell below the cutoff and two good images exceeded it.</p></details>
+      </section>
+      <section class="panel advice-panel" aria-labelledby="advice-title">
+        <div class="panel-head"><div><h2 id="advice-title">Llama operator note</h2><p>On-device ExecuTorch · separate advisory</p></div><span class="section-label">ASSIST</span></div>
+        <p id="advice-status" role="status" aria-live="polite">Analyze an image to see whether advice is available.</p>
+        <button id="advice-request" class="secondary" type="button" disabled>Generate Llama advice</button>
+        <p id="advice-note" hidden></p>
+        <p class="help">Review this note before acting. It cannot change the saved grade or identify a confirmed defect cause.</p>
+        <details class="technical-details"><summary>Advisory runtime</summary><p id="advice-runtime">Waiting for station status.</p></details>
+      </section>
+    </div>
+    <section class="panel review-panel" aria-labelledby="review-title">
+      <div class="panel-head"><div><h2 id="review-title">Manual operator review</h2><p>Your observation is saved separately. The automated grade stays unchanged.</p></div><span class="section-label">HUMAN CHECK</span></div>
+      <p id="review-target" class="help">Inspect an image first, then compare its original and response map above.</p>
+      <form id="review-form"><div class="review-fields"><label class="field">Operator name or ID<input id="review-actor" maxlength="64" autocomplete="off" placeholder="e.g. Operator-1" required></label><label class="field">What did you observe?<select id="review-outcome" required><option value="">Choose a finding</option><option value="no_visible_issue">No visible issue</option><option value="visible_issue">Visible issue</option><option value="uncertain_or_recapture">Uncertain / capture again</option></select></label><label class="field review-reason">Observation<textarea id="review-reason" minlength="3" maxlength="500" rows="2" placeholder="Describe what you checked in the saved image" required></textarea></label></div><button id="review-submit" class="secondary" type="submit" disabled>Save review finding</button></form>
+      <p id="review-status" role="status" aria-live="polite">Analyze an image before reviewing it.</p><div id="review-history" class="review-history"></div>
+      <details class="technical-details"><summary>How manual review works</summary><p>Compare the original image with the highlighted response. A visible issue proposes REJECT; no visible issue proposes PASS; uncertainty proposes REVIEW. Your name, observation and proposal are saved in the SQLite audit log as an unverified operator claim. This does not overwrite ForgeGrade or confirm a defect type.</p></details>
     </section>
-    <section class="panel history"><div class="panel-head"><div><h2>Recent inspections</h2><p>Stored locally in SQLite</p></div></div><div id="history">No inspections yet.</div></section>
+    <section id="history-panel" class="panel history" aria-labelledby="history-title"><div class="panel-head"><div><h2 id="history-title">Recent inspections</h2><p>Last 10 records · stored locally in SQLite</p></div><span class="section-label">INSPECTION LOG</span></div><div id="history">No inspections yet.</div></section>
+    <footer><span>ForgeSight · EfficientAD / ForgeGrade / ExecuTorch</span><span>Prototype station · camera decisions require setup validation</span></footer>
   </main>
 </body>
 </html>
