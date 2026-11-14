@@ -194,7 +194,7 @@ class WarmPathProvenanceTests(unittest.TestCase):
             hashlib.sha256(assets.encode()).hexdigest())
         self.assert_gate_fails_closed("m-empty", self.manifest_root(
             "m-empty", export=json.dumps(export), assets=assets),
-            needle="no valid asset hashes")
+            needle="no valid tokenizer hash")
 
     def test_unreadable_manifest_fails_closed(self):
         root = self.manifest_root(
@@ -218,6 +218,36 @@ class WarmPathProvenanceTests(unittest.TestCase):
             "m-artlist", export=json.dumps(export),
             assets=Path("manifests/llama3_2_1b_assets.json").read_text()),
             needle="no valid artifact hash")
+
+    def test_tokenizer_matching_another_asset_entry_is_refused(self):
+        # The gate binds the tokenizer to the exact original/tokenizer.model
+        # entry, like verify_inputs does at worker startup: evidence quoting
+        # a DIFFERENT pinned source asset's hash is not tokenizer evidence.
+        export = json.loads(Path("manifests/llama3_2_1b_export.json").read_text())
+        assets = json.loads(Path("manifests/llama3_2_1b_assets.json").read_text())
+        params_sha = assets["files"]["original/params.json"]["sha256"]
+        evidence = json.loads(json.dumps(self.VALID_EVIDENCE))
+        evidence["runtime_evidence"] = {
+            "artifact": {"sha256": export["artifact"]["sha256"]},
+            "tokenizer": {"sha256": params_sha}}
+        report, root = self.run_warm("m-tokid", evidence, llama_root=self.manifest_root(
+            "m-tokid", export=json.dumps(export),
+            assets=Path("manifests/llama3_2_1b_assets.json").read_text()))
+        self.assertIsNone(report.get("advisory"))
+        self.assertIn("does not match the pinned asset manifest",
+                      report.get("runtime_error", ""))
+        self.assertFalse((root / "advisory.json").exists())
+
+    def test_tokenizer_entry_missing_fails_closed(self):
+        export = json.loads(Path("manifests/llama3_2_1b_export.json").read_text())
+        assets = json.loads(Path("manifests/llama3_2_1b_assets.json").read_text())
+        del assets["files"]["original/tokenizer.model"]
+        assets = json.dumps(assets)
+        export["inputs_sha256"]["manifests/llama3_2_1b_assets.json"] = (
+            hashlib.sha256(assets.encode()).hexdigest())
+        self.assert_gate_fails_closed("m-notok", self.manifest_root(
+            "m-notok", export=json.dumps(export), assets=assets),
+            needle="no valid tokenizer hash")
 
     def test_pinned_manifest_mismatch_is_refused(self):
         llama_root = self.dir / "llama"

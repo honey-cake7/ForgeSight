@@ -69,12 +69,11 @@ def _pinned_asset_hashes(llama_root):
     if not _valid_sha256(artifact):
         raise RuntimeError("Pinned export manifest has no valid artifact hash.")
     files = assets.get("files")
-    tokenizer_pins = {entry.get("sha256") for entry in files.values()
-                      if isinstance(entry, dict)} if isinstance(files, dict) else set()
-    tokenizer_pins = {value for value in tokenizer_pins if _valid_sha256(value)}
-    if not tokenizer_pins:
-        raise RuntimeError("Pinned source-assets manifest has no valid asset hashes.")
-    return {artifact}, tokenizer_pins
+    tokenizer_entry = files.get("original/tokenizer.model") if isinstance(files, dict) else None
+    tokenizer = tokenizer_entry.get("sha256") if isinstance(tokenizer_entry, dict) else None
+    if not _valid_sha256(tokenizer):
+        raise RuntimeError("Pinned source-assets manifest has no valid tokenizer hash.")
+    return {artifact}, {tokenizer}
 
 
 def _generate_via_worker(args, context, root, report, source_mode):
