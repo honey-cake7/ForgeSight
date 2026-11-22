@@ -61,6 +61,32 @@ both `vision_edge_live_once` and `vision_edge_replay`.
 
 ## Train and evaluate the decision tree on the PC
 
+### Frozen within-MVTec experiment
+
+For the experiment using the existing MVTec data, the subtype split assigns
+66 images to training, 21 to validation, and 24 to test. The builder ranks
+original paths by a seeded hash within each truth label. It reads the original
+manifest metadata and excludes all four development previews. The source
+images had already been scored in the original detector benchmark. The new
+test split is separate from subtype fitting and measures within-MVTec behavior.
+Use a separate camera-domain dataset to evaluate transfer to physical parts.
+
+```powershell
+python -B -m scripts.build_mvtec_defect_type_split --output artifacts/vision/mvtec_subtype_split_check.json
+python -B -m scripts.train_defect_type --mvtec-subtype-experiment --split manifests/metal_nut_defect_type_split_v1.json --model artifacts/vision/edge_export_v1/efficientad_s_calibrated.ts --output artifacts/vision/defect_type_mvtec_v1
+```
+
+The explicit experiment switch verifies the frozen assignments and all original
+image hashes. EfficientAD uses the existing export and threshold. The tree is
+fit on training features, and validation decides which leaves can emit a
+known label. The comparison uses the untouched subtype test split. Advance
+the tree to a deployment benchmark if it makes more correct type assignments
+in total, preserves or improves correct assignments for both target types,
+and makes no additional wrong type assignments. Detector misses are counted
+separately as `not_flagged` for both methods.
+
+### Independent labeled split
+
 Gather independent labeled 700 × 700 RGB PNGs. Provide a local version 1 JSON
 split manifest with `schema_version: 1` and a `samples` array. Each sample has
 `path` relative to the manifest, file `sha256`, `group` for the original part or
@@ -93,12 +119,9 @@ inconsistent validation support return `unknown`. Compare both profiles in
 `evaluation.json` on the independent test set, including upstream `not_flagged`
 results and false type assignments. Use `candidate.json` with the same Jetson
 profile switch only after reviewing those results and timing it on-device.
-There is no trained defect-type artifact in this branch. Deployment of a
-trained profile awaits an independent same-domain split with usable flagged
-training examples of both target defects. The trainer was smoke-tested on
-nine generated appearances from distinct fitting images. It produced a tree
-and comparison report as expected. These generated appearances provide CLI
-verification only.
+The independent-data trainer was smoke-tested on nine generated appearances
+from distinct fitting images. It produced a tree and comparison report. These
+generated appearances provide CLI verification only.
 
 ### Independent data review
 

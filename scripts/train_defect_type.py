@@ -10,9 +10,10 @@ from pathlib import Path
 from PIL import Image
 import torch
 
-from forgesight.data_manifest import DEFAULT_MANIFEST, read_manifest, safe_path
+from forgesight.data_manifest import DEFAULT_MANIFEST, DEFAULT_ROOT, read_manifest, safe_path
 from forgesight.defect_type import FEATURE_NAMES, LABELS, load_profile, predict_type, response_features
 from forgesight.regions import response_regions
+from scripts.build_mvtec_defect_type_split import PROTOCOL, build_split
 from scripts.probe_defect_type_features import MODEL_SHA256, infer
 
 
@@ -56,6 +57,26 @@ def target(label):
     return label if label in LABELS else "unknown"
 
 
+def load_mvtec_experiment(path, dataset_root):
+    document = json.loads(path.read_text(encoding="utf-8"))
+    if document != build_split(DEFAULT_MANIFEST):
+        raise ValueError("MVTec subtype experiment requires the frozen v1 assignments.")
+    source = read_manifest(DEFAULT_MANIFEST)
+    samples = defaultdict(list)
+    assignments = document["assignments"]
+    for original in source["samples"]:
+        relative = original["path"]
+        if relative not in assignments:
+            continue
+        payload = safe_path(dataset_root, relative).read_bytes()
+        if hashlib.sha256(payload).hexdigest() != original["sha256"]:
+            raise ValueError(f"Original MVTec image hash mismatch: {relative}")
+        label = "discoloration" if original["label"] == "color" else original["label"]
+        row = {"path": relative, "label": label, "group": original["sha256"]}
+        samples[assignments[relative]].append((row, payload))
+    return samples
+
+
 def vector(features):
     return [features[name] for name in FEATURE_NAMES]
 
@@ -90,6 +111,26 @@ def evaluate(rows, profile):
     return {"counts_by_true_label": dict(confusion), "images": decisions}
 
 
+def compare_subtypes(candidate, baseline):
+    known = ("scratch", "discoloration")
+
+    def summarize(evaluation):
+        images = evaluation["images"]
+        return {"correct_by_target": {label: sum(row["label"] == row["prediction"] == label
+                                                 for row in images) for label in known},
+                "incorrect_type_assignments": sum(row["prediction"] in known and row["prediction"] != row["label"]
+                                                  for row in images),
+                "unknown": sum(row["prediction"] == "unknown" for row in images),
+                "not_flagged": sum(row["prediction"] == "not_flagged" for row in images)}
+
+    tree, rules = summarize(candidate), summarize(baseline)
+    tree_correct, rules_correct = tree["correct_by_target"], rules["correct_by_target"]
+    improves = (sum(tree_correct.values()) > sum(rules_correct.values())
+                and all(tree_correct[label] >= rules_correct[label] for label in known)
+                and tree["incorrect_type_assignments"] <= rules["incorrect_type_assignments"])
+    return {"candidate": tree, "rules": rules, "candidate_passed_promotion_gate": improves}
+
+
 def coverage_report(rows):
     coverage = {}
     issues = []
@@ -121,12 +162,17 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--audit-only", action="store_true",
                         help="Save coverage for each split and label without fitting, even if a split is incomplete.")
+    parser.add_argument("--mvtec-subtype-experiment", action="store_true",
+                        help="Allow only the frozen within-MVTec split of detector-evaluated images.")
+    parser.add_argument("--dataset-root", type=Path, default=DEFAULT_ROOT,
+                        help="Original metal_nut root for the within-MVTec experiment.")
     args = parser.parse_args()
     if args.output.exists():
         parser.error("Choose a new output directory.")
     if hashlib.sha256(args.model.read_bytes()).hexdigest() != MODEL_SHA256:
         parser.error("Expected the frozen EfficientAD TorchScript export.")
-    samples = load_split(args.split, DEFAULT_MANIFEST)
+    samples = (load_mvtec_experiment(args.split, args.dataset_root) if args.mvtec_subtype_experiment
+               else load_split(args.split, DEFAULT_MANIFEST))
     threshold = json.loads(Path("configs/forgegrade_v1.json").read_text(encoding="utf-8"))["image_threshold"]
     torch.set_num_threads(2)
     model = torch.jit.load(str(args.model), map_location="cpu").eval()
@@ -143,6 +189,8 @@ def main():
     split_hash = hashlib.sha256(args.split.read_bytes()).hexdigest()
     coverage = {**coverage_report(rows), "split_sha256": split_hash, "model_sha256": MODEL_SHA256,
                 "image_threshold": threshold}
+    if args.mvtec_subtype_experiment:
+        coverage["protocol"] = PROTOCOL
     args.output.mkdir(parents=True)
     (args.output / "coverage.json").write_text(json.dumps(coverage, indent=2) + "\n", encoding="utf-8")
     if args.audit_only:
@@ -160,6 +208,8 @@ def main():
                "profile_id": f"metal-nut-tree-{split_hash[:12]}",
                "split_sha256": split_hash, "model_sha256": MODEL_SHA256, "image_threshold": threshold,
                "tree": export_tree(tree, rows["validation"])}
+    if args.mvtec_subtype_experiment:
+        profile["training_protocol"] = PROTOCOL
     profile_path = args.output / "candidate.json"
     profile_path.write_text(json.dumps(profile, indent=2, allow_nan=False) + "\n", encoding="utf-8")
     baseline = load_profile(Path("configs/defect_type_preview_v1.json"))
@@ -167,6 +217,9 @@ def main():
               "features_available_in_training": len(train),
               "candidate_test": evaluate(rows["test"], load_profile(profile_path)),
               "preview_rules_test": evaluate(rows["test"], baseline)}
+    if args.mvtec_subtype_experiment:
+        report["protocol"] = PROTOCOL
+        report["comparison"] = compare_subtypes(report["candidate_test"], report["preview_rules_test"])
     (args.output / "evaluation.json").write_text(json.dumps(report, indent=2, allow_nan=False) + "\n",
                                                 encoding="utf-8")
 
