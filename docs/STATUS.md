@@ -2,11 +2,13 @@
 
 ## Current stage
 
-**Provisional defect type on original benchmark images.** The preview profile
-attaches a possible discoloration finding to eligible saved inspections. The
-frozen detector missed the development scratch preview. A depth-3 PC trainer
-and Jetson JSON runtime are available. Supervised training and independent
-subtype accuracy await suitable labeled data. See [defect type](DEFECT_TYPE.md).
+**Depth-3 defect-type tree trained within MVTec.** The same 24-image test gave
+the tree one correct scratch and four correct discoloration labels. The color
+rule gave zero and four, respectively, and made two wrong type assignments.
+The tree abstained on four flagged scratches. The scope is provisional saved
+benchmark images. The isolated Jetson comparison reproduced all 48 PC profile
+outcomes and measured tree-assessment p50/p95 of 6.4/34.9 ms. See
+[defect type](DEFECT_TYPE.md).
 
 **Merged CPU vision and persistent ExecuTorch advice VERIFIED for one saved
 image on the Jetson at `ca499bd`.** Inspection work took 2.337 s (model forward

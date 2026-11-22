@@ -3,8 +3,8 @@
 ForgeSight can attach a provisional `assessment` to an EfficientAD anomaly on
 an original dataset replay or a 700 × 700 upload declared as MVTec metal nut.
 The current preview profile reports `discoloration` when it sees a local color
-shift and returns `unknown` otherwise. A future trained profile also supports
-`scratch`. The operator page displays possible types and includes them in
+shift and returns `unknown` otherwise. The optional within-MVTec tree also
+supports `scratch`. The operator page displays possible types and includes them in
 recent history. SQLite stores the assessment with the inspection record.
 
 EfficientAD supplies the existing score, anomaly map, and largest response
@@ -84,6 +84,33 @@ the tree to a deployment benchmark if it makes more correct type assignments
 in total, preserves or improves correct assignments for both target types,
 and makes no additional wrong type assignments. Detector misses are counted
 separately as `not_flagged` for both methods.
+
+The PC run used 53 flagged training images with usable features, including 11
+scratches and 13 discoloration images. EfficientAD missed two training
+scratches. In the 24-image subtype test it flagged all 19 defect images and
+none of the five good images. Image-level candidate flags agreed with the
+archived Jetson scores for each test image.
+
+| Subtype test outcome | Color rule | Depth-3 tree |
+| --- | ---: | ---: |
+| Correct scratch labels | 0/5 | 1/5 |
+| Correct discoloration labels | 4/4 | 4/4 |
+| Incorrect type assignments | 2 | 0 |
+| Unknown | 13 | 14 |
+| Below anomaly threshold | 5 | 5 |
+
+The tree passed the comparison gate. It abstained on four flagged scratches
+and on all ten bent and flip images. Both good-image false alarms from the
+historical benchmark fell in the subtype training split, so the subtype test
+contains no flagged good images. This small test supports a provisional demo
+profile and leaves reliable scratch classification open. To try the
+tree on benchmark PNGs, run the operator app with the option below. See the
+[PC results and artifact hashes](../manifests/mvtec_defect_type_evaluation_v1.json).
+
+```sh
+/usr/bin/python3 -B -m forgesight.jetson_live_ui --port 8770 \
+  --defect-type-profile configs/defect_type_mvtec_tree_v1.json
+```
 
 ### Independent labeled split
 
@@ -185,3 +212,23 @@ selected cases. The loopback test exercised the HTML and inspection API with
 real inference, and SQLite readbacks matched history. Browser rendering,
 camera accuracy, and full-station offline acceptance remain separate checks.
 See the [measured evidence](../manifests/jetson_defect_type_preview_v1.json).
+
+To compare the color rule and tree instead, stage the 24 original PNGs in the
+frozen subtype test and the unedited PC `evaluation.json`. Add the following
+arguments inside the same isolated verification command:
+
+```sh
+--evaluation artifacts/vision/defect_type_mvtec_v1/evaluation.json \
+--candidate-profile configs/defect_type_mvtec_tree_v1.json
+```
+
+The Orin Nano comparison processed 24 images per profile. All 48 assessment
+outcomes matched the PC results and were consistent across the result API,
+history, and SQLite. Both profiles yielded exactly the same detector score,
+candidate, maps, overlay, and ForgeGrade decision per image. The 19 flagged
+images per profile took a median **6.4 ms** and p95 **34.9 ms** for tree
+assessment, compared with **6.3 ms** and **31.0 ms** for the rule. This timing
+covers feature extraction and the final decision, excluding detector inference.
+The active station retains its own configuration. The staged upload of
+`test/scratch/013.png` exercised the tree's positive scratch label.
+See the [device measurements](../manifests/jetson_mvtec_defect_type_tree_v1.json).

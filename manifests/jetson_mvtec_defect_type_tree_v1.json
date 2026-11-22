@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "status": "WITHIN_MVTEC_DEFECT_TREE_JETSON_COMPARISON_COMPLETE",
+  "client_context_date": "2026-11-22",
+  "device": "NVIDIA Jetson Orin Nano Engineering Reference Developer Kit Super",
+  "runtime": "persistent EfficientAD-S TorchScript FP32 CPU worker and optional post-processing profile",
+  "application_namespace_interfaces": ["lo"],
+  "pc_evaluation": "manifests/mvtec_defect_type_evaluation_v1.json",
+  "baseline_profile": "configs/defect_type_preview_v1.json",
+  "candidate_profile": "configs/defect_type_mvtec_tree_v1.json",
+  "paired_benchmark_pngs": 24,
+  "assessment_results_matching_pc_for_both_profiles": 48,
+  "exact_baseline_matches": ["input_sha256", "score", "candidate", "model_map_sha256", "source_map_sha256", "overlay_sha256", "ForgeGrade decision"],
+  "assessment_latest_history_sqlite_match": true,
+  "assessment_ms": {
+    "scope": "feature extraction and profile evaluation on each flagged image",
+    "samples_per_profile": 19,
+    "percentile_method": "linear interpolation at (n-1)*p",
+    "color_rule": {"min": 3.654, "p50": 6.252, "p95": 30.986, "max": 35.823},
+    "depth_3_tree": {"min": 2.876, "p50": 6.363, "p95": 34.883, "max": 37.864}
+  },
+  "model_forward_ms": {
+    "samples_per_profile": 24,
+    "color_rule": {"p50": 1550.933, "p95": 1614.710},
+    "depth_3_tree": {"p50": 1536.757, "p95": 1745.633}
+  },
+  "tree_scratch_example": "test/scratch/013.png",
+  "device_report_sha256": "779da4fd3aa123cce4c749d6c9ff433755b088febbf98415133a8c46fc6a4a6b",
+  "verification": "scripts/verify_jetson_defect_type.py",
+  "active_station_modified": false,
+  "browser_rendered": false,
+  "physical_camera_accuracy_tested": false
+}

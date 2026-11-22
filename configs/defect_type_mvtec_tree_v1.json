@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "kind": "decision_tree",
+  "feature_names": [
+    "elongation",
+    "chroma_difference"
+  ],
+  "profile_id": "metal-nut-tree-5b25c00a924d",
+  "split_sha256": "5b25c00a924d6039fb03985a6e98fbd03d537cfefdebfc85e3c3657d977de394",
+  "model_sha256": "8766c41a51a5444f57f564134427bbd2d2d95dd6ec5ff08b24698f00f7f55dcd",
+  "image_threshold": 0.22776579856872559,
+  "tree": {
+    "feature": "chroma_difference",
+    "threshold": 8.828855514526367,
+    "left": {
+      "feature": "elongation",
+      "threshold": 1.7686166167259216,
+      "left": {
+        "feature": "elongation",
+        "threshold": 1.1201148629188538,
+        "left": {
+          "label": "unknown"
+        },
+        "right": {
+          "label": "unknown"
+        }
+      },
+      "right": {
+        "feature": "elongation",
+        "threshold": 2.730640172958374,
+        "left": {
+          "label": "unknown"
+        },
+        "right": {
+          "label": "scratch"
+        }
+      }
+    },
+    "right": {
+      "feature": "chroma_difference",
+      "threshold": 9.757587432861328,
+      "left": {
+        "feature": "elongation",
+        "threshold": 2.2767152786254883,
+        "left": {
+          "label": "discoloration"
+        },
+        "right": {
+          "label": "unknown"
+        }
+      },
+      "right": {
+        "label": "discoloration"
+      }
+    }
+  },
+  "training_protocol": "mvtec-metal-nut-subtype-on-detector-evaluated-images-v1"
+}
