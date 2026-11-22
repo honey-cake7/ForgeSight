@@ -30,6 +30,19 @@ from forgesight.grade import grade_record
 
 MAX_NEW_TOKENS = 64  # composed advisory generation cap, matching the deployed config
 
+import re
+
+# Guard-preserving trim variants, measured in the SAME step as the unmodified v4
+# candidate so a deeper prompt is never a second device round trip. Each transform
+# only removes optional clause text from the built prompt; a later contract change
+# implementing a chosen variant must emit byte-identical text and update the parser
+# pins. Disclaimer removal needs explicit auditor sign-off before any contract use.
+VARIANT_TRANSFORMS = {
+    'noPct': lambda text: re.sub(r', \d+\.\d+% of frame', '', text),
+    'noLoc': lambda text: re.sub(r'; largest region [^\n]*', '', text),
+    'noDisclaimer': lambda text: text.replace(', not physical damage', '').replace('; not a probability', ''),
+}
+
 
 def _sha256(path):
     import hashlib
@@ -48,9 +61,15 @@ def camera_variant(record):
     return variant
 
 
-def measure_case(name, record, source_path, guidance, token_count, profile, synthetic=False):
+def measure_case(name, record, source_path, guidance, token_count, profile, synthetic=False,
+                 variant_tags=()):
     row = {'name': name, 'record_sha256': _sha256(source_path) if source_path else None,
-           'input_kind': 'SYNTHETIC_MEASUREMENT_DERIVED' if synthetic else 'RECORD_FILE'}
+           'input_kind': ('VARIANT_TRIM_MEASUREMENT' if variant_tags else
+                          'SYNTHETIC_MEASUREMENT_DERIVED' if synthetic else 'RECORD_FILE')}
+    if variant_tags:
+        row['variant'] = list(variant_tags)
+        if synthetic:
+            row['derived_from'] = 'SYNTHETIC_MEASUREMENT_DERIVED'
     try:
         context = prepare_advisory(record, guidance)
     except AdvisoryRefusal as exc:
@@ -59,7 +78,10 @@ def measure_case(name, record, source_path, guidance, token_count, profile, synt
     except (KeyError, ValueError) as exc:
         row['eligibility'] = 'INVALID_FIXTURE: ' + str(exc)[:120]
         return row
-    formatted = chat_prompt(context['prompt_text'], context['system_text'])
+    prompt_text = context['prompt_text']
+    for tag in variant_tags:
+        prompt_text = VARIANT_TRANSFORMS[tag](prompt_text)
+    formatted = chat_prompt(prompt_text, context['system_text'])
     full = token_count(formatted)
     row.update({
         'eligibility': 'ELIGIBLE',
@@ -67,9 +89,9 @@ def measure_case(name, record, source_path, guidance, token_count, profile, synt
         'source_mode': context['source_mode'],
         'guide_id': next(key for key in context['evidence'] if key != 'E1'),
         'tokens': {'full_formatted': full,
-                   'prompt_text': token_count(context['prompt_text']),
+                   'prompt_text': token_count(prompt_text),
                    'system_text': token_count(context['system_text']),
-                   'template_overhead': full - token_count(context['prompt_text'])
+                   'template_overhead': full - token_count(prompt_text)
                                         - token_count(context['system_text'])},
         'budget': {'max_seq_length': profile['max_seq_length'],
                    'max_context_length': profile['max_context_length'],
@@ -95,7 +117,18 @@ def main(argv=None):
     parser.add_argument('--derive-camera-variant', type=Path, action='append', default=[])
     parser.add_argument('--guidance', type=Path, default=DEFAULT_GUIDANCE)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--variant', action='append', default=[],
+                        help='Comma-separated trim tags (%s); each use adds one measured '
+                             'variant row per case, labeled VARIANT_TRIM_MEASUREMENT.'
+                             % ','.join(sorted(VARIANT_TRANSFORMS)))
     args = parser.parse_args(argv)
+    variant_sets = []
+    for spec in args.variant:
+        tags = tuple(spec.split(','))
+        unknown = [tag for tag in tags if tag not in VARIANT_TRANSFORMS]
+        if unknown:
+            parser.error('Unknown variant tag(s): ' + ','.join(unknown))
+        variant_sets.append(tags)
     if not args.record and not args.derive_camera_variant:
         parser.error('Provide at least one --record or --derive-camera-variant.')
     if args.output.exists():
@@ -105,14 +138,20 @@ def main(argv=None):
     profile = json.loads(profile_path.read_text(encoding='utf-8'))
     guidance = json.loads(args.guidance.read_text(encoding='utf-8'))
     token_count = load_token_counter(root)
-    cases = []
+    inputs = []
     for path in args.record:
-        cases.append(measure_case(path.stem, json.loads(path.read_text(encoding='utf-8')),
-                                  path, guidance, token_count, profile))
+        inputs.append((path.stem, json.loads(path.read_text(encoding='utf-8')), path, False))
     for path in args.derive_camera_variant:
         record = json.loads(path.read_text(encoding='utf-8'))
-        cases.append(measure_case(path.stem + '__camera_variant', camera_variant(record),
-                                  path, guidance, token_count, profile, synthetic=True))
+        inputs.append((path.stem + '__camera_variant', camera_variant(record), path, True))
+    cases = []
+    for name, record, path, synthetic in inputs:
+        cases.append(measure_case(name, record, path, guidance, token_count, profile,
+                                  synthetic=synthetic))
+        for tags in variant_sets:
+            cases.append(measure_case(name + '__variant_' + '-'.join(tags), record, path,
+                                      guidance, token_count, profile, synthetic=synthetic,
+                                      variant_tags=tags))
     report = {'schema_version': 1,
               'scope': 'READ_ONLY_TOKEN_COUNT_NO_MODEL_EXECUTION',
               'tokenizer': {'path': str(root / 'model/tokenizer.model'),

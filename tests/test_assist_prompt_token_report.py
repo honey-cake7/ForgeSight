@@ -69,5 +69,51 @@ class TokenReportTests(unittest.TestCase):
             self.assertEqual(row['record_sha256'], hashlib.sha256(path.read_bytes()).hexdigest())
 
 
+class TrimVariantTests(unittest.TestCase):
+    def setUp(self):
+        self.guidance = json.loads(DEFAULT_GUIDANCE.read_text())
+        self.count = len
+
+    def test_each_trim_shrinks_and_labels_the_variant(self):
+        record = fixture_record()
+        base = measure_case('c', record, None, self.guidance, self.count, PROFILE)
+        for tag in ('noPct', 'noLoc', 'noDisclaimer'):
+            row = measure_case('c', record, None, self.guidance, self.count, PROFILE,
+                               variant_tags=(tag,))
+            self.assertLess(row['tokens']['full_formatted'], base['tokens']['full_formatted'], tag)
+            self.assertEqual(row['input_kind'], 'VARIANT_TRIM_MEASUREMENT')
+            self.assertEqual(row['variant'], [tag])
+
+    def test_combined_trims_accumulate(self):
+        record = fixture_record()
+        single = measure_case('c', record, None, self.guidance, self.count, PROFILE,
+                              variant_tags=('noLoc',))
+        combo = measure_case('c', record, None, self.guidance, self.count, PROFILE,
+                             variant_tags=('noLoc', 'noPct', 'noDisclaimer'))
+        self.assertLess(combo['tokens']['full_formatted'], single['tokens']['full_formatted'])
+
+    def test_synthetic_origin_survives_a_trim(self):
+        variant = camera_variant(fixture_record())
+        row = measure_case('c', variant, None, self.guidance, self.count, PROFILE,
+                           synthetic=True, variant_tags=('noLoc',))
+        self.assertEqual(row['derived_from'], 'SYNTHETIC_MEASUREMENT_DERIVED')
+
+    def test_trims_keep_required_evidence_words(self):
+        record = fixture_record()
+        combo = measure_case('c', record, None, self.guidance, self.count, PROFILE,
+                             variant_tags=('noLoc', 'noPct', 'noDisclaimer'))
+        # Rebuild the trimmed prompt the way the report did and check the words a
+        # valid note still needs: severity, score, area and the checklist citation.
+        from forgesight.assist_contract import prepare_advisory
+        context = prepare_advisory(record, self.guidance)
+        text = context['prompt_text']
+        for tag in ('noLoc', 'noPct', 'noDisclaimer'):
+            from forgesight.assist_prompt_token_report import VARIANT_TRANSFORMS
+            text = VARIANT_TRANSFORMS[tag](text)
+        for needed in ('Severity HIGH', '0.682809', '9015 px', 'Prototype checklist'):
+            self.assertIn(needed, text)
+        self.assertEqual(combo['eligibility'], 'ELIGIBLE')
+
+
 if __name__ == '__main__':
     unittest.main()
