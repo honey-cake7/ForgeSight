@@ -1,4 +1,4 @@
-"""Audit detector coverage or train a depth-3 tree on a labeled split."""
+"""Audit detector coverage or train an optional metal-nut subtype classifier."""
 
 import argparse
 from collections import Counter, defaultdict
@@ -11,7 +11,8 @@ from PIL import Image
 import torch
 
 from forgesight.data_manifest import DEFAULT_MANIFEST, DEFAULT_ROOT, read_manifest, safe_path
-from forgesight.defect_type import FEATURE_NAMES, LABELS, load_profile, predict_type, response_features
+from forgesight.defect_type import (FEATURE_NAMES, FOREST_FEATURES, FOUR_TYPES, LABELS, four_type_features,
+                                    load_profile, predict_type, response_features)
 from forgesight.regions import response_regions
 from scripts.build_mvtec_defect_type_split import PROTOCOL, build_split
 from scripts.probe_defect_type_features import MODEL_SHA256, infer
@@ -102,6 +103,38 @@ def export_tree(tree, validation):
     return export(0)
 
 
+def train_four_type(rows, profile):
+    from sklearn.ensemble import RandomForestClassifier
+
+    train = [row for row in rows["train"] if row["features"] is not None]
+    labels = [row["label"] if row["label"] in FOUR_TYPES else "unknown" for row in train]
+    if set(labels) != set(FOUR_TYPES) | {"unknown"}:
+        raise ValueError("Four-type training requires usable examples of each type and flagged negatives.")
+    classifier = RandomForestClassifier(n_estimators=31, max_depth=5, class_weight="balanced",
+                                        random_state=42)
+    classifier.fit([[row["features"][name] for name in FOREST_FEATURES] for row in train], labels)
+
+    def export(tree, node=0):
+        left, right = tree.children_left[node], tree.children_right[node]
+        if left == right:
+            return {"label": str(classifier.classes_[tree.value[node][0].argmax()])}
+        return {"feature": FOREST_FEATURES[tree.feature[node]], "threshold": float(tree.threshold[node]),
+                "left": export(tree, left), "right": export(tree, right)}
+
+    profile.update(kind="four_type_forest", feature_names=list(FOREST_FEATURES),
+                   profile_id="metal-nut-four-type-v1-" + profile["split_sha256"][:12],
+                   trees=[export(tree.tree_) for tree in classifier.estimators_])
+    # Select a strict majority on validation only. Reward correct type calls and penalize wrong calls; abstentions score zero.
+    def utility(min_votes):
+        candidate = dict(profile, min_votes=min_votes)
+        decisions = evaluate(rows["validation"], candidate)["images"]
+        correct = sum(row["prediction"] in FOUR_TYPES and row["prediction"] == row["label"] for row in decisions)
+        wrong = sum(row["prediction"] in FOUR_TYPES and row["prediction"] != row["label"] for row in decisions)
+        return correct - 2 * wrong, correct, min_votes
+
+    profile["min_votes"] = max(range(16, 32), key=utility)
+
+
 def evaluate(rows, profile):
     decisions = [{**row, "prediction": predict_type(row["features"], profile)
                   if row["flagged"] else "not_flagged"} for row in rows]
@@ -111,8 +144,7 @@ def evaluate(rows, profile):
     return {"counts_by_true_label": dict(confusion), "images": decisions}
 
 
-def compare_subtypes(candidate, baseline):
-    known = ("scratch", "discoloration")
+def compare_subtypes(candidate, baseline, known=("scratch", "discoloration")):
 
     def summarize(evaluation):
         images = evaluation["images"]
@@ -131,12 +163,17 @@ def compare_subtypes(candidate, baseline):
     return {"candidate": tree, "rules": rules, "candidate_passed_promotion_gate": improves}
 
 
-def coverage_report(rows):
+def coverage_report(rows, four_types=False):
+    required_types = set(FOUR_TYPES if four_types else ("scratch", "discoloration"))
+
+    def coverage_label(row):
+        return row["label"] if row["label"] in required_types else "unknown"
+
     coverage = {}
     issues = []
     for split in SPLITS:
         entries = rows.get(split, [])
-        missing_labels = set(LABELS) - {target(row["label"]) for row in entries}
+        missing_labels = (required_types | {"unknown"}) - {coverage_label(row) for row in entries}
         if missing_labels:
             issues.append(f"{split} lacks labels: {', '.join(sorted(missing_labels))}")
         by_label = defaultdict(list)
@@ -148,8 +185,8 @@ def coverage_report(rows):
                     "usable_features": sum(row["features"] is not None for row in items)}
             for label, items in sorted(by_label.items())
         }
-    usable_training_labels = {target(row["label"]) for row in rows.get("train", []) if row["features"] is not None}
-    missing_training = {"scratch", "discoloration"} - usable_training_labels
+    usable_training_labels = {coverage_label(row) for row in rows.get("train", []) if row["features"] is not None}
+    missing_training = (required_types | ({"unknown"} if four_types else set())) - usable_training_labels
     if missing_training:
         issues.append(f"train lacks flagged images with usable features: {', '.join(sorted(missing_training))}")
     return {"splits": coverage, "minimum_training_inputs_met": not issues, "issues": issues}
@@ -166,7 +203,11 @@ def main():
                         help="Allow only the frozen within-MVTec split of detector-evaluated images.")
     parser.add_argument("--dataset-root", type=Path, default=DEFAULT_ROOT,
                         help="Original metal_nut root for the within-MVTec experiment.")
+    parser.add_argument("--four-types", action="store_true", help="Fit a four-type voting forest on the frozen MVTec split.")
     args = parser.parse_args()
+    if args.four_types and not args.mvtec_subtype_experiment:
+        parser.error("--four-types requires --mvtec-subtype-experiment")
+    extract = four_type_features if args.four_types else response_features
     if args.output.exists():
         parser.error("Choose a new output directory.")
     if hashlib.sha256(args.model.read_bytes()).hexdigest() != MODEL_SHA256:
@@ -177,17 +218,24 @@ def main():
     torch.set_num_threads(2)
     model = torch.jit.load(str(args.model), map_location="cpu").eval()
     rows = defaultdict(list)
+    preview_test = []
     for split, entries in samples.items():
         for row, payload in entries:
             with Image.open(BytesIO(payload)) as image:
                 score, values = infer(model, image)
                 flagged = score > threshold
                 geometry = response_regions(values, threshold) if flagged else None
-                features = response_features(image, values, geometry) if flagged else None
+                features = extract(image, values, geometry) if flagged else None
+                if split == "test" and args.four_types:
+                    preview_features = features
+                    if flagged and features is None:
+                        preview_features = response_features(image, values, geometry)
+                    preview_test.append({"image": row["path"], "label": row["label"], "flagged": flagged,
+                                         "group": row["group"], "score": score, "features": preview_features})
             rows[split].append({"image": row["path"], "label": row["label"], "group": row["group"],
                                 "flagged": flagged, "score": score, "features": features})
     split_hash = hashlib.sha256(args.split.read_bytes()).hexdigest()
-    coverage = {**coverage_report(rows), "split_sha256": split_hash, "model_sha256": MODEL_SHA256,
+    coverage = {**coverage_report(rows, args.four_types), "split_sha256": split_hash, "model_sha256": MODEL_SHA256,
                 "image_threshold": threshold}
     if args.mvtec_subtype_experiment:
         coverage["protocol"] = PROTOCOL
@@ -202,12 +250,15 @@ def main():
     from sklearn.tree import DecisionTreeClassifier
 
     train = [row for row in rows["train"] if row["features"] is not None]
-    tree = DecisionTreeClassifier(max_depth=3, random_state=42)
-    tree.fit([vector(row["features"]) for row in train], [target(row["label"]) for row in train])
-    profile = {"schema_version": 1, "kind": "decision_tree", "feature_names": list(FEATURE_NAMES),
-               "profile_id": f"metal-nut-tree-{split_hash[:12]}",
-               "split_sha256": split_hash, "model_sha256": MODEL_SHA256, "image_threshold": threshold,
-               "tree": export_tree(tree, rows["validation"])}
+    profile = {"schema_version": 1, "split_sha256": split_hash, "model_sha256": MODEL_SHA256,
+               "image_threshold": threshold}
+    if args.four_types:
+        train_four_type(rows, profile)
+    else:
+        tree = DecisionTreeClassifier(max_depth=3, random_state=42)
+        tree.fit([vector(row["features"]) for row in train], [target(row["label"]) for row in train])
+        profile.update(kind="decision_tree", feature_names=list(FEATURE_NAMES),
+                       profile_id=f"metal-nut-tree-{split_hash[:12]}", tree=export_tree(tree, rows["validation"]))
     if args.mvtec_subtype_experiment:
         profile["training_protocol"] = PROTOCOL
     profile_path = args.output / "candidate.json"
@@ -216,10 +267,12 @@ def main():
     report = {"split_counts": {split: dict(Counter(row["label"] for row in rows[split])) for split in SPLITS},
               "features_available_in_training": len(train),
               "candidate_test": evaluate(rows["test"], load_profile(profile_path)),
-              "preview_rules_test": evaluate(rows["test"], baseline)}
+              "preview_rules_test": evaluate(preview_test or rows["test"], baseline)}
     if args.mvtec_subtype_experiment:
         report["protocol"] = PROTOCOL
-        report["comparison"] = compare_subtypes(report["candidate_test"], report["preview_rules_test"])
+        report["comparison"] = compare_subtypes(report["candidate_test"], report["preview_rules_test"],
+                                                FOUR_TYPES if args.four_types else ("scratch", "discoloration"))
+        report["candidate_validation"] = evaluate(rows["validation"], profile)
     (args.output / "evaluation.json").write_text(json.dumps(report, indent=2, allow_nan=False) + "\n",
                                                 encoding="utf-8")
 

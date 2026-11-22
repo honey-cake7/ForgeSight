@@ -1,0 +1,134 @@
+{
+  "profile": "configs/defect_type_mvtec_four_v1.json",
+  "profile_sha256_git_lf": "742ab377ce2b06c0d5c6b42c9e4bed2a45f1ac3f5bdeaf6e5b69c99d021a52f0",
+  "split_sha256": "5b25c00a924d6039fb03985a6e98fbd03d537cfefdebfc85e3c3657d977de394",
+  "model_sha256": "8766c41a51a5444f57f564134427bbd2d2d95dd6ec5ff08b24698f00f7f55dcd",
+  "protocol": "mvtec-metal-nut-subtype-on-detector-evaluated-images-v1",
+  "split_counts": {
+    "train": {
+      "bent": 14,
+      "discoloration": 13,
+      "flip": 13,
+      "good": 13,
+      "scratch": 13
+    },
+    "validation": {
+      "bent": 5,
+      "discoloration": 4,
+      "flip": 4,
+      "good": 4,
+      "scratch": 4
+    },
+    "test": {
+      "bent": 5,
+      "discoloration": 4,
+      "flip": 5,
+      "good": 5,
+      "scratch": 5
+    }
+  },
+  "usable_training_images": 53,
+  "min_votes_of_31": 17,
+  "validation_confusion": {
+    "bent": {
+      "bent": 4,
+      "unknown": 1
+    },
+    "discoloration": {
+      "unknown": 1,
+      "discoloration": 3
+    },
+    "flip": {
+      "flip": 4
+    },
+    "good": {
+      "not_flagged": 4
+    },
+    "scratch": {
+      "scratch": 3,
+      "bent": 1
+    }
+  },
+  "test_confusion": {
+    "bent": {
+      "unknown": 1,
+      "bent": 4
+    },
+    "discoloration": {
+      "unknown": 1,
+      "discoloration": 3
+    },
+    "flip": {
+      "flip": 5
+    },
+    "good": {
+      "not_flagged": 5
+    },
+    "scratch": {
+      "scratch": 5
+    }
+  },
+  "test_comparison_to_preview_rule": {
+    "candidate": {
+      "correct_by_target": {
+        "bent": 4,
+        "flip": 5,
+        "scratch": 5,
+        "discoloration": 3
+      },
+      "incorrect_type_assignments": 0,
+      "unknown": 2,
+      "not_flagged": 5
+    },
+    "rules": {
+      "correct_by_target": {
+        "bent": 0,
+        "flip": 0,
+        "scratch": 0,
+        "discoloration": 4
+      },
+      "incorrect_type_assignments": 2,
+      "unknown": 13,
+      "not_flagged": 5
+    },
+    "candidate_passed_promotion_gate": false
+  },
+  "prior_two_type_tree_test": "manifests/mvtec_defect_type_evaluation_v1.json",
+  "jetson": {
+    "device": "NVIDIA Jetson Orin Nano Engineering Reference Developer Kit Super",
+    "network_interfaces": [
+      "lo"
+    ],
+    "pair_count": 24,
+    "assessments_matching_pc_including_unflagged": 48,
+    "sqlite_and_history_match": true,
+    "exact_scores_maps_overlays_and_decisions": true,
+    "timings_ms": {
+      "baseline": {
+        "feature_ms": {
+          "p50": 6.19,
+          "p95": 32.219
+        },
+        "model_forward_ms": {
+          "p50": 1551.605,
+          "p95": 1798.269
+        }
+      },
+      "enabled": {
+        "feature_ms": {
+          "p50": 17.65,
+          "p95": 62.172
+        },
+        "model_forward_ms": {
+          "p50": 1537.633,
+          "p95": 1698.297
+        }
+      }
+    },
+    "assessment_timed_per_profile": 19,
+    "forward_timed_per_profile": 24,
+    "raw_report_sha256": "1cd0e439dc681a9d36e24e9cf54bc4ae7cf8df140d187fed8448c27299136da3"
+  },
+  "physical_camera_accuracy_tested": false,
+  "incremental_ram_measured": false
+}

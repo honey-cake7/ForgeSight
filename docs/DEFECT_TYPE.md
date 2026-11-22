@@ -1,5 +1,55 @@
 # Provisional metal-nut defect type
 
+## Four-type benchmark classifier
+
+Use `--defect-type-profile configs/defect_type_mvtec_four_v1.json` with the Jetson
+operator app for original saved-image replays or declared MVTec PNG uploads.
+The result and inspection history display the provisional label. The classifier
+runs after EfficientAD flags an image. Live camera input is outside its
+validated scope.
+
+The PC fitted 31 depth-limited trees on 53 flagged training images. Bent (14),
+flip (13), scratch (11), and discoloration (13) each had a separate training
+label. Two flagged good images supplied the unknown class. Features combine
+the existing local color and elongation cues with response size and position,
+nut outline, and face and rim appearance measured at 96 by 96 pixels. The
+profile stores JSON thresholds and leaf labels. Each tree casts one vote.
+Validation selected 17 of 31 votes to emit a type. Lower agreement yields
+`unknown`. Jetson inference uses the existing OpenCV and NumPy runtime.
+
+| Actual type | Correct / tested | Other outcomes |
+| --- | ---: | --- |
+| Bent | 4/5 | 1 unknown |
+| Flip | 5/5 | |
+| Scratch | 5/5 | |
+| Discoloration | 3/4 | 1 unknown |
+| Good | 5/5 unflagged | |
+
+This is the same 24-image MVTec subtype test used for the earlier profile.
+It was excluded from fitting and vote-threshold selection, and has been
+evaluated previously. Validation included one scratch predicted as bent.
+Discoloration coverage fell from 4/4 with the earlier tree to 3/4. The
+four-type profile stays opt-in under the existing promotion criterion.
+The isolated Orin Nano app reproduced all 48 expected outcomes (24 per profile).
+Scores, maps, overlays and grade agreed across paired runs. Current result,
+history and SQLite agreed. Four-type assessment on 19 flagged images took
+17.6 ms median and 62.2 ms p95.
+The JSON profile is approximately 49 KiB. Incremental RAM, physical-camera
+accuracy and generalization to new parts are unmeasured.
+
+Train from the repository root using a fresh output directory:
+
+```sh
+python -B -m scripts.train_defect_type --four-types --mvtec-subtype-experiment --split manifests/metal_nut_defect_type_split_v1.json --model artifacts/vision/edge_export_v1/efficientad_s_calibrated.ts --output artifacts/vision/four_type_reproduction
+```
+
+To repeat the device check, use the isolated Jetson comparison command below
+with the generated `evaluation.json` and `configs/defect_type_mvtec_four_v1.json`.
+The [evaluation record](../manifests/mvtec_four_type_v1.json) lists the split,
+confusion counts and device measurements.
+
+## Earlier two-type and preview profiles
+
 ForgeSight can attach a provisional `assessment` to an EfficientAD anomaly on
 an original dataset replay or a 700 × 700 upload declared as MVTec metal nut.
 The current preview profile reports `discoloration` when it sees a local color

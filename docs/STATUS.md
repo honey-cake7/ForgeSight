@@ -2,7 +2,13 @@
 
 ## Current stage
 
-**Depth-3 defect-type tree trained within MVTec.** The same 24-image test gave
+The opt-in four-type forest classified 17 of 19 defective MVTec test images,
+with two unknowns and all five good images unflagged. Each defect type had
+correct predictions. The isolated Jetson reproduced the PC results on all 24 images.
+Discoloration coverage fell from four to three of four.
+[Four-type results and usage](DEFECT_TYPE.md).
+
+**Previous depth-3 defect-type tree trained within MVTec.** The same 24-image test gave
 the tree one correct scratch and four correct discoloration labels. The color
 rule gave zero and four, respectively, and made two wrong type assignments.
 The tree abstained on four flagged scratches. The scope is provisional saved

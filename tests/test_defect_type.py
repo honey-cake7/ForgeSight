@@ -77,3 +77,27 @@ class DefectTypeTests(unittest.TestCase):
             path.write_text(json.dumps(profile), encoding="utf-8")
             with self.assertRaises(ValueError):
                 load_profile(path)
+
+    def test_four_type_majority_and_abstention(self):
+        from forgesight.defect_type import FOREST_FEATURES, FOUR_TYPES
+
+        features = dict.fromkeys(FOREST_FEATURES, 1.0)
+        profile = load_profile(ROOT / "configs/defect_type_mvtec_four_v1.json")
+        for label in FOUR_TYPES:
+            profile["trees"] = [{"label": label}] * 16 + [{"label": "unknown"}] * 15
+            profile["min_votes"] = 16
+            self.assertEqual(predict_type(features, profile), label)
+            profile["min_votes"] = 17
+            self.assertEqual(predict_type(features, profile), "unknown")
+        self.assertEqual(predict_type({"elongation": 1.0}, profile), "unknown")
+
+    def test_four_type_audit_requires_flip_training_features(self):
+        from scripts.train_defect_type import coverage_report
+
+        rows = [{"label": label, "group": label, "flagged": True, "features": {"feature": 1}}
+                for label in ("bent", "flip", "scratch", "discoloration", "good")]
+        splits = {role: deepcopy(rows) for role in ("train", "validation", "test")}
+        self.assertTrue(coverage_report(splits, four_types=True)["minimum_training_inputs_met"])
+        splits["train"][1]["features"] = None
+        self.assertIn("train lacks flagged images with usable features: flip",
+                      coverage_report(splits, four_types=True)["issues"])

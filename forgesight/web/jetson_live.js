@@ -324,6 +324,8 @@ function renderLatest(item, processing) {
 function assessmentLabel(assessment) {
   if (!assessment) return '';
   if (assessment.defect_type === 'discoloration') return 'Possible discoloration (provisional)';
+  if (assessment.defect_type === 'bent') return 'Possible bent nut (provisional)';
+  if (assessment.defect_type === 'flip') return 'Possible flipped nut (provisional)';
   if (assessment.defect_type === 'scratch') return 'Possible scratch (provisional)';
   return 'Defect type unknown';
 }
