@@ -27,7 +27,7 @@ class AssistContractTests(unittest.TestCase):
         "Anomaly score 0.682809 vs threshold 0.227766. "
         "Response area 9015 px across 2 regions; largest region width 139 px height 116 px "
         "at x 512 y 361 in the right area of the frame. "
-        "Hold for human review; check image clarity and lighting; compare the highlighted "
+        "Hold for human review; check clarity and lighting; compare the highlighted "
         "region with a known-good part [G1].")
 
     def test_deterministic_compact_context_and_unchanged_decision(self):
@@ -125,12 +125,12 @@ class AssistContractTests(unittest.TestCase):
         self.assertIn('[G2]', context['prompt_text'])
         note = ('An anomaly is flagged; type and cause are unknown [E1]. Severity HIGH. '
                 'Anomaly score 0.600000. Hold the provisional benchmark result for human review; '
-                'check image clarity and lighting; compare the highlighted region with a '
+                'check clarity and lighting; compare the highlighted region with a '
                 'known-good part [G2].')
         self.assertEqual(parse_advisory(note, context)['authoritative_grade'], 'REJECT')
         with self.assertRaises(ValueError):
             parse_advisory('[E1] Anomaly flagged; grade REVIEW; defect type and cause unknown. '
-                           '[G2] Prototype checklist: Hold for human review; check image clarity and lighting.', context)
+                           '[G2] Prototype checklist: Hold for human review; check clarity and lighting.', context)
         row['source']['dataset_origin_verified'] = True
         with self.assertRaises(ValueError):
             prepare_advisory(row, self.guidance)
@@ -162,7 +162,7 @@ class AssistContractTests(unittest.TestCase):
         self.assertEqual(result['quality_grade_authority'],'DETERMINISTIC_RULES_ONLY')
         with self.assertRaises(ValueError):
             parse_advisory('An anomaly is flagged; type and cause are unknown. '
-                           'Hold for human review and check image clarity and lighting [E1][G1].',
+                           'Hold for human review and check clarity and lighting [E1][G1].',
                            self.context)
 
     def test_bad_format_wrong_citations_and_missing_checks_are_rejected(self):

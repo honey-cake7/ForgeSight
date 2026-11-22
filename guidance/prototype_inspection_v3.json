@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "document_id": "forgesight-prototype-image-review-v3",
+  "approval_status": "PROTOTYPE_NOT_FACTORY_APPROVED",
+  "origin": "Developer-authored checklists for saved-image REVIEW, provisional MVTec benchmark REJECT and unvalidated live-camera REVIEW workflows; not a factory SOP or standard.",
+  "scope": "Explain recorded image evidence and request human verification. No machine adjustments, repair instructions, physical tolerances or confirmed causes are authorized.",
+  "entries": [
+    {
+      "id": "G1",
+      "candidate": "ANOMALY_CANDIDATE",
+      "grade": "REVIEW",
+      "text": "Hold for human review; check clarity and lighting; compare the highlighted region with a known-good part."
+    },
+    {
+      "id": "G2",
+      "candidate": "ANOMALY_CANDIDATE",
+      "grade": "REJECT",
+      "text": "Hold the provisional benchmark result for human review; check clarity and lighting; compare the highlighted region with a known-good part."
+    },
+    {
+      "id": "G3",
+      "candidate": "ANOMALY_CANDIDATE",
+      "grade": "REVIEW",
+      "source_modes": [
+        "LIVE_CAMERA",
+        "LIVE_CAMERA_DIAGNOSTIC_NO_PART",
+        "LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC"
+      ],
+      "text": "Hold for human review; recapture with steady lighting and alignment; compare the highlighted region with a known-good part."
+    }
+  ]
+}
