@@ -95,6 +95,14 @@ def check_binding():
 
 def materialize_package(workdir):
     source_dir = Path(os.environ.get('_FORGESIGHT_MEASURE_CWD', os.getcwd()))
+    try:
+        commit = subprocess.run(['git', '-C', str(source_dir), 'rev-parse', 'FETCH_HEAD'],
+                                check=True, capture_output=True, text=True,
+                                timeout=30).stdout.strip()
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
+        fail('cannot resolve FETCH_HEAD in %s; run the fetch line first from the '
+             'ForgeSight folder' % source_dir)
+    files = []
     for relative in PACKAGE_FILES:
         try:
             content = subprocess.run(['git', '-C', str(source_dir), 'show', 'FETCH_HEAD:' + relative],
@@ -105,7 +113,10 @@ def materialize_package(workdir):
         target = workdir / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(content)
-    return workdir
+        files.append({'path': relative, 'source': 'FETCH_HEAD:%s' % relative,
+                      'sha256': hashlib.sha256(content).hexdigest()})
+    return workdir, {'candidate_commit': commit, 'source_repo': str(source_dir),
+                     'package_files': files}
 
 
 def discover_records(home):
@@ -136,6 +147,10 @@ def build_cases(records):
         cases.append((kind, record, path, False))
     if 'real_review' not in seen:
         fail('no ELIGIBLE saved-image REVIEW record found under the audit space')
+    input_kinds = {expected: 'MISSING_NOT_FOUND_ON_THIS_DEVICE' for expected in
+                   ('real_review', 'real_reject')}
+    for kind, _, path, _ in cases:
+        input_kinds[kind] = str(path)
     review = next(record for kind, record, _, _ in cases if kind == 'real_review')
     review_path = next(path for kind, _, path, _ in cases if kind == 'real_review')
     cases.append(('synthetic_camera_variant', camera_variant(review), review_path, True))
@@ -166,7 +181,10 @@ def build_cases(records):
 
     regraded(many_regions, 'synthetic_multiregion_12')
     regraded(wide_digits, 'synthetic_wide_digits')
-    return cases, guidance
+    for kind, _, path, _ in cases:
+        if kind.startswith('synthetic_'):
+            input_kinds[kind] = 'DERIVED_FROM:' + str(path)
+    return cases, guidance, input_kinds
 
 
 def main():
@@ -179,7 +197,7 @@ def main():
     out_dir = Path(os.environ.get('_FORGESIGHT_MEASURE_CWD', os.getcwd())) / f'forgesight_token_measure_{stamp}'
     out_dir.mkdir(exist_ok=False)
     workdir = Path(tempfile.mkdtemp(prefix='forgesight_measure_'))
-    materialize_package(workdir)
+    _, provenance = materialize_package(workdir)
     os.chdir(workdir)
     sys.path.insert(0, str(workdir))
     for name in list(sys.modules):
@@ -190,7 +208,7 @@ def main():
     profile = json.loads((root / 'model/edge_llama.json').read_text(encoding='utf-8'))
     token_count = load_token_counter(root)
     records = discover_records(home)
-    cases, guidance = build_cases(records)
+    cases, guidance, input_kinds = build_cases(records)
     rows = []
     for name, record, path, synthetic in cases:
         rows.append(measure_case(name, record, path, guidance, token_count, profile,
@@ -207,7 +225,8 @@ def main():
               and r.get('budget', {}).get('prefill_ok')]
     report = {'schema_version': 1, 'llama_root': str(root),
               'tokenizer_sha256': EXPECTED_TOKENIZER_SHA256,
-              'binding': EXPECTED_BINDING, 'cases': rows,
+              'binding': EXPECTED_BINDING, 'provenance': provenance,
+              'input_kinds': input_kinds, 'cases': rows,
               'recommendation_scope': ('CANDIDATE_MEASURED_ON_LISTED_INPUTS_ONLY' if viable
                                        else 'NO_GUARD_PRESERVING_VARIANT_FITS_THESE_INPUTS')}
     (out_dir / 'token_report.json').write_text(json.dumps(report, indent=2) + '\n')
@@ -216,6 +235,10 @@ def main():
         status = row['eligibility'] if row['eligibility'] != 'ELIGIBLE' else (
             'full=%d prefill_ok=%s' % (row['tokens']['full_formatted'], budget.get('prefill_ok')))
         print('%-58s %s' % (row['name'], status))
+    for kind, detail in sorted(input_kinds.items()):
+        if detail.startswith('MISSING'):
+            print('input kind %-16s %s' % (kind, detail))
+    print('candidate: %s' % provenance['candidate_commit'])
     print('report: %s' % (out_dir / 'token_report.json'))
 
 

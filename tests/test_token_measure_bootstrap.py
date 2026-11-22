@@ -117,6 +117,21 @@ class BootstrapIntegrationTests(unittest.TestCase):
                     self.assertEqual(row['compliance'], 'GUARD_PRESERVING_CANDIDATE')
             self.assertEqual(report['recommendation_scope'],
                              'CANDIDATE_MEASURED_ON_LISTED_INPUTS_ONLY')
+            # Provenance: the exact fetched commit and per-file hashes are recorded.
+            provenance = report['provenance']
+            self.assertEqual(provenance['candidate_commit'], head)
+            self.assertEqual(provenance['source_repo'], str(work))
+            self.assertEqual(len(provenance['package_files']), 10)
+            for entry in provenance['package_files']:
+                self.assertEqual(entry['sha256'], hashlib.sha256(
+                    (work / entry['path']).read_bytes()).hexdigest(), entry['path'])
+            # Input kinds: real review recorded, absent benchmark said explicitly.
+            kinds = report['input_kinds']
+            self.assertTrue(kinds['real_review'].endswith('record.json'))
+            self.assertEqual(kinds['real_reject'], 'MISSING_NOT_FOUND_ON_THIS_DEVICE')
+            self.assertTrue(kinds['synthetic_camera_variant'].startswith('DERIVED_FROM:'))
+            self.assertIn('real_reject      MISSING', result.stdout)
+            self.assertIn('candidate: ' + head, result.stdout)
 
 
 class TrimParserCompatTests(unittest.TestCase):
