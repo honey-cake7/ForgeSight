@@ -33,7 +33,12 @@ class JetsonSmokeGuards(unittest.TestCase):
     def test_token_limits_follow_export_bounds(self):
         profile = {'max_seq_length': 128, 'max_context_length': 512}
         validate_budget(33, 64, profile)
-        for prompt, answer in ((0, 64), (128, 1), (33, 65)):
+        # max_seq_length is not a prompt bound: the native runner consumes
+        # longer prompts with chunked prefill. The envelope is the context.
+        validate_budget(128, 1, profile)
+        validate_budget(180, 8, profile)
+        validate_budget(448, 64, profile)
+        for prompt, answer in ((0, 64), (449, 64), (33, 65)):
             with self.subTest(prompt=prompt, answer=answer), self.assertRaises(ValueError):
                 validate_budget(prompt, answer, profile)
 

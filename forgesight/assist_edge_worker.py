@@ -141,8 +141,13 @@ class Worker:
         formatted = chat_prompt(request["prompt_text"], request["system_text"])
         prompt_tokens = self.runtime.token_count(formatted)
         profile = self.runtime.profile
-        if not 0 < prompt_tokens < profile["max_seq_length"]:
-            raise ValueError("Prompt exceeds the exported prefill bound.")
+        # max_seq_length is the prefill chunk size, not a prompt bound: the
+        # native runner chunks longer prompts (edge_jetson_smoke
+        # PREFILL_CONTRACT). The context-envelope check below stays
+        # load-bearing: the native decode cap ignores consumed prompt
+        # position when max_seq_length < max_context_length.
+        if not 0 < prompt_tokens:
+            raise ValueError("Expected a nonempty prompt.")
         if prompt_tokens + request["max_new_tokens"] > profile["max_context_length"]:
             raise ValueError("Prompt plus answer exceeds the exported context.")
         started = time.perf_counter()

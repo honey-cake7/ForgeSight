@@ -129,7 +129,19 @@ class WorkerTests(unittest.TestCase):
             self.ask(near_limit, tokens=64)      # 502 + 64 > 540 context bound
         self.ask(near_limit, tokens=32)          # 502 + 32 <= 540 passes
         with self.assertRaises(ValueError):
-            self.ask(" ".join(["word"] * 520), tokens=1)  # over the prefill bound itself
+            self.ask(" ".join(["word"] * 545), tokens=1)  # over the context envelope itself
+
+    def test_prompt_above_max_seq_length_uses_chunked_prefill(self):
+        # max_seq_length is the prefill chunk size, not a prompt bound: the
+        # native runner chunks longer prompts. The KV context envelope is the
+        # real bound (prompt + max_new_tokens <= max_context_length), kept
+        # because the native decode cap ignores consumed prompt position.
+        self.runtime.profile = {"max_seq_length": 128, "max_context_length": 512}
+        prompt = " ".join(["word"] * 300)   # ~302 stand-in tokens, above 128
+        result = self.ask(prompt, tokens=8)  # 302 + 8 <= 512: accepted
+        self.assertIn("generated_text", result)
+        with self.assertRaises(ValueError):
+            self.ask(" ".join(["word"] * 510), tokens=8)  # ~512 + 8 > 512
 
     def test_stats_mismatch_rejected(self):
         def lying_generate(formatted, max_new_tokens):

@@ -146,13 +146,13 @@ class CheckTests(unittest.TestCase):
         result = {'returncode': 1, 'run': {'status': 'FAILED_NOT_VERIFIED',
                                            'completion_reason': 'EXITED'},
                   'generated_exists': False,
-                  'stderr_tail': 'ValueError: Prompt exceeds the exported prefill bound.'}
+                  'stderr_tail': 'ValueError: Prompt plus answer exceeds exported context.'}
         self.assertEqual(check_refusal(result)['status'], 'PASS')
 
     def test_refusal_fails_when_generation_happened(self):
         result = {'returncode': 1, 'run': {'status': 'FAILED_NOT_VERIFIED'},
                   'generated_exists': True,
-                  'stderr_tail': 'ValueError: Prompt exceeds the exported prefill bound.'}
+                  'stderr_tail': 'ValueError: Prompt plus answer exceeds exported context.'}
         self.assertEqual(check_refusal(result)['status'], 'FAIL')
 
     def test_refusal_fails_when_accepted(self):
@@ -223,7 +223,7 @@ class FakeExecutors:
             'returncode': 1, 'run': {'status': 'FAILED_NOT_VERIFIED',
                                      'completion_reason': 'EXITED'},
             'generated_exists': False,
-            'stderr_tail': 'ValueError: Prompt exceeds the exported prefill bound.'}
+            'stderr_tail': 'ValueError: Prompt plus answer exceeds exported context.'}
         self.replays = replays if replays is not None else {
             'review': advice_report(prompt_tokens=180),
             'reject': advice_report(prompt_tokens=188),
@@ -252,7 +252,8 @@ class FakeExecutors:
         if 'boundary_refused' in str(out_dir):
             return self.refusal
         if 'boundary_accepted' in str(out_dir):
-            return smoke_result(prompt_tokens=255, generated=1)
+            return smoke_result(prompt_tokens=PROFILE['max_context_length'] - 2,
+                                generated=1)
         return self.smoke
 
     def run_replay(self, record, database, guidance, out_dir, worker_socket=None):
@@ -312,9 +313,9 @@ class OrchestrationTests(unittest.TestCase):
             self.assertEqual(manifest['status'], acceptance.PASSED)
             self.assertEqual(manifest['checks']['camera_replay']['status'], 'UNASSESSED')
             self.assertIn('camera_replay', manifest['unassessed'])
-            self.assertEqual(manifest['checks']['boundary_accepted']['prompt_token_count'], 255)
-            self.assertEqual(manifest['checks']['boundary_accepted']['fit_target_tokens'], 255)
-            self.assertEqual(manifest['checks']['boundary_refused']['fit_target_tokens'], 256)
+            self.assertEqual(manifest['checks']['boundary_accepted']['prompt_token_count'], 510)
+            self.assertEqual(manifest['checks']['boundary_accepted']['fit_target_tokens'], 510)
+            self.assertEqual(manifest['checks']['boundary_refused']['fit_target_tokens'], 511)
             self.assertEqual(manifest['artifact_sha256'], 'a' * 64)
             persisted = json.loads((Path(directory) / 'out/acceptance.json').read_text())
             self.assertEqual(persisted['status'], acceptance.PASSED)

@@ -36,10 +36,17 @@ class TokenReportTests(unittest.TestCase):
         self.assertTrue(row['budget']['context_ok'])
         self.assertEqual(row['budget']['max_new_tokens'], 64)
 
-    def test_prefill_bound_is_strict(self):
-        tight = dict(PROFILE, max_seq_length=1)
+    def test_prefill_bound_is_the_context_envelope(self):
+        tight = dict(PROFILE, max_context_length=10)
         row = measure_case('case', fixture_record(), None, self.guidance, self.count, tight)
         self.assertFalse(row['budget']['prefill_ok'])
+        self.assertFalse(row['budget']['context_ok'])
+
+    def test_prompt_above_max_seq_length_is_prefill_ok(self):
+        # max_seq_length is the prefill chunk size, not a prompt bound.
+        profile = dict(PROFILE, max_seq_length=1)
+        row = measure_case('case', fixture_record(), None, self.guidance, self.count, profile)
+        self.assertTrue(row['budget']['prefill_ok'])
 
     def test_refused_record_is_reported_not_raised(self):
         record = fixture_record()

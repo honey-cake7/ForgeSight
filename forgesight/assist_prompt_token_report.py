@@ -96,7 +96,9 @@ def measure_case(name, record, source_path, guidance, token_count, profile, synt
         'budget': {'max_seq_length': profile['max_seq_length'],
                    'max_context_length': profile['max_context_length'],
                    'max_new_tokens': MAX_NEW_TOKENS,
-                   'prefill_ok': 0 < full < profile['max_seq_length'],
+                   # Native chunked prefill: the prompt bound is the context
+                   # envelope, not max_seq_length (the prefill chunk size).
+                   'prefill_ok': 0 < full < profile['max_context_length'],
                    'context_ok': full + MAX_NEW_TOKENS <= profile['max_context_length']},
     })
     return row

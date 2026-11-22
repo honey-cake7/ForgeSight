@@ -9,13 +9,15 @@ behavior that a JSON manifest alone cannot prove for the new chain:
   binds them to the staged profile values;
 - regression: the pinned smoke prompt still verifies, with the recorded
   baseline prompt-token count, on the new artifact;
-- boundary: a prompt fitted to exactly max_seq_length - 1 tokens generates,
-  and one fitted to exactly max_seq_length is refused by the application's own
-  prefill guard BEFORE generation (the native runner's chunked prefill would
-  accept it; the guard is the contract);
+- boundary: a prompt fitted to exactly max_context_length - 2 tokens
+  generates with max_new_tokens=2, and one fitted to max_context_length - 1
+  is refused by the application's budget guard BEFORE generation (the native
+  runner's chunked prefill accepts prompts beyond max_seq_length; the
+  context envelope is the contract);
 - replay: real saved REVIEW/REJECT inspections with measured prompts above
   128 tokens verify through the trusted cold path, proving actual >128
-  prefill on the new artifact (the old 128 chain could not run them);
+  chunked prefill on the artifact under test (any chain whose context
+  envelope covers the prompt plus answer can run them);
 - camera: an optional camera inspection record verifies the same way, labeled
   by the record's own stored source mode; absent, it stays UNASSESSED;
 - warm/cold: the persistent worker's startup/warmup evidence plus one warm
@@ -48,7 +50,9 @@ import time
 
 VERIFIED_SMOKE = 'JETSON_EXECUTORCH_LLAMA_GENERATION_VERIFIED'
 VERIFIED_ADVICE = 'JETSON_ADVICE_GENERATED_REQUIRES_HUMAN_REVIEW'
-REFUSAL_TEXT = 'Prompt exceeds the exported prefill bound.'
+REFUSAL_TEXT = 'Prompt plus answer exceeds exported context.'
+# Boundary runs use this generation budget; the boundary pair derives from it.
+BOUNDARY_MAX_NEW = 2
 FAILED_STATUS = 'FAILED_NOT_VERIFIED'
 
 BASE_BOUNDARY_PROMPT = ('Describe one lighting property that matters when '
@@ -225,7 +229,7 @@ def check_refusal(result):
     if run is None or run.get('status') != FAILED_STATUS:
         problems.append('expected a failed, unverified run record')
     if REFUSAL_TEXT not in (result.get('stderr_tail') or ''):
-        problems.append('refusal reason did not name the exported prefill bound')
+        problems.append('refusal reason did not name the exported context bound')
     if result.get('generated_exists'):
         problems.append('a generation output file exists for a refused prompt')
     if problems:
@@ -489,7 +493,7 @@ def run_acceptance(config, executors):
                     'disconnection is validated here.',
                     'RSS figures are sampled values and may miss peaks; timings are '
                     'measurements on this device, not performance promises.']}
-    max_seq = profile['max_seq_length']
+    max_context = profile['max_context_length']
 
     def step_dir(name):
         path = output / name
@@ -520,8 +524,10 @@ def run_acceptance(config, executors):
     except Exception as error:
         record_error('regression_smoke', error)
 
-    # 3. Prefill-guard boundary: max_seq-1 accepted, max_seq refused pre-generation.
-    for label, target in (('boundary_accepted', max_seq - 1), ('boundary_refused', max_seq)):
+    # 3. Budget boundary: context-2 accepted, context-1 refused pre-generation
+    #    (the guard refuses prompt + max_new_tokens > max_context_length).
+    for label, target in (('boundary_accepted', max_context - BOUNDARY_MAX_NEW),
+                          ('boundary_refused', max_context - BOUNDARY_MAX_NEW + 1)):
         try:
             directory = step_dir(label)
             fit = executors.run_child('fit-prompt', ['--root', config['llama_root'],
@@ -529,7 +535,8 @@ def run_acceptance(config, executors):
                                                      '--output', directory / 'prompt.txt'])
             if fit['report'] is None:
                 raise RuntimeError('fit child failed: ' + fit['stderr_tail'][-400:])
-            result = executors.run_smoke(directory / 'prompt.txt', 2, directory / 'run')
+            result = executors.run_smoke(directory / 'prompt.txt', BOUNDARY_MAX_NEW,
+                                         directory / 'run')
             if label == 'boundary_accepted':
                 checks[label] = check_generation(result, expected_prompt_tokens=target)
             else:

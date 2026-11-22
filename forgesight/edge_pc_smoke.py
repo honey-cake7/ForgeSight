@@ -33,8 +33,11 @@ def chat_prompt(text: str, *, system_text: str | None = None) -> str:
 def validate_token_budget(prompt_tokens: int, max_new_tokens: int, profile: dict) -> None:
     if not 1 <= max_new_tokens <= 128:
         raise ValueError("Generation limit must be 1-128 new tokens.")
-    if not 0 < prompt_tokens < profile["max_seq_length"]:
-        raise ValueError("Prompt exceeds the exported dynamic prefill token bound.")
+    # max_seq_length is the prefill chunk size, not a prompt bound (native
+    # chunked prefill; see edge_jetson_smoke PREFILL_CONTRACT). The context
+    # envelope below is the real bound.
+    if not 0 < prompt_tokens:
+        raise ValueError("Expected a nonempty prompt.")
     if prompt_tokens + max_new_tokens > profile["max_context_length"]:
         raise ValueError("Prompt and generation budget exceed exported context capacity.")
 

@@ -25,12 +25,16 @@ class PCSmokeTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "control markers"):
                 chat_prompt(text)
 
-    def test_dynamic_prefill_boundary_is_enforced(self):
+    def test_chunked_prefill_boundary_is_the_context_envelope(self):
         profile = {"max_seq_length": 128, "max_context_length": 512}
         validate_token_budget(127, 64, profile)
-        for count in (0, 128):
-            with self.assertRaisesRegex(ValueError, "prefill token bound"):
-                validate_token_budget(count, 64, profile)
+        # max_seq_length is not a prompt bound under native chunked prefill;
+        # the envelope is prompt + generation <= max_context_length.
+        validate_token_budget(448, 64, profile)
+        with self.assertRaisesRegex(ValueError, "nonempty prompt"):
+            validate_token_budget(0, 64, profile)
+        with self.assertRaisesRegex(ValueError, "context capacity"):
+            validate_token_budget(449, 64, profile)
 
     def test_context_capacity_and_new_token_limits_are_enforced(self):
         profile = {"max_seq_length": 128, "max_context_length": 100}

@@ -47,11 +47,21 @@ def chat_prompt(text, system_text=None):
             + text + '<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n')
 
 
+PREFILL_CONTRACT = 'native-chunked-prefill-v1'
+
+
 def validate_budget(prompt_tokens, new_tokens, profile):
+    # Prefill contract native-chunked-prefill-v1: the ExecuTorch 1.5.1
+    # TextPrefiller consumes prompts longer than max_seq_length in chunks
+    # (pinned source extension/llm/runner/text_prefiller.cpp, upstream commit
+    # 3b60683923245cf472b7323426920e15623ba361), so max_seq_length is the
+    # prefill chunk size, not a prompt bound. The context-envelope check is
+    # load-bearing: in the max_seq < max_context branch the native decode cap
+    # starts at position 0 and ignores the consumed prompt position.
     if not 1 <= new_tokens <= 64:
         raise ValueError('Initial Jetson smoke limit is 1-64 new tokens.')
-    if not 0 < prompt_tokens < profile['max_seq_length']:
-        raise ValueError('Prompt exceeds exported prefill bound.')
+    if not 0 < prompt_tokens:
+        raise ValueError('Expected a nonempty prompt.')
     if prompt_tokens + new_tokens > profile['max_context_length']:
         raise ValueError('Prompt plus answer exceeds exported context.')
 
