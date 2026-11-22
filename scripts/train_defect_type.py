@@ -1,4 +1,4 @@
-"""Fit and evaluate a depth-3 defect tree from an independent labeled split."""
+"""Audit detector coverage or train a depth-3 tree on a labeled split."""
 
 import argparse
 from collections import Counter, defaultdict
@@ -8,7 +8,6 @@ import json
 from pathlib import Path
 
 from PIL import Image
-from sklearn.tree import DecisionTreeClassifier
 import torch
 
 from forgesight.data_manifest import DEFAULT_MANIFEST, read_manifest, safe_path
@@ -48,10 +47,8 @@ def load_split(path, protected_manifest):
             raise ValueError(f"Duplicate pixels or protected holdout image: {row['path']}")
         seen_pixels.add(pixel_hash)
         samples[split].append((row, payload))
-    for split in SPLITS:
-        labels = {target(row["label"]) for row, _ in samples[split]}
-        if labels != set(LABELS):
-            raise ValueError(f"{split} requires scratch, discoloration, and other/normal examples.")
+    if not seen_pixels:
+        raise ValueError("Expected at least one labeled image.")
     return samples
 
 
@@ -93,11 +90,37 @@ def evaluate(rows, profile):
     return {"counts_by_true_label": dict(confusion), "images": decisions}
 
 
+def coverage_report(rows):
+    coverage = {}
+    issues = []
+    for split in SPLITS:
+        entries = rows.get(split, [])
+        missing_labels = set(LABELS) - {target(row["label"]) for row in entries}
+        if missing_labels:
+            issues.append(f"{split} lacks labels: {', '.join(sorted(missing_labels))}")
+        by_label = defaultdict(list)
+        for row in entries:
+            by_label[row["label"]].append(row)
+        coverage[split] = {
+            label: {"images": len(items), "source_groups": len({row["group"] for row in items}),
+                    "flagged": sum(row["flagged"] for row in items),
+                    "usable_features": sum(row["features"] is not None for row in items)}
+            for label, items in sorted(by_label.items())
+        }
+    usable_training_labels = {target(row["label"]) for row in rows.get("train", []) if row["features"] is not None}
+    missing_training = {"scratch", "discoloration"} - usable_training_labels
+    if missing_training:
+        issues.append(f"train lacks flagged images with usable features: {', '.join(sorted(missing_training))}")
+    return {"splits": coverage, "minimum_training_inputs_met": not issues, "issues": issues}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--split", type=Path, required=True)
     parser.add_argument("--model", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--audit-only", action="store_true",
+                        help="Save coverage for each split and label without fitting, even if a split is incomplete.")
     args = parser.parse_args()
     if args.output.exists():
         parser.error("Choose a new output directory.")
@@ -117,17 +140,26 @@ def main():
                 features = response_features(image, values, geometry) if flagged else None
             rows[split].append({"image": row["path"], "label": row["label"], "group": row["group"],
                                 "flagged": flagged, "score": score, "features": features})
+    split_hash = hashlib.sha256(args.split.read_bytes()).hexdigest()
+    coverage = {**coverage_report(rows), "split_sha256": split_hash, "model_sha256": MODEL_SHA256,
+                "image_threshold": threshold}
+    args.output.mkdir(parents=True)
+    (args.output / "coverage.json").write_text(json.dumps(coverage, indent=2) + "\n", encoding="utf-8")
+    if args.audit_only:
+        print(json.dumps(coverage, indent=2))
+        return
+    if not coverage["minimum_training_inputs_met"]:
+        parser.error("; ".join(coverage["issues"]) + f". See {args.output / 'coverage.json'}.")
+
+    from sklearn.tree import DecisionTreeClassifier
+
     train = [row for row in rows["train"] if row["features"] is not None]
-    if not {"scratch", "discoloration"} <= {target(row["label"]) for row in train}:
-        parser.error("EfficientAD must flag training examples of both target defects with usable geometry.")
     tree = DecisionTreeClassifier(max_depth=3, random_state=42)
     tree.fit([vector(row["features"]) for row in train], [target(row["label"]) for row in train])
-    split_hash = hashlib.sha256(args.split.read_bytes()).hexdigest()
     profile = {"schema_version": 1, "kind": "decision_tree", "feature_names": list(FEATURE_NAMES),
                "profile_id": f"metal-nut-tree-{split_hash[:12]}",
                "split_sha256": split_hash, "model_sha256": MODEL_SHA256, "image_threshold": threshold,
                "tree": export_tree(tree, rows["validation"])}
-    args.output.mkdir(parents=True)
     profile_path = args.output / "candidate.json"
     profile_path.write_text(json.dumps(profile, indent=2, allow_nan=False) + "\n", encoding="utf-8")
     baseline = load_profile(Path("configs/defect_type_preview_v1.json"))

@@ -71,6 +71,18 @@ parts when deciding how much evaluation evidence you have. Keep images of
 the same source or part in one split. The trainer rejects duplicate pixels,
 cross-split groups, and file or pixel matches to the existing detector holdout.
 
+Run the detector coverage check while assembling the split. This accepts
+incomplete splits and saves per-label image counts, distinct source groups,
+anomaly flags, and usable feature rows in `coverage.json`. The report also
+identifies missing minimum training inputs. Every training run saves the same
+report before fitting. The minimum input check establishes that the procedure
+can run. Review sample counts, source independence, and representativeness
+before interpreting accuracy.
+
+```powershell
+python -B -m scripts.train_defect_type --audit-only --split data/defect_type_v1/split.json --model artifacts/vision/edge_export_v1/efficientad_s_calibrated.ts --output artifacts/vision/defect_type_coverage_v1
+```
+
 ```powershell
 python -B -m scripts.train_defect_type --split data/defect_type_v1/split.json --model artifacts/vision/edge_export_v1/efficientad_s_calibrated.ts --output artifacts/vision/defect_type_candidate_v1
 ```
@@ -87,6 +99,37 @@ training examples of both target defects. The trainer was smoke-tested on
 nine generated appearances from distinct fitting images. It produced a tree
 and comparison report as expected. These generated appearances provide CLI
 verification only.
+
+### Independent data review
+
+The local inventory contained only the original MVTec nut dataset. Running the
+coverage command on its four eligible development previews yielded one usable
+feature row each for discoloration, bent, and flip, and zero for scratch.
+There were no independent validation or test groups available for this run.
+
+A separate read of the cached Jetson detector predictions verified the
+prediction-file hash and matched all 111 rows to the frozen manifest. The
+detector flagged **20/22 scratches**, **21/21 discoloration images**, and
+**2/22 good images**. This measures upstream detector coverage only. The file
+contains image scores and carries no classifier training features. The
+classifier run used the four development previews only. See the
+[Jetson evaluation evidence](../manifests/jetson_holdout_batch_v1.json).
+
+The closest published sources reviewed were:
+
+- **ReliVision metal-nut playbook.** The download requires access. The three
+  example classes, counts, and part appearance resemble a subset of MVTec.
+  Confirm sample provenance and permission before treating the collection as
+  independent. [Publisher playbook](https://www.relimetrics.com/knowledge-hub/playbooks/metal-nuts-use-case)
+- **ALPS Alpine metal-nut set.** Its published description identifies the
+  scratch and color categories as inherited from MVTec and adds one simulated
+  category. [Dataset notes](https://github.com/ALPSALPINE-ProSysDevDept/industrial-ad-dataset#metal_nut_dataset)
+- **CAD-SD.** Its sample annotations place scratching and paint on screw rods
+  in assembled fasteners. [Original dataset](https://github.com/IshidaKengo/Co-occurrence-Anomaly-Detection-Screw-Dataset)
+- **Roboflow Nuts defect.** The catalog labels include scratches and rust.
+  Download requests for the reviewed variants were blocked, and independent
+  source groups and equivalent discoloration annotations remain unverified.
+  [Dataset catalog](https://universe.roboflow.com/nuts-defect/nuts-ytdpr)
 
 ## Reproduce the isolated Jetson comparison
 
