@@ -226,6 +226,8 @@ def main():
     report = {'schema_version': 1, 'llama_root': str(root),
               'tokenizer_sha256': EXPECTED_TOKENIZER_SHA256,
               'binding': EXPECTED_BINDING, 'provenance': provenance,
+              'script': {'path': str(Path(__file__).resolve()),
+                         'sha256': sha256(Path(__file__).resolve())},
               'input_kinds': input_kinds, 'cases': rows,
               'recommendation_scope': ('CANDIDATE_MEASURED_ON_LISTED_INPUTS_ONLY' if viable
                                        else 'NO_GUARD_PRESERVING_VARIANT_FITS_THESE_INPUTS')}

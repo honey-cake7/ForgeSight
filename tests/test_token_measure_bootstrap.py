@@ -125,6 +125,10 @@ class BootstrapIntegrationTests(unittest.TestCase):
             for entry in provenance['package_files']:
                 self.assertEqual(entry['sha256'], hashlib.sha256(
                     (work / entry['path']).read_bytes()).hexdigest(), entry['path'])
+            # The executed script bytes hash ties the run to the reviewed file.
+            self.assertEqual(report['script']['sha256'],
+                             hashlib.sha256(patched.read_bytes()).hexdigest())
+            self.assertEqual(report['script']['path'], str(patched.resolve()))
             # Input kinds: real review recorded, absent benchmark said explicitly.
             kinds = report['input_kinds']
             self.assertTrue(kinds['real_review'].endswith('record.json'))
