@@ -105,6 +105,9 @@ figures and architectural assumptions are not verified project results.
 
 ## Evidence and decisions
 
+- [Provisional defect-type assessment](docs/DEFECT_TYPE.md) covers the opt-in
+  benchmark-image color cue, the Jetson comparison, and the PC training workflow.
+
 - [Hardware audit](docs/HARDWARE.md)
 - [Observed development environment](docs/ENVIRONMENT.md)
 - [Dataset source and split policy](docs/DATASET.md)

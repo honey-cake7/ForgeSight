@@ -14,6 +14,7 @@ from uuid import uuid4
 import numpy as np
 from PIL import Image, ImageDraw
 
+from forgesight.defect_type import assess_response, load_profile
 from forgesight.grade import grade_record, validate_policy
 from forgesight.regions import response_regions
 from forgesight.storage import InspectionStore
@@ -204,6 +205,7 @@ def inspect(args):
                                     "score_map_source_sha256": source_map_hash})
         with Image.open(args.image) as image:
             source = image.convert("RGB")
+            assess_response(record, source, values, getattr(args, "defect_type_profile", None))
             support = Image.fromarray((values > policy["image_threshold"]).astype("uint8") * 110)
             overlay = Image.composite(Image.new("RGB", source.size, "red"), source, support)
             draw = ImageDraw.Draw(overlay)
@@ -248,6 +250,8 @@ def main():
                         help="Use a running vision_edge_worker.py socket instead of a fresh model process per inspection.")
     parser.add_argument("--overlay-format", choices=("png", "jpeg"), default="png",
                         help="Overlay image encoding; jpeg cuts encode time roughly 20x, lossy pixels (maps stay exact .npy).")
+    parser.add_argument("--defect-type-profile", type=load_profile,
+                        help="Optional provisional classification profile for benchmark PNGs.")
     declaration = parser.add_mutually_exclusive_group(required=True)
     declaration.add_argument("--operator-declared-part", action="store_true")
     declaration.add_argument("--screen-photo-diagnostic", action="store_true")

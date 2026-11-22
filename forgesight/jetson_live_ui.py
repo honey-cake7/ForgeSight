@@ -21,6 +21,7 @@ from PIL import Image
 from forgesight.assist_display import advice_for
 from forgesight.assist_queue import AdvisoryQueue
 from forgesight.operation_log import configure_operation_log, operation_logger, scrub
+from forgesight.defect_type import load_profile
 from forgesight.storage import InspectionStore, new_correction
 from forgesight.vision_edge_live_once import (
     CHILD_TIMEOUT_SECONDS, MODEL_SHA256, WORKER_REQUEST_TIMEOUT_SECONDS, sha256)
@@ -314,6 +315,8 @@ class LiveService:
     def __init__(self, args, camera):
         self.args = args
         self.camera = camera
+        profile_path = getattr(args, "defect_type_profile", None)
+        self.defect_type_profile = load_profile(profile_path) if profile_path else None
         if not args.vision_python.is_file() or sha256(args.model) != MODEL_SHA256:
             raise ValueError("Jetson vision runtime or frozen model is missing/mismatched")
         if not args.grade_policy.is_file():
@@ -385,6 +388,7 @@ class LiveService:
             camera_index=self.args.camera_index,
             vision_worker_socket=self.args.vision_worker_socket,
             overlay_format=self.args.overlay_format,
+            defect_type_profile=getattr(self, "defect_type_profile", None),
             **mode_flags)
         record = live_once.inspect(args)
 
@@ -723,6 +727,7 @@ class LiveService:
                 "history": [{"part_id": r["part_id"], "inspection_id": r["inspection_id"],
                              "source_mode": r["source"]["mode"],
                              "grade": r["decision"]["grade"], "status": r["status"],
+                             "assessment": r.get("assessment"),
                              "timestamp_utc": r["timestamp_utc"]}
                             for r in self.store.history(limit=10)],
                 "storage": self.storage_health()}
@@ -994,6 +999,8 @@ class LiveService:
                        "--database", str(self.args.database),
                        "--output-dir", str(root / "result"),
                        "--mvtec-benchmark-upload" if benchmark else "--uploaded-image-diagnostic"]
+            if benchmark and getattr(self.args, "defect_type_profile", None):
+                command += ["--defect-type-profile", str(self.args.defect_type_profile)]
             if self.args.vision_worker_socket is not None:
                 command += ["--vision-worker-socket", str(self.args.vision_worker_socket)]
             result = subprocess.run(command, capture_output=True, text=True, timeout=VISION_OUTER_TIMEOUT_SECONDS)
@@ -1021,6 +1028,8 @@ class LiveService:
                        "--grade-policy", str(self.args.grade_policy),
                        "--database", str(self.args.database),
                        "--output-dir", str(root / "result")]
+            if getattr(self.args, "defect_type_profile", None):
+                command += ["--defect-type-profile", str(self.args.defect_type_profile)]
             if self.args.vision_worker_socket is not None:
                 command += ["--vision-worker-socket", str(self.args.vision_worker_socket)]
             result = subprocess.run(command, capture_output=True, text=True, timeout=VISION_OUTER_TIMEOUT_SECONDS)
@@ -1055,6 +1064,7 @@ class LiveService:
                       "inspection_id": record["inspection_id"], "grade": record["decision"]["grade"],
                       "reason": record["decision"]["reason"],
                       "action": record["decision"]["operator_action"],
+                      "assessment": record.get("assessment"),
                       "score": record["score"], "candidate": record["candidate"],
                       "threshold": record["model"]["image_threshold"],
                       "response_area_px": (record["geometry"] or {}).get("total_area_px"),
@@ -1315,6 +1325,8 @@ def main():
     parser.add_argument("--grade-policy", type=Path, default=Path("configs/forgegrade_benchmark_v1.json"))
     parser.add_argument("--dataset-manifest", type=Path, default=Path("manifests/metal_nut_v1.json"))
     parser.add_argument("--dataset-root", type=Path, default=Path("data/mvtec_ad/metal_nut"))
+    parser.add_argument("--defect-type-profile", type=Path,
+                        help="Enable provisional defect assessment for benchmark images.")
     parser.add_argument("--guidance", type=Path, default=Path("guidance/prototype_inspection_v1.json"))
     parser.add_argument("--llama-worker-socket", type=Path, default=None,
                         help="Optional persistent advisory worker socket; omit for the per-request cold path")

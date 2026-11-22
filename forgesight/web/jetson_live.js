@@ -302,6 +302,9 @@ function renderLatest(item, processing) {
     ? 'Camera setup not calibrated (CAMERA_DOMAIN_UNVALIDATED)'
     : item.reason || (item.error && (item.error.message || item.error)) || 'Inspection could not complete';
   byId('action').textContent = item.action || (item.status === 'ERROR' ? 'Check the analysis error and input image before trying again.' : 'No operator action was provided. Review the inspection evidence.');
+  const assessment = byId('defect-assessment');
+  assessment.hidden = !item.assessment;
+  assessment.textContent = assessmentLabel(item.assessment);
   byId('inspection-id').textContent = item.inspection_id ? 'Inspection ID: ' + item.inspection_id : '';
   clearMedia(item.status === 'ANALYZED' ? 'Loading saved image…' : 'No response map is available for this failed inspection.');
   if (item.status === 'ANALYZED') {
@@ -316,6 +319,13 @@ function renderLatest(item, processing) {
     byId('source-link').href = media + '/source.png' + stamp;
     selectView(savedView);
   }
+}
+
+function assessmentLabel(assessment) {
+  if (!assessment) return '';
+  if (assessment.defect_type === 'discoloration') return 'Possible discoloration (provisional)';
+  if (assessment.defect_type === 'scratch') return 'Possible scratch (provisional)';
+  return 'Defect type unknown';
 }
 
 function renderHistory(rows) {
@@ -342,6 +352,8 @@ function renderHistory(rows) {
     const grade = document.createElement('span');
     grade.className = 'history-meta';
     grade.textContent = (row.source_mode === 'USER_DECLARED_MVTEC_METAL_NUT_UPLOAD' ? 'BENCHMARK · ' : row.source_mode === 'USER_UPLOADED_IMAGE_DIAGNOSTIC' ? 'USER PNG · ' : row.source_mode === 'SAVED_IMAGE_REPLAY' ? 'DATASET REPLAY · ' : row.source_mode === 'LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC' ? 'SCREEN PHOTO · ' : '') + row.status;
+    const defect = assessmentLabel(row.assessment);
+    if (defect) grade.textContent += ' · ' + defect;
     decision.append(badge, grade);
     line.append(name, details, decision);
     list.append(line);

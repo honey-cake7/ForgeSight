@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "status": "PROVISIONAL_COLOR_CUE_VERIFIED_ON_JETSON",
+  "client_context_date": "2026-11-22",
+  "device": "NVIDIA Jetson Orin Nano Engineering Reference Developer Kit Super",
+  "runtime": "persistent EfficientAD-S TorchScript FP32 CPU worker",
+  "detector_export_sha256": "8766c41a51a5444f57f564134427bbd2d2d95dd6ec5ff08b24698f00f7f55dcd",
+  "profile": "configs/defect_type_preview_v1.json",
+  "network_scope": "application process and worker in isolated network namespace with loopback only",
+  "network_interfaces_seen_by_application": ["lo"],
+  "inputs": "MVTec AD development previews, with three runs on the color original",
+  "paired_cases": 6,
+  "exact_baseline_matches": ["score", "candidate", "source_map_sha256", "overlay_sha256", "ForgeGrade decision"],
+  "assessment_latest_history_sqlite_match": true,
+  "cases": [
+    {"input": "test/color/009.png", "mode": "replay", "type": "discoloration", "assessment_ms": 179.012},
+    {"input": "test/color/009.png", "mode": "benchmark_upload", "type": "discoloration", "assessment_ms": 7.203},
+    {"input": "test/color/009.png", "mode": "benchmark_upload", "type": "discoloration", "assessment_ms": 8.803},
+    {"input": "test/bent/017.png", "mode": "replay", "type": "unknown", "assessment_ms": 32.544},
+    {"input": "test/flip/012.png", "mode": "replay", "type": "unknown", "assessment_ms": 56.019},
+    {"input": "test/scratch/020.png", "mode": "replay", "type": null, "assessment_ms": null, "candidate": "NORMAL_CANDIDATE"}
+  ],
+  "verification": "scripts/verify_jetson_defect_type.py",
+  "independent_type_test": false,
+  "physical_part_inspected": false,
+  "browser_rendered": false,
+  "active_station_modified": false
+}

@@ -2,6 +2,13 @@
 
 No challenge requirement is marked satisfied by repository setup alone.
 
+The optional benchmark subtype profile produced a provisional color cue on
+the physical Jetson in a loopback-only application namespace. Six paired
+inspections preserved exact detector scores, source maps, overlays, and
+ForgeGrade decisions. The frozen detector missed the scratch preview.
+Independent type accuracy and physical-camera subtype validation remain open.
+See [defect-type evidence and commands](DEFECT_TYPE.md).
+
 Stage 10.7 measured eight repeated, fresh-process Llama advisories through
 ExecuTorch while Jetson Wi-Fi was disconnected. Every note passed the local
 evidence contract; the saved REVIEW inspection and SQLite file were unchanged.

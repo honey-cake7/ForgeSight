@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "profile_id": "metal-nut-preview-color-cue-v1",
+  "kind": "preview_rules",
+  "feature_names": ["elongation", "chroma_difference"],
+  "model_sha256": "8766c41a51a5444f57f564134427bbd2d2d95dd6ec5ff08b24698f00f7f55dcd",
+  "image_threshold": 0.22776579856872559,
+  "min_chroma_difference": 7.0
+}

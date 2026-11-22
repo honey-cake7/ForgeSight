@@ -14,6 +14,7 @@ from uuid import uuid4
 import numpy as np
 from PIL import Image, ImageDraw
 
+from forgesight.defect_type import assess_response, load_profile
 from forgesight.grade import grade_record, validate_policy
 from forgesight.regions import response_regions
 from forgesight.storage import InspectionStore
@@ -56,6 +57,8 @@ def select_replay_sample(samples, image_sha256, image_path, allow_fit_reference=
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--defect-type-profile", type=load_profile,
+                        help="Optional provisional classification profile for benchmark PNGs.")
     parser.add_argument("--image", type=Path, required=True)
     parser.add_argument("--image-sha256", required=True)
     parser.add_argument("--dataset-manifest", type=Path, required=True)
@@ -206,6 +209,7 @@ def main():
                                    score_map_source=str(source_map),
                                    score_map_source_sha256=source_map_hash)
         with Image.open(args.image) as source:
+            assess_response(record, source, source_values, args.defect_type_profile)
             support = Image.fromarray((source_values > policy["image_threshold"]).astype("uint8") * 110)
             overlay = Image.composite(Image.new("RGB", source.size, "red"), source, support)
             draw = ImageDraw.Draw(overlay)
