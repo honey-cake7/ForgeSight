@@ -1367,7 +1367,7 @@ def main():
     parser.add_argument("--dataset-root", type=Path, default=Path("data/mvtec_ad/metal_nut"))
     parser.add_argument("--defect-type-profile", type=Path,
                         help="Enable provisional defect assessment for benchmark images.")
-    parser.add_argument("--guidance", type=Path, default=Path("guidance/prototype_inspection_v2.json"))
+    parser.add_argument("--guidance", type=Path, default=Path("guidance/prototype_inspection_v3.json"))
     parser.add_argument("--llama-worker-socket", type=Path, default=None,
                         help="Optional persistent advisory worker socket; omit for the per-request cold path")
     parser.add_argument("--llama-worker-idle-timeout-seconds", type=float, default=900,

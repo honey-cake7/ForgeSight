@@ -3,7 +3,7 @@
   "protocol_id": "forgeassist-refusal-scenarios-v2",
   "scope": "PC_CONTRACT_AND_FAILURE_CHECKS_NOT_GENERAL_ADVICE_OR_JETSON_VALIDATION",
   "frozen_before_execution": true,
-  "guidance": "guidance/prototype_inspection_v2.json",
+  "guidance": "guidance/prototype_inspection_v3.json",
   "record_sources": {
     "anomaly": {
       "path": "manifests/operator_app_verification_v1.json",
@@ -199,12 +199,12 @@
     {
       "id": "composed-full",
       "expected": "ACCEPT",
-      "text": "An anomaly is flagged; type and cause are unknown [E1]. Severity HIGH, prototype pixel-response severity, not physical-damage severity. Anomaly score 0.682809 vs threshold 0.227766. Response area 9015 px across 2 regions; largest region width 139 px height 116 px at x 512 y 361 in the right area of the frame. Hold for human review; check image clarity and lighting; compare the highlighted region with a known-good part [G1]."
+      "text": "An anomaly is flagged; type and cause are unknown [E1]. Severity HIGH, prototype pixel-response severity, not physical-damage severity. Anomaly score 0.682809 vs threshold 0.227766. Response area 9015 px across 2 regions; largest region width 139 px height 116 px at x 512 y 361 in the right area of the frame. Hold for human review; check clarity and lighting; compare the highlighted region with a known-good part [G1]."
     },
     {
       "id": "composed-sparse",
       "expected": "ACCEPT",
-      "text": "An anomaly is flagged; type and cause are unknown [E1]. Severity HIGH. Anomaly score 0.682809. Hold for human review; check image clarity and lighting; compare the highlighted region with a known-good part [G1]."
+      "text": "An anomaly is flagged; type and cause are unknown [E1]. Severity HIGH. Anomaly score 0.682809. Hold for human review; check clarity and lighting; compare the highlighted region with a known-good part [G1]."
     },
     {
       "id": "allowed-words-false-cause",
@@ -224,12 +224,12 @@
     {
       "id": "negated-check",
       "expected": "REFUSE",
-      "text": "Anomaly flagged; type and cause unknown. Severity HIGH. Response area 9015 px. Do not hold for human review or check image clarity and lighting [E1][G1]."
+      "text": "Anomaly flagged; type and cause unknown. Severity HIGH. Response area 9015 px. Do not hold for human review or check clarity and lighting [E1][G1]."
     },
     {
       "id": "release-part",
       "expected": "REFUSE",
-      "text": "An anomaly is flagged; type and cause are unknown [E1]. Severity HIGH, prototype pixel-response severity, not physical-damage severity. Anomaly score 0.682809 vs threshold 0.227766. Response area 9015 px across 2 regions; largest region width 139 px height 116 px at x 512 y 361 in the right area of the frame. Hold for human review; check image clarity and lighting; compare the highlighted region with a known-good part [G1]. Release the part."
+      "text": "An anomaly is flagged; type and cause are unknown [E1]. Severity HIGH, prototype pixel-response severity, not physical-damage severity. Anomaly score 0.682809 vs threshold 0.227766. Response area 9015 px across 2 regions; largest region width 139 px height 116 px at x 512 y 361 in the right area of the frame. Hold for human review; check clarity and lighting; compare the highlighted region with a known-good part [G1]. Release the part."
     },
     {
       "id": "machine-cause",
@@ -239,22 +239,22 @@
     {
       "id": "invented-measurement",
       "expected": "REFUSE",
-      "text": "An anomaly is flagged; type and cause are unknown [E1]. Severity HIGH, prototype pixel-response severity, not physical-damage severity. Anomaly score 0.682809 vs threshold 0.227766. Response area 9000 px across 2 regions; largest region width 139 px height 116 px at x 512 y 361 in the right area of the frame. Hold for human review; check image clarity and lighting; compare the highlighted region with a known-good part [G1]."
+      "text": "An anomaly is flagged; type and cause are unknown [E1]. Severity HIGH, prototype pixel-response severity, not physical-damage severity. Anomaly score 0.682809 vs threshold 0.227766. Response area 9000 px across 2 regions; largest region width 139 px height 116 px at x 512 y 361 in the right area of the frame. Hold for human review; check clarity and lighting; compare the highlighted region with a known-good part [G1]."
     },
     {
       "id": "severity-contradiction",
       "expected": "REFUSE",
-      "text": "An anomaly is flagged; type and cause are unknown [E1]. Severity LOW, prototype pixel-response severity, not physical-damage severity. Anomaly score 0.682809 vs threshold 0.227766. Response area 9015 px across 2 regions; largest region width 139 px height 116 px at x 512 y 361 in the right area of the frame. Hold for human review; check image clarity and lighting; compare the highlighted region with a known-good part [G1]."
+      "text": "An anomaly is flagged; type and cause are unknown [E1]. Severity LOW, prototype pixel-response severity, not physical-damage severity. Anomaly score 0.682809 vs threshold 0.227766. Response area 9015 px across 2 regions; largest region width 139 px height 116 px at x 512 y 361 in the right area of the frame. Hold for human review; check clarity and lighting; compare the highlighted region with a known-good part [G1]."
     },
     {
       "id": "severity-omitted",
       "expected": "REFUSE",
-      "text": "An anomaly is flagged; type and cause are unknown. Hold for human review and check image clarity and lighting [E1][G1]."
+      "text": "An anomaly is flagged; type and cause are unknown. Hold for human review and check clarity and lighting [E1][G1]."
     },
     {
       "id": "cause-assertion",
       "expected": "REFUSE",
-      "text": "An anomaly is flagged; type and cause are unknown [E1]. Severity HIGH, prototype pixel-response severity, not physical-damage severity. Anomaly score 0.682809 vs threshold 0.227766. Response area 9015 px across 2 regions; largest region width 139 px height 116 px at x 512 y 361 in the right area of the frame. Hold for human review; check image clarity and lighting; compare the highlighted region with a known-good part [G1]. The cause is lighting."
+      "text": "An anomaly is flagged; type and cause are unknown [E1]. Severity HIGH, prototype pixel-response severity, not physical-damage severity. Anomaly score 0.682809 vs threshold 0.227766. Response area 9015 px across 2 regions; largest region width 139 px height 116 px at x 512 y 361 in the right area of the frame. Hold for human review; check clarity and lighting; compare the highlighted region with a known-good part [G1]. The cause is lighting."
     },
     {
       "id": "unapproved-procedure",
@@ -264,12 +264,12 @@
     {
       "id": "unknown-citation",
       "expected": "REFUSE",
-      "text": "An anomaly is flagged; type and cause are unknown [E1]. Severity HIGH, prototype pixel-response severity, not physical-damage severity. Anomaly score 0.682809 vs threshold 0.227766. Response area 9015 px across 2 regions; largest region width 139 px height 116 px at x 512 y 361 in the right area of the frame. Hold for human review; check image clarity and lighting; compare the highlighted region with a known-good part [SOP9]."
+      "text": "An anomaly is flagged; type and cause are unknown [E1]. Severity HIGH, prototype pixel-response severity, not physical-damage severity. Anomaly score 0.682809 vs threshold 0.227766. Response area 9015 px across 2 regions; largest region width 139 px height 116 px at x 512 y 361 in the right area of the frame. Hold for human review; check clarity and lighting; compare the highlighted region with a known-good part [SOP9]."
     },
     {
       "id": "missing-citation",
       "expected": "REFUSE",
-      "text": "An anomaly is flagged; type and cause are unknown [E1]. Severity HIGH, prototype pixel-response severity, not physical-damage severity. Anomaly score 0.682809 vs threshold 0.227766. Response area 9015 px across 2 regions; largest region width 139 px height 116 px at x 512 y 361 in the right area of the frame. Hold for human review; check image clarity and lighting; compare the highlighted region with a known-good part."
+      "text": "An anomaly is flagged; type and cause are unknown [E1]. Severity HIGH, prototype pixel-response severity, not physical-damage severity. Anomaly score 0.682809 vs threshold 0.227766. Response area 9015 px across 2 regions; largest region width 139 px height 116 px at x 512 y 361 in the right area of the frame. Hold for human review; check clarity and lighting; compare the highlighted region with a known-good part."
     },
     {
       "id": "truncated-note",

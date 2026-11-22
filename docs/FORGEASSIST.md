@@ -74,7 +74,7 @@ provisional assessment (an app started without the defect-type profile, or a
 plain uploaded diagnostic). From the merged tree:
 
 ```sh
-/usr/bin/python3 -B -m forgesight.assist_jetson_replay_once   --record <saved replay record.json> --database <inspections.sqlite3>   --guidance guidance/prototype_inspection_v2.json   --llama-root "$HOME/.local/share/forgesight/llama_cpu_v1"   --output-dir runs/composed_advice_check_01
+/usr/bin/python3 -B -m forgesight.assist_jetson_replay_once   --record <saved replay record.json> --database <inspections.sqlite3>   --guidance guidance/prototype_inspection_v3.json   --llama-root "$HOME/.local/share/forgesight/llama_cpu_v1"   --output-dir runs/composed_advice_check_01
 ```
 
 Omit `--advisory-mode` (composed is the default) or pass
@@ -104,7 +104,7 @@ Two aliases identify the supplied sources:
 
 `guidance/prototype_inspection_v1.json` is explicitly developer-authored
 **PROTOTYPE_NOT_FACTORY_APPROVED** guidance. Its permitted action is to hold
-for human review and check image clarity/lighting. It is not an official SOP,
+for human review and check clarity/lighting. It is not an official SOP,
 manufacturing tolerance or permission to alter machinery. No approved factory
 procedure, machine history, confirmed cause or recurrence analysis is supplied.
 
@@ -139,7 +139,7 @@ The final native model output was:
 
 > [E1] Anomaly flagged; grade REVIEW; defect type and cause unknown.
 >
-> [G1] Prototype checklist: Hold for human review; check image clarity and lighting.
+> [G1] Prototype checklist: Hold for human review; check clarity and lighting.
 
 This is a faithful repetition of the supplied facts/checklist. It is a small
 functional grounding demonstration, **not proof of novel reasoning, diagnosis,

@@ -13,12 +13,12 @@ from forgesight.grade import grade_record
 from forgesight.severity import severity_assessment
 
 
-DEFAULT_GUIDANCE = Path('guidance/prototype_inspection_v2.json')
-PROMPT_VERSION = 'forgeassist-system-cited-note-v3'
-OUTPUT_POLICY_VERSION = 'forgeassist-evidence-composed-note-v5'
+DEFAULT_GUIDANCE = Path('guidance/prototype_inspection_v3.json')
+PROMPT_VERSION = 'forgeassist-system-cited-note-v4'
+OUTPUT_POLICY_VERSION = 'forgeassist-evidence-composed-note-v6'
 # Canonical document hash, independent of JSON whitespace/Windows line endings.
 # A changed procedure requires deliberate review/versioning, not just the same ID.
-GUIDANCE_DOCUMENT_SHA256 = '2cec35633827ff89f10d2d6e5c32629bd9e761fcaa9365bf3d8a0ba724d0eeb2'
+GUIDANCE_DOCUMENT_SHA256 = '9ecdbcc80cb93d8e3b853a4bcb590110ab65b473c4c7d221b280fa89cbca6744'
 
 # Grammatical glue permitted in a composed note in addition to words that
 # appear in the prompt itself. No negators, release/adjust/repair verbs or
@@ -32,6 +32,31 @@ CONNECTOR_WORDS = {
 }
 
 SEVERITY_WORDS = {'none', 'low', 'medium', 'high'}
+
+# Camera-sourced records carry the deterministic REVIEW grade with reason
+# CAMERA_DOMAIN_UNVALIDATED; their advice must state that unvalidated domain.
+CAMERA_SOURCE_MODES = frozenset(
+    {'LIVE_CAMERA', 'LIVE_CAMERA_DIAGNOSTIC_NO_PART', 'LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC'})
+
+
+def _guide_id_for(source_mode, grade):
+    """Expected guidance entry from the validated record source and grade only.
+
+    Shared by prepare and parse so both sides always agree; the model never
+    influences which entry is expected.
+    """
+    if grade == 'REJECT':
+        return 'G2'
+    if source_mode in CAMERA_SOURCE_MODES:
+        return 'G3'
+    return 'G1'
+
+
+def _entry_scope_matches(entry, source_mode):
+    modes = entry.get('source_modes')
+    if modes:
+        return source_mode in modes
+    return source_mode not in CAMERA_SOURCE_MODES
 
 
 class AdvisoryRefusal(ValueError):
@@ -134,13 +159,16 @@ def _prepare_advisory(record: dict, guidance: dict, *, mode: str = 'composed') -
         raise AdvisoryRefusal('UNSUPPORTED_TYPE_OR_GRADE', 'The grade or defect type is outside the reviewed advisory scope.')
     if grade_record(record, decision['policy_snapshot']) != decision:
         raise AdvisoryRefusal('INCONSISTENT_DECISION', 'Decision does not match its recorded deterministic evidence/policy.')
+    camera = (decision['grade'] == 'REVIEW'
+              and decision['reason'] == 'CAMERA_DOMAIN_UNVALIDATED'
+              and source_mode in CAMERA_SOURCE_MODES)
     benchmark = (source_mode == 'USER_DECLARED_MVTEC_METAL_NUT_UPLOAD'
                  and record['source'].get('physical_part') is False
                  and record['source'].get('dataset_origin_verified') is False
                  and record['source'].get('size_px') == [700, 700]
                  and decision['grade'] == 'REJECT'
                  and decision['reason'] == 'BENCHMARK_SCORE_ABOVE_IMAGE_THRESHOLD')
-    supported_reason = (benchmark or
+    supported_reason = (benchmark or camera or
                         (decision['grade'] == 'REVIEW' and
                          (decision['reason'] == 'UNKNOWN_UNSEEN_OR_UNRELIABLE_TYPE'
                           or (source_mode == 'USER_UPLOADED_IMAGE_DIAGNOSTIC'
@@ -155,8 +183,10 @@ def _prepare_advisory(record: dict, guidance: dict, *, mode: str = 'composed') -
     if record.get('assessment') is not None:
         raise AdvisoryRefusal('UNSUPPORTED_ASSESSED_RECORD',
                               'Record carries a provisional classifier assessment; request the vision-choice advisory mode explicitly.')
-    entries = [entry for entry in guidance['entries'] if entry['candidate'] == record['candidate'] and entry['grade'] == decision['grade']]
-    guide_id = 'G2' if benchmark else 'G1'
+    guide_id = _guide_id_for(source_mode, decision['grade'])
+    entries = [entry for entry in guidance['entries']
+               if entry['candidate'] == record['candidate'] and entry['grade'] == decision['grade']
+               and _entry_scope_matches(entry, source_mode)]
     if len(entries) != 1 or entries[0]['id'] != guide_id:
         raise ValueError('No single permitted guidance entry matches this inspection.')
     entry = entries[0]
@@ -179,15 +209,18 @@ def _prepare_advisory(record: dict, guidance: dict, *, mode: str = 'composed') -
     location = _location_words(largest['bbox_xywh_px'], geometry['source_size_px'])
     # E1 aliases the full immutable record outside the tight model prefill budget.
     # Numbers are response pixels, not physical damage or probabilities.
+    camera_line = ('[E1] Source: live camera frame; camera domain unvalidated, not a verified physical part.\n'
+                   if camera else '')
     prompt = (
-        ('[E1] Anomaly flagged; provisional benchmark grade REJECT; defect type and cause unknown.\n'
-         if benchmark else '[E1] Anomaly flagged; grade REVIEW; defect type and cause unknown.\n')
-        + f"[E1] Severity {severity['severity']}, prototype pixel-response severity, not physical-damage severity.\n"
-        + f'[E1] Anomaly score {score_text} vs threshold {threshold_text}; the score is not a probability or calibrated confidence.\n'
-        + f'[E1] Response area {area} px, {area_percent}% of the frame, across {len(regions)} '
+        ('[E1] Anomaly flagged; provisional benchmark grade REJECT; type and cause unknown.\n'
+         if benchmark else '[E1] Anomaly flagged; grade REVIEW; type and cause unknown.\n')
+        + camera_line
+        + f"[E1] Severity {severity['severity']}, pixel-response, not physical damage.\n"
+        + f'[E1] Score {score_text} vs threshold {threshold_text}; not a probability.\n'
+        + f'[E1] Response area {area} px, {area_percent}% of frame, across {len(regions)} '
         + ('region' if len(regions) == 1 else 'regions')
         + (f'; largest region width {largest["bbox_xywh_px"][2]} px height {largest["bbox_xywh_px"][3]} px '
-           f'at x {largest["bbox_xywh_px"][0]} y {largest["bbox_xywh_px"][1]} in the {location} area of the frame.\n')
+           f'at x {largest["bbox_xywh_px"][0]} y {largest["bbox_xywh_px"][1]}, {location}.\n')
         + f'[{guide_id}] Prototype checklist: {entry["text"]}'
     )
     return {'schema_version': 1, 'prompt_version': PROMPT_VERSION, 'output_policy_version': OUTPUT_POLICY_VERSION,
@@ -208,14 +241,15 @@ def _prepare_advisory(record: dict, guidance: dict, *, mode: str = 'composed') -
                          guide_id: {'document_id': guidance['document_id'], 'document_sha256': canonical_hash(guidance),
                                     'approval_status': guidance['approval_status'], 'text': entry['text']}},
             'recurrence': 'NOT_SUPPLIED_NO_PATTERN_ANALYSIS', 'prompt_text': prompt,
-            'system_text': ('You are an inspection assistant. Reply with one short operator advisory. '
-                            'Use only the supplied facts and values exactly; never invent measurements, '
-                            'types, causes or actions. State unknown type and cause, the severity, and '
-                            'the checklist. Cite [E1][' + guide_id + '].'),
-            'model_received_fields': ['anomaly_flag', 'fixed_' + decision['grade'] + '_grade',
-                                      'unknown_type_and_cause', 'pixel_response_severity',
-                                      'score_vs_threshold', 'response_area_fraction_and_region_count',
-                                      'largest_region_bbox_and_location', 'prototype_' + guide_id + '_text'],
+            'system_text': ('Inspection assistant. Give one short advisory from the supplied facts and '
+                            'values exactly; never invent measurements, types, causes or actions. State '
+                            'unknown type and cause, severity, and the checklist. Cite [E1][' + guide_id + '].'
+                            + (' State the camera domain is unvalidated.' if camera else '')),
+            'model_received_fields': (['camera_domain_unvalidated'] if camera else [])
+                                     + ['anomaly_flag', 'fixed_' + decision['grade'] + '_grade',
+                                        'unknown_type_and_cause', 'pixel_response_severity',
+                                        'score_vs_threshold', 'response_area_fraction_and_region_count',
+                                        'largest_region_bbox_and_location', 'prototype_' + guide_id + '_text'],
             'score_and_geometry_in_prompt': True,
             'image_supplied_to_llama': False, 'quality_grade_authority': 'DETERMINISTIC_RULES_ONLY'}
 
@@ -287,10 +321,10 @@ def parse_advisory(raw: str, context: dict) -> dict:
     if not 1 <= len(cleaned) <= 800 or any(mark in cleaned for mark in ('{', '}', '```')):
         raise ValueError('Expected a bounded plain-text advisory, not JSON or formatting instructions.')
     citations = re.findall(r'\[([^\]]*)\]', cleaned)
-    guide_id = 'G2' if context['authoritative_decision']['grade'] == 'REJECT' else 'G1'
+    guide_id = _guide_id_for(context['source_mode'], context['authoritative_decision']['grade'])
     if set(citations) != {'E1', guide_id}:
         raise ValueError('Advisory cites unknown or missing evidence.')
-    text = re.sub(r'\[(E1|G1|G2)\]', '', cleaned)
+    text = re.sub(r'\[(E1|G1|G2|G3)\]', '', cleaned)
     prompt_mentions = _value_mentions(context['prompt_text'])
     note_mentions = _value_mentions(text)
     if not note_mentions:
@@ -326,6 +360,8 @@ def parse_advisory(raw: str, context: dict) -> dict:
         raise ValueError('The note omits or contradicts the supplied severity.')
     if not word_set & {'score', 'area'}:
         raise ValueError('The note references none of the supplied size, location or score evidence.')
+    if guide_id == 'G3' and not {'camera', 'unvalidated'} <= word_set:
+        raise ValueError('The advisory omits the required unvalidated-camera-domain statement.')
     # The checklist is a procedure: its words must be restated in order
     # (connectors may be interleaved), not merely present as a word set whose
     # reordering could invert the instruction.
