@@ -2,6 +2,11 @@
 
 ## Current stage
 
+The Jetson app assigns inspection IDs from a SQLite counter shared by
+camera captures, uploads and replays. The offline device test saved an
+accepted error with its support ID and continued the sequence after
+restart. See [inspection history and error logging](STORAGE.md).
+
 ForgeAssist receives type, severity, location and response extent from saved
 benchmark inspections. In an offline Jetson check, the ExecuTorch worker
 selected a concrete inspection check for each of the four defect types and

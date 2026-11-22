@@ -35,11 +35,10 @@
       <div class="capture-heading"><h2 id="capture-title">Capture one inspection</h2><span class="subtle">One capture · one saved record</span></div>
       <form id="capture-form" class="capture-form">
         <fieldset class="source-choice"><legend>Camera is viewing</legend><label><input type="radio" name="source-kind" value="screen_photo" checked> Photo on a screen</label><label><input type="radio" name="source-kind" value="physical_nut"> Physical nut</label></fieldset>
-        <label class="field">New capture ID<input id="part-id" maxlength="64" autocomplete="off" placeholder="e.g. NUT-001" pattern="[A-Za-z0-9_-]{1,64}" required aria-describedby="id-help"></label>
         <label class="confirm"><input id="confirmed" type="checkbox"><span id="confirm-text">I confirm a displayed nut photo, not a physical part, is in view.</span></label>
         <button id="inspect" type="submit" disabled>Capture &amp; analyze</button>
       </form>
-      <div class="capture-foot"><p id="request-status" role="status" aria-live="polite">Waiting for camera.</p><span id="id-help" class="help">IDs: letters, numbers, hyphens or underscores.</span></div>
+      <div class="capture-foot"><p id="request-status" role="status" aria-live="polite">Waiting for camera.</p><span class="help">Inspection IDs are assigned automatically.</span></div>
     </section>
     <section class="panel result" aria-labelledby="result-title">
       <div class="panel-head"><div><h2 id="result-title">Latest inspection</h2><p id="result-part">No saved result selected</p></div><span id="inspection-status" class="subtle" role="status">AWAITING IMAGE</span></div>
@@ -56,11 +55,11 @@
       <section id="upload-panel" class="panel user-upload-panel" aria-labelledby="upload-title">
         <div class="panel-head"><div><h2 id="upload-title">Inspect a saved PNG</h2><p>Use an original file for dataset testing</p></div><span class="section-label">IMAGE INPUT</span></div>
         <p class="help">Choose a file from this browser’s computer. RGB PNG · 64–1024 pixels per side · under 8 MiB.</p>
-        <form id="upload-form"><div class="replay-fields"><label class="field">Choose PNG<input id="diagnostic-file" type="file" accept="image/png,.png" required></label><label class="field">New upload ID<input id="diagnostic-id" maxlength="64" autocomplete="off" placeholder="e.g. TEST-001" pattern="[A-Za-z0-9_-]{1,64}" required></label></div>
+        <form id="upload-form"><div class="replay-fields"><label class="field">Choose PNG<input id="diagnostic-file" type="file" accept="image/png,.png" required></label></div>
           <label class="confirm"><input id="mvtec-benchmark" type="checkbox"><span>This is an original-size MVTec metal_nut PNG.<small>Show provisional benchmark PASS / REVIEW / REJECT.</small></span></label>
           <button id="diagnostic-submit" type="submit" disabled>Analyze uploaded PNG</button>
         </form>
-        <p id="diagnostic-status" role="status" aria-live="polite">Choose a PNG and enter a new upload ID.</p>
+        <p id="diagnostic-status" role="status" aria-live="polite">Choose a PNG to inspect.</p>
         <details class="technical-details"><summary>About benchmark decisions</summary><p>Benchmark mode requires a 700 × 700 RGB PNG. It uses the frozen MVTec cutoff and 10% review band. File origin is user-declared, not verified. Other uploads remain REVIEW. Grades describe dataset screening, never physical-part acceptance. In the recorded 111-image holdout, two scratch images fell below the cutoff and two good images exceeded it.</p></details>
       </section>
       <section class="panel advice-panel" aria-labelledby="advice-title">

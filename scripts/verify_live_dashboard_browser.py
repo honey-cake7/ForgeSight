@@ -1,7 +1,7 @@
 """Browser verification for the live dashboard; device proof requires a real API.
 
 By default only reads existing results and checks layout. --png creates one
-explicitly identified benchmark inspection and one unverified QA review, then
+automatically numbered benchmark inspection and one unverified QA review, then
 requests real Llama advice. Use only with a known development-preview PNG.
 Browser-only fault scenarios intercept API responses; they are not model proof.
 """
@@ -18,12 +18,9 @@ def main():
     parser.add_argument('--url', default='http://127.0.0.1:8770')
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--png', type=Path)
-    parser.add_argument('--part-id')
     args = parser.parse_args()
     if urlsplit(args.url).hostname not in ('127.0.0.1', 'localhost'):
         parser.error('Use a loopback URL, optionally through SSH.')
-    if args.png and not args.part_id:
-        parser.error('--png requires a unique --part-id')
     args.output.mkdir(parents=True, exist_ok=True)
     report = {'scope': 'Browser presentation QA; inference only when --png is supplied',
               'viewports': [], 'page_errors': [], 'external_requests': [], 'console_errors': []}
@@ -56,16 +53,17 @@ def main():
 
         if args.png:
             page.locator('#diagnostic-file').set_input_files(str(args.png))
-            page.locator('#diagnostic-id').fill(args.part_id)
             page.locator('#mvtec-benchmark').check()
             with page.expect_response(lambda r: r.url.endswith('/api/upload-diagnostic')) as upload:
                 page.locator('#diagnostic-submit').click()
             assert upload.value.status == 202, upload.value.text()
-            expect(page.locator('#result-part')).to_have_text(args.part_id, timeout=90000)
+            part_id = upload.value.json()['part_id']
+            assert part_id.startswith('INS-') and part_id[4:].isdigit(), part_id
+            expect(page.locator('#result-part')).to_have_text(part_id, timeout=90000)
             expect(page.locator('#inspection-status')).to_have_text('SAVED', timeout=90000)
             state = page.request.get(args.url + '/api/state').json()
             report['real_inspection'] = state['latest']
-            assert state['latest']['part_id'] == args.part_id
+            assert state['latest']['part_id'] == part_id
             assert state['latest']['status'] == 'ANALYZED'
             expect(page.locator('#overlay')).to_be_visible()
             original_grade = page.locator('#grade').inner_text()
@@ -89,11 +87,10 @@ def main():
                 expect(page.locator('#advice-note')).to_be_visible(timeout=150000)
                 report['real_advice'] = page.request.get(args.url + '/api/state').json()['advice']
                 expect(page.locator('#grade')).to_have_text(original_grade)
-            # Duplicate IDs must show the real backend rejection without erasing the result.
-            page.locator('#diagnostic-submit').click()
-            expect(page.locator('#diagnostic-status')).to_contain_text('already recorded', timeout=10000)
+            # A new submission needs a fresh file selection.
+            expect(page.locator('#diagnostic-submit')).to_be_disabled()
             expect(page.locator('#grade')).to_have_text(original_grade)
-            report['duplicate_upload_rejected'] = True
+            report['file_selection_cleared'] = True
 
         if state['latest'] and state['latest']['status'] == 'ANALYZED':
             if page.locator('#show-overlay').get_attribute('aria-pressed') == 'true':

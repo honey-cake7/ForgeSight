@@ -1,6 +1,7 @@
 """Loopback live C270 preview and one-part EfficientAD inspection UI for Jetson."""
 
 import argparse
+from datetime import datetime, timezone
 import hashlib
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from io import BytesIO
@@ -22,7 +23,8 @@ from forgesight.assist_display import advice_for
 from forgesight.assist_queue import AdvisoryQueue
 from forgesight.operation_log import configure_operation_log, operation_logger, scrub
 from forgesight.defect_type import load_profile
-from forgesight.storage import InspectionStore, new_correction
+from forgesight.grade import grade_record
+from forgesight.storage import AUTOMATIC_PART_ID, InspectionStore, new_correction
 from forgesight.vision_edge_live_once import (
     CHILD_TIMEOUT_SECONDS, MODEL_SHA256, WORKER_REQUEST_TIMEOUT_SECONDS, sha256)
 
@@ -728,7 +730,8 @@ class LiveService:
                              "source_mode": r["source"]["mode"],
                              "grade": r["decision"]["grade"], "status": r["status"],
                              "assessment": r.get("assessment"),
-                             "timestamp_utc": r["timestamp_utc"]}
+                             "timestamp_utc": r["timestamp_utc"],
+                             **({"support_id": r["inspection_id"][:8]} if r["status"] == "ERROR" else {})}
                             for r in self.store.history(limit=10)],
                 "storage": self.storage_health()}
 
@@ -918,8 +921,7 @@ class LiveService:
         return 200, data
 
     def replay(self, replay_id, dataset_path, data):
-        if not isinstance(replay_id, str) or not PART_ID.fullmatch(replay_id):
-            raise ValueError("Enter a new replay ID using letters, numbers, - or _")
+        _validate_requested_part_id(replay_id)
         sample = self.replay_samples.get(dataset_path)
         if sample is None or not isinstance(data, bytes) or not 0 < len(data) <= MAX_UPLOAD_BYTES:
             raise ValueError("Choose one permitted MVTec development-preview PNG")
@@ -928,17 +930,19 @@ class LiveService:
         with self.lock:
             if self.busy:
                 raise ValueError("An inspection is already running")
-            if self.store.has_part(replay_id):
+            if replay_id is not None and self.store.has_part(replay_id):
                 raise ValueError("This replay ID is already recorded; enter a new one")
             root = self.args.runs_root / ("replay_" + uuid4().hex)
             image = root / "upload" / dataset_path
             image.parent.mkdir(parents=True, exist_ok=False)
             with image.open("xb") as stream:
                 stream.write(data)
+            replay_id = replay_id or self.store.reserve_part_id()
             self.busy = True
             self.latest = {"status": "PROCESSING", "part_id": replay_id,
                            "source_mode": "SAVED_IMAGE_REPLAY"}
-        Thread(target=self._run_replay, args=(replay_id, image, sample, root), daemon=True).start()
+        return self._start_inspection(replay_id, image, root, "SAVED_IMAGE_REPLAY",
+                                      self._run_replay, replay_id, image, sample, root)
 
     def replay_local(self, replay_id, dataset_path):
         if dataset_path not in self.local_replay_samples:
@@ -946,13 +950,12 @@ class LiveService:
         image = self.args.dataset_root / dataset_path
         if not image.is_file() or image.stat().st_size > MAX_UPLOAD_BYTES:
             raise ValueError("Selected Jetson image is missing or too large")
-        self.replay(replay_id, dataset_path, image.read_bytes())
+        return self.replay(replay_id, dataset_path, image.read_bytes())
 
     def upload_diagnostic(self, upload_id, data, benchmark=False):
         if type(benchmark) is not bool:
             raise ValueError("Invalid benchmark declaration")
-        if not isinstance(upload_id, str) or not PART_ID.fullmatch(upload_id):
-            raise ValueError("Enter a new upload ID using letters, numbers, - or _")
+        _validate_requested_part_id(upload_id)
         if not isinstance(data, bytes) or not 0 < len(data) <= MAX_UPLOAD_BYTES:
             raise ValueError("Choose one PNG under 8 MiB")
         try:
@@ -969,182 +972,229 @@ class LiveService:
         with self.lock:
             if self.busy:
                 raise ValueError("An inspection is already running")
-            if self.store.has_part(upload_id):
+            if upload_id is not None and self.store.has_part(upload_id):
                 raise ValueError("This upload ID is already recorded; enter a new one")
             root = self.args.runs_root / ("user_upload_" + uuid4().hex)
             root.mkdir(parents=True, exist_ok=False)
             image = root / "upload.png"
             with image.open("xb") as stream:
                 stream.write(data)
+            upload_id = upload_id or self.store.reserve_part_id()
             self.busy = True
             mode = "USER_DECLARED_MVTEC_METAL_NUT_UPLOAD" if benchmark else "USER_UPLOADED_IMAGE_DIAGNOSTIC"
             self.latest = {"status": "PROCESSING", "part_id": upload_id, "source_mode": mode}
-        Thread(target=self._run_upload, args=(upload_id, image, root, benchmark), daemon=True).start()
+        return self._start_inspection(upload_id, image, root, mode,
+                                      self._run_upload, upload_id, image, root, benchmark)
+
+    def _start_inspection(self, part_id, image, root, mode, process, *args):
+        def work():
+            try:
+                process(*args)
+            except Exception as error:
+                self._publish_failure(part_id, root / "result", image, mode, error)
+            finally:
+                with self.lock:
+                    self.busy = False
+
+        try:
+            Thread(target=work, daemon=True).start()
+        except RuntimeError as error:
+            try:
+                self._publish_failure(part_id, root / "result", image, mode, error)
+            finally:
+                with self.lock:
+                    self.busy = False
+        return part_id
 
     def _run_upload(self, upload_id, image, root, benchmark):
-        try:
-            if self.args.vision_worker_socket is not None:
-                self._inspect_inline(image, upload_id, root,
-                                     {"mvtec_benchmark_upload": benchmark,
-                                      "uploaded_image_diagnostic": not benchmark,
-                                      "operator_declared_part": False,
-                                      "screen_photo_diagnostic": False,
-                                      "diagnostic_no_part": False})
-                return
-            command = [sys.executable, "-B", "-m", "forgesight.vision_edge_live_once",
-                       "--image", str(image), "--part-id", upload_id,
-                       "--vision-python", str(self.args.vision_python),
-                       "--model", str(self.args.model), "--model-sha256", MODEL_SHA256,
-                       "--grade-policy", str(self.args.grade_policy),
-                       "--database", str(self.args.database),
-                       "--output-dir", str(root / "result"),
-                       "--mvtec-benchmark-upload" if benchmark else "--uploaded-image-diagnostic"]
-            if benchmark and getattr(self.args, "defect_type_profile", None):
-                command += ["--defect-type-profile", str(self.args.defect_type_profile)]
-            if self.args.vision_worker_socket is not None:
-                command += ["--vision-worker-socket", str(self.args.vision_worker_socket)]
-            result = subprocess.run(command, capture_output=True, text=True, timeout=VISION_OUTER_TIMEOUT_SECONDS)
-            self._publish_result(upload_id, root / "result", image, result)
-        except Exception as error:
-            with self.lock:
-                self.latest_root = root
-                self.latest_source = image
-                self.latest = {"status": "ERROR", "part_id": upload_id,
-                               "source_mode": ("USER_DECLARED_MVTEC_METAL_NUT_UPLOAD" if benchmark
-                                               else "USER_UPLOADED_IMAGE_DIAGNOSTIC"),
-                               "error": str(error)}
-        finally:
-            with self.lock:
-                self.busy = False
+        if self.args.vision_worker_socket is not None:
+            self._inspect_inline(image, upload_id, root,
+                                 {"mvtec_benchmark_upload": benchmark,
+                                  "uploaded_image_diagnostic": not benchmark,
+                                  "operator_declared_part": False,
+                                  "screen_photo_diagnostic": False,
+                                  "diagnostic_no_part": False})
+            return
+        command = [sys.executable, "-B", "-m", "forgesight.vision_edge_live_once",
+                   "--image", str(image), "--part-id", upload_id,
+                   "--vision-python", str(self.args.vision_python),
+                   "--model", str(self.args.model), "--model-sha256", MODEL_SHA256,
+                   "--grade-policy", str(self.args.grade_policy),
+                   "--database", str(self.args.database),
+                   "--output-dir", str(root / "result"),
+                   "--mvtec-benchmark-upload" if benchmark else "--uploaded-image-diagnostic"]
+        if benchmark and getattr(self.args, "defect_type_profile", None):
+            command += ["--defect-type-profile", str(self.args.defect_type_profile)]
+        if self.args.vision_worker_socket is not None:
+            command += ["--vision-worker-socket", str(self.args.vision_worker_socket)]
+        result = subprocess.run(command, capture_output=True, text=True, timeout=VISION_OUTER_TIMEOUT_SECONDS)
+        self._publish_result(upload_id, root / "result", image, result)
 
     def _run_replay(self, replay_id, image, sample, root):
-        try:
-            command = [sys.executable, "-B", "-m", "forgesight.vision_edge_replay",
-                       "--image", str(image), "--image-sha256", sample["sha256"],
-                       "--dataset-manifest", str(self.args.dataset_manifest),
-                       "--part-id", replay_id,
-                       "--vision-python", str(self.args.vision_python),
-                       "--model", str(self.args.model), "--model-sha256", MODEL_SHA256,
-                       "--grade-policy", str(self.args.grade_policy),
-                       "--database", str(self.args.database),
-                       "--output-dir", str(root / "result")]
-            if getattr(self.args, "defect_type_profile", None):
-                command += ["--defect-type-profile", str(self.args.defect_type_profile)]
-            if self.args.vision_worker_socket is not None:
-                command += ["--vision-worker-socket", str(self.args.vision_worker_socket)]
-            result = subprocess.run(command, capture_output=True, text=True, timeout=VISION_OUTER_TIMEOUT_SECONDS)
-            self._publish_result(replay_id, root / "result", image, result)
-            record_path = root / "result" / "record.json"
-            if record_path.is_file():
-                # Same cold-fallback recovery as inline inspections: a dead
-                # worker must be replaced after a replay too, or replay-only
-                # sessions run every later inspection on the slow cold path.
-                self._rewarm_after_cold_fallback(json.loads(record_path.read_text()))
-        except Exception as error:
-            with self.lock:
-                self.latest_root = root
-                self.latest_source = image
-                self.latest = {"status": "ERROR", "part_id": replay_id, "error": str(error)}
-        finally:
-            with self.lock:
-                self.busy = False
+        command = [sys.executable, "-B", "-m", "forgesight.vision_edge_replay",
+                   "--image", str(image), "--image-sha256", sample["sha256"],
+                   "--dataset-manifest", str(self.args.dataset_manifest),
+                   "--part-id", replay_id,
+                   "--vision-python", str(self.args.vision_python),
+                   "--model", str(self.args.model), "--model-sha256", MODEL_SHA256,
+                   "--grade-policy", str(self.args.grade_policy),
+                   "--database", str(self.args.database),
+                   "--output-dir", str(root / "result")]
+        if getattr(self.args, "defect_type_profile", None):
+            command += ["--defect-type-profile", str(self.args.defect_type_profile)]
+        if self.args.vision_worker_socket is not None:
+            command += ["--vision-worker-socket", str(self.args.vision_worker_socket)]
+        result = subprocess.run(command, capture_output=True, text=True, timeout=VISION_OUTER_TIMEOUT_SECONDS)
+        self._publish_result(replay_id, root / "result", image, result)
+        record_path = root / "result" / "record.json"
+        if record_path.is_file():
+            # Same cold-fallback recovery as inline inspections: a dead
+            # worker must be replaced after a replay too, or replay-only
+            # sessions run every later inspection on the slow cold path.
+            self._rewarm_after_cold_fallback(json.loads(record_path.read_text()))
 
     def _publish_result(self, part_id, result_root, image, result):
         record_path = result_root / "record.json"
-        record = None
-        if record_path.is_file():
-            record = json.loads(record_path.read_text())
-            if self.store.get_inspection(record["inspection_id"]) != record:
-                raise RuntimeError("Inspection record was not confirmed in SQLite")
-            if result.returncode and record["status"] == "ANALYZED":
-                raise RuntimeError("Inspection process failed after writing an analyzed record")
-            latest = {"status": record["status"], "part_id": part_id,
-                      "source_mode": record["source"]["mode"],
-                      "dataset_path": record["source"].get("dataset_path"),
-                      "inspection_id": record["inspection_id"], "grade": record["decision"]["grade"],
-                      "reason": record["decision"]["reason"],
-                      "action": record["decision"]["operator_action"],
-                      "assessment": record.get("assessment"),
-                      "score": record["score"], "candidate": record["candidate"],
-                      "threshold": record["model"]["image_threshold"],
-                      "response_area_px": (record["geometry"] or {}).get("total_area_px"),
-                      "response_regions": (record["geometry"] or {}).get("regions", []),
-                      "zone_method": (record["geometry"] or {}).get("zone_method"),
-                      "source_area_px": record["source"]["size_px"][0] * record["source"]["size_px"][1],
-                      "model_forward_ms": record["timings"].get("model_forward_ms"),
-                      "inspection_ms": (record["timings"].get("capture_file_to_record_ms")
-                                        or record["timings"].get("replay_before_record_write_ms")),
-                      "error": record["error"]}
+        if not record_path.is_file():
+            raise RuntimeError((result.stderr or result.stdout)[-1000:] or "Inspection process produced no record")
+        record = json.loads(record_path.read_text())
+        if record["part_id"] != part_id or self.store.get_inspection(record["inspection_id"]) != record:
+            raise RuntimeError("Inspection record was not confirmed in SQLite")
+        if result.returncode and record["status"] == "ANALYZED":
+            raise RuntimeError("Inspection process failed after writing an analyzed record")
+        self._publish_record(record, result_root, image)
+
+    def _publish_record(self, record, result_root, image):
+        inspection_id = record["inspection_id"]
+        part_id = record["part_id"]
+        error = record["error"]
+        source_size = record["source"]["size_px"]
+        geometry = record["geometry"] or {}
+        latest = {"status": record["status"], "part_id": part_id, "inspection_id": inspection_id,
+                  "source_mode": record["source"]["mode"], "dataset_path": record["source"].get("dataset_path"),
+                  "grade": record["decision"]["grade"], "reason": record["decision"]["reason"],
+                  "action": record["decision"]["operator_action"], "assessment": record.get("assessment"),
+                  "score": record["score"], "candidate": record["candidate"],
+                  "threshold": record["model"]["image_threshold"], "response_area_px": geometry.get("total_area_px"),
+                  "response_regions": geometry.get("regions", []), "zone_method": geometry.get("zone_method"),
+                  "source_area_px": source_size[0] * source_size[1] if source_size else None,
+                  "model_forward_ms": record["timings"].get("model_forward_ms"),
+                  "inspection_ms": (record["timings"].get("capture_file_to_record_ms")
+                                    or record["timings"].get("replay_before_record_write_ms")),
+                  "error": None}
+        if error:
+            support_id = inspection_id[:8]
+            latest.update(support_id=support_id, error={"type": error["type"], "message": "Inspection failed."})
+            _log.error("Inspection %s (%s) failed support_id=%s: %s: %s",
+                       inspection_id, part_id, support_id, error["type"], scrub(error["message"]))
         else:
-            latest = {"status": "ERROR", "part_id": part_id,
-                      "error": (result.stderr or result.stdout)[-1000:] or "Inspection process failed"}
+            _log.info("Inspection %s (%s) finished: status=%s grade=%s vision_mode=%s",
+                      inspection_id, part_id, latest["status"], latest["grade"], record["timings"].get("vision_mode"))
         with self.lock:
             self.latest_root = result_root
             self.latest_source = image
             self.latest = latest
-        if record is not None:
-            _log.info("Inspection %s (%s) finished: status=%s grade=%s vision_mode=%s",
-                      record["inspection_id"], part_id, latest.get("status"),
-                      latest.get("grade"), record.get("timings", {}).get("vision_mode"))
-        else:
-            _log.error("Inspection for part %s failed before a record was confirmed: %s",
-                       part_id, latest.get("error"))
+
+    def _publish_failure(self, part_id, result_root, image, mode, error):
+        inspection_id = str(uuid4())
+        try:
+            existing = self.store.history(part_id=part_id, limit=1)
+            if existing:
+                _log.error("Inspection %s (%s) already saved when processing raised: %s",
+                           existing[0]["inspection_id"], part_id, scrub(error))
+                self._publish_record(existing[0], result_root, image)
+                return
+            policy = json.loads(self.args.grade_policy.read_text())
+            record = {
+                "schema_version": 1, "inspection_id": inspection_id, "part_id": part_id,
+                "timestamp_utc": datetime.now(timezone.utc).isoformat(),
+                "source": {"path": str(image.resolve()), "mode": mode, "sha256": None, "size_px": None,
+                           "physical_part": "OPERATOR_DECLARED_UNVERIFIED" if mode == "LIVE_CAMERA" else False},
+                "model": {"name": "EfficientAD-S", "checkpoint_sha256": policy["checkpoint_sha256"],
+                          "export_sha256": MODEL_SHA256, "score_policy_sha256": policy["score_policy_sha256"],
+                          "image_threshold": policy["image_threshold"], "jetson_verified": False},
+                "status": "ERROR", "score": None, "candidate": None, "geometry": None,
+                "predicted_defect_type": "unknown", "type_status": "NO_VALIDATED_SUBTYPE_CLASSIFIER",
+                "advice_status": "NOT_REQUESTED", "error": {"type": type(error).__name__, "message": scrub(error)},
+                "artifacts": {}, "timings": {},
+            }
+            record["decision"] = grade_record(record, policy)
+            self.store.save_inspection(record)
+            try:
+                result_root.mkdir(parents=True, exist_ok=True)
+                with (result_root / "record.json").open("x", encoding="utf-8") as stream:
+                    json.dump(record, stream, indent=2, allow_nan=False)
+                    stream.write("\n")
+            except OSError as write_error:
+                _log.warning("Inspection %s (%s) persisted in SQLite without a new record file: %s",
+                             inspection_id, part_id, scrub(write_error))
+            self._publish_record(record, result_root, image)
+        except (OSError, ValueError, TypeError, KeyError, sqlite3.Error) as storage_error:
+            support_id = inspection_id[:8]
+            _log.error("Inspection %s could not be saved support_id=%s: %s; initial failure: %s",
+                       part_id, support_id, scrub(storage_error), scrub(error))
+            with self.lock:
+                self.latest_root = None
+                self.latest_source = None
+                self.latest = {"status": "ERROR", "part_id": part_id, "source_mode": mode,
+                               "support_id": support_id,
+                               "error": {"message": "Inspection failed and could not be saved."}}
 
     def inspect(self, part_id, confirmed, source_kind):
-        if (not isinstance(part_id, str) or not PART_ID.fullmatch(part_id)
-                or confirmed is not True or source_kind not in ("physical_nut", "screen_photo")):
-            raise ValueError("Enter a new capture ID, choose the source, and confirm it is in view")
+        _validate_requested_part_id(part_id)
+        if confirmed is not True or source_kind not in ("physical_nut", "screen_photo"):
+            raise ValueError("Choose the source and confirm it is in view")
+        mode = "LIVE_CAMERA" if source_kind == "physical_nut" else "LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC"
         with self.lock:
             if self.busy:
                 raise ValueError("An inspection is already running")
-            if self.store.has_part(part_id):
+            if part_id is not None and self.store.has_part(part_id):
                 raise ValueError("This part ID was already inspected; use a new ID only for a distinct part")
             frame = self.camera.snapshot()
+            part_id = part_id or self.store.reserve_part_id()
+            root = self.args.runs_root / ("part_" + uuid4().hex)
             self.busy = True
-            self.latest = {"status": "PROCESSING", "part_id": part_id}
-        Thread(target=self._run, args=(part_id, frame, source_kind), daemon=True).start()
+            self.latest = {"status": "PROCESSING", "part_id": part_id, "source_mode": mode}
+        return self._start_inspection(part_id, root / "frame.png", root, mode,
+                                      self._run, part_id, frame, source_kind, root)
 
-    def _run(self, part_id, frame, source_kind):
+    def _run(self, part_id, frame, source_kind, root):
         import cv2
 
-        root = self.args.runs_root / ("part_" + uuid4().hex)
-        try:
-            root.mkdir(parents=True, exist_ok=False)
-            image = root / "frame.png"
-            good, encoded = cv2.imencode(".png", frame)
-            if not good:
-                raise RuntimeError("Camera frame could not be saved")
-            with image.open("xb") as stream:
-                stream.write(encoded.tobytes())
-            if self.args.vision_worker_socket is not None:
-                self._inspect_inline(image, part_id, root,
-                                     {"mvtec_benchmark_upload": False,
-                                      "uploaded_image_diagnostic": False,
-                                      "operator_declared_part": source_kind == "physical_nut",
-                                      "screen_photo_diagnostic": source_kind != "physical_nut",
-                                      "diagnostic_no_part": False})
-                return
-            command = [sys.executable, "-B", "-m", "forgesight.vision_edge_live_once",
-                       "--image", str(image), "--part-id", part_id,
-                       "--vision-python", str(self.args.vision_python),
-                       "--model", str(self.args.model), "--model-sha256", MODEL_SHA256,
-                       "--grade-policy", str(self.args.grade_policy),
-                       "--database", str(self.args.database),
-                       "--output-dir", str(root / "result"),
-                       "--camera-index", str(self.args.camera_index),
-                       "--operator-declared-part" if source_kind == "physical_nut" else "--screen-photo-diagnostic"]
-            if self.args.vision_worker_socket is not None:
-                command += ["--vision-worker-socket", str(self.args.vision_worker_socket)]
-            result = subprocess.run(command, capture_output=True, text=True, timeout=VISION_OUTER_TIMEOUT_SECONDS)
-            self._publish_result(part_id, root / "result", image, result)
-        except Exception as error:
-            with self.lock:
-                self.latest_root = root
-                self.latest_source = root / "frame.png"
-                self.latest = {"status": "ERROR", "part_id": part_id, "error": str(error)}
-        finally:
-            with self.lock:
-                self.busy = False
+        root.mkdir(parents=True, exist_ok=False)
+        image = root / "frame.png"
+        good, encoded = cv2.imencode(".png", frame)
+        if not good:
+            raise RuntimeError("Camera frame could not be saved")
+        with image.open("xb") as stream:
+            stream.write(encoded.tobytes())
+        if self.args.vision_worker_socket is not None:
+            self._inspect_inline(image, part_id, root,
+                                 {"mvtec_benchmark_upload": False,
+                                  "uploaded_image_diagnostic": False,
+                                  "operator_declared_part": source_kind == "physical_nut",
+                                  "screen_photo_diagnostic": source_kind != "physical_nut",
+                                  "diagnostic_no_part": False})
+            return
+        command = [sys.executable, "-B", "-m", "forgesight.vision_edge_live_once",
+                   "--image", str(image), "--part-id", part_id,
+                   "--vision-python", str(self.args.vision_python),
+                   "--model", str(self.args.model), "--model-sha256", MODEL_SHA256,
+                   "--grade-policy", str(self.args.grade_policy),
+                   "--database", str(self.args.database),
+                   "--output-dir", str(root / "result"),
+                   "--camera-index", str(self.args.camera_index),
+                   "--operator-declared-part" if source_kind == "physical_nut" else "--screen-photo-diagnostic"]
+        if self.args.vision_worker_socket is not None:
+            command += ["--vision-worker-socket", str(self.args.vision_worker_socket)]
+        result = subprocess.run(command, capture_output=True, text=True, timeout=VISION_OUTER_TIMEOUT_SECONDS)
+        self._publish_result(part_id, root / "result", image, result)
+
+def _validate_requested_part_id(value):
+    if value is not None and (not isinstance(value, str) or not PART_ID.fullmatch(value)):
+        raise ValueError("Use letters, numbers, hyphens or underscores for a supplied ID")
+    if value is not None and AUTOMATIC_PART_ID.fullmatch(value):
+        raise ValueError("INS numbers are assigned by the station. Omit the ID to use the counter.")
 
 
 def handler_for(service):
@@ -1258,24 +1308,24 @@ def handler_for(service):
                     if self.headers.get("Content-Type") != "application/json" or not 0 < length <= 512:
                         raise ValueError("Invalid camera request")
                     body = json.loads(self.rfile.read(length))
-                    service.inspect(body.get("part_id"), body.get("confirmed"), body.get("source_kind"))
+                    part_id = service.inspect(body.get("part_id"), body.get("confirmed"), body.get("source_kind"))
                 elif self.path == "/api/replay":
                     if self.headers.get("Content-Type") != "image/png" or not 0 < length <= MAX_UPLOAD_BYTES:
                         raise ValueError("Upload one original PNG under 8 MiB")
-                    service.replay(self.headers.get("X-Replay-Id"),
+                    part_id = service.replay(self.headers.get("X-Replay-Id"),
                                    self.headers.get("X-Dataset-Path"), self.rfile.read(length))
                 elif self.path == "/api/replay-local":
                     if self.headers.get("Content-Type") != "application/json" or not 0 < length <= 512:
                         raise ValueError("Invalid local replay request")
                     body = json.loads(self.rfile.read(length))
-                    service.replay_local(body.get("replay_id"), body.get("dataset_path"))
+                    part_id = service.replay_local(body.get("replay_id"), body.get("dataset_path"))
                 else:
                     if self.headers.get("Content-Type") != "image/png" or not 0 < length <= MAX_UPLOAD_BYTES:
                         raise ValueError("Upload one RGB PNG under 8 MiB")
                     benchmark = self.headers.get("X-Mvtec-Benchmark")
                     if benchmark not in (None, "yes", "no"):
                         raise ValueError("Invalid benchmark declaration")
-                    service.upload_diagnostic(self.headers.get("X-Upload-Id"), self.rfile.read(length),
+                    part_id = service.upload_diagnostic(self.headers.get("X-Upload-Id"), self.rfile.read(length),
                                               benchmark == "yes")
             except ValueError as error:
                 code, body = _refusal_body(self.path, error, safe=True)
@@ -1288,7 +1338,10 @@ def handler_for(service):
                 code, body = _refusal_body(self.path, error, safe=False)
                 self.send(code, body.encode(), "application/json")
                 return
-            self.send(202, b'{"status":"PROCESSING"}', "application/json")
+            submission = {"status": "PROCESSING"}
+            if part_id is not None:
+                submission["part_id"] = part_id
+            self.send(202, json.dumps(submission).encode(), "application/json")
 
     return Handler
 

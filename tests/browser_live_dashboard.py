@@ -94,7 +94,6 @@ class DashboardBrowserTests(unittest.TestCase):
         expect(self.page.locator('#preview')).to_be_hidden()
         expect(self.page.locator('#inspect')).to_be_disabled()
         self.page.locator('#diagnostic-file').set_input_files(dict(name='fixture.png', mimeType='image/png', buffer=PIXEL))
-        self.page.locator('#diagnostic-id').fill('FIXTURE-UPLOAD')
         expect(self.page.locator('#diagnostic-submit')).to_be_enabled()
         self.state['camera'] = dict(ready=False, message='Starting camera')
         self.refresh()
@@ -150,7 +149,6 @@ class DashboardBrowserTests(unittest.TestCase):
 
     def test_capture_payload_and_duplicate_submit_lock(self):
         expect(self.page.locator('#camera-status')).to_have_text('LIVE')
-        self.page.locator('#part-id').fill('SCREEN-QA')
         self.page.locator('#confirmed').check()
         self.hold_posts = True
         self.page.locator('#inspect').click()
@@ -160,28 +158,39 @@ class DashboardBrowserTests(unittest.TestCase):
         self.assertEqual(len(self.posts), 1)
         path, body, _ = self.posts[0]
         self.assertEqual(path, '/api/inspect')
-        self.assertEqual(json.loads(body), dict(part_id='SCREEN-QA', confirmed=True, source_kind='screen_photo'))
+        self.assertEqual(json.loads(body), dict(confirmed=True, source_kind='screen_photo'))
         self.state['busy'] = True
-        self.state['latest'] = dict(status='PROCESSING', part_id='SCREEN-QA', source_mode='LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC')
-        self.pending.pop().fulfill(status=202, content_type='application/json', body='{"status":"PROCESSING"}')
+        self.state['latest'] = dict(status='PROCESSING', part_id='INS-000001', source_mode='LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC')
+        self.pending.pop().fulfill(status=202, content_type='application/json',
+                                   body='{"status":"PROCESSING","part_id":"INS-000001"}')
         expect(self.page.locator('#inspection-status')).to_have_text('PROCESSING')
+        expect(self.page.locator('#result-part')).to_have_text('INS-000001')
         expect(self.page.locator('#confirmed')).not_to_be_checked()
 
     def test_upload_sends_bytes_and_declaration_and_keeps_rejection_visible(self):
         self.page.locator('#diagnostic-file').set_input_files(dict(name='fixture.png', mimeType='image/png', buffer=PIXEL))
-        self.page.locator('#diagnostic-id').fill('UPLOAD-QA')
         self.page.locator('#mvtec-benchmark').check()
-        self.post_error = 'This upload ID is already recorded; enter a new one'
+        self.post_error = 'The selected file is not a readable PNG'
         self.page.locator('#diagnostic-submit').click()
-        expect(self.page.locator('#diagnostic-status')).to_contain_text('already recorded')
+        expect(self.page.locator('#diagnostic-status')).to_contain_text('not a readable PNG')
         self.refresh()
-        expect(self.page.locator('#diagnostic-status')).to_contain_text('already recorded')
+        expect(self.page.locator('#diagnostic-status')).to_contain_text('not a readable PNG')
         path, body, headers = self.posts[0]
         self.assertEqual(path, '/api/upload-diagnostic')
         self.assertEqual(body, PIXEL)
         self.assertEqual(headers['x-mvtec-benchmark'], 'yes')
-        self.assertEqual(headers['x-upload-id'], 'UPLOAD-QA')
+        self.assertNotIn('x-upload-id', headers)
         expect(self.page.locator('#grade')).to_have_text('REJECT')
+
+    def test_failed_inspection_shows_assigned_id_and_support_reference(self):
+        self.state['latest'].update(inspection_id='fixture-error', part_id='INS-000002',
+                                    support_id='ab12cd34', status='ERROR', grade='REVIEW',
+                                    error={'message': 'Inspection failed.'})
+        self.state['history'] = [dict(self.state['latest'], timestamp_utc='2026-11-22T00:00:00Z')]
+        self.refresh()
+        expect(self.page.locator('#result-part')).to_have_text('INS-000002')
+        expect(self.page.locator('#diagnostic-status')).to_contain_text('ab12cd34')
+        expect(self.page.locator('#history')).to_contain_text('Support ID ab12cd34')
 
     def test_review_draft_is_cleared_when_another_inspection_arrives(self):
         self.page.locator('#review-actor').fill('QA')

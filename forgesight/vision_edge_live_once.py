@@ -16,6 +16,7 @@ from PIL import Image, ImageDraw
 
 from forgesight.defect_type import assess_response, load_profile
 from forgesight.grade import grade_record, validate_policy
+from forgesight.operation_log import scrub
 from forgesight.regions import response_regions
 from forgesight.storage import InspectionStore
 from forgesight.vision_edge_worker import (
@@ -224,7 +225,7 @@ def inspect(args):
         record["timings"]["model_peak_rss_kib"] = inference["process_peak_rss_kib"]
         record["status"] = "ANALYZED"
     except Exception as error:
-        record["error"] = {"type": type(error).__name__, "message": str(error)}
+        record["error"] = {"type": type(error).__name__, "message": scrub(error)}
     record["decision"] = grade_record(record, policy)
     record["timings"]["capture_file_to_record_ms"] = (time.perf_counter() - started) * 1000
     record["timings"]["scope"] = "saved frame preprocessing, model process, maps, grade and overlay; excludes camera preview and SQLite write"

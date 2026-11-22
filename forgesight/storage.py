@@ -15,10 +15,13 @@ from forgesight.grade import grade_record, policy_digest, validate_policy
 
 
 DEFAULT_DATABASE = Path('artifacts/runtime/inspections.sqlite3')
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 APPLICATION_ID = 0x46534947  # FSIG; refuse unrelated or newer databases.
 GRADES = ('PASS', 'REVIEW', 'REJECT')
 STATUSES = ('ANALYZED', 'ERROR')
+AUTOMATIC_PART_ID = re.compile(r'INS-[0-9]{6,18}\Z')
+_V1_TABLES = {'inspections', 'corrections'}
+_V2_TABLES = _V1_TABLES | {'inspection_counter'}
 
 SCHEMA_V1 = (
     '''CREATE TABLE inspections (
@@ -187,9 +190,20 @@ class InspectionStore:
                 for statement in SCHEMA_V1:
                     connection.execute(statement)
                 connection.execute(f'PRAGMA application_id = {APPLICATION_ID}')
-                connection.execute(f'PRAGMA user_version = {SCHEMA_VERSION}')
-            elif version != SCHEMA_VERSION or application != APPLICATION_ID or tables != {'inspections', 'corrections'}:
+                version, tables, application = 1, _V1_TABLES, APPLICATION_ID
+            if (application != APPLICATION_ID or (version, tables) not in
+                    ((1, _V1_TABLES), (SCHEMA_VERSION, _V2_TABLES))):
                 raise ValueError('Unrelated, unversioned or unsupported database; original file preserved.')
+            if create and version == 1:
+                connection.execute('''CREATE TABLE inspection_counter (
+                    singleton INTEGER PRIMARY KEY CHECK (singleton = 1),
+                    last_number INTEGER NOT NULL CHECK (last_number >= 0)
+                )''')
+                historical_ids = connection.execute("SELECT part_id FROM inspections WHERE part_id GLOB 'INS-*'")
+                last_number = max((int(part_id[4:]) for (part_id,) in historical_ids
+                                   if AUTOMATIC_PART_ID.fullmatch(part_id)), default=0)
+                connection.execute('INSERT INTO inspection_counter VALUES (1, ?)', (last_number,))
+                connection.execute(f'PRAGMA user_version = {SCHEMA_VERSION}')
 
     def _connect(self, *, create=False, readonly=False):
         mode = 'ro' if readonly else ('rwc' if create else 'rw')
@@ -218,6 +232,21 @@ class InspectionStore:
         _part_id(part_id)
         with closing(self._connect(readonly=True)) as connection:
             return connection.execute('SELECT 1 FROM inspections WHERE part_id = ?', (part_id,)).fetchone() is not None
+
+    def reserve_part_id(self):
+        """Commit an automatic ID before work starts so a restart cannot reuse it."""
+        with closing(self._connect()) as connection, self._transaction(connection):
+            last_number, = connection.execute(
+                'SELECT last_number FROM inspection_counter WHERE singleton = 1').fetchone()
+            while True:
+                last_number += 1
+                if last_number >= 10 ** 18:
+                    raise RuntimeError('Automatic inspection counter is exhausted.')
+                part_id = f'INS-{last_number:06d}'
+                if connection.execute('SELECT 1 FROM inspections WHERE part_id = ?', (part_id,)).fetchone() is None:
+                    connection.execute('UPDATE inspection_counter SET last_number = ? WHERE singleton = 1',
+                                       (last_number,))
+                    return part_id
 
     def save_inspection(self, record):
         stamp, encoded, digest = _validate_record(record)
