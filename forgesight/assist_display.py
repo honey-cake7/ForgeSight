@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from forgesight.assist_contract import canonical_hash
+from forgesight.assist_vision import VISION_GUIDE_ID, VISION_OUTPUT_POLICY, vision_context, vision_note
 
 
 def advice_for(record, root):
@@ -55,6 +56,15 @@ def advice_for(record, root):
             raise ValueError("Advisory response is invalid")
         note = response.get("generated_note")
         guide_id = "G2" if record["source"]["mode"] == "USER_DECLARED_MVTEC_METAL_NUT_UPLOAD" else "G1"
+        presentation = {}
+        if advisory.get("output_policy_version") == VISION_OUTPUT_POLICY:
+            vision = vision_context(record)
+            choice = response.get("model_action_choice")
+            if (vision is None or choice not in vision[1] or note != vision_note(choice, vision[1])
+                    or response.get("note_origin") != "LLAMA_SELECTED_REVIEWED_CHECK"):
+                raise ValueError("Selected check does not match reviewed guidance for this inspection")
+            guide_id = VISION_GUIDE_ID
+            presentation["note_origin"] = response["note_origin"]
         if (not isinstance(note, str) or not note.strip() or len(note) > 2000
                 or response.get("evidence_ids") != ["E1", guide_id]
                 or "[E1]" not in note or "[" + guide_id + "]" not in note):
@@ -63,9 +73,9 @@ def advice_for(record, root):
             "note": note, "evidence_ids": response["evidence_ids"],
             "guidance_approval": advisory.get("guidance_approval"),
             "source_mode": advisory.get("source_mode"),
-            "jetson_reported": True},
+            "jetson_reported": True, **presentation},
             # The runtime that produced THIS advisory, recorded in the report;
             # a process alive now says nothing about a saved result.
             "llama_runtime_mode": report.get("llama_runtime_mode")}
-    except (OSError, ValueError, TypeError, KeyError):
+    except (OSError, ValueError, TypeError, KeyError, IndexError):
         return {"status": "ADVICE_UNAVAILABLE", "advisory": None}

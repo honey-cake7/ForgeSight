@@ -149,7 +149,7 @@ def _generate_via_worker(args, context, root, report, source_mode, deadline=None
         native = worker_request(args.llama_worker_socket,
                                 {"prompt_text": context["prompt_text"],
                                  "system_text": context["system_text"],
-                                 "max_new_tokens": 64},
+                                 "max_new_tokens": context.get("max_new_tokens", 64)},
                                 timeout_seconds=timeout)
         report["controller_runtime_wall_ms"] = (time.perf_counter() - started) * 1000
         evidence = native.get("runtime_evidence") or {}
@@ -232,7 +232,8 @@ def _generate_via_subprocess(args, context, root, report, source_mode, timeout_s
                "--assets", str(model_dir / "llama3_2_1b_assets.json"),
                "--prompt", str(root / "prompt.txt"), "--system-prompt", str(root / "system.txt"),
                "--output", str(root / "native"), "--threads", "2",
-               "--max-new-tokens", "64", "--timeout", str(args.llama_timeout_seconds)]
+               "--max-new-tokens", str(context.get("max_new_tokens", 64)),
+               "--timeout", str(args.llama_timeout_seconds)]
     started = time.perf_counter()
     try:
         report["runtime_requested"] = True

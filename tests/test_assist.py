@@ -12,6 +12,8 @@ from forgesight.assist_contract import (DEFAULT_GUIDANCE, canonical_hash,
                                         parse_advisory, prepare_advisory)
 from forgesight.assist_once import advise_once
 from forgesight.assist_evaluate import DEFAULT_PROTOCOL, evaluate
+from forgesight.assist_vision import VISION_OUTPUT_POLICY
+from forgesight.defect_severity import assess_severity
 from forgesight.grade import grade_record
 
 
@@ -29,6 +31,47 @@ class AssistContractTests(unittest.TestCase):
         self.assertEqual(self.context['decision_sha256'], canonical_hash(self.record['decision']))
         self.assertFalse(self.context['image_supplied_to_llama'])
         self.assertNotIn(self.record['inspection_id'], self.context['prompt_text'])
+
+    def vision_record(self, label, location='inner rim'):
+        row = deepcopy(self.record)
+        row['source'].update(mode='SAVED_IMAGE_REPLAY', physical_part=False)
+        row['geometry']['regions'][0]['approximate_nut_area'] = location
+        row['assessment'] = {
+            'schema_version': 1, 'scope': 'PROVISIONAL_BENCHMARK_IMAGE', 'method': 'four_type_forest',
+            'defect_type': label, 'severity': assess_severity(label, row['geometry'], (500, 250_000)),
+        }
+        return row
+
+    def test_vision_context_routes_only_valid_vision_evidence_to_reviewed_checks(self):
+        checks = {'bent': 'outline of a good nut', 'flip': 'correctly oriented reference',
+                  'scratch': 'thread opening', 'discoloration': 'under the same lighting',
+                  'unknown': 'under even lighting'}
+        for label, expected in checks.items():
+            with self.subTest(label=label):
+                row = self.vision_record(label, 'inner rim' if label == 'scratch' else 'annular face')
+                original = deepcopy(row)
+                context = prepare_advisory(row, self.guidance)
+                self.assertEqual(context['output_policy_version'], VISION_OUTPUT_POLICY)
+                self.assertEqual(context['authoritative_decision'], original['decision'])
+                self.assertEqual(row, original)
+                self.assertIn(expected, context['prompt_text'])
+                self.assertIn(row['assessment']['severity']['level'].lower(), context['prompt_text'])
+                note = parse_advisory('A<|eot_id|>', context)
+                self.assertIn(expected, note['response']['generated_note'])
+                self.assertEqual(note['response']['evidence_ids'], ['E1', 'G3'])
+                self.assertEqual(note['response']['note_origin'], 'LLAMA_SELECTED_REVIEWED_CHECK')
+
+    def test_vision_rejects_out_of_policy_measurement_and_model_claims(self):
+        row = self.vision_record('scratch')
+        context = prepare_advisory(row, self.guidance)
+        self.assertIn('Response extent', context['prompt_text'])
+        self.assertIn('inner rim', context['prompt_text'])
+        for text in ('Here is A', 'A or B', 'C', 'A. The thread is damaged.', 'B [G2]'):
+            with self.subTest(text=text), self.assertRaises(ValueError):
+                parse_advisory(text, context)
+        row['assessment']['severity']['evidence']['ratio'] = 0.99
+        with self.assertRaises(ValueError):
+            prepare_advisory(row, self.guidance)
 
     def test_uploaded_anomaly_is_eligible_without_changing_review_grade(self):
         row = deepcopy(self.record)

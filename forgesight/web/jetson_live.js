@@ -218,7 +218,10 @@ function renderAdvice(advice) {
     ADVICE_UNAVAILABLE: 'Llama advice was unavailable. The inspection grade is unchanged. You can try again.',
     GENERATED_REQUIRES_HUMAN_REVIEW: 'Generated operator note · human review required.'
   };
-  byId('advice-status').textContent = labels[status] || 'Llama advice status is unknown.';
+  byId('advice-status').textContent = status === 'GENERATED_REQUIRES_HUMAN_REVIEW' &&
+    advice?.advisory?.note_origin === 'LLAMA_SELECTED_REVIEWED_CHECK'
+    ? 'Llama-selected check · human review required.'
+    : labels[status] || 'Llama advice status is unknown.';
   const runtime = advice?.llama_runtime === 'PERSISTENT_WORKER'
     ? 'Warm worker: the model stays loaded between notes.'
     : (advice?.llama_runtime || '').includes('COLD')

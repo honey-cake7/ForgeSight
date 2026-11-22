@@ -1,9 +1,58 @@
-# ForgeAssist advisory component — Stages 9.1–9.2, PC only
+# ForgeAssist advisory component
 
-Stage 8 camera/hardware work is BLOCKED: the user still has no Jetson. Under
-the roadmap's hardware-blocker rule, this independent PC substep takes one
-existing real inspection through the actual ExecuTorch Llama runner. It does
-not complete Stage 9, connect advice to the UI, or certify edge deployment.
+## Vision-grounded Jetson advice
+
+Launch the operator app with the [four-type severity profile](DEFECT_SEVERITY.md).
+After a flagged benchmark inspection, select **Generate Llama advice**.
+ForgeAssist passes the provisional type, severity, approximate location and
+response extent from that inspection to the local Llama ExecuTorch runtime.
+The model sees those text fields and two reviewed inspection checks. It
+returns a selection, and the app displays the corresponding check with its
+citations. `E1` identifies the saved inspection and `G3` identifies the
+versioned prototype checks in `forgesight/assist_vision.py`.
+
+The checks cover scratch, discoloration, bent nut, flipped orientation, and
+unknown type. Inner-rim scratch and bent responses include a thread-opening
+check. The model may return only a choice label. Invalid output yields
+`ADVICE_UNAVAILABLE`, and ForgeGrade owns the inspection decision.
+The saved advisory report records the choice and its runtime provenance.
+
+To verify five representative original PNGs from the frozen subtype test,
+stage them under the same dataset paths in an isolated checkout and run on
+Jetson with the existing vision and Llama runtimes:
+
+```sh
+export FS_VISION=/home/nvidia/.local/share/forgesight/vision_cpu_v1
+export FS_LLAMA=/home/nvidia/.local/share/forgesight/llama_cpu_v1
+unshare --user --map-root-user --net sh -c '
+  ip link set lo up &&
+  /usr/bin/python3 -B -m scripts.verify_jetson_vision_advice \
+    --output vision_advice_check --dataset-root data/mvtec_ad/metal_nut \
+    --model "$FS_VISION/efficientad_s_calibrated.ts" \
+    --vision-python "$FS_VISION/venv/bin/python" --llama-root "$FS_LLAMA"
+'
+```
+
+On Orin Nano with only loopback visible to the app, all five uploaded images
+produced a distinct type-appropriate check. Advisory submission, pending
+state and final display were observed. The persistent worker returned the
+displayed checks in 1.29–1.52 seconds from request to API result. Llama chose
+the first option in each case. These examples verify the integration and
+choice validation. Ranking quality and physical-part usefulness remain
+unmeasured.
+
+A cold request returned the same scratch check in 22.65 seconds under the
+default 75-second deadline. An earlier run reached its 35-second deadline.
+A forced one-second native deadline produced `ADVICE_UNAVAILABLE` in
+1.24 seconds, and the saved inspection and SQLite row matched their originals.
+The client normalizes socket timeouts so the Jetson's Python 3.8 controller
+can use its bounded worker-recovery path.
+See the [device verification](../manifests/jetson_vision_advice_v1.json).
+
+## Earlier PC prototype
+
+The initial PC substep sent one saved inspection through ExecuTorch while
+Jetson hardware was unavailable.
 
 ## What is implemented
 

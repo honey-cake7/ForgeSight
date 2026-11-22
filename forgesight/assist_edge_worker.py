@@ -284,6 +284,9 @@ def request(socket_path, request_dict, timeout_seconds=180, connect_retries=50):
                 break
         else:
             raise ConnectionError("Advisory worker reply exceeded the size bound")
+    except socket.timeout as error:
+        # Jetson's Python 3.8 treats socket.timeout as a separate OSError type.
+        raise TimeoutError("Advisory worker socket timed out") from error
     finally:
         connection.close()
     if not chunks:

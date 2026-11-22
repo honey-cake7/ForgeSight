@@ -223,6 +223,16 @@ class DashboardBrowserTests(unittest.TestCase):
         self.refresh()
         expect(self.page.locator('#defect-assessment')).to_have_text('Possible scratch (provisional)')
 
+    def test_vision_grounded_check_displays_with_existing_grade(self):
+        self.state['advice'] = dict(status='GENERATED_REQUIRES_HUMAN_REVIEW', advisory=dict(
+            note='Check the highlighted line under angled light. [E1][G3]',
+            note_origin='LLAMA_SELECTED_REVIEWED_CHECK'))
+        self.refresh()
+        expect(self.page.locator('#advice-status')).to_contain_text('Llama-selected check')
+        expect(self.page.locator('#advice-note')).to_have_text(
+            'Check the highlighted line under angled light. [E1][G3]')
+        expect(self.page.locator('#grade')).to_have_text('REJECT')
+
     def test_image_failure_has_placeholder_and_retains_grade(self):
         self.bad_media.add('/api/inspection/fixture-new/overlay.png')
         self.state['latest']['inspection_id'] = 'fixture-new'

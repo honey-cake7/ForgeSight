@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "device": "NVIDIA Jetson Orin Nano Engineering Reference Developer Kit Super",
+  "application_network_interfaces": [
+    "lo"
+  ],
+  "profile": "configs/defect_type_mvtec_four_v1.json",
+  "policy_id": "forgeassist-reviewed-vision-choice-v1",
+  "source_mode": "USER_DECLARED_MVTEC_METAL_NUT_UPLOAD",
+  "cases": {
+    "bent": {
+      "image": "test/bent/004.png",
+      "grade": "REJECT",
+      "choice": "A",
+      "note": "Compare the highlighted edge with the outline of a good nut. [E1][G3]",
+      "prompt_tokens": 101,
+      "generated_tokens": 1,
+      "advice_report_sha256": "547173709de179890fc304cb4d0496e4044005f22aa3527ecd76c74b9b73ed26",
+      "type": "bent",
+      "severity": "LOW",
+      "location": "outer edge/background",
+      "advice_ready_ms": 1518.4
+    },
+    "flip": {
+      "image": "test/flip/005.png",
+      "grade": "REJECT",
+      "choice": "A",
+      "note": "Compare the visible face with a correctly oriented reference. [E1][G3]",
+      "prompt_tokens": 95,
+      "generated_tokens": 1,
+      "advice_report_sha256": "f352069cfef4b09995a4a535e74628516b31711a9d79d54f015371ca7f7f285c",
+      "type": "flip",
+      "severity": "UNASSESSED",
+      "location": "whole nut orientation",
+      "advice_ready_ms": 1288.2
+    },
+    "scratch": {
+      "image": "test/scratch/013.png",
+      "grade": "REJECT",
+      "choice": "A",
+      "note": "Check the highlighted line under angled light. [E1][G3]",
+      "prompt_tokens": 93,
+      "generated_tokens": 1,
+      "advice_report_sha256": "e51327673ae6a006027397d83d0cd9bea01c5385b2f24213298defacf9ed67bc",
+      "type": "scratch",
+      "severity": "MEDIUM",
+      "location": "annular face",
+      "advice_ready_ms": 1523.8
+    },
+    "discoloration": {
+      "image": "test/color/012.png",
+      "grade": "REJECT",
+      "choice": "A",
+      "note": "Compare the highlighted color with a good nut under the same lighting. [E1][G3]",
+      "prompt_tokens": 108,
+      "generated_tokens": 1,
+      "advice_report_sha256": "98837822df2e646e8870b69b942fbba3da483d25372a47330883639fe4e0868e",
+      "type": "discoloration",
+      "severity": "HIGH",
+      "location": "annular face / outer edge/background",
+      "advice_ready_ms": 1325.4
+    },
+    "unknown": {
+      "image": "test/bent/000.png",
+      "grade": "REJECT",
+      "choice": "A",
+      "note": "Inspect the highlighted area under even lighting. [E1][G3]",
+      "prompt_tokens": 93,
+      "generated_tokens": 1,
+      "advice_report_sha256": "5d58de7429a5e64d487d30ff752a17782ad13545c126b49d706436c75ed3f3b9",
+      "type": "unknown",
+      "severity": "UNASSESSED",
+      "location": "outer edge/background",
+      "advice_ready_ms": 1309.4
+    }
+  },
+  "persistent_worker": {
+    "mode": "ExecuTorch XNNPACK Llama 3.2 1B",
+    "model_sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739",
+    "all_cases_observed_pending_and_displayed_advice": true,
+    "max_new_tokens": 2,
+    "request_to_advice_ready_ms": {
+      "min": 1288.2,
+      "median": 1325.4,
+      "max": 1523.8
+    },
+    "raw_report_sha256": "f379ebbe709fcf93253e9295d4811ba32d1e41e19e394a0eb201a280c95d24a4"
+  },
+  "cold_scratch": {
+    "success_deadline_seconds": 75,
+    "forced_timeout_seconds": 1,
+    "shorter_35_second_run_timed_out": true,
+    "cold_and_warm_note_match": true,
+    "complete": {
+      "status": "JETSON_ADVICE_GENERATED_REQUIRES_HUMAN_REVIEW",
+      "mode": "COLD_SUBPROCESS",
+      "grade": "REJECT",
+      "note": "Check the highlighted line under angled light. [E1][G3]",
+      "wall_ms": 22645.1,
+      "native_status": "JETSON_EXECUTORCH_LLAMA_GENERATION_VERIFIED",
+      "native_worker_completion": "EXITED",
+      "report_sha256": "ffcb34372c752528f7d228c5cb481ea28f5425b3c2db6c9734a794aa123b53cf",
+      "report_error": null
+    },
+    "timeout": {
+      "status": "ADVICE_UNAVAILABLE",
+      "mode": "COLD_SUBPROCESS",
+      "grade": "REJECT",
+      "note": null,
+      "wall_ms": 1242.3,
+      "native_status": null,
+      "native_worker_completion": "TIMEOUT",
+      "report_sha256": "7ab539b6392778e113f919c5f2823af29cb3db08995639ed6ed3b46f4beaac27",
+      "report_error": "ExecuTorch runner did not complete successfully."
+    },
+    "raw_report_sha256": "a195ba28645d7f910afec627524493f007e2a756e156ce202b9d22bda865b3f8"
+  },
+  "deterministic_record_and_sqlite_unchanged": true,
+  "wsl_advisory_tests_passed": 107,
+  "jetson_advisory_recovery_and_display_tests_passed": 29,
+  "pc_browser_tests_passed": 11,
+  "selection_ranking_quality_validated": false,
+  "physical_parts_tested": false,
+  "reproduce": "scripts/verify_jetson_vision_advice.py"
+}

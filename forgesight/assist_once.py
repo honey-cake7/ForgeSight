@@ -65,6 +65,7 @@ def advise_once(record_path: Path, output: Path, *, guidance_path=DEFAULT_GUIDAN
 
 def _generate(context, output, runtime_python, timeout, max_new_tokens, report):
     """Invoke the existing PC worker only after host eligibility succeeds."""
+    max_new_tokens = min(max_new_tokens, context.get('max_new_tokens', max_new_tokens))
     raw = output/'native'; raw.mkdir()
     prompt_path = output/'prompt.txt'
     prompt_path.write_text(context['prompt_text'], encoding='utf-8')

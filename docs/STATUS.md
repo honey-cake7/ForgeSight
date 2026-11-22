@@ -2,6 +2,11 @@
 
 ## Current stage
 
+ForgeAssist receives type, severity, location and response extent from saved
+benchmark inspections. In an offline Jetson check, the ExecuTorch worker
+selected a concrete inspection check for each of the four defect types and
+an unknown case. See [the advisory workflow and verification](FORGEASSIST.md).
+
 The four-type profile supplies deterministic provisional severity from response
 extent and approximate nut location. The frozen 24-image benchmark yielded
 five Low, six Medium, one High, seven Unassessed and five unflagged results.

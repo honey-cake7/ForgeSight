@@ -6,8 +6,9 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
 
-from forgesight.assist_contract import canonical_hash
+from forgesight.assist_contract import DEFAULT_GUIDANCE, canonical_hash, parse_advisory, prepare_advisory
 from forgesight.assist_display import advice_for
+from forgesight.defect_severity import assess_severity
 
 
 class AdviceDisplayTests(unittest.TestCase):
@@ -74,6 +75,30 @@ class AdviceDisplayTests(unittest.TestCase):
         report['native'] = {'status': 'SOME_FUTURE_UNREVIEWED_MODE'}
         self.write_report(report)
         self.assertEqual(advice_for(self.record, self.root)['status'], 'ADVICE_UNAVAILABLE')
+
+    def test_vision_check_must_match_the_model_choice_and_reviewed_action(self):
+        proof = json.loads(Path('manifests/operator_app_verification_v1.json').read_text())
+        row = proof['browser_proof']['inspections'][1]['record']
+        self.folder = self.root / row['inspection_id']
+        row['source']['physical_part'] = False
+        row['geometry']['regions'][0]['approximate_nut_area'] = 'annular face'
+        row['assessment'] = {
+            'schema_version': 1, 'scope': 'PROVISIONAL_BENCHMARK_IMAGE', 'method': 'four_type_forest',
+            'defect_type': 'scratch', 'severity': assess_severity('scratch', row['geometry'], (500, 250_000)),
+        }
+        context = prepare_advisory(row, json.loads(DEFAULT_GUIDANCE.read_text()))
+        result = parse_advisory('A', context)
+        result.update(jetson_verified=True, source_mode=row['source']['mode'])
+        self.report.update(advisory=result, inspection_id=row['inspection_id'],
+                           inspection_sha256=canonical_hash(row), decision_sha256=canonical_hash(row['decision']),
+                           authoritative_grade=row['decision']['grade'], source_mode=row['source']['mode'])
+        self.write_report(self.report)
+        shown = advice_for(row, self.root)
+        self.assertEqual(shown['advisory']['note_origin'], 'LLAMA_SELECTED_REVIEWED_CHECK')
+        self.assertEqual(shown['advisory']['note'], 'Check the highlighted line under angled light. [E1][G3]')
+        result['response']['model_action_choice'] = 'B'
+        self.write_report(self.report)
+        self.assertEqual(advice_for(row, self.root)['status'], 'ADVICE_UNAVAILABLE')
 
     def test_mismatch_and_unavailable_withhold_note(self):
         for changed in ('inspection_sha256', 'decision_sha256', 'authoritative_grade', 'native', 'status'):
