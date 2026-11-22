@@ -289,7 +289,7 @@ class ControllerWiringTests(unittest.TestCase):
                    "Anomaly score 0.682809 vs threshold 0.227766. "
                    "Response area 9015 px across 2 regions; largest region width 139 px height 116 px "
                    "at x 512 y 361 in the right area of the frame. "
-                   "Hold for human review; check image clarity and lighting; compare the highlighted "
+                   "Hold for human review; check clarity and lighting; compare the highlighted "
                    "region with a known-good part [G1].")
 
     def setUp(self):
@@ -340,7 +340,7 @@ class ControllerWiringTests(unittest.TestCase):
         from forgesight import assist_jetson_replay_once as replay
         argv = ["prog", "--record", str(self.record_path),
                 "--database", str(self.database),
-                "--guidance", "guidance/prototype_inspection_v2.json",
+                "--guidance", "guidance/prototype_inspection_v3.json",
                 "--llama-root", str(llama_root or Path(self.dir.name) / "unused_llama_root"),
                 "--output-dir", str(self.output),
                 "--llama-worker-socket", str(self.socket_path)]
@@ -465,7 +465,7 @@ class ControllerWiringTests(unittest.TestCase):
         from forgesight import assist_jetson_replay_once as replay
         argv = ["prog", "--record", str(self.record_path),
                 "--database", str(self.database),
-                "--guidance", "guidance/prototype_inspection_v2.json",
+                "--guidance", "guidance/prototype_inspection_v3.json",
                 "--llama-root", str(Path(self.dir.name) / "unused_llama_root"),
                 "--output-dir", str(self.output),
                 "--llama-worker-socket", str(self.socket_path)]
@@ -519,7 +519,7 @@ class ControllerWiringTests(unittest.TestCase):
         from forgesight import assist_jetson_replay_once as replay
         argv = ["prog", "--record", str(self.record_path),
                 "--database", str(self.database),
-                "--guidance", "guidance/prototype_inspection_v2.json",
+                "--guidance", "guidance/prototype_inspection_v3.json",
                 "--llama-root", str(Path(self.dir.name) / "unused_llama_root"),
                 "--output-dir", str(self.output),
                 "--llama-worker-socket", str(self.socket_path)]
@@ -557,7 +557,7 @@ class ControllerWiringTests(unittest.TestCase):
         thread.start()
         argv = ["prog", "--record", str(self.record_path),
                 "--database", str(self.database),
-                "--guidance", "guidance/prototype_inspection_v2.json",
+                "--guidance", "guidance/prototype_inspection_v3.json",
                 "--llama-root", str(Path(self.dir.name) / "unused_llama_root"),
                 "--output-dir", str(self.output),
                 "--llama-worker-socket", str(self.socket_path)]

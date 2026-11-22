@@ -7,7 +7,7 @@ import unittest
 from forgesight.assist_worker_acceptance import compare_reports
 
 NOTE = ("[E1] Anomaly flagged; grade REVIEW; defect type and cause unknown. "
-        "[G1] Prototype checklist: hold for human review; check image clarity and lighting.")
+        "[G1] Prototype checklist: hold for human review; check clarity and lighting.")
 
 
 def report(mode, note=NOTE, wall=None, status="JETSON_ADVICE_GENERATED_REQUIRES_HUMAN_REVIEW"):

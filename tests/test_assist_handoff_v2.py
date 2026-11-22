@@ -15,7 +15,7 @@ VALID = ("An anomaly is flagged; type and cause are unknown [E1]. "
          "Anomaly score 0.682809 vs threshold 0.227766. "
          "Response area 9015 px across 2 regions; largest region width 139 px height 116 px "
          "at x 512 y 361 in the right area of the frame. "
-         "Hold for human review; check image clarity and lighting; compare the highlighted "
+         "Hold for human review; check clarity and lighting; compare the highlighted "
          "region with a known-good part [G1].")
 
 
@@ -30,7 +30,7 @@ class HandoffV2Tests(unittest.TestCase):
         prompt = self.context['prompt_text']
         for fragment in ('0.682809', '0.227766', '9015', '1.840', '2 regions',
                          '139', '116', '512', '361', 'Severity HIGH',
-                         'not physical-damage severity', 'not a probability or calibrated confidence'):
+                         'not physical damage', 'not a probability'):
             self.assertIn(fragment, prompt)
         self.assertTrue(self.context['score_and_geometry_in_prompt'])
         self.assertFalse(self.context['image_supplied_to_llama'])
@@ -48,7 +48,7 @@ class HandoffV2Tests(unittest.TestCase):
 
     def test_composed_note_accepted_and_reordered(self):
         self.assertEqual(parse_advisory(VALID, self.context)['status'], 'GENERATED_REQUIRES_HUMAN_REVIEW')
-        reordered = ("Hold for human review; check image clarity and lighting; compare the "
+        reordered = ("Hold for human review; check clarity and lighting; compare the "
                      "highlighted region with a known-good part [G1]. Severity HIGH. "
                      "Response area 9015 px. An anomaly is flagged; type and cause are unknown [E1].")
         self.assertEqual(parse_advisory(reordered, self.context)['output_policy_version'],
@@ -69,7 +69,7 @@ class HandoffV2Tests(unittest.TestCase):
 
     def test_no_measurement_at_all_rejected(self):
         bare = ("An anomaly is flagged; type and cause are unknown [E1]. Severity HIGH. "
-                "Hold for human review; check image clarity and lighting; compare the "
+                "Hold for human review; check clarity and lighting; compare the "
                 "highlighted region with a known-good part [G1].")
         with self.assertRaises(ValueError):
             parse_advisory(bare, self.context)
@@ -93,11 +93,16 @@ class HandoffV2Tests(unittest.TestCase):
                 parse_advisory(VALID + ' ' + claim, self.context)
 
     def test_unknown_cause_statement_variants_accepted(self):
-        for ok in (VALID.replace('type and cause are unknown', 'defect type and cause unknown'),
-                   VALID.replace('type and cause are unknown', 'type and cause remain unknown')):
-            with self.subTest(ok=ok):
-                self.assertEqual(parse_advisory(ok, self.context)['status'],
-                                 'GENERATED_REQUIRES_HUMAN_REVIEW')
+        ok = VALID.replace('type and cause are unknown', 'type and cause remain unknown')
+        self.assertEqual(parse_advisory(ok, self.context)['status'],
+                         'GENERATED_REQUIRES_HUMAN_REVIEW')
+
+    def test_defect_wording_outside_compact_prompt_is_refused(self):
+        # The v4 compact prompt carries 'type and cause unknown' without the word
+        # 'defect', so a note adding it asserts a word the evidence never supplied.
+        with self.assertRaises(ValueError):
+            parse_advisory(VALID.replace('type and cause are unknown',
+                                         'defect type and cause unknown'), self.context)
 
     def test_supplied_value_on_wrong_quantity_rejected(self):
         # 9015 is the supplied response area; it may not be presented as the score.
@@ -117,7 +122,7 @@ class HandoffV2Tests(unittest.TestCase):
     def test_checklist_scrambled_rejected(self):
         # Same words, different order: the procedure meaning is not preserved.
         scrambled = VALID.replace(
-            'Hold for human review; check image clarity and lighting; compare the '
+            'Hold for human review; check clarity and lighting; compare the '
             'highlighted region with a known-good part',
             'Compare lighting with a known-good part; check image clarity and the '
             'highlighted region; hold for human review')
