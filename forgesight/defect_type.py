@@ -5,6 +5,8 @@ import math
 import re
 from time import perf_counter
 
+from forgesight.defect_severity import assess_severity
+
 
 FEATURE_NAMES = ("elongation", "chroma_difference")
 LABELS = ("scratch", "discoloration", "unknown")
@@ -89,12 +91,16 @@ def assess_response(record, image, score_map, profile):
     import cv2
 
     started = perf_counter()
+    features = outline = None
     try:
         model = record["model"]
         matches_profile = (model["export_sha256"] == profile["model_sha256"]
                            and model["image_threshold"] == profile["image_threshold"])
-        extract = four_type_features if profile["kind"] == "four_type_forest" else response_features
-        features = extract(image, score_map, record["geometry"]) if matches_profile else None
+        if matches_profile:
+            if profile["kind"] == "four_type_forest":
+                features, outline = _four_type_features_and_outline(image, score_map, record["geometry"])
+            else:
+                features = response_features(image, score_map, record["geometry"])
     except (cv2.error, ValueError, ArithmeticError):
         features = None
     label = predict_type(features, profile)
@@ -102,6 +108,10 @@ def assess_response(record, image, score_map, profile):
                             "method": profile["kind"], "scope": "PROVISIONAL_BENCHMARK_IMAGE",
                             "defect_type": label, "features": features}
     record["timings"]["defect_type_ms"] = (perf_counter() - started) * 1000
+    if profile["kind"] == "four_type_forest":
+        started = perf_counter()
+        record["assessment"]["severity"] = assess_severity(label, record["geometry"], outline)
+        record["timings"]["defect_severity_ms"] = (perf_counter() - started) * 1000
 
 
 def response_features(image, score_map, geometry):
@@ -149,12 +159,17 @@ def response_features(image, score_map, geometry):
 
 def four_type_features(image, score_map, geometry):
     """Combine the anomaly response with the outline and face of a benchmark nut."""
+    features, _ = _four_type_features_and_outline(image, score_map, geometry)
+    return features
+
+
+def _four_type_features_and_outline(image, score_map, geometry):
     import cv2
     import numpy as np
 
     features = response_features(image, score_map, geometry)
     if features is None:
-        return None
+        return None, None
     rgb = cv2.resize(np.asarray(image), (96, 96), interpolation=cv2.INTER_AREA)
     gray = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY)
     # The benchmark uses a dark background visible at the image border.
@@ -162,22 +177,22 @@ def four_type_features(image, score_map, geometry):
     mask = (gray > np.median(border) + 12).astype(np.uint8)
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     if not contours:
-        return None
+        return None, None
     contour = max(contours, key=cv2.contourArea)
     area = cv2.contourArea(contour)
     (cx, cy), sides, _ = cv2.minAreaRect(contour)
     if area < 100 or min(sides) <= 0:
-        return None
+        return None, None
     yy, xx = np.ogrid[:96, :96]
     radius = np.hypot(xx - cx, yy - cy) / (sum(sides) / 4)
     face = (radius > 0.5) & (radius < 0.85) & (mask != 0)
     rim = (radius > 0.85) & (radius < 1.05) & (mask != 0)
     if not np.any(face) or not np.any(rim):
-        return None
+        return None, None
     response = cv2.resize(score_map, (96, 96), interpolation=cv2.INTER_AREA)
     peak = np.unravel_index(response.argmax(), response.shape)
     color = rgb[face].astype(np.int16)
-    return dict(features, response_fraction=geometry["total_area_px"] / score_map.size,
+    features = dict(features, response_fraction=geometry["total_area_px"] / score_map.size,
                 primary_fraction=geometry["regions"][0]["area_px"] / score_map.size,
                 radial_offset=float(radius[peak]), peak_score=float(response[peak]),
                 outline_solidity=area / cv2.contourArea(cv2.convexHull(contour)),
@@ -185,3 +200,7 @@ def four_type_features(image, score_map, geometry):
                 rim_brightness=float(np.mean(gray[rim])), face_contrast=float(np.std(gray[face])),
                 face_chroma=float(np.percentile(color.max(axis=1) - color.min(axis=1), 95)),
                 response_brightness=float(gray[peak]))
+    # The benchmark is square. Reuse the outline from subtype extraction.
+    scale = image.width / gray.shape[1]
+    outline = (sum(sides) / 2 * scale, area * scale ** 2)
+    return features, outline

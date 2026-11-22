@@ -205,6 +205,24 @@ class DashboardBrowserTests(unittest.TestCase):
         expect(self.page.locator('#advice-note')).to_be_hidden()
         expect(self.page.locator('#grade')).to_have_text('REJECT')
 
+    def test_severity_displays_in_current_result_and_history(self):
+        self.state['latest']['inspection_id'] = 'fixture-scratch-medium'
+        self.state['latest']['assessment'] = dict(defect_type='scratch', severity=dict(level='MEDIUM'))
+        self.state['history'] = [dict(self.state['latest'], timestamp_utc='2026-11-22T00:00:00Z')]
+        self.refresh()
+        expect(self.page.locator('#defect-assessment')).to_be_visible()
+        expect(self.page.locator('#defect-assessment')).to_contain_text('Provisional severity: Medium')
+        expect(self.page.locator('#history')).to_contain_text('Provisional severity: Medium')
+        self.state['latest']['inspection_id'] = 'fixture-flip-unassessed'
+        self.state['latest']['assessment'] = dict(defect_type='flip',
+            severity=dict(level='UNASSESSED', reason='ORIENTATION_ISSUE'))
+        self.refresh()
+        expect(self.page.locator('#defect-assessment')).to_contain_text('Orientation issue · Severity unassessed')
+        self.state['latest']['inspection_id'] = 'fixture-older-record'
+        self.state['latest']['assessment'] = dict(defect_type='scratch')
+        self.refresh()
+        expect(self.page.locator('#defect-assessment')).to_have_text('Possible scratch (provisional)')
+
     def test_image_failure_has_placeholder_and_retains_grade(self):
         self.bad_media.add('/api/inspection/fixture-new/overlay.png')
         self.state['latest']['inspection_id'] = 'fixture-new'

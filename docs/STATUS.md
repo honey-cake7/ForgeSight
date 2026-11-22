@@ -2,6 +2,14 @@
 
 ## Current stage
 
+The four-type profile supplies deterministic provisional severity from response
+extent and approximate nut location. The frozen 24-image benchmark yielded
+five Low, six Medium, one High, seven Unassessed and five unflagged results.
+Five of the Unassessed results were orientation issues. The offline Jetson
+app matched the PC on all 28 uploads and replays and saved each severity
+assessment in SQLite. See
+[severity rules and verification](DEFECT_SEVERITY.md).
+
 The opt-in four-type forest classified 17 of 19 defective MVTec test images,
 with two unknowns and all five good images unflagged. Each defect type had
 correct predictions. The isolated Jetson reproduced the PC results on all 24 images.

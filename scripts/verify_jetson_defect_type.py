@@ -63,7 +63,7 @@ def state(base):
         return json.load(response)
 
 
-def exercise(args, name, profile, cases):
+def exercise(args, name, profile, cases, severity_expectations=None):
     run = args.output / name
     run.mkdir()
     database = run / "inspections.sqlite3"
@@ -123,6 +123,11 @@ def exercise(args, name, profile, cases):
                 if (observed_type != expected_type or latest["assessment"] != assessment
                         or history["assessment"] != assessment or record["predicted_defect_type"] != "unknown"):
                     raise RuntimeError(f"Assessment differed across expected result, UI, history and SQLite: {part}")
+                severity = assessment.get("severity") if assessment else None
+                if severity_expectations is not None:
+                    expected = severity_expectations[dataset_path]
+                    if severity_signature(severity) != severity_signature(expected["severity"]):
+                        raise RuntimeError(f"Jetson severity differed from PC severity: {part}")
                 facts.append({"part": part, "dataset_path": dataset_path,
                               "image_sha256": record["source"]["sha256"],
                               "type": observed_type, "score": record["score"],
@@ -130,6 +135,8 @@ def exercise(args, name, profile, cases):
                               "model_map_sha256": record["artifacts"]["score_map_model_sha256"],
                               "source_map_sha256": record["artifacts"]["score_map_source_sha256"],
                               "overlay_sha256": record["artifacts"]["response_overlay_sha256"],
+                              "severity": severity,
+                              "severity_ms": record["timings"].get("defect_severity_ms"),
                               "feature_ms": record["timings"].get("defect_type_ms"),
                               "model_forward_ms": record["timings"]["model_forward_ms"]})
             return facts
@@ -144,6 +151,14 @@ def exercise(args, name, profile, cases):
                 app.wait()
 
 
+def severity_signature(severity):
+    if severity is None:
+        return None
+    evidence = severity.get("evidence", {})
+    return (severity["policy_id"], severity["level"], severity["reason"], evidence.get("metric"),
+            evidence.get("location"), evidence.get("size_band"), evidence.get("rim_escalation"))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
@@ -153,15 +168,34 @@ def main():
     parser.add_argument("--port", type=int, default=8783)
     parser.add_argument("--evaluation", type=Path, help="Compare both profiles on the frozen subtype test.")
     parser.add_argument("--candidate-profile", type=Path, help="Tree JSON produced by the evaluated PC run.")
+    parser.add_argument("--severity-expectations", type=Path, help="Report from evaluate_defect_severity.")
     args = parser.parse_args()
     if bool(args.evaluation) != bool(args.candidate_profile):
         parser.error("Supply both --evaluation and --candidate-profile for a tree comparison.")
+    if args.severity_expectations and not args.evaluation:
+        parser.error("Severity verification requires a frozen subtype comparison.")
     device = Path("/proc/device-tree/model").read_bytes().decode().rstrip("\x00")
     interfaces = [name for _, name in socket.if_nameindex()]
     if platform.machine() != "aarch64" or "Jetson Orin Nano" not in device or interfaces != ["lo"]:
         parser.error("Run on the Jetson inside a network namespace containing only loopback.")
     baseline_cases, enabled_cases = (evaluation_cases(args.evaluation, args.candidate_profile)
                                      if args.evaluation else (CASES, CASES))
+    expected = None
+    if args.severity_expectations:
+        document = json.loads(args.severity_expectations.read_text(encoding="utf-8"))
+        expected = document["images"]
+        profile = json.loads(args.candidate_profile.read_text(encoding="utf-8"))
+        if (document["profile_id"] != profile["profile_id"]
+                or {path: label for _, path, _, label in enabled_cases}
+                != {path: row["type"] for path, row in expected.items()}):
+            raise ValueError("PC severity report and frozen subtype predictions must agree.")
+        replays = [case for case in CASES if not case[2]]
+        if set(document["replays"]) != {path for _, path, _, _ in replays}:
+            raise ValueError("PC severity report must cover the original development replays.")
+        expected = {**expected, **document["replays"]}
+        baseline_cases.extend(replays)
+        enabled_cases.extend((part, path, upload, expected[path]["type"])
+                             for part, path, upload, _ in replays)
     original_hashes = {row["path"]: row["sha256"] for row in json.loads(
         Path("manifests/metal_nut_v1.json").read_text(encoding="utf-8"))["samples"]}
     for _, path, _, _ in enabled_cases:
@@ -169,7 +203,7 @@ def main():
             raise ValueError(f"Benchmark image hash mismatch: {path}")
     args.output.mkdir(parents=True)
     baseline = exercise(args, "baseline", PREVIEW_PROFILE if args.evaluation else None, baseline_cases)
-    enabled = exercise(args, "enabled", args.candidate_profile or PREVIEW_PROFILE, enabled_cases)
+    enabled = exercise(args, "enabled", args.candidate_profile or PREVIEW_PROFILE, enabled_cases, expected)
     for original, updated in zip(baseline, enabled):
         for key in ("image_sha256", "score", "candidate", "decision", "model_map_sha256",
                     "source_map_sha256", "overlay_sha256"):
@@ -184,6 +218,8 @@ def main():
               "baseline_profile": str(PREVIEW_PROFILE) if args.evaluation else None,
               "enabled_profile": str(args.candidate_profile or PREVIEW_PROFILE),
               "baseline": concise(baseline), "enabled": concise(enabled)}
+    if expected is not None:
+        report["severity_levels_reasons_and_locations_match_pc"] = True
     (args.output / "report.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(report, indent=2))
 

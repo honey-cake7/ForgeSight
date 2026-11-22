@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "policy_id": "mvtec-metal-nut-severity-v1",
+  "profile_id": "metal-nut-four-type-v1-5b25c00a924d",
+  "split": "manifests/metal_nut_defect_type_split_v1.json",
+  "prior_type_evidence": "manifests/mvtec_four_type_v1.json",
+  "pc_report_sha256": "36250550890d82763ded6f18b839173ce2897a41080cd454c58173f4c5349a3e",
+  "benchmark_uploads": {
+    "image_count": 24,
+    "levels": {
+      "HIGH": 1,
+      "LOW": 5,
+      "MEDIUM": 6,
+      "UNASSESSED": 7,
+      "UNFLAGGED": 5
+    },
+    "unassessed_reasons": {
+      "ORIENTATION_ISSUE": 5,
+      "UNKNOWN_DEFECT_TYPE": 2
+    }
+  },
+  "saved_replay_previews": {
+    "image_count": 4,
+    "levels": {
+      "UNASSESSED": 3,
+      "UNFLAGGED": 1
+    },
+    "unassessed_reasons": {
+      "LOCALIZATION_UNCERTAIN": 1,
+      "ORIENTATION_ISSUE": 1,
+      "UNKNOWN_DEFECT_TYPE": 1
+    }
+  },
+  "jetson": {
+    "device": "NVIDIA Jetson Orin Nano Engineering Reference Developer Kit Super",
+    "network_interfaces": [
+      "lo"
+    ],
+    "image_pairs": 28,
+    "severity_outcomes_matching_pc": 28,
+    "exact_scores_maps_overlays_and_forgegrade_decisions": true,
+    "latest_result_history_and_sqlite_match": true,
+    "severity_rule_ms": {
+      "samples": 22,
+      "p50": 0.0452,
+      "p95": 0.0559
+    },
+    "raw_report_sha256": "7c792439fb7590f3d99479bab399aa441cc680745911cae29b04b6639f967b6d"
+  },
+  "regression_checks": {
+    "pc_python_tests": 41,
+    "pc_python_subtests": 50,
+    "pc_edge_browser_tests": 10,
+    "jetson_python_tests": 35
+  },
+  "physical_camera_accuracy_tested": false,
+  "factory_labels_available": false,
+  "incremental_ram_measured": false
+}

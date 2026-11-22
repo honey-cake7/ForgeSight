@@ -323,11 +323,18 @@ function renderLatest(item, processing) {
 
 function assessmentLabel(assessment) {
   if (!assessment) return '';
-  if (assessment.defect_type === 'discoloration') return 'Possible discoloration (provisional)';
-  if (assessment.defect_type === 'bent') return 'Possible bent nut (provisional)';
-  if (assessment.defect_type === 'flip') return 'Possible flipped nut (provisional)';
-  if (assessment.defect_type === 'scratch') return 'Possible scratch (provisional)';
-  return 'Defect type unknown';
+  const names = new Map([
+    ['discoloration', 'Possible discoloration (provisional)'],
+    ['bent', 'Possible bent nut (provisional)'],
+    ['flip', 'Possible flipped nut (provisional)'],
+    ['scratch', 'Possible scratch (provisional)'],
+  ]);
+  const label = names.get(assessment.defect_type) || 'Defect type unknown';
+  const severity = assessment.severity;
+  if (!severity) return label;
+  if (severity.reason === 'ORIENTATION_ISSUE') return label + ' · Orientation issue · Severity unassessed';
+  const levels = {LOW: 'Low', MEDIUM: 'Medium', HIGH: 'High'};
+  return label + (levels[severity.level] ? ' · Provisional severity: ' + levels[severity.level] : ' · Severity unassessed');
 }
 
 function renderHistory(rows) {

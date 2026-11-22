@@ -8,6 +8,8 @@ The result and inspection history display the provisional label. The classifier
 runs after EfficientAD flags an image. Live camera input is outside its
 validated scope.
 
+The four-type profile also enables [provisional severity](DEFECT_SEVERITY.md).
+
 The PC fitted 31 depth-limited trees on 53 flagged training images. Bent (14),
 flip (13), scratch (11), and discoloration (13) each had a separate training
 label. Two flagged good images supplied the unknown class. Features combine
