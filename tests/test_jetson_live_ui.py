@@ -559,6 +559,25 @@ class MediaBindingTests(unittest.TestCase):
 
 
 class ReplayIntakeTests(unittest.TestCase):
+    def test_missing_failure_image_cannot_be_replaced_after_recording(self):
+        with TemporaryDirectory() as folder:
+            root = Path(folder)
+            service = LiveService.__new__(LiveService)
+            service.args = SimpleNamespace(runs_root=root / "runs",
+                                           grade_policy=Path("configs/forgegrade_benchmark_v1.json"))
+            service.store = InspectionStore(root / "inspections.sqlite3")
+            service.lock = Lock()
+            image = root / "runs" / "part_missing" / "source.png"
+            service._publish_failure("INS-000001", image.parent / "result", image,
+                                     "LIVE_CAMERA", RuntimeError("camera failed"))
+            record = service.store.get_inspection(service.latest["inspection_id"])
+            self.assertEqual(record["status"], "ERROR")
+            self.assertIsNone(record["source"]["sha256"])
+            image.parent.mkdir(parents=True, exist_ok=True)
+            image.write_bytes(b"later replacement")
+            self.assertEqual(service.inspection_image(record["inspection_id"], "source"),
+                             (404, None))
+
     def test_camera_and_upload_share_the_automatic_counter(self):
         with TemporaryDirectory() as folder:
             service = LiveService.__new__(LiveService)
@@ -605,6 +624,12 @@ class ReplayIntakeTests(unittest.TestCase):
             self.assertEqual(record["error"]["message"], "Worker failed: TOKEN=[redacted]")
             self.assertNotIn("private", json.dumps(latest))
             self.assertIn("support_id=" + latest["support_id"], " ".join(log.output))
+            image = Path(record["source"]["path"])
+            self.assertEqual(record["source"]["sha256"], hashlib.sha256(png.getvalue()).hexdigest())
+            self.assertEqual(service.inspection_image(latest["inspection_id"], "source"),
+                             (200, png.getvalue()))
+            image.write_bytes(b"changed after failure")
+            self.assertEqual(service.inspection_image(latest["inspection_id"], "source"), (409, None))
 
     def test_only_exact_manifest_preview_bytes_are_accepted(self):
         with TemporaryDirectory() as folder:

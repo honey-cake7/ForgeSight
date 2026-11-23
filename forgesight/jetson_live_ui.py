@@ -965,7 +965,7 @@ class LiveService:
         else:
             reference = record["source"].get("path")
             expected = record["source"].get("sha256")
-        if not reference:
+        if not reference or not expected:
             return 404, None
         path = Path(reference).resolve()
         runs_root = Path(self.args.runs_root).resolve()
@@ -975,7 +975,7 @@ class LiveService:
         if not path.is_file():
             return 404, None
         data = path.read_bytes()
-        if expected and hashlib.sha256(data).hexdigest() != expected:
+        if hashlib.sha256(data).hexdigest() != expected:
             return 409, None
         return 200, data
 
@@ -1167,10 +1167,16 @@ class LiveService:
                 self._publish_record(existing[0], result_root, image)
                 return
             policy = json.loads(self.args.grade_policy.read_text())
+            try:
+                source_digest = sha256(image)
+            except OSError:
+                # The failure record still needs to persist if the image was
+                # never written or became unreadable during processing.
+                source_digest = None
             record = {
                 "schema_version": 1, "inspection_id": inspection_id, "part_id": part_id,
                 "timestamp_utc": datetime.now(timezone.utc).isoformat(),
-                "source": {"path": str(image.resolve()), "mode": mode, "sha256": None, "size_px": None,
+                "source": {"path": str(image.resolve()), "mode": mode, "sha256": source_digest, "size_px": None,
                            "physical_part": "OPERATOR_DECLARED_UNVERIFIED" if mode == "LIVE_CAMERA" else False},
                 "model": {"name": "EfficientAD-S", "checkpoint_sha256": policy["checkpoint_sha256"],
                           "export_sha256": MODEL_SHA256, "score_policy_sha256": policy["score_policy_sha256"],
