@@ -13,6 +13,12 @@ import sys
 import time
 
 
+# Backend initialization can wait 120 s for vision and 180 s for Llama,
+# before binding HTTP. Allow another 60 s for imports and cleanup/fallback.
+STATION_STARTUP_TIMEOUT_SECONDS = 360
+BROWSER_STARTUP_CHECK_SECONDS = 2
+
+
 def station_ready(port):
     connection = HTTPConnection("127.0.0.1", port, timeout=1)
     try:
@@ -79,6 +85,13 @@ def webkit_window():
     return open_window
 
 
+def run_webkit_window(port, open_window):
+    status = open_window(port)
+    if status != 0:
+        raise RuntimeError(f"GTK WebKit exited with status {status}.")
+    return 0
+
+
 def load_station(path):
     config = json.loads(path.read_text(encoding="utf-8"))
     command = config["command"]
@@ -101,7 +114,7 @@ def start_station(port, command, working_dir, cache):
                 command, cwd=working_dir, stdin=subprocess.DEVNULL, stdout=log,
                 stderr=subprocess.STDOUT, start_new_session=True,
                 env={**os.environ, "HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1"})
-        deadline = time.monotonic() + 120
+        deadline = time.monotonic() + STATION_STARTUP_TIMEOUT_SECONDS
         while service.poll() is None and time.monotonic() < deadline:
             if station_ready(port):
                 if "--runs-root" in command:
@@ -183,11 +196,29 @@ def main():
         cache.mkdir(parents=True, exist_ok=True)
         start_station(port, command, working_dir, cache)
         if open_window is not None:
-            return open_window(port)
-        subprocess.Popen(
-            [browser, f"--user-data-dir={cache / 'browser'}",
-             f"--app=http://127.0.0.1:{port}/", "--no-first-run"],
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+            return run_webkit_window(port, open_window)
+        browser_log = cache / "browser.log"
+        try:
+            with browser_log.open("ab") as log:
+                viewer = subprocess.Popen(
+                    [browser, f"--user-data-dir={cache / 'browser'}",
+                     f"--app=http://127.0.0.1:{port}/", "--no-first-run"],
+                    stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
+            try:
+                status = viewer.wait(timeout=BROWSER_STARTUP_CHECK_SECONDS)
+            except subprocess.TimeoutExpired:
+                return 0  # The viewer is still running after the startup check.
+            if status == 0:
+                return 0  # A running browser may accept the window and exit its wrapper.
+            browser_error = f"{browser} exited with status {status}"
+        except OSError as error:
+            browser_error = f"{browser} could not start: {error}"
+        try:
+            return run_webkit_window(port, webkit_window())
+        except (OSError, ValueError, RuntimeError) as error:
+            raise RuntimeError(
+                f"Browser failed: {browser_error}; GTK fallback failed: {error}. "
+                f"Check {browser_log}.") from error
     except (OSError, ValueError, KeyError, RuntimeError, subprocess.CalledProcessError) as error:
         print(f"ForgeSight: {error}", file=sys.stderr)
         if shutil.which("notify-send"):
