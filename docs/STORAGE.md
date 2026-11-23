@@ -15,12 +15,11 @@ FULL synchronous commits. This is not a factory-throughput benchmark.
 
 ## Schema and identity
 
-Schema version 1 is established atomically for a new empty database using
-`PRAGMA user_version`, with the ForgeSight application ID. Unrelated,
-unversioned nonempty and unsupported/newer databases are refused, preserved
-without automatic repair or destructive migrations. Future changes need an
-explicit migration. Missing history paths fail rather than silently returning
-a newly created empty database.
+Schema version 2 adds a persistent inspection counter. The writer migrates
+a recognized version 1 database in one transaction and preserves all
+existing inspection and correction rows. The counter starts above any
+historical numeric INS identifiers. Unrelated, unversioned nonempty and
+newer databases are refused.
 
 The inspection table stores the original full record as metadata JSON plus
 indexed identifiers, UTC time, image path/hash, model name/checkpoint hash,
@@ -32,9 +31,11 @@ policy, input mode and artifact provenance.
 - `inspection_id` is a unique key. Saving the exact canonical record again is
   an idempotent retry: it returns `False` and adds no row.
 - Reusing an inspection ID with changed content is an explicit conflict.
-- `part_id` is also unique **within one database**, including after restart.
-  A new UUID cannot count that same declared part again. Use genuinely distinct
-  part IDs, optionally including batch identity, across the application's life.
+- `part_id` is unique **within one database**, including after restart. The
+  Jetson app assigns `INS-000001`, `INS-000002` and so on for accepted uploads,
+  captures and replays. The sequence counts accepted attempts. It cannot
+  identify whether two captures show the same physical part. External callers
+  can still supply their own IDs outside the reserved INS sequence.
 - Two distinct parts may use identical photo bytes. Image hashes establish
   provenance; they do not determine physical identity.
 - `CaptureGate(already_recorded=store.has_part)` checks persistent history when
@@ -43,9 +44,14 @@ policy, input mode and artifact provenance.
   if two writers race. A racing caller can still perform extra inference before
   its final save is refused; no concurrent physical capture claim is made.
 
-An accepted failed-image attempt is retained once, as ERROR/REVIEW. A database
-retry means resaving its original JSON; it does not mean inspecting the part
-again under another ID. A separate reinspection workflow is not implemented.
+The app saves an accepted processing failure as ERROR/REVIEW with the assigned
+ID. The latest result and history show a support ID also recorded in
+`runs/live_inspections_v1/logs/forgesight-operations.log`. Rejected input is
+logged with its own support ID before an inspection ID is reserved.
+
+SQLite reserves each number before analysis starts. A forced process exit can
+leave a gap. If storage is unavailable, the app reports that the failure
+could not be saved and attempts to log the support ID.
 
 ## Corrections and write failures
 

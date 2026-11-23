@@ -559,6 +559,53 @@ class MediaBindingTests(unittest.TestCase):
 
 
 class ReplayIntakeTests(unittest.TestCase):
+    def test_camera_and_upload_share_the_automatic_counter(self):
+        with TemporaryDirectory() as folder:
+            service = LiveService.__new__(LiveService)
+            root = Path(folder)
+            service.args = SimpleNamespace(runs_root=root / "runs")
+            service.camera = SimpleNamespace(snapshot=lambda: object())
+            service.store = InspectionStore(root / "inspections.sqlite3")
+            service.lock = Lock()
+            service.busy = False
+            service.latest = None
+            png = BytesIO()
+            Image.new("RGB", (700, 700), "gray").save(png, format="PNG")
+            with patch("forgesight.jetson_live_ui.Thread"):
+                self.assertEqual(service.inspect(None, True, "screen_photo"), "INS-000001")
+                with self.assertRaisesRegex(ValueError, "already running"):
+                    service.upload_diagnostic(None, png.getvalue())
+                service.busy = False
+                self.assertEqual(service.upload_diagnostic(None, png.getvalue()), "INS-000002")
+            self.assertEqual(service.latest["part_id"], "INS-000002")
+
+    def test_early_worker_failure_is_saved_and_logged_without_secret(self):
+        with TemporaryDirectory() as folder:
+            service = LiveService.__new__(LiveService)
+            root = Path(folder)
+            service.args = SimpleNamespace(runs_root=root / "runs",
+                                           grade_policy=Path("configs/forgegrade_benchmark_v1.json"))
+            service.store = InspectionStore(root / "inspections.sqlite3")
+            service.lock = Lock()
+            service.busy = False
+            service.latest = None
+            png = BytesIO()
+            Image.new("RGB", (64, 64), "gray").save(png, format="PNG")
+            with patch.object(service, "_run_upload", side_effect=RuntimeError("Worker failed: TOKEN=private")), \
+                    self.assertLogs("forgesight.operations", level="ERROR") as log:
+                self.assertEqual(service.upload_diagnostic(None, png.getvalue()), "INS-000001")
+                deadline = time.monotonic() + 5
+                while service.busy and time.monotonic() < deadline:
+                    time.sleep(0.01)
+            self.assertFalse(service.busy)
+            latest = service.latest
+            record = service.store.get_inspection(latest["inspection_id"])
+            self.assertEqual(record["status"], "ERROR")
+            self.assertEqual(record["decision"]["grade"], "REVIEW")
+            self.assertEqual(record["error"]["message"], "Worker failed: TOKEN=[redacted]")
+            self.assertNotIn("private", json.dumps(latest))
+            self.assertIn("support_id=" + latest["support_id"], " ".join(log.output))
+
     def test_only_exact_manifest_preview_bytes_are_accepted(self):
         with TemporaryDirectory() as folder:
             service = LiveService.__new__(LiveService)
