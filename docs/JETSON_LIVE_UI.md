@@ -3,8 +3,8 @@
 The live page shows the C270 camera feed and captures one frame when the operator
 clicks **Capture & analyze**. That frame is passed to the frozen EfficientAD-S
 TorchScript model. The source image, two anomaly maps, overlay, ForgeGrade
-decision and immutable SQLite record are saved locally. A new capture ID is
-required for each capture; video frames do not create extra inspections.
+decision and immutable SQLite record are saved locally. The station assigns a
+sequential ID such as `INS-000001` when it accepts a capture.
 
 The operator chooses **Dataset photo on a screen** or **Physical nut** before
 capture. The former is saved as `LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC` with
@@ -21,8 +21,9 @@ operation remain unverified.
 
 ## Upload, model response and manual review
 
-Use **Upload your own test PNG** to choose a file on the computer running the
-browser. Enter a fresh upload ID. For an original-size 700x700 MVTec metal_nut
+Use **Inspect a saved PNG** to choose a file on the computer running the
+browser. The station assigns its ID from the same counter as camera captures
+and replays. For an original-size 700x700 MVTec metal_nut
 PNG, check the MVTec declaration to show the provisional benchmark grade.
 This declaration is not proof of file origin. Other PNGs remain diagnostic
 REVIEW; camera results also remain REVIEW pending camera-domain validation.
@@ -72,8 +73,8 @@ ssh -N -L 8770:127.0.0.1:8770 nvidia@<JETSON_IP>
 ```
 
 Open `http://127.0.0.1:8770` in the PC browser, or open the same address in
-Firefox on the Jetson desktop. For camera use, choose the correct source mode,
-enter a new capture ID, confirm it is visible, then click **Capture & analyze**. The camera
+Firefox on the Jetson desktop. For camera use, choose the source mode,
+confirm it is visible, then click **Capture & analyze**. The camera
 preview stays visible while the saved frame is analyzed. Stop the server with
 Ctrl+C. Local output is under `runs/live_inspections_v1/` in the Jetson vision
 directory; the SQLite file is `runs/live_inspections_v1/inspections.sqlite3`.
@@ -87,6 +88,29 @@ packages were not changed by the combined-advice update. A physical nut
 inspection remains unverified.
 
 ## Current proof
+
+The offline Jetson app assigned `INS-000001` to an upload and `INS-000002`
+to a saved replay. A controlled failure on an accepted upload persisted
+`INS-000003` as ERROR/REVIEW with a matching support ID in the operations
+log. After restarting the app, the next upload received `INS-000004`. A
+malformed PNG was refused and logged before receiving an inspection number.
+The device test used saved images. The camera submission path was tested
+with a simulated capture. See the
+[verification record](../manifests/jetson_inspection_ids_v1.json).
+
+To reproduce on an isolated Jetson checkout with the original
+`test/scratch/013.png` and `test/color/009.png` files staged under their
+dataset paths, use the existing runtime and a fresh output directory:
+
+```sh
+export FS_VISION=/home/nvidia/.local/share/forgesight/vision_cpu_v1
+unshare --user --map-root-user --net sh -c '
+  ip link set lo up &&
+  /usr/bin/python3 -B -m scripts.verify_jetson_inspection_ids \
+    --output inspection_ids_check --dataset-root data/mvtec_ad/metal_nut \
+    --model "$FS_VISION/efficientad_s_calibrated.ts" --vision-python "$FS_VISION/venv/bin/python"
+'
+```
 
 - On the PC/WSL, an earlier captured Jetson room frame (no nut) completed
   frozen EfficientAD inference, produced a 640×480 source map and overlay,

@@ -192,9 +192,11 @@ class RespawnTests(unittest.TestCase):
         service._publish_result = mock.Mock()
         service._respawn_vision_worker = mock.Mock()
         root = Path(self._tmp.name) / "replay-no-record"
+        service.args.dataset_manifest = Path("manifest")
         with mock.patch("forgesight.jetson_live_ui.subprocess.run") as run:
             run.return_value = subprocess.CompletedProcess([], 0, "", "")
             service._run_replay("replay-t2", root / "image.png", {"sha256": "a" * 64}, root)
+        run.assert_called_once()
         service._respawn_vision_worker.assert_not_called()
 
     def test_respawn_replaces_dead_worker(self):

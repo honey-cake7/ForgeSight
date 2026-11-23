@@ -10,6 +10,11 @@ label with its prototype qualifier; type-conditioned severity is shown only as
 clearly scoped provisional metadata. All Jetson evidence below predates this
 integration, so a fresh on-device run of the combined build is pending.
 
+The Jetson app assigns inspection IDs from a SQLite counter shared by
+camera captures, uploads and replays. The original isolated offline device test saved an
+accepted error with its support ID and continued the sequence after
+restart. See [inspection history and error logging](STORAGE.md).
+
 ForgeAssist receives type, severity, location and response extent from saved
 benchmark inspections. In an offline Jetson check, the ExecuTorch worker
 selected a concrete inspection check for each of the four defect types and

@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "proof_scope": "ISOLATED_JETSON_OPERATOR_APP_SAVED_IMAGES",
+  "device": "NVIDIA Jetson Orin Nano Engineering Reference Developer Kit Super",
+  "interfaces": [
+    "lo"
+  ],
+  "results": [
+    {
+      "part_id": "INS-000001",
+      "inspection_id": "1676b973-3040-404d-81fc-1391bcc9dcd6",
+      "status": "ANALYZED",
+      "source_mode": "USER_DECLARED_MVTEC_METAL_NUT_UPLOAD",
+      "grade": "REJECT"
+    },
+    {
+      "part_id": "INS-000002",
+      "inspection_id": "42be0ce2-4279-4961-b9b8-a2dd4a456d99",
+      "status": "ANALYZED",
+      "source_mode": "SAVED_IMAGE_REPLAY",
+      "grade": "REVIEW"
+    },
+    {
+      "part_id": "INS-000003",
+      "inspection_id": "8b87c3ee-2a96-44d6-8bda-232cb04be220",
+      "status": "ERROR",
+      "source_mode": "USER_DECLARED_MVTEC_METAL_NUT_UPLOAD",
+      "grade": "REVIEW",
+      "support_id": "8b87c3ee"
+    },
+    {
+      "part_id": "INS-000004",
+      "inspection_id": "46cc2852-6ae7-4821-a258-f0f161a50548",
+      "status": "ANALYZED",
+      "source_mode": "USER_DECLARED_MVTEC_METAL_NUT_UPLOAD",
+      "grade": "REJECT"
+    }
+  ],
+  "refused_input_support_id": "29b79e7c",
+  "support_ids_match_operation_log": true,
+  "counter_survived_restart": true,
+  "error_injected_by_hiding_isolated_model": true,
+  "raw_device_report_sha256": "9ab1d3a5068f613349adf3e3228042ce69289704ba868a0451bfd3b7aaec2837",
+  "pc_browser_tests_passed": 12,
+  "linux_service_storage_and_log_tests_passed": 62,
+  "sqlite_v1_migration_with_concurrent_counter_reservations_tested": true,
+  "physical_camera_tested": false,
+  "reproduce": "scripts/verify_jetson_inspection_ids.py"
+}

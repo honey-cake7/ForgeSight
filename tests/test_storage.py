@@ -17,7 +17,7 @@ from uuid import uuid4
 
 from forgesight.grade import grade_record
 from forgesight.inspection import CaptureGate, inspect_one_image
-from forgesight.storage import (APPLICATION_ID, InspectionStore, PartAlreadyInspected,
+from forgesight.storage import (APPLICATION_ID, SCHEMA_V1, SCHEMA_VERSION, InspectionStore, PartAlreadyInspected,
                                 RecordConflict, new_correction)
 
 
@@ -38,13 +38,32 @@ class StorageTests(unittest.TestCase):
         self.assertTrue(self.store.save_inspection(expected))
         self.assertEqual(self.store.get_inspection(expected['inspection_id']), expected)
         with closing(sqlite3.connect(self.database)) as connection:
-            self.assertEqual(connection.execute('PRAGMA user_version').fetchone()[0], 1)
+            self.assertEqual(connection.execute('PRAGMA user_version').fetchone()[0], SCHEMA_VERSION)
             self.assertEqual(connection.execute('PRAGMA application_id').fetchone()[0], APPLICATION_ID)
         checks = self.store.integrity()
         self.assertEqual(checks['integrity_check'], ['ok'])
         self.assertEqual(checks['foreign_key_check'], [])
         self.assertTrue(checks['foreign_keys_enabled'])
         self.assertEqual(checks['synchronous'], 2)
+
+    def test_counter_migrates_version_one_and_persists_across_concurrent_clients(self):
+        legacy = self.root / 'legacy.sqlite3'
+        with closing(sqlite3.connect(legacy)) as connection, connection:
+            for statement in SCHEMA_V1:
+                connection.execute(statement)
+            connection.execute(f'PRAGMA application_id = {APPLICATION_ID}')
+            connection.execute('PRAGMA user_version = 1')
+        original = self.fixture()
+        original['part_id'] = 'INS-000007'
+        InspectionStore(legacy, create=False).save_inspection(original)
+
+        station = InspectionStore(legacy)
+        with ThreadPoolExecutor(max_workers=6) as pool:
+            reserved = list(pool.map(lambda _: station.reserve_part_id(), range(12)))
+        self.assertEqual(sorted(reserved), [f'INS-{number:06d}' for number in range(8, 20)])
+        reopened = InspectionStore(legacy)
+        self.assertEqual(reopened.reserve_part_id(), 'INS-000020')
+        self.assertEqual(reopened.history(), [original])
 
     def test_exact_retry_reordered_keys_and_conflicting_content(self):
         original = self.fixture()

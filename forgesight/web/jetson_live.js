@@ -26,16 +26,14 @@ const regionNote = byId('response-regions');
 
 const savedModes = ['SAVED_IMAGE_REPLAY', 'USER_UPLOADED_IMAGE_DIAGNOSTIC',
   'USER_DECLARED_MVTEC_METAL_NUT_UPLOAD'];
-const validId = value => /^[A-Za-z0-9_-]{1,64}$/.test(value);
 
 function updateButton() {
   const locked = !connected || commandPending || busy;
   byId('camera-start').disabled = locked || cameraControlPending || cameraRunning;
   byId('camera-stop').disabled = locked || cameraControlPending || !cameraRunning;
   byId('inspect').disabled = locked || !cameraReady || preview.hidden ||
-    !byId('confirmed').checked || !validId(byId('part-id').value);
-  byId('diagnostic-submit').disabled = locked || !byId('diagnostic-file').files.length ||
-    !validId(byId('diagnostic-id').value);
+    !byId('confirmed').checked;
+  byId('diagnostic-submit').disabled = locked || !byId('diagnostic-file').files.length;
   byId('review-submit').disabled = locked || currentLatest?.status !== 'ANALYZED' ||
     !/^[A-Za-z0-9 _.-]{1,64}$/.test(byId('review-actor').value) ||
     !byId('review-outcome').value || byId('review-reason').value.trim().length < 3;
@@ -131,9 +129,9 @@ async function refreshState() {
     if (state.latest) renderLatest(state.latest, state.busy);
     else resetResult();
     if (['Waiting for camera.', 'Camera unavailable. You can still upload a saved PNG.',
-      'Position the part, enter a new ID and confirm the camera view.'].includes(byId('request-status').textContent)) {
+      'Position the part and confirm the camera view.'].includes(byId('request-status').textContent)) {
       byId('request-status').textContent = cameraReady
-        ? 'Position the part, enter a new ID and confirm the camera view.'
+        ? 'Position the part and confirm the camera view.'
         : 'Camera unavailable. You can still upload a saved PNG.';
     }
     renderReviews(state.manual_reviews || [], state.latest);
@@ -273,7 +271,8 @@ function renderLatest(item, processing) {
   byId('review-target').textContent = item.status === 'ANALYZED'
     ? 'Reviewing ' + item.part_id + '. Compare Original and Response map above.'
     : 'Analysis failed. A completed result is required for review.';
-  const statusText = item.status === 'ANALYZED' ? 'Result saved locally.' : 'Analysis failed; see error below.';
+  const statusText = item.status === 'ANALYZED' ? 'Result saved locally.' :
+    'Analysis failed.' + (item.support_id ? ' Support ID ' + item.support_id + '.' : '');
   byId('review-status').textContent = item.status === 'ANALYZED'
     ? 'Compare the saved original and overlay, then record your observation.'
     : 'Manual review is available after a completed analysis.';
@@ -319,7 +318,8 @@ function renderLatest(item, processing) {
       ? 'Broad model response. A phone-screen capture can change focus, color and texture; this does not identify a localized defect. Use the original saved image for benchmark evaluation.'
       : 'Broad model response. Check the capture and camera setup; this does not identify a localized defect.')
     : 'Highlighted pixels are model response, not confirmed physical damage.';
-  byId('reason').textContent = item.reason === 'CAMERA_DOMAIN_UNVALIDATED'
+  byId('reason').textContent = item.status === 'ERROR' && item.error?.message ? item.error.message :
+    item.reason === 'CAMERA_DOMAIN_UNVALIDATED'
     ? 'Camera setup not calibrated (CAMERA_DOMAIN_UNVALIDATED)'
     : item.reason || (item.error && (item.error.message || item.error)) || 'Inspection could not complete';
   byId('action').textContent = item.action || (item.status === 'ERROR' ? 'Check the analysis error and input image before trying again.' : 'No operator action was provided. Review the inspection evidence.');
@@ -384,6 +384,7 @@ function renderHistory(rows) {
     grade.textContent = (row.source_mode === 'USER_DECLARED_MVTEC_METAL_NUT_UPLOAD' ? 'BENCHMARK · ' : row.source_mode === 'USER_UPLOADED_IMAGE_DIAGNOSTIC' ? 'USER PNG · ' : row.source_mode === 'SAVED_IMAGE_REPLAY' ? 'DATASET REPLAY · ' : row.source_mode === 'LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC' ? 'SCREEN PHOTO · ' : '') + row.status;
     const defect = assessmentLabel(row.assessment);
     if (defect) grade.textContent += ' · ' + defect;
+    if (row.support_id) grade.textContent += ' · Support ID ' + row.support_id;
     decision.append(badge, grade);
     line.append(name, details, decision);
     list.append(line);
@@ -412,9 +413,7 @@ function renderReviews(reviews, latest) {
 }
 
 byId('confirmed').addEventListener('change', updateButton);
-byId('part-id').addEventListener('input', updateButton);
 byId('diagnostic-file').addEventListener('change', updateButton);
-byId('diagnostic-id').addEventListener('input', updateButton);
 byId('review-actor').addEventListener('input', updateButton);
 byId('review-outcome').addEventListener('change', updateButton);
 byId('review-reason').addEventListener('input', updateButton);
@@ -436,8 +435,8 @@ async function submitAction(button, status, path, options, onAccepted) {
   commandEpoch += 1;
   updateButton();
   try {
-    await requestJSON(path, options);
-    onAccepted();
+    const response = await requestJSON(path, options);
+    onAccepted(response);
   } catch (error) {
     commandError = {target: status, message: error.message, inspectionId: currentLatest?.inspection_id};
     byId(status).textContent = error.message;
@@ -450,16 +449,16 @@ async function submitAction(button, status, path, options, onAccepted) {
 
 byId('capture-form').addEventListener('submit', event => {
   event.preventDefault();
-  const body = {part_id: byId('part-id').value, confirmed: byId('confirmed').checked,
+  const body = {confirmed: byId('confirmed').checked,
     source_kind: document.querySelector('input[name="source-kind"]:checked').value};
   if (byId('inspect').disabled) return;
   byId('request-status').textContent = 'Capturing one camera frame…';
   submitAction('inspect', 'request-status', '/api/inspect',
     {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)},
-    () => {
+    response => {
       busy = true;
       byId('confirmed').checked = false;
-      byId('request-status').textContent = 'Analyzing captured frame…';
+      byId('request-status').textContent = response.part_id ? 'Analyzing ' + response.part_id + '…' : 'Analyzing captured frame…';
     });
 });
 
@@ -474,11 +473,11 @@ byId('upload-form').addEventListener('submit', event => {
   byId('diagnostic-status').textContent = 'Uploading your PNG…';
   submitAction('diagnostic-submit', 'diagnostic-status', '/api/upload-diagnostic',
     {method: 'POST', headers: {'Content-Type': 'image/png',
-      'X-Upload-Id': byId('diagnostic-id').value,
       'X-Mvtec-Benchmark': byId('mvtec-benchmark').checked ? 'yes' : 'no'}, body: file},
-    () => {
+    response => {
       busy = true;
-      byId('diagnostic-status').textContent = 'Analyzing uploaded PNG…';
+      byId('diagnostic-file').value = '';
+      byId('diagnostic-status').textContent = response.part_id ? 'Analyzing ' + response.part_id + '…' : 'Analyzing uploaded PNG…';
     });
 });
 
