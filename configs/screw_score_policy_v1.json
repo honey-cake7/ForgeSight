@@ -1,0 +1,33 @@
+{
+    "schema_version":  1,
+    "policy_version":  "screw-efficientad-s-fp32-v1",
+    "status":  "NORMAL_ONLY_POLICY_PENDING_CALIBRATION",
+    "validation_role":  "validation_normal",
+    "split_seed":  42,
+    "split_method":  "Frozen screw_v1 manifest roles; no resplitting",
+    "map_fit_count":  64,
+    "map_quantiles":  [
+                          0.9,
+                          0.995
+                      ],
+    "branch_scale":  0.1,
+    "branch_weights":  [
+                           0.5,
+                           0.5
+                       ],
+    "image_score":  "maximum of the equally weighted normalized branch maps",
+    "nominal_normal_flag_level":  0.05,
+    "threshold_rule":  "ceil((n+1)*(1-alpha))-th smallest independent normal threshold score",
+    "comparison":  "strict_greater_than",
+    "above_threshold":  "ANOMALY_CANDIDATE",
+    "at_or_below_threshold":  "NORMAL_CANDIDATE",
+    "nonfinite_score":  "ERROR",
+    "is_probability":  false,
+    "is_final_quality_grade":  false,
+    "defect_recall":  "NOT_EVALUATED",
+    "guarantee_scope":  "Rank calculation assumes exchangeable future normal images and a score function fixed independently of threshold samples. These assumptions and production false-alarm performance are not verified.",
+    "final_holdout_access":  false,
+    "category":  "screw",
+    "threshold_role":  "threshold_normal",
+    "threshold_count":  20
+}

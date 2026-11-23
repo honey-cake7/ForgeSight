@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "status": "FROZEN_SCREW_HOLDOUT_EVALUATED_NO_TUNING",
+  "protocol": {
+    "manifest": "manifests/screw_v1.json",
+    "manifest_sha256": "1b1d3ff53822877520687e0e1d2446a5f52fdb0474a3868f72a4316799b26f23",
+    "model": "plugins/screw/efficientad_s.ts",
+    "model_sha256": "25c0893dc773629ff02d7b3bd9b8b86086f70e3f38fcc948296555a7b8a39885",
+    "calibration_reference_sha256": "202b78e619f482d99b5be8226313b68aa941b8c0630c63ff1e0ee75315e76945",
+    "export_verification_sha256": "8e1ad2832cd5b0e13c3b9d2cb893bfb46ed874d2aa4e273a61864d17e8973e81",
+    "policy_sha256": "21c0a342ffacefea2c28eeba99ff31621d7550fe877065c4c34bd3cb5c5e9051",
+    "threshold": 0.19198325276374817,
+    "started_utc": "2026-11-23T23:46:41.016410+00:00",
+    "runtime": "TorchScript CPU FP32",
+    "preprocessing": "source grayscale replicated to RGB, full-frame PIL bilinear resize to 256x256, float [0,1]",
+    "source_sha256": "9c8ccd4d262b3680e8d5be32ad3192eaf49a6a7b139cc9c380a0b8accd2196c4",
+    "tune_from_holdout": false,
+    "targets": {
+      "image_auroc": 0.95,
+      "recall": 0.95,
+      "false_alarm_rate": 0.1
+    }
+  },
+  "metrics": {
+    "images": 50,
+    "tp": 22,
+    "tn": 20,
+    "fp": 1,
+    "fn": 7,
+    "recall": 0.7586206896551724,
+    "precision": 0.9565217391304348,
+    "false_alarm_rate": 0.047619047619047616,
+    "accuracy": 0.84,
+    "f1": 0.8461538461538461,
+    "image_auroc": 0.9408866995073891,
+    "pixel_auroc_256_grid": 0.9747866511763476
+  },
+  "gate_1": {
+    "targets": {
+      "image_auroc": 0.95,
+      "recall": 0.95,
+      "false_alarm_rate": 0.1
+    },
+    "checks": {
+      "image_auroc": false,
+      "recall": false,
+      "false_alarm_rate": true
+    },
+    "passed": false
+  },
+  "per_ground_truth_class": {
+    "good": {
+      "images": 21,
+      "flagged": 1
+    },
+    "manipulated_front": {
+      "images": 6,
+      "flagged": 4
+    },
+    "scratch_head": {
+      "images": 6,
+      "flagged": 3
+    },
+    "scratch_neck": {
+      "images": 5,
+      "flagged": 5
+    },
+    "thread_side": {
+      "images": 6,
+      "flagged": 4
+    },
+    "thread_top": {
+      "images": 6,
+      "flagged": 6
+    }
+  },
+  "false_negatives": [
+    "test/manipulated_front/011.png",
+    "test/manipulated_front/022.png",
+    "test/scratch_head/003.png",
+    "test/scratch_head/014.png",
+    "test/scratch_head/020.png",
+    "test/thread_side/015.png",
+    "test/thread_side/020.png"
+  ],
+  "false_positives": [
+    "test/good/002.png"
+  ],
+  "predictions_sha256": "53c78b1cb985634f58558879a5ae2a0f1197d30091d72e3660e4eb4307ae46da",
+  "pixel_metric_scope": "256x256 model map; source masks resized nearest-neighbor; no pixel threshold tuned",
+  "defect_classifier": "NOT_IMPLEMENTED",
+  "jetson_proof": "NOT_VERIFIED",
+  "physical_camera_accuracy": "NOT_VERIFIED"
+}

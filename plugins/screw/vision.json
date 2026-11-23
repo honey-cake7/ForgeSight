@@ -1,0 +1,58 @@
+{
+    "schema_version":  1,
+    "plugin_id":  "screw",
+    "recipe_version":  "screw-efficientad-s-fp32-v1",
+    "status":  "GATE_1_FAILED_NOT_PROMOTED",
+    "ready_for_station":  false,
+    "model":  {
+                  "runtime":  "TorchScript CPU FP32",
+                  "sha256":  "25c0893dc773629ff02d7b3bd9b8b86086f70e3f38fcc948296555a7b8a39885",
+                  "file":  "efficientad_s.ts",
+                  "bytes":  32317777
+              },
+    "input":  {
+                  "source_grayscale":  "replicate to RGB",
+                  "color":  "RGB",
+                  "shape":  [
+                                1,
+                                3,
+                                256,
+                                256
+                            ],
+                  "range":  [
+                                0,
+                                1
+                            ],
+                  "resize":  "full frame PIL bilinear antialias",
+                  "external_normalization":  false,
+                  "dtype":  "float32"
+              },
+    "score_policy":  {
+                         "sha256":  "d8f3141ea16c141d4271fc933bae4db41d35b6db0e33f65267795ed526372f8e",
+                         "threshold":  0.19198325276374817,
+                         "file":  "score_policy.json",
+                         "comparison":  "strict_greater_than"
+                     },
+    "calibration_reference":  "manifests/screw_efficientad_s_calibration_v1.json",
+    "export_verification":  "manifests/screw_torchscript_export_v1.json",
+    "evaluation_reference":  "manifests/screw_efficientad_s_evaluation_v1.json",
+    "evaluation_reference_sha256":  "0d8ec37c58682404533ba3d16a6be60aaa6c502a0f62759b02b545a8bc08f66e",
+    "gate_1":  {
+                   "targets":  {
+                                   "image_auroc":  0.95,
+                                   "recall":  0.95,
+                                   "false_alarm_rate":  0.1
+                               },
+                   "checks":  {
+                                  "image_auroc":  false,
+                                  "recall":  false,
+                                  "false_alarm_rate":  true
+                              },
+                   "passed":  false
+               },
+    "classifier":  "NOT_IMPLEMENTED_STAGE_2_BLOCKED",
+    "grade_policy":  "NOT_IMPLEMENTED_STAGE_2_BLOCKED",
+    "guidance":  "NOT_IMPLEMENTED_STAGE_2_BLOCKED",
+    "jetson_proof":  "NOT_VERIFIED",
+    "physical_camera_accuracy":  "NOT_VERIFIED"
+}
