@@ -573,11 +573,13 @@ function renderLatest(item, processing) {
   if (key === priorInspection) return;
   priorInspection = key;
   byId('result-part').textContent = item.part_id || 'Inspection';
-  byId('inspection-status').textContent = item.status === 'ANALYZED' ? 'SAVED' : 'ANALYSIS ERROR';
+  byId('inspection-status').textContent = item.status === 'ANALYZED' ? 'SAVED' :
+    'ANALYSIS ERROR' + (item.support_id ? ' · Support ID ' + item.support_id : '');
   byId('review-target').textContent = item.status === 'ANALYZED'
     ? 'Reviewing ' + item.part_id + '. Compare the original and response map, then record your observation.'
     : 'Analysis failed. A completed result is required for review.';
-  const statusText = item.status === 'ANALYZED' ? 'Result saved locally.' : 'Analysis failed; see error below.';
+  const statusText = item.status === 'ANALYZED' ? 'Result saved locally.' :
+    (item.error?.message || 'Analysis failed.') + (item.support_id ? ' Support ID ' + item.support_id + '.' : '');
   byId('review-status').textContent = item.status === 'ANALYZED'
     ? 'Compare the saved original and overlay, then record your observation.'
     : 'Manual review is available after a completed analysis.';
@@ -623,7 +625,8 @@ function renderLatest(item, processing) {
       ? 'Broad model response. A phone-screen capture can change focus, color and texture; this does not identify a localized defect. Use the original saved image for benchmark evaluation.'
       : 'Broad model response. Check the capture and camera setup; this does not identify a localized defect.')
     : 'Highlighted pixels are model response, not confirmed physical damage.';
-  byId('reason').textContent = item.reason === 'CAMERA_DOMAIN_UNVALIDATED'
+  byId('reason').textContent = item.status === 'ERROR' && item.error?.message ? item.error.message :
+    item.reason === 'CAMERA_DOMAIN_UNVALIDATED'
     ? 'Camera setup not calibrated (CAMERA_DOMAIN_UNVALIDATED)'
     : item.reason || (item.error && (item.error.message || item.error)) || 'Inspection could not complete';
   byId('action').textContent = item.action || (item.status === 'ERROR' ? 'Check the analysis error and input image before trying again.' : 'No operator action was provided. Review the inspection evidence.');
@@ -749,7 +752,8 @@ function renderHistory(rows) {
     time.dateTime = item.timestamp_utc;
     time.textContent = historyTime(item.timestamp_utc);
     line.insertCell().append(time);
-    line.insertCell().textContent = item.grade + ' / ' + item.status;
+    line.insertCell().textContent = item.grade + ' / ' + item.status +
+      (item.support_id ? ' / Support ID ' + item.support_id : '');
     const actions = line.insertCell();
     actions.className = 'history-actions';
     actions.append(historyButton('Open result', 'secondary', () => openReportWindow(item.inspection_id)),
@@ -782,7 +786,8 @@ async function openSavedInspection(id, moveFocus = true) {
     if (reportInspection) document.title = item.part_id + ' / ForgeSight report';
     const assessment = item.assessment;
     byId('saved-summary').textContent = [historyTime(item.timestamp_utc), item.grade, item.status,
-      assessment ? assessmentLabel(assessment) : null].filter(Boolean).join(' / ');
+      assessment ? assessmentLabel(assessment) : null,
+      item.support_id ? 'Support ID ' + item.support_id : null].filter(Boolean).join(' / ');
     byId('saved-advice-origin').textContent = item.advice.status === 'CHECKLIST_FALLBACK'
       ? 'Checklist fallback' : item.advice.note ? 'Saved Llama advice' : '';
     const advice = byId('saved-advice');

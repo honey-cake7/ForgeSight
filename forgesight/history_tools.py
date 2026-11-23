@@ -71,6 +71,7 @@ def list_records(service, page):
                     "timestamp_utc": record["timestamp_utc"], "status": record["status"],
                     "grade": record["decision"]["grade"], "source_mode": record["source"]["mode"],
                     "assessment": record.get("assessment"),
+                    "support_id": record["inspection_id"][:8] if record["status"] == "ERROR" else None,
                 })
             seen += 1
             if len(found) > size:
@@ -101,6 +102,7 @@ def details(service, record):
     return {"inspection_id": record["inspection_id"], "part_id": record["part_id"],
             "timestamp_utc": record["timestamp_utc"], "grade": record["decision"]["grade"],
             "status": record["status"], "assessment": record.get("assessment"),
+            "support_id": record["inspection_id"][:8] if record["status"] == "ERROR" else None,
             "advice": stored_advice(service, record),
             "reviews": current_reviews(service, record["inspection_id"])}
 
@@ -125,6 +127,7 @@ def export_report(service, record):
                       f"{escape(row.get('review_outcome') or 'Operator finding')}<p>{escape(row['reason'])}</p></li>")
     assessment = item.get("assessment") or {}
     severity = (assessment.get("severity") or {}).get("level", "Unassessed")
+    support = f"<p><strong>Support ID:</strong> {escape(item['support_id'])}</p>" if item["support_id"] else ""
     return ('<!doctype html><html lang="en"><meta charset="utf-8"><title>ForgeSight inspection report</title>'
             '<meta name="viewport" content="width=device-width,initial-scale=1">'
             '<style>body{font:16px/1.55 system-ui;color:#20333b;background:#e8eff0;margin:0}'
@@ -138,6 +141,7 @@ def export_report(service, record):
             '.images{grid-template-columns:repeat(2,minmax(0,1fr))}}</style>'
             '<body><main><h1>ForgeSight inspection report</h1>'
             f"<p><strong>Inspection:</strong> {escape(item['part_id'])} | <time>{escape(item['timestamp_utc'])}</time></p>"
+            f"{support}"
             f"<h2>Vision</h2><p>Grade {escape(item['grade'])}, status {escape(item['status'])}. "
             f"Defect type: {escape(assessment.get('defect_type','Unknown'))}. Severity: {escape(severity)}.</p>"
             + '<div class="images">' + "".join(images) + '</div>'
