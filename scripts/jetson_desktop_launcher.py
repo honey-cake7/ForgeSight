@@ -2,15 +2,20 @@
 """Start the configured Jetson station and open it in a desktop app window."""
 
 import argparse
+from datetime import datetime
 import fcntl
 from http.client import HTTPConnection, HTTPException
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import sys
+from threading import Thread
 import time
+from urllib.parse import urlsplit
+from uuid import uuid4
 
 
 # Backend initialization can wait 120 s for vision and 180 s for Llama,
@@ -50,26 +55,139 @@ def webkit_window():
         import gi
         gi.require_version("Gtk", "3.0")
         gi.require_version("WebKit2", "4.0")
-        from gi.repository import Gtk, WebKit2
+        from gi.repository import GLib, Gtk, WebKit2
     except (ImportError, ValueError) as error:
         raise RuntimeError("ForgeSight needs GTK WebKit or a Chromium-compatible browser.") from error
 
     def open_window(port):
         app = Gtk.Application(application_id="local.forgesight.Station")
+        print_jobs = {}
+
+        def local_uri(uri):
+            target = urlsplit(uri)
+            return target.scheme == "http" and target.netloc == f"127.0.0.1:{port}"
+
+        def is_report(uri):
+            return (local_uri(uri) and re.fullmatch(
+                r"/api/history/[0-9a-fA-F-]{36}/report\.html", urlsplit(uri).path))
+
+        def save_report(view, uri):
+            def feedback(message):
+                script = ("window.dispatchEvent(new CustomEvent('forgesight-report-status',"
+                          f"{{detail:{json.dumps(message)}}}));")
+                view.run_javascript(script, None, None, None)
+
+            def finish(message, error=None):
+                print_jobs.pop(destination, None)
+                if error:
+                    print(f"ForgeSight PDF export: {error}", file=sys.stderr)
+                feedback(message)
+                app.release()
+
+            folder = Path(GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_DESKTOP)
+                          or (Path.home() / "Desktop")) / "ForgeSight Results"
+            stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+            destination = folder / f"ForgeSight-report-{stamp}-{uuid4().hex[:8]}.pdf"
+            try:
+                folder.mkdir(parents=True, exist_ok=True)
+            except OSError as error:
+                print(f"ForgeSight PDF export: {error}", file=sys.stderr)
+                feedback("Could not create the ForgeSight Results folder on the Desktop.")
+                return
+
+            def render_report(html):
+                print_view = WebKit2.WebView.new_with_context(view.get_context())
+                print_view.get_settings().set_enable_javascript(False)
+                print_jobs[destination] = print_view
+
+                def render_pdf(web_view, event):
+                    if event != WebKit2.LoadEvent.FINISHED:
+                        return
+                    web_view.disconnect(handler)
+                    settings = Gtk.PrintSettings.new()
+                    settings.set_printer("Print to File")
+                    settings.set(Gtk.PRINT_SETTINGS_OUTPUT_FILE_FORMAT, "pdf")
+                    settings.set(Gtk.PRINT_SETTINGS_OUTPUT_URI, destination.as_uri())
+                    page = Gtk.PageSetup.new()
+                    page.set_paper_size(Gtk.PaperSize.new(Gtk.PAPER_NAME_A4))
+                    job = WebKit2.PrintOperation.new(web_view)
+                    job.set_print_settings(settings)
+                    job.set_page_setup(page)
+                    print_jobs[destination] = (web_view, job)
+
+                    failures = []
+                    job.connect("failed", lambda _, error: failures.append(error))
+
+                    def printed(_):
+                        if failures or not destination.is_file():
+                            destination.unlink(missing_ok=True)
+                            finish("Could not save the PDF.", failures[0] if failures else destination)
+                        else:
+                            finish(f"PDF saved in Desktop / ForgeSight Results / {destination.name}")
+
+                    job.connect("finished", printed)
+                    job.print_()
+
+                handler = print_view.connect("load-changed", render_pdf)
+                print_view.load_html(html, f"http://127.0.0.1:{port}/")
+
+            def fetch_report():
+                connection = HTTPConnection("127.0.0.1", port, timeout=15)
+                try:
+                    connection.request("GET", urlsplit(uri).path)
+                    response = connection.getresponse()
+                    if response.status != 200 or response.headers.get_content_type() != "text/html":
+                        raise ValueError(f"Report unavailable (HTTP {response.status}).")
+                    GLib.idle_add(render_report, response.read().decode("utf-8"))
+                except (OSError, HTTPException, ValueError) as error:
+                    GLib.idle_add(finish, "Could not load the saved inspection for PDF export.", error)
+                finally:
+                    connection.close()
+
+            app.hold()
+            feedback("Saving PDF…")
+            Thread(target=fetch_report, daemon=True).start()
 
         def activate(application):
             window = application.get_active_window()
             if window is None:
-                window = Gtk.ApplicationWindow(application=application, title="ForgeSight")
                 icon = launcher_icon()
-                if icon.is_file():
-                    window.set_icon_from_file(str(icon))
-                window.set_default_size(1280, 820)
                 view = WebKit2.WebView()
                 view.get_settings().set_hardware_acceleration_policy(
                     WebKit2.HardwareAccelerationPolicy.NEVER)
-                view.connect("notify::title", lambda page, _: window.set_title(page.get_title() or "ForgeSight"))
-                window.add(view)
+                view.get_settings().set_user_agent_with_application_details("ForgeSight", "1.0")
+
+                def new_window(web_view, width, height):
+                    panel = Gtk.ApplicationWindow(application=application, title="ForgeSight")
+                    panel.set_default_size(width, height)
+                    if icon.is_file():
+                        panel.set_icon_from_file(str(icon))
+                    panel.add(web_view)
+                    web_view.connect("notify::title", lambda page, _: panel.set_title(page.get_title() or "ForgeSight"))
+                    web_view.connect("close", lambda *_: panel.close())
+                    web_view.connect("create", create_view)
+                    web_view.connect("decide-policy", decide_policy)
+                    return panel
+
+                def create_view(parent, navigation):
+                    if not local_uri(navigation.get_request().get_uri()):
+                        return None
+                    child = WebKit2.WebView.new_with_related_view(parent)
+                    panel = new_window(child, 1160, 820)
+                    child.connect("ready-to-show", lambda *_: (panel.show_all(), panel.present()))
+                    return child
+
+                def decide_policy(web_view, decision, decision_type):
+                    if decision_type == WebKit2.PolicyDecisionType.NAVIGATION_ACTION:
+                        uri = decision.get_navigation_action().get_request().get_uri()
+                        if not is_report(uri):
+                            return False
+                        decision.ignore()
+                        save_report(web_view, uri)
+                        return True
+                    return False
+
+                window = new_window(view, 1280, 820)
                 view.load_uri(f"http://127.0.0.1:{port}/")
                 window.show_all()
             try:
