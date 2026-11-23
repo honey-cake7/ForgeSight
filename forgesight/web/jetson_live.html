@@ -1,85 +1,233 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ForgeSight · Inspection station</title>
+  <link rel="icon" href="/station-logo.png" type="image/png">
   <link rel="stylesheet" href="/style.css">
   <script src="/app.js" defer></script>
 </head>
 <body>
-  <a class="skip-link" href="#workspace">Skip to inspection</a>
-  <header class="topbar">
-    <a class="brand" href="/" aria-label="ForgeSight inspection station"><span class="mark" aria-hidden="true">F</span><strong>ForgeSight</strong><span class="brand-divider">Inspection station</span></a>
-    <nav aria-label="Station sections"><a href="#upload-panel">Upload PNG</a><a href="#history-panel">History</a></nav>
-    <span id="connection-status" class="connection" role="status">Connecting to station…</span>
-  </header>
-  <main id="workspace">
-    <div class="workspace-heading"><div><p class="eyebrow">QUALITY CONTROL / METAL NUT</p><h1>Inspection workspace</h1></div><p class="workflow">Position part <span aria-hidden="true">→</span> Capture <span aria-hidden="true">→</span> Check result <span aria-hidden="true">→</span> Record review</p></div>
-    <p id="connection-error" class="error-banner" role="alert" hidden></p>
-    <div class="evidence-grid">
-      <section class="panel camera-panel" aria-labelledby="camera-title">
-        <div class="panel-head"><div><h2 id="camera-title">Camera preview</h2><p id="camera-detail">Waiting for a camera frame</p></div><span id="camera-status" class="status connecting" role="status">CONNECTING</span></div>
-        <div class="image-shell"><img id="preview" alt="Live camera view; not the saved inspection" hidden><div id="preview-empty" class="empty">Connecting to the camera…</div></div>
-        <div class="camera-toolbar"><div class="button-group" aria-label="Camera controls"><button id="camera-start" type="button" class="secondary" aria-describedby="camera-control-help">Start Camera</button><button id="camera-stop" type="button" class="secondary" aria-describedby="camera-control-help">Stop Camera</button></div><span class="subtle">USB camera controls</span></div>
-        <p id="camera-control-help" class="help">Start opens the USB camera; Stop releases it. The last saved inspection and its result remain available.</p>
-      </section>
-      <section class="panel overlay-panel" aria-labelledby="evidence-title">
-        <div class="panel-head"><div><h2 id="evidence-title">Anomaly response</h2><p id="evidence-caption">Latest saved inspection · EfficientAD</p></div><div class="view-switch" role="group" aria-label="Saved image view"><button id="show-overlay" class="view-button" type="button" aria-pressed="true">Response map</button><button id="show-source" class="view-button" type="button" aria-pressed="false">Original</button></div></div>
-        <div class="image-shell"><img id="overlay" alt="Saved image with thresholded EfficientAD response highlighted in red" hidden><img id="source-image" alt="Original image saved for this inspection" hidden><div id="overlay-empty" class="empty">No image inspected yet.<small>Capture a camera view or upload a PNG below.</small></div></div>
-        <div class="evidence-foot"><span><i class="response-key" aria-hidden="true"></i> Red = response above the pixel threshold</span><a id="source-link" href="/api/source.png" target="_blank" rel="noopener" hidden>Open original ↗</a></div>
-        <p class="help">Highlights show model response, not confirmed damage. This saved image does not update with the live camera.</p>
-      </section>
-    </div>
-    <section class="panel capture-panel" aria-labelledby="capture-title">
-      <div class="capture-heading"><h2 id="capture-title">Capture one inspection</h2><span class="subtle">One capture · one saved record</span></div>
-      <form id="capture-form" class="capture-form">
-        <fieldset class="source-choice"><legend>Camera is viewing</legend><label><input type="radio" name="source-kind" value="screen_photo" checked> Photo on a screen</label><label><input type="radio" name="source-kind" value="physical_nut"> Physical nut</label></fieldset>
-        <label class="confirm"><input id="confirmed" type="checkbox"><span id="confirm-text">I confirm a displayed nut photo, not a physical part, is in view.</span></label>
-        <button id="inspect" type="submit" disabled>Capture &amp; analyze</button>
-      </form>
-      <div class="capture-foot"><p id="request-status" role="status" aria-live="polite">Waiting for camera.</p><span class="help">Inspection IDs are assigned automatically.</span></div>
-    </section>
-    <section class="panel result" aria-labelledby="result-title">
-      <div class="panel-head"><div><h2 id="result-title">Latest inspection</h2><p id="result-part">No saved result selected</p></div><span id="inspection-status" class="subtle" role="status">AWAITING IMAGE</span></div>
-      <div id="result-empty" class="result-empty">The saved decision and next action will appear here after analysis.</div>
-      <div id="result-content" hidden>
-        <div class="decision-row"><div class="decision"><span class="field-label">ForgeGrade decision</span><span id="grade" class="grade">NO RESULT</span><span id="decision-context" class="help"></span></div><div class="next-action"><span class="field-label">Recommended operator action</span><p id="action" class="action"></p></div></div>
-        <div class="metrics"><div><span class="field-label">Anomaly score</span><strong id="score">—</strong></div><div><span class="field-label">Response area</span><strong id="area">—</strong></div><div><span class="field-label">Model processing</span><strong id="latency">—</strong><small>Forward pass only · excludes saving</small></div><div><span class="field-label">Largest response region</span><strong id="region-summary">—</strong><small>Approximate image location</small></div></div>
-        <p id="source-mode" class="source-mode"></p>
-        <p id="defect-assessment" hidden></p>
-        <details class="technical-details"><summary>Inspection evidence &amp; limitations</summary><p id="candidate"></p><p id="response-regions"></p><p id="response-note"></p><p id="reason"></p><p id="inspection-id" class="subtle"></p></details>
+  <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" width="0" height="0">
+    <symbol id="icon-camera" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="14" rx="3"/><path d="m8 6 2-3h4l2 3"/><circle cx="12" cy="13" r="3"/></symbol>
+    <symbol id="icon-results" viewBox="0 0 24 24"><path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3M8 15l4-4 3 2 5-6m-4 0h4v4"/></symbol>
+    <symbol id="icon-review" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><rect x="9" y="2" width="6" height="4" rx="1"/><path d="m9 13 2 2 4-4"/></symbol>
+    <symbol id="icon-history" viewBox="0 0 24 24"><path d="M3 10a9 9 0 1 1 2 8M3 5v5h5m4-3v5l3 2"/></symbol>
+    <symbol id="icon-theme" viewBox="0 0 24 24"><path d="M20.5 15.2A8.5 8.5 0 0 1 8.8 3.5 8.5 8.5 0 1 0 20.5 15.2Z"/><path d="M17 3v6m-3-3h6"/></symbol>
+    <symbol id="icon-sidebar" viewBox="0 0 24 24"><rect x="2.5" y="4" width="19" height="16" rx="3"/><path d="M9 4v16m7-11-3 3 3 3"/></symbol>
+    <symbol id="icon-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="icon-upload" viewBox="0 0 24 24"><path d="M12 16V4m-5 5 5-5 5 5M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"/></symbol>
+    <symbol id="icon-play" viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5Z"/></symbol>
+    <symbol id="icon-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></symbol>
+    <symbol id="icon-scan" viewBox="0 0 24 24"><path d="M3 8V5a2 2 0 0 1 2-2h3m8 0h3a2 2 0 0 1 2 2v3m0 8v3a2 2 0 0 1-2 2h-3m-8 0H5a2 2 0 0 1-2-2v-3m0-4h18"/><path d="M9 8h6m-6 8h6"/></symbol>
+    <symbol id="icon-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8" cy="9" r="1.4"/><path d="m4 17 5-4 3 3 4-5 4 5"/></symbol>
+    <symbol id="icon-highlight" viewBox="0 0 24 24"><path d="m12 3 9 5-9 5-9-5 9-5ZM3 12l9 5 9-5M3 16l9 5 9-5"/></symbol>
+    <symbol id="icon-compare" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M12 2v20m-3-8-2-2 2-2m6 0 2 2-2 2"/></symbol>
+    <symbol id="icon-heat" viewBox="0 0 24 24"><path d="M13 3c1 4-1 5-1 7 2 0 3-2 4-3 2 2 3 4 3 7a7 7 0 0 1-14 0c0-4 4-7 8-11Z"/><path d="M9 17a3 3 0 0 0 6 0c0-1-1-2-3-4-2 2-3 3-3 4Z"/></symbol>
+    <symbol id="icon-contours" viewBox="0 0 24 24"><path d="M4 8c2-5 9-6 14-3s4 11-1 14c-4 3-10 2-13-1-2-3-1-7 0-10Z"/><path d="M7 9c2-3 6-4 9-2s3 7 0 9c-3 3-7 2-9 0-2-2-1-5 0-7Z"/><path d="M10 10c2-2 5-1 5 2 0 2-2 3-4 3s-3-3-1-5Z"/></symbol>
+    <symbol id="icon-spark" viewBox="0 0 24 24"><path d="M11 2c0 6 4 10 10 10-6 0-10 4-10 10 0-6-4-10-10-10 6 0 10-4 10-10Zm8 1v6m-3-3h6"/></symbol>
+    <symbol id="icon-external" viewBox="0 0 24 24"><path d="M14 4h6v6m0-6-9 9M10 5H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-4"/></symbol>
+    <symbol id="icon-pdf" viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Zm0 0v7h7m-8 3v6m-3-3 3 3 3-3"/></symbol>
+    <symbol id="icon-edit" viewBox="0 0 24 24"><path d="m15 5 4 4m-8 8-5 1 1-5L17 3a2 2 0 0 1 3 3Zm-7 4h16"/></symbol>
+    <symbol id="icon-delete" viewBox="0 0 24 24"><path d="M4 7h16m-11 0V4h6v3M6 7l1 13h10l1-13m-8 4v5m4-5v5"/></symbol>
+    <symbol id="icon-save" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h12l4 4v12a2 2 0 0 1-2 2ZM7 3v6h9V3M7 21v-7h10v7"/></symbol>
+    <symbol id="icon-prev" viewBox="0 0 24 24"><path d="m14 5-7 7 7 7"/></symbol>
+    <symbol id="icon-next" viewBox="0 0 24 24"><path d="m10 5 7 7-7 7"/></symbol>
+  </svg>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="app">
+
+    <!-- ===== Sidebar: navigation, pipeline status, station notes ===== -->
+    <aside id="station-sidebar" class="sidebar">
+      <a class="brand" href="#/inspect" aria-label="ForgeSight inspection station">
+        <img class="mark" src="/station-logo.png" alt="" width="44" height="44">
+        <span class="brand-text"><strong>ForgeSight</strong><small>Inspection station</small></span>
+      </a>
+
+      <nav class="nav" aria-label="Inspection navigation">
+        <a href="#/inspect" data-view-link="inspect"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-camera"></use></svg>Inspect</a>
+        <a href="#/results" data-view-link="results"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-results"></use></svg>Results</a>
+        <a id="review-navigation" href="#/review" data-view-link="review"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-review"></use></svg>Review</a>
+        <a href="#/history" data-view-link="history"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-history"></use></svg>History</a>
+      </nav>
+
+
+      <div class="side-foot">
+        <p>ForgeSight · EfficientAD / ForgeGrade / ExecuTorch</p>
+        <p>Prototype station · camera decisions require setup validation</p>
       </div>
-    </section>
-    <div class="support-grid">
-      <section id="upload-panel" class="panel user-upload-panel" aria-labelledby="upload-title">
-        <div class="panel-head"><div><h2 id="upload-title">Inspect a saved PNG</h2><p>Use an original file for dataset testing</p></div><span class="section-label">IMAGE INPUT</span></div>
-        <p class="help">Choose a file from this browser’s computer. RGB PNG · 64–1024 pixels per side · under 8 MiB.</p>
-        <form id="upload-form"><div class="replay-fields"><label class="field">Choose PNG<input id="diagnostic-file" type="file" accept="image/png,.png" required></label></div>
-          <label class="confirm"><input id="mvtec-benchmark" type="checkbox"><span>This is an original-size MVTec metal_nut PNG.<small>Show provisional benchmark PASS / REVIEW / REJECT.</small></span></label>
-          <button id="diagnostic-submit" type="submit" disabled>Analyze uploaded PNG</button>
-        </form>
-        <p id="diagnostic-status" role="status" aria-live="polite">Choose a PNG to inspect.</p>
-        <details class="technical-details"><summary>About benchmark decisions</summary><p>Benchmark mode requires a 700 × 700 RGB PNG. It uses the frozen MVTec cutoff and 10% review band. File origin is user-declared, not verified. Other uploads remain REVIEW. Grades describe dataset screening, never physical-part acceptance. In the recorded 111-image holdout, two scratch images fell below the cutoff and two good images exceeded it.</p></details>
-      </section>
-      <section class="panel advice-panel" aria-labelledby="advice-title">
-        <div class="panel-head"><div><h2 id="advice-title">Llama operator note</h2><p>On-device ExecuTorch · separate advisory</p></div><span class="section-label">ASSIST</span></div>
-        <p id="advice-status" role="status" aria-live="polite">Analyze an image to see whether advice is available.</p>
-        <button id="advice-request" class="secondary" type="button" disabled>Generate Llama advice</button>
-        <p id="advice-note" hidden></p>
-        <p class="help">Review this note before acting. It cannot change the saved grade or identify a confirmed defect cause.</p>
-        <details class="technical-details"><summary>Advisory runtime</summary><p id="advice-runtime">Waiting for station status.</p></details>
-      </section>
+    </aside>
+
+    <div class="content">
+      <button id="sidebar-toggle" class="icon-button sidebar-handle" type="button" aria-controls="station-sidebar" aria-expanded="true" title="Hide navigation" aria-label="Hide navigation"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-sidebar"></use></svg></button>
+      <header class="page-header">
+        <div class="page-title">
+          <h1 id="view-title" tabindex="-1">New inspection</h1>
+          <p id="view-intro" class="page-intro" hidden></p>
+        </div>
+        <div class="header-tools"><button id="close-report" class="btn secondary" type="button" hidden><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-close"></use></svg>Close report</button>
+          <span id="connection-status" class="connection" role="status">Connecting to station…</span>
+          <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch to light theme" title="Switch to light theme"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-theme"></use></svg></button>
+        </div>
+      </header>
+
+      <main id="main" tabindex="-1">
+        <p id="connection-error" class="error-banner" role="alert" hidden></p>
+
+        <!-- ================= INSPECT ================= -->
+        <section class="view" id="view-inspect" data-view="inspect" aria-label="Inspect">
+          <div class="tabs" role="tablist" aria-label="Image source">
+            <button id="tab-camera" class="tab" type="button" role="tab" data-pane="camera" aria-selected="true" aria-controls="pane-camera"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-camera"></use></svg>Camera</button>
+            <button id="tab-upload" class="tab" type="button" role="tab" data-pane="upload" aria-selected="false" aria-controls="pane-upload" tabindex="-1"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-upload"></use></svg>Upload PNG</button>
+          </div>
+
+          <div class="pane split" id="pane-camera" data-pane="camera" role="tabpanel" aria-labelledby="tab-camera">
+            <section class="card camera-panel" aria-labelledby="camera-title">
+              <div class="card-head"><div><h2 id="camera-title">Camera preview</h2><p id="camera-detail" class="card-sub">Waiting for a camera frame</p></div><span id="camera-status" class="status connecting" role="status">CONNECTING</span></div>
+              <div class="image-shell"><img id="preview" alt="Live camera view; not the saved inspection" hidden><div id="preview-empty" class="empty">Connecting to the camera…</div></div>
+              <div class="camera-toolbar"><div class="button-group" aria-label="Camera controls"><button id="camera-start" type="button" class="btn" aria-describedby="camera-control-help"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-play"></use></svg>Start Camera</button><button id="camera-stop" type="button" class="btn" aria-describedby="camera-control-help"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-stop"></use></svg>Stop Camera</button></div></div>
+              <p id="camera-control-help" class="help">Start opens the USB camera; Stop releases it. The last saved inspection and its result remain available.</p>
+            </section>
+
+            <section class="card capture-panel" aria-labelledby="capture-title">
+              <div class="card-head"><div><h2 id="capture-title">Capture one inspection</h2><p class="card-sub">One capture · one saved record</p></div></div>
+              <form id="capture-form" class="form">
+                <p class="help">Place the part in the camera view, then analyze one frame.</p>
+                <button id="inspect" class="btn primary block" type="submit" disabled><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-scan"></use></svg><span class="button-label">Analyze</span></button>
+              </form>
+              <p id="request-status" class="status-line" role="status" aria-live="polite">Waiting for camera.</p>
+            </section>
+          </div>
+
+          <div class="pane split" id="pane-upload" data-pane="upload" role="tabpanel" aria-labelledby="tab-upload" hidden>
+            <section id="upload-panel" class="card user-upload-panel" aria-labelledby="upload-title">
+              <div class="card-head"><div><h2 id="upload-title">Inspect a saved PNG</h2><p class="card-sub">Use an original file for dataset testing</p></div></div>
+              <p class="help lead-help">Choose a file from this browser’s computer. RGB PNG · 64–1024 pixels per side · under 8 MiB.</p>
+              <form id="upload-form" class="form">
+                <div class="replay-fields"><label class="field">Choose PNG<input id="diagnostic-file" type="file" accept="image/png,.png" required></label></div>
+                <label class="confirm"><input id="mvtec-benchmark" type="checkbox"><span>This is an original-size MVTec metal_nut PNG.<small>Show provisional benchmark PASS / REVIEW / REJECT.</small></span></label>
+                <button id="diagnostic-submit" class="btn primary block" type="submit" disabled><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-scan"></use></svg><span class="button-label">Analyze uploaded PNG</span></button>
+              </form>
+              <p id="diagnostic-status" class="status-line" role="status" aria-live="polite">Choose a PNG to inspect.</p>
+            </section>
+
+          </div>
+        </section>
+
+        <!-- ================= RESULTS ================= -->
+        <section class="view" id="view-results" data-view="results" aria-label="Results" hidden>
+          <div class="results-grid">
+            <section class="card overlay-panel" aria-labelledby="evidence-title">
+              <div class="card-head"><div><h2 id="evidence-title"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-image"></use></svg>Inspection images</h2><p id="evidence-caption" class="card-sub">Latest saved inspection · EfficientAD</p></div></div>
+              <div class="segmented" role="group" aria-label="Saved image view">
+                <button id="show-overlay" class="view-button" type="button" aria-pressed="true"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-highlight"></use></svg>Highlighted Area</button>
+                <button id="show-source" class="view-button" type="button" aria-pressed="false"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-image"></use></svg>Original</button>
+                <button id="show-compare" class="view-button" type="button" aria-pressed="false"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-compare"></use></svg>Compare</button>
+                <button id="show-heatmap" class="view-button" type="button" aria-pressed="false"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-heat"></use></svg>Heatmap</button>
+                <button id="show-contours" class="view-button" type="button" aria-pressed="false"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-contours"></use></svg>Contours</button>
+              </div>
+              <div id="saved-image-shell" class="image-shell"><img id="overlay" alt="Saved image with thresholded EfficientAD response highlighted in red" hidden><img id="source-image" alt="Original image saved for this inspection" hidden><canvas id="score-view" role="img" aria-label="Anomaly response" hidden></canvas>
+                <div id="compare-divider" aria-hidden="true" hidden><span>&#8596;</span></div>
+                <input id="compare-split" class="comparison-input" type="range" min="0" max="100" value="50" aria-label="Compare original and highlighted area" hidden>
+                <div id="overlay-empty" class="empty">No image inspected yet.<small>Capture a camera view or upload a PNG.</small></div></div>
+              <div class="evidence-foot">
+                <span id="evidence-view-help">Highlighted pixels exceed the stored response threshold.</span>
+                <a id="source-link" target="_blank" rel="noopener" hidden><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-external"></use></svg>Open original</a>
+              </div>
+              <div id="score-legend" class="score-legend" hidden><span>Anomaly response</span><div id="score-legend-scale"></div><span id="score-min"></span><span id="score-max"></span></div>
+            </section>
+
+            <div class="card result-summary">
+              <section class="result" aria-labelledby="result-title">
+                <div class="card-head"><div><h2 id="result-title"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-results"></use></svg>Inspection outcome</h2><p id="result-part" class="card-sub mono">No saved result selected</p></div><span id="inspection-status" class="chip" role="status">AWAITING IMAGE</span></div>
+                <div id="result-empty" class="result-empty">The saved decision and next action will appear here after analysis.</div>
+                <div id="result-content" hidden>
+                  <div class="decision-row">
+                    <div class="decision"><span class="field-label">ForgeGrade decision</span><span id="grade" class="grade">NO RESULT</span><span id="decision-context" class="help"></span></div>
+                    <div class="next-action"><span class="field-label">Recommended operator action</span><p id="action" class="action"></p></div>
+                  </div>
+                  <div class="metrics">
+                    <div><span class="field-label">Anomaly score</span><strong id="score">—</strong></div>
+                    <div><span class="field-label">Response area</span><strong id="area">—</strong></div>
+                    <div><span class="field-label">Model processing</span><strong id="latency">—</strong><small>Forward pass only · excludes saving</small></div>
+                    <div><span class="field-label">Largest response region</span><strong id="region-summary">—</strong><small>Approximate image location</small></div>
+                  </div>
+                  <p id="source-mode" class="source-mode"></p>
+                  <p id="defect-assessment" hidden></p>
+                  <details class="technical-details"><summary>Inspection evidence &amp; limitations</summary><p id="candidate"></p><p id="response-regions"></p><p id="response-note"></p><p id="reason"></p><p id="inspection-id" class="subtle mono"></p></details>
+                  <div class="card-actions"><button id="open-review" class="btn primary" type="button" disabled><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-review"></use></svg>Open operator review</button></div>
+                </div>
+              </section>
+
+              <section class="advice-panel" aria-labelledby="advice-title">
+                <div class="card-head"><div><h2 id="advice-title"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-spark"></use></svg>Llama operator note</h2><p class="card-sub">On-device ExecuTorch · separate advisory</p></div></div>
+                <p id="advice-status" class="status-line" role="status" aria-live="polite">Analyze an image to see whether advice is available.</p>
+                <button id="advice-request" class="btn" type="button" disabled><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-spark"></use></svg><span class="button-label">Generate Llama advice</span></button>
+                <ul id="advice-note" class="advice-points" hidden></ul>
+                <p class="help">Review this note before acting. It cannot change the saved grade or identify a confirmed defect cause.</p>
+                <details class="technical-details"><summary>Advisory runtime</summary><p id="advice-runtime">Waiting for station status.</p></details>
+              </section>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= REVIEW ================= -->
+        <section class="view" id="view-review" data-view="review" aria-label="Operator review" hidden>
+          <section id="review-empty" class="card empty-card">
+            <h2>No saved result to review</h2>
+            <p>Inspect an image first, then compare its original and response map here.</p>
+            <div class="button-group center"><a class="btn primary" href="#/inspect">Go to Inspect</a></div>
+          </section>
+          <section id="review-panel" class="card review-panel" hidden aria-labelledby="review-title">
+            <div class="card-head"><div><h2 id="review-title">Manual operator review</h2><p class="card-sub">Your observation is saved separately. The automated grade stays unchanged.</p></div></div>
+            <p id="review-target" class="help lead-help">Inspect an image first, then compare its original and response map.</p>
+            <div class="review-layout">
+              <div class="review-evidence">
+                <figure><div class="thumb"><img id="review-source" loading="lazy" alt="Original image saved for this inspection" hidden></div><figcaption>Original</figcaption></figure>
+                <figure><div class="thumb"><img id="review-overlay" loading="lazy" alt="Saved image with thresholded EfficientAD response highlighted in red" hidden></div><figcaption>Highlighted area</figcaption></figure>
+              </div>
+              <div class="review-main">
+                <form id="review-form" class="form"><div class="review-fields"><label class="field">Operator name or ID<input id="review-actor" maxlength="64" autocomplete="off" placeholder="e.g. Operator-1" required></label><label class="field">What did you observe?<select id="review-outcome" required><option value="">Choose a finding</option><option value="no_visible_issue">No visible issue</option><option value="visible_issue">Visible issue</option><option value="uncertain_or_recapture">Uncertain / capture again</option></select></label><label class="field review-reason">Observation<textarea id="review-reason" minlength="3" maxlength="500" rows="3" placeholder="Describe what you checked in the saved image" required></textarea></label></div><button id="review-submit" class="btn primary" type="submit" disabled><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-save"></use></svg>Save review finding</button></form>
+                <p id="review-status" class="status-line" role="status" aria-live="polite">Analyze an image before reviewing it.</p>
+                <div id="review-history" class="review-history"></div>
+              </div>
+            </div>
+            <details class="technical-details"><summary>How manual review works</summary><p>Compare the original image with the highlighted response. A visible issue proposes REJECT; no visible issue proposes PASS; uncertainty proposes REVIEW. Your name, observation and proposal are saved in the SQLite audit log as an unverified operator claim. This does not overwrite ForgeGrade or confirm a defect type.</p></details>
+          </section>
+        </section>
+
+        <!-- ================= HISTORY ================= -->
+        <section class="view" id="view-history" data-view="history" aria-label="History" hidden>
+          <section id="history-panel" class="card history" aria-labelledby="history-title"><div class="card-head"><div><h2 id="history-title">Recent inspections</h2><p class="card-sub">Saved tests, evidence and reviews</p></div></div><div id="history">No inspections yet.</div>
+            <div class="history-actions"><button id="history-prev" class="btn secondary" type="button" disabled><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-prev"></use></svg>Previous</button><span id="history-page-note">Page 1</span><button id="history-next" class="btn secondary" type="button" disabled><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-next"></use></svg>Next</button></div>
+            <p id="history-feedback" class="status-line" role="status" aria-live="polite"></p></section>
+          <p id="report-feedback" class="status-line" role="status" hidden></p><article id="saved-inspection" class="card" hidden aria-labelledby="saved-title">
+            <div class="card-head"><div><h2 id="saved-title" tabindex="-1">Saved inspection</h2><p id="saved-summary" class="card-sub"></p></div><a class="btn secondary" id="download-report" download><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-pdf"></use></svg><span class="button-label">Download report</span></a></div>
+            <div class="saved-images">
+              <figure><figcaption>Original image</figcaption><img id="saved-original" alt="Saved original image"><p id="original-unavailable" hidden>Original image unavailable.</p></figure>
+              <figure><figcaption>Anomaly overlay</figcaption><img id="saved-overlay" alt="Saved anomaly overlay"><p id="overlay-unavailable" hidden>Anomaly overlay unavailable.</p></figure>
+            </div>
+            <section class="saved-block"><h3>Llama advice</h3><p id="saved-advice-origin" class="card-sub"></p><div id="saved-advice"></div></section>
+            <section class="saved-block"><h3>Operator reviews</h3><div id="saved-reviews"></div></section>
+          </article>
+        </section>
+      </main>
     </div>
-    <section class="panel review-panel" aria-labelledby="review-title">
-      <div class="panel-head"><div><h2 id="review-title">Manual operator review</h2><p>Your observation is saved separately. The automated grade stays unchanged.</p></div><span class="section-label">HUMAN CHECK</span></div>
-      <p id="review-target" class="help">Inspect an image first, then compare its original and response map above.</p>
-      <form id="review-form"><div class="review-fields"><label class="field">Operator name or ID<input id="review-actor" maxlength="64" autocomplete="off" placeholder="e.g. Operator-1" required></label><label class="field">What did you observe?<select id="review-outcome" required><option value="">Choose a finding</option><option value="no_visible_issue">No visible issue</option><option value="visible_issue">Visible issue</option><option value="uncertain_or_recapture">Uncertain / capture again</option></select></label><label class="field review-reason">Observation<textarea id="review-reason" minlength="3" maxlength="500" rows="2" placeholder="Describe what you checked in the saved image" required></textarea></label></div><button id="review-submit" class="secondary" type="submit" disabled>Save review finding</button></form>
-      <p id="review-status" role="status" aria-live="polite">Analyze an image before reviewing it.</p><div id="review-history" class="review-history"></div>
-      <details class="technical-details"><summary>How manual review works</summary><p>Compare the original image with the highlighted response. A visible issue proposes REJECT; no visible issue proposes PASS; uncertainty proposes REVIEW. Your name, observation and proposal are saved in the SQLite audit log as an unverified operator claim. This does not overwrite ForgeGrade or confirm a defect type.</p></details>
-    </section>
-    <section id="history-panel" class="panel history" aria-labelledby="history-title"><div class="panel-head"><div><h2 id="history-title">Recent inspections</h2><p>Last 10 records · stored locally in SQLite</p></div><span class="section-label">INSPECTION LOG</span></div><div id="history">No inspections yet.</div></section>
-    <footer><span>ForgeSight · EfficientAD / ForgeGrade / ExecuTorch</span><span>Prototype station · camera decisions require setup validation</span></footer>
-  </main>
+  </div>
+  <dialog id="history-confirm" class="history-dialog" aria-labelledby="history-confirm-title">
+    <h2 id="history-confirm-title">Confirm deletion</h2><p id="history-confirm-text"></p>
+    <div class="history-actions"><button id="history-cancel" class="btn secondary" type="button"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-close"></use></svg>Cancel</button><button id="history-delete" class="btn danger" type="button"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-delete"></use></svg>Delete</button></div>
+  </dialog>
+  <dialog id="edit-review-dialog" class="history-dialog" aria-labelledby="edit-review-title">
+    <h2 id="edit-review-title">Edit operator review</h2>
+    <form id="edit-review-form" class="form">
+      <label class="field">Operator ID<input id="edit-actor" maxlength="64" required autocomplete="off"></label>
+      <label class="field">Finding<select id="edit-outcome" required><option value="no_visible_issue">No visible issue</option><option value="visible_issue">Visible issue</option><option value="uncertain_or_recapture">Uncertain / capture again</option></select></label>
+      <label class="field">Observation<textarea id="edit-reason" minlength="3" maxlength="500" required></textarea></label>
+      <p id="edit-feedback" class="status-line" role="status"></p>
+      <div class="history-actions"><button id="edit-cancel" class="btn secondary" type="button"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-close"></use></svg>Cancel</button><button id="edit-save" class="btn primary" type="submit"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-save"></use></svg>Save review</button></div>
+    </form>
+  </dialog>
 </body>
 </html>

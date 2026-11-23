@@ -959,7 +959,14 @@ class LiveService:
             return 404, None
         if record is None:
             return 404, None
-        if name == "overlay":
+        allowed_suffixes = (".png", ".jpg", ".jpeg")
+        if name == "score_map":
+            reference = record.get("artifacts", {}).get("score_map_source")
+            expected = record.get("artifacts", {}).get("score_map_source_sha256")
+            if not expected:
+                return 404, None
+            allowed_suffixes = (".npy",)
+        elif name == "overlay":
             reference = record["artifacts"].get("response_overlay")
             expected = record["artifacts"].get("response_overlay_sha256")
         else:
@@ -970,11 +977,23 @@ class LiveService:
         path = Path(reference).resolve()
         runs_root = Path(self.args.runs_root).resolve()
         if (not _path_is_relative_to(path, runs_root)
-                or path.suffix.lower() not in (".png", ".jpg", ".jpeg")):
+                or path.suffix.lower() not in allowed_suffixes):
             return 404, None
         if not path.is_file():
             return 404, None
-        data = path.read_bytes()
+        if name == "score_map":
+            # Only requested by a view tab. Bound the read before verifying
+            # the saved map, including a 1024 x 1024 float64 map and its header.
+            try:
+                with path.open("rb") as source:
+                    limit = 9 * 1024 * 1024
+                    data = source.read(limit + 1)
+                if len(data) > limit:
+                    return 404, None
+            except OSError:
+                return 404, None
+        else:
+            data = path.read_bytes()
         if hashlib.sha256(data).hexdigest() != expected:
             return 409, None
         return 200, data
@@ -1282,9 +1301,11 @@ def handler_for(service):
             if not isinstance(code, int) or code >= 400:
                 super().log_request(code, size)
 
-        def send(self, status, content, mime):
+        def send(self, status, content, mime, download=None):
             self.send_response(status)
             self.send_header("Content-Type", mime)
+            if download:
+                self.send_header("Content-Disposition", f'attachment; filename="{download}"')
             self.send_header("Content-Length", str(len(content)))
             self.send_header("Cache-Control", "no-store")
             self.send_header("X-Content-Type-Options", "nosniff")
@@ -1306,23 +1327,41 @@ def handler_for(service):
             path = self.path.split("?", 1)[0]
             if path == "/api/state":
                 self.send(200, json.dumps(service.state(), allow_nan=False).encode(), "application/json")
+            elif path == "/api/history" or path.startswith("/api/history/"):
+                from forgesight.history_tools import read_request
+                try:
+                    payload, mime = read_request(service, self.path)
+                    if mime == "application/json":
+                        self.send(200, json.dumps(payload, allow_nan=False).encode(), mime)
+                    else:
+                        self.send(200, payload.encode(), mime, download="forgesight-inspection.html")
+                except (ValueError, KeyError, TypeError):
+                    self.send(404, b'{"error":"Saved inspection or History page is unavailable."}', "application/json")
+                except (OSError, sqlite3.Error, RuntimeError):
+                    self.send(503, b'{"error":"Could not read saved history."}', "application/json")
             elif path == "/api/frame.jpg":
                 frame = service.camera.preview()
                 self.send(200 if frame else 503, frame or b"Camera unavailable", "image/jpeg" if frame else "text/plain")
             elif path.startswith("/api/inspection/"):
                 parts = path.split("/")
                 kind = parts[4] if len(parts) == 5 else ""
-                if kind not in ("source.png", "overlay.png"):
+                evidence = {"source.png": ("source", "image/png"),
+                            "overlay.png": ("overlay", "image/png"),
+                            "score-map.npy": ("score_map", "application/octet-stream")}.get(kind)
+                if evidence is None:
                     self.send(404, b"Not found", "text/plain")
                     return
-                status, data = service.inspection_image(
-                    parts[3], "overlay" if kind.startswith("overlay") else "source")
+                name, mime = evidence
+                status, data = service.inspection_image(parts[3], name)
                 if status == 409:
                     self.send(409, b"Saved image changed; original inspection evidence does not match.",
                               "text/plain")
                 else:
                     self.send(200 if data else 404, data or b"Image unavailable",
-                              "image/png" if data else "text/plain")
+                              mime if data else "text/plain")
+            elif path == "/station-logo.png":
+                logo = WEB_ROOT.parent.parent / "assets" / "forgesight-station.png"
+                self.send(200, logo.read_bytes(), "image/png")
             elif path in ("/", "/app.js", "/style.css"):
                 file = {"/": "jetson_live.html", "/app.js": "jetson_live.js",
                         "/style.css": "jetson_live.css"}[path]
@@ -1379,12 +1418,23 @@ def handler_for(service):
                           json.dumps({"status": status}).encode(), "application/json")
                 return
             if self.path not in ("/api/inspect", "/api/replay", "/api/replay-local",
-                                 "/api/upload-diagnostic", "/api/manual-review"):
+                                 "/api/upload-diagnostic", "/api/manual-review", "/api/history"):
                 self.send(400, b"Invalid request", "text/plain")
                 return
             try:
                 length = int(self.headers.get("Content-Length", "-1"))
-                if self.path == "/api/manual-review":
+                if self.path == "/api/history":
+                    from forgesight.history_tools import change_request
+                    if self.headers.get("Content-Type") != "application/json" or not 0 < length <= 4096:
+                        raise ValueError("Invalid History request")
+                    try:
+                        body = json.loads(self.rfile.read(length))
+                        changed = change_request(service, body)
+                    except (KeyError, TypeError, AttributeError) as error:
+                        raise ValueError("Incomplete History request") from error
+                    self.send(200, json.dumps(changed).encode(), "application/json")
+                    return
+                elif self.path == "/api/manual-review":
                     if self.headers.get("Content-Type") != "application/json" or not 0 < length <= 1024:
                         raise ValueError("Invalid manual review request")
                     body = json.loads(self.rfile.read(length))
