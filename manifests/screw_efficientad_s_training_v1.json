@@ -97,5 +97,11 @@
     "accuracy":  "NOT_EVALUATED",
     "calibration":  "NOT_RUN",
     "torchscript_export":  "NOT_RUN",
-    "jetson_proof":  "NOT_VERIFIED"
+    "jetson_proof":  "NOT_VERIFIED",
+    "profile_provenance":  {
+                               "note":  "Input hashes record exact training-time bytes. Repository profile subsequently normalized CRLF to LF; parsed values match the embedded training profile exactly.",
+                               "archived_original":  "artifacts/vision/screw_train_v1/training_profile_original.json",
+                               "archived_original_sha256":  "096581a0690d2b7c90476eaaab8ac35492312199f97dcedf5a9022810b1ad03c",
+                               "repository_profile_sha256":  "fa619a53a436b53d59ab32c18515d07598bd1a9790b6c970c5cb7dd1c912e3c3"
+                           }
 }
