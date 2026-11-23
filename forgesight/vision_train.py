@@ -11,7 +11,8 @@ import time
 import traceback
 
 from forgesight.data_loader import load_verified_image
-from forgesight.data_manifest import DEFAULT_ROOT, read_manifest
+from forgesight.data_manifest import DEFAULT_ROOT
+from forgesight.vision_recipe import read_manifest
 from forgesight.edge_assets import fingerprint
 
 
@@ -117,7 +118,7 @@ def train(args, report: dict) -> None:
     images = []
     for row in fit:
         with load_verified_image(args.root, row) as image:
-            images.append(transform(image))
+            images.append(transform(image.convert("RGB")))
     cache = torch.stack(images).pin_memory()
     del images
     model.teacher.eval()
