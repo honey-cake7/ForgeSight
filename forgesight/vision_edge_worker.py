@@ -184,6 +184,8 @@ def serve(socket_path, worker, idle_timeout_seconds=None, request_read_timeout_s
         server.bind(str(socket_path))
         os.chmod(socket_path, stat.S_IRUSR | stat.S_IWUSR)
         server.listen(4)
+        print(json.dumps({"status": "WORKER_READY", "model_sha256": worker.model_sha256,
+                          "model_load_ms": worker.model_load_ms, "socket": str(socket_path)}), flush=True)
         if idle_timeout_seconds is not None:
             server.settimeout(idle_timeout_seconds)
         while True:
@@ -296,8 +298,6 @@ def main():
     if not 0 < args.request_read_timeout_seconds <= 300:
         parser.error("Request read timeout must be between 0 and 300 seconds")
     worker = Worker(args.model, args.model_sha256, args.threads)
-    print(json.dumps({"status": "WORKER_READY", "model_sha256": args.model_sha256,
-                      "model_load_ms": worker.model_load_ms, "socket": str(args.socket)}), flush=True)
     serve(args.socket, worker, args.idle_timeout_seconds, args.request_read_timeout_seconds)
 
 

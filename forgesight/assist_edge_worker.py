@@ -171,7 +171,7 @@ class Worker:
                 "timing_scope": "persistent worker: tokenize+generate per request; verification/imports/model load once at worker start"}
 
 
-def serve(socket_path, worker, idle_timeout_seconds=None, request_read_timeout_seconds=30):
+def serve(socket_path, worker, idle_timeout_seconds=None, request_read_timeout_seconds=30, ready_extra=None):
     if not 0 < request_read_timeout_seconds <= 300:
         raise ValueError("Request read timeout must be between 0 and 300 seconds.")
     socket_path = Path(socket_path)
@@ -192,6 +192,11 @@ def serve(socket_path, worker, idle_timeout_seconds=None, request_read_timeout_s
         server.bind(str(socket_path))
         os.chmod(socket_path, stat.S_IRUSR | stat.S_IWUSR)
         server.listen(4)
+        ready_payload = {"status": "WORKER_READY",
+                         "model_sha256": worker.runtime.evidence["artifact"]["sha256"]}
+        if ready_extra:
+            ready_payload.update(ready_extra)
+        print(json.dumps(ready_payload), flush=True)
         if idle_timeout_seconds is not None:
             server.settimeout(idle_timeout_seconds)
         while True:
@@ -394,11 +399,8 @@ def main():
     runtime = build_jetson_runtime(args.llama_root)
     worker = Worker(runtime)
     warmup = warm_worker(worker)
-    print(json.dumps({"status": "WORKER_READY",
-                      "model_sha256": runtime.evidence["artifact"]["sha256"],
-                      **warmup}), flush=True)
     serve(args.socket, worker, args.idle_timeout_seconds,
-          args.request_read_timeout_seconds)
+          args.request_read_timeout_seconds, ready_extra=warmup)
 
 
 if __name__ == "__main__":
