@@ -1,220 +1,174 @@
-# ForgeSight 
+# ForgeSight AI
 
-An incremental project for offline industrial surface-defect inspection on an
-NVIDIA Jetson Orin Nano, with deterministic grading, local inspection history,
-and a Llama-family advisory model running on the device through ExecuTorch.
+<img src="assets/forgesight-station.png" alt="ForgeSight project icon" width="88">
 
-**Current state: Llama 3.2 1B generated real text through ExecuTorch on Jetson
-(2.10); PC Stage 7 UI and Stage 9.2 advisory checks observed.** The PC system
-runs a real trained EfficientAD-S model, highlights response regions, saves one
-record per declared part, adds deterministic pixel-only decisions and saves
-local SQLite history. A local screen runs real inspection and browses saved
-results. Jetson/camera deployment and complete offline edge operation remain open.
+**Offline quality-inspection prototype on NVIDIA Jetson Orin Nano 8GB:** EfficientAD finds visual anomalies, deterministic rules grade the inspection, and Llama generates operator guidance on-device through ExecuTorch. Images, decisions, advice and inspection history stay local during inference.
 
-- [Merged runtime changes and Jetson latency](docs/MERGE_LATENCY_REPORT.md):
-  what PRs #1–#12 added, measured CPU vision and persistent ExecuTorch advice,
-  and the limits of the speed comparisons. PR #8 was not merged.
-- [Vision training and choice](docs/VISION_BASELINE.md): EfficientAD-S 256x256,
-  10,000 FP32 training steps on 176 normal images; [training evidence](docs/VISION_TRAINING.md).
-- [Frozen calibration](docs/VISION_CALIBRATION.md): threshold 0.2277658; cached
-  desktop forward-only p50/p95 14.54/14.80 ms, excluding image I/O and app work.
-- [Held-out evaluation](docs/VISION_EVALUATION.md): flagged 87/89 defects,
-  missed two scratches, false alarms on 2/22 good images. No test-driven retuning.
-- [Part gate and records](docs/INSPECTION.md): nine replay frames -> four declared
-  part records, five repeats suppressed, including an explicit input error.
-- [ForgeGrade prototype](docs/FORGEGRADE.md): real replay gives PASS, REVIEW,
-  PASS, REVIEW. Types remain unknown. REJECT size/location rules pass synthetic
-  policy tests; automatic type-based rejection is not yet supported by the model.
-  The two missed scratches still receive provisional PASS in a cache-only rule
-  diagnostic; production use is not established. No millimeters or certification.
-- [Llama / ExecuTorch evidence](docs/EDGE_RUNTIME.md): genuine Llama 3.2 1B text
-  generation through the native ExecuTorch runner on desktop WSL. Actual Jetson
-  inference and integration as inspection advice remain open.
-- [SQLite history](docs/STORAGE.md): four actual replay records survive writer
-  exit and separate-process queries. Four exact retries add zero rows; errors
-  and duplicate IDs are handled explicitly. Correction proposals remain
-  separate, unverified claims and preserve the original decision.
+Built for the **On-Device Quality Inspector Challenge**. MVTec AD `metal_nut` is the primary benchmark; the optional screw recipe is experimental.
 
-- [Local operator screen and API](docs/OPERATOR_APP.md): Inspect runs the real
-  model and saves to SQLite. Actual source/response images, provisional actions
-  and persisted history survive refresh and server restart. Replay only; no
-  camera or generated advisory is presented as connected.
-  The main screen shows only photo/highlight, result, type and a short action;
-  history and technical details are expandable.
+**Evidence checkpoint: `081ba00`, 24 November 2026.** Saved-image inspection, SQLite history and real Jetson Llama generation have device evidence. Physical-part accuracy and full acceptance of the latest combined build remain unverified. The latest commit documents a partial guidance check, not a whole-station deployment.
 
-- [ForgeAssist first PC note](docs/FORGEASSIST.md): actual ExecuTorch Llama
-  generation links one saved REVIEW record to a prototype checklist. The final
-  note repeats supplied facts/checks; six content/format failures and a validator
-  false positive are retained. No factory diagnosis or general reliability is
-  claimed. Advice is not yet connected to the UI; Stage 9 remains incomplete.
-  Input refusal and narrow reviewed-statement checks are now tested: 27 contract
-  checks matched; two real native generations retained the source-linked note.
-  The original full protocol matched 31/32 expectations because a one-token
-  failure occurred earlier than expected; a declared eight-token follow-up
-  verified text-parser refusal. All evidence, including that mismatch, is saved.
+## Submission deliverables
 
-All **151 tests pass** in the locked app environment. All four earlier
-environments are unchanged; the app preserves all 89 vision package versions.
-On 2026-11-11 an **authenticated read-only Jetson audit completed**: Orin Nano
-8GB identifiers, ARM64, Ubuntu 20.04.6/L4T 35.6.1, Python 3.8.10, CUDA 11.4,
-SD storage and a Logitech C270 webcam. That initial audit installed nothing.
-See [hardware facts and limits](docs/HARDWARE.md).
-**Substep 2.8 prepared a candidate isolated CPU runtime recipe:** 33 core ARM
-ELF binaries match ten real Jetson system libraries, and 49 dependencies are
-locked for Python 3.12.14/ARM64. The separate interpreter archive is now downloaded
-and checksum-verified. Its ten native files bring the checked total to 43, matching
-12 actual Jetson system libraries.
-**Substep 2.9 installed and checked the separate CPU runtime on Jetson:** Python
-3.12.14, Torch 2.14.0+cpu and ExecuTorch 1.5.1+cpu. Dependency checks, CPU tensor
-arithmetic, native imports and required operator registration passed. System
-Python 3.8.10 and checked system files/packages are unchanged. No model was loaded.
-See [setup, commands and limits](docs/JETSON_RUNTIME.md) and the
-[actual device setup evidence](manifests/jetson_runtime_installation_v1.json).
-**Substep 2.10 ran the actual Llama model on the Orin Nano:** one short prompt
-produced 40 tokens through native ExecuTorch. The PTE/tokenizer hashes were
-checked on both machines. The connected-device run used two CPU threads, took
-30.856 s end to end (2.129 s native inference), and sampled 1,189,184 KiB peak
-child RSS. See [actual text and evidence](manifests/jetson_llama_generation_v1.json).
-This is one smoke result, not a throughput benchmark. Jetson camera inspection,
-integrated advice and disconnected operation remain unverified. The PC background
-worker (9.3) remains pending.
+| Deliverable | Location and readiness |
+| --- | --- |
+| Documented source | This repository; [setup and required assets](docs/SETUP.md). A clone alone excludes models and datasets. |
+| Target-device application | [Jetson operator guide](docs/JETSON_LIVE_UI.md); earlier snapshots have saved-image/device evidence. Latest whole-build deployment acceptance is pending. |
+| Demo: detection, alerts and logging | **Missing submission link.** A real video still needs to be recorded/published and linked. |
+| Technical report | [Runtime report](docs/MERGE_LATENCY_REPORT.md), [vision evaluation](docs/VISION_EVALUATION.md) and [offline ledger](docs/STAGE10_VERIFICATION.md) supply evidence; a consolidated submission report is still missing. |
 
-## Open the local operator screen
+The [submission audit](docs/SUBMISSION_AUDIT.md) maps records to requirements and lists gaps. The supplied guide permits static, camera or recorded-video demonstrations and specifies no fixed FPS target. Our roadmap additionally requires physical-part acceptance.
 
-From PowerShell in the project folder on this configured PC:
+## What works today
 
-```powershell
-wsl -d Ubuntu --exec /root/.cache/forgesight/app-v1/venv/bin/python -B -m forgesight.operator_app
+| Capability | Implemented and observed scope |
+| --- | --- |
+| Detect | Frozen EfficientAD-S scores and response maps; 111-image metal-nut benchmark evaluated on PC and reproduced on Jetson. |
+| Classify | Opt-in bent, flip, scratch and discoloration profile; provisional benchmark results with `unknown` abstention. Camera-domain type accuracy is unverified. |
+| Severity | Deterministic pixel-response grading; optional type-conditioned Low/Medium/High/Unassessed metadata. Neither measures calibrated physical damage. |
+| Alert and advise | Operator decision/action display, real ExecuTorch advice, bounded background work and explicit unavailable/fallback states. Latest hybrid results are partial. |
+| Log | SQLite inspection IDs, decisions, source references, versions and advice states; accepted errors and append-only manual-review claims. Restart/readback evidence exists. |
+| Offline | Disconnected saved-image vision, advice, logging and loopback-service checks for earlier snapshots. Complete latest-build offline cold-start acceptance remains open. |
+| Camera | C270 preview and model-path diagnostics. Room scenes and photos displayed on a screen do not establish physical-nut inspection accuracy. |
+
+Camera-domain decisions remain **REVIEW** pending validation. Overlays show model response, not confirmed defect masks. See [current status](docs/STATUS.md) and [requirement evidence](docs/COMPLIANCE.md).
+
+## Architecture
+
+```mermaid
+flowchart TD
+    Input[Camera, saved PNG or replay] --> Vision[EfficientAD-S score and maps]
+    Vision --> Findings[Structured findings and optional provisional type]
+    Findings --> Grade[ForgeGrade deterministic decision]
+    Grade --> Store[Local SQLite and image artifacts]
+    Store --> UI[Operator result, alert and history]
+    Store --> Queue[Bounded asynchronous advisory queue]
+    Checklist[Local inspection checklist] --> Queue
+    Queue --> Llama[Llama 3.2 1B through ExecuTorch on Jetson]
+    Llama --> Guard[Validate reply]
+    Guard --> Advice[Separate advice and provenance]
+    Guard --> Failure[Unavailable or optional checklist fallback]
+    Failure --> Advice
 ```
 
-After startup, open **http://127.0.0.1:8765**. Enter a new part ID, choose a
-saved photo and click Inspect. Keep the terminal open; Ctrl+C stops the server.
-The default working database is `artifacts/runtime/inspections.sqlite3`.
-See [launch options, proof data and limits](docs/OPERATOR_APP.md) and
-[locked environment setup](docs/ENVIRONMENT.md).
+Vision supplies findings; **ForgeGrade owns PASS/REVIEW/REJECT and Llama cannot override it**. The JSON hand-off carries source/model provenance, score, type or uncertainty, geometry, severity and decision. Anomaly scores are not calibrated probabilities; confidence is not severity.
 
-## Start here
+The default v5 advisory contract and opt-in reviewed-check/grounded guidance are separate paths. Generated wording, host-supplied reasoning and fallback retain separate provenance. Advice failures preserve the saved grade. See [records](docs/INSPECTION.md), [grading](docs/FORGEGRADE.md), [advisory integration](docs/FORGEASSIST.md) and [grounded guidance](docs/GROUNDED_ADVICE.md).
 
-1. [Current status](docs/STATUS.md): completed evidence, open gates and next steps.
-2. [Operator app guide](docs/OPERATOR_APP.md): launch instructions and supported workflow.
-3. [Engineering decisions](docs/DECISIONS.md): implementation choices and trade-offs.
+For example, the recorded `ca499bd` replay of development image `test/bent/017.png` scored **0.682808876** and received provisional benchmark REJECT. Its accepted 40-token advice left the saved decision unchanged. This is a saved-image integration example, not a physical-part result. [Recorded inspection/advice](manifests/jetson_persistent_advice_success_v1.json).
 
-The original `Edge AI Quality Control Model Pipeline.pdf` remains in the local
-workspace as a technical reference and is excluded from Git. Its performance
-figures and architectural assumptions are not verified project results.
+## Hardware and both runtimes
 
-## Evidence and decisions
+| Component | Recorded configuration |
+| --- | --- |
+| Device | Orin Nano 8GB, ARM64 Linux; audited Ubuntu 20.04.6, L4T 35.6.1, CUDA 11.4; Logitech C270 USB camera |
+| Vision | EfficientAD-S, RGB 256 x 256, FP32 TorchScript; Jetson CPU, isolated Python 3.12.14 / Torch 2.14.0+cpu |
+| Advisory | Meta Llama 3.2 1B Instruct; ExecuTorch 1.5.1+cpu / XNNPACK CPU; dynamic INT8 activations, INT4 weights/group 128, 4-bit embeddings/group 32 |
+| Isolation | Separate vision and Llama runtimes under `/home/nvidia/.local/share/forgesight/`; Jetson UI/controller uses existing Python 3.8 |
+| Application | Local Jetson HTTP UI; separate FastAPI PC replay UI; SQLite/local files, no CDN or cloud inference required |
 
-- [Provisional defect-type assessment](docs/DEFECT_TYPE.md) covers the opt-in
-  benchmark-image color cue, the Jetson comparison, and the PC training workflow.
+A TensorRT engine was built, but GPU inference parity and speed are unverified. **The reported Jetson results use CPU inference.** See [hardware](docs/HARDWARE.md), [vision runtime](docs/JETSON_VISION.md), [Llama runtime](docs/JETSON_RUNTIME.md) and [model/export provenance](docs/EDGE_RUNTIME.md).
 
-- [Hardware audit](docs/HARDWARE.md)
-- [Observed development environment](docs/ENVIRONMENT.md)
-- [Dataset source and split policy](docs/DATASET.md)
-- [Architecture decisions](docs/DECISIONS.md)
-- [Requirement evidence](docs/COMPLIANCE.md)
-- [Learning notes](docs/LEARNING_LOG.md)
+## Data and measured results
 
-The benchmark domain is MVTec AD `metal_nut`. Its real archive and extracted
-335 images/93 masks have passed structural validation; the license, source
-fingerprint, counts, and split policy are in `docs/DATASET.md`. A frozen manifest
-assigns 176 fit, 44 normal-validation, four development, and 111 holdout samples.
-A verified loader reads fitting, validation, and development roles. A local
-contact sheet shows supplied ground-truth annotations; separate model overlays
-now exist in local evaluation/inspection outputs. Evaluation uses a custom holdout that excludes
-development previews. Controlled physical samples and actual Jetson camera
-validation are separate later evidence.
+EfficientAD-S trained for 10,000 FP32 steps on **176 normal metal-nut images**. The frozen split assigns 44 normal-validation images, four development previews and 111 holdout images. Threshold **0.22776579856872559** was fixed before holdout evaluation. Llama uses pretrained weights and structured prompts; it was not fine-tuned.
 
-Repeat the category archive audit without extracting or displaying images:
+### Frozen metal-nut anomaly benchmark
 
-```powershell
-wsl -d Ubuntu --exec .venv/bin/python -B scripts/audit_metal_nut_archive.py data/downloads/metal_nut.zip
+| Metric | Result |
+| --- | ---: |
+| Defects flagged / good images unflagged | 87/89 / 20/22 |
+| Precision / recall / F1 | 97.75% / 97.75% / 97.75% |
+| Accuracy | 96.40% |
+| False alarms / missed defects | 2 / 2 |
+| False-alarm rate on 22 good images | 9.09% |
+
+These are saved benchmark images, not physical-camera accuracy. Both misses were scratches and received provisional PASS in the recorded diagnostic. Jetson reproduced all 111 PC candidate decisions. Ground-truth folders are not predicted classes. [Evaluation/failures](docs/VISION_EVALUATION.md), [device batch](manifests/jetson_holdout_batch_v1.json).
+
+The opt-in four-type profile correctly labeled 17/19 defective images, abstained on two and left five good images unflagged. Its 24-image test was reused for successive candidates; its split repartitions the detector's already-exposed holdout. These are provisional subtype results, not a fresh independent test. [Classification](docs/DEFECT_TYPE.md), [severity](docs/DEFECT_SEVERITY.md), [dataset](docs/DATASET.md), [training](docs/VISION_TRAINING.md), [calibration](docs/VISION_CALIBRATION.md).
+
+### Jetson CPU performance
+
+| Historical disconnected test scope | n | p50 | p95 |
+| --- | ---: | ---: | ---: |
+| Cold vision: model forward only | 20 | 1,585 ms | 1,684 ms |
+| Same cold replay: through SQLite commit | 20 | 7,499 ms | 7,677 ms |
+| Cold Llama advice: native process wall | 8 | 20,690 ms | 20,942 ms |
+| Vision child peak RSS | 20 | 436,336 KiB | 437,163 KiB |
+| Separate advice child sampled peak RSS | 8 | 1,172,206 KiB | 1,189,735 KiB |
+
+Vision repeated two known images; advice repeated one inspection. These separate runs do not measure simultaneous system peak memory or physical parts/minute. [Offline methods/records](docs/STAGE10_VERIFICATION.md).
+
+At earlier persistent-runtime build `ca499bd`, one saved-image inspection took **2.337 s**, including a **1.768 s** forward but excluding SQLite, camera, UI and advice. Its first advisory request took **5.311 s**, including reported model load. These single observations have different timing scopes/prompts from the cold series: no direct speedup or warm p50/p95 claim is valid. [Runtime report](docs/MERGE_LATENCY_REPORT.md).
+
+Application FPS, physical parts/minute, complete camera-to-advice latency, simultaneous peak RAM, power, TTFT and a comparable current-build tokens/s series are not established by these tables.
+
+### Latest guidance and experimental screw recipe
+
+Commit `081ba00` records guidance from source `842c793` tested on an existing warm Jetson ExecuTorch worker: **12/15 matching model choices** (metal nut 7/9, screw 5/6); three needed pinned checklist fallback. PC replay verified all 15 guarded outputs. The installed station was not upgraded/restarted. This is prompt/protocol evidence, not new accuracy, site QC approval or full deployment. [Latest record](manifests/jetson_hybrid_guidance_842c793_v1.json).
+
+The opt-in `--plugins-root` selector adds a screw recipe. Its selected 30k development detector flagged 26/29 defects, with no false alarms on 21 good images in a reused 50-image diagnostic. Subtypes were correct in 19/25 calls, with six wrong calls, one unknown and three detector misses. The reliability gate remains failed. Nut/screw metrics are kept separate. [Screw guide](docs/SCREW_PLUGIN.md).
+
+## Get started
+
+```sh
+git clone https://github.com/honey-cake7/Forge_Sight.git
+cd Forge_Sight
 ```
 
-Verify the frozen split against the current dataset:
+Follow [setup and asset staging](docs/SETUP.md) first. Models, licensed datasets, generated outputs and databases are excluded from Git. Root `requirements.txt` installs only the early Pillow environment, not the application.
 
-```powershell
-wsl -d Ubuntu --exec .venv/bin/python -B -m forgesight.data_manifest --check
+On an **already prepared Jetson**, from matching source with staged assets:
+
+```sh
+export FS_VISION="$HOME/.local/share/forgesight/vision_cpu_v1"
+/usr/bin/python3 -B -m forgesight.jetson_live_ui \
+  --vision-python "$FS_VISION/venv/bin/python" \
+  --model "$FS_VISION/efficientad_s_calibrated.ts" --port 8770
 ```
 
-Load and verify the four development image/mask pairs:
+Open **http://127.0.0.1:8770** on the Jetson. This uses the default manual advisory path; optional worker/grounded/plugin modes require additional flags/assets. Current-source launch was not rerun during this documentation update.
 
-```powershell
-wsl -d Ubuntu --exec .venv/bin/python -B -m forgesight.data_loader --role development_preview
+Choose a source mode, inspect a saved image or capture a diagnostic, then review the response, decision and history. Request advice for an eligible flagged record. Declare displayed photos as screen-photo diagnostics. SQLite assigns inspection IDs; a captured frame alone does not establish a distinct physical part. Manual review adds an unverified claim and preserves the original decision. Stop with Ctrl+C. Default history: `runs/live_inspections_v1/inspections.sqlite3`, relative to the launch directory. [Jetson workflow](docs/JETSON_LIVE_UI.md), [storage](docs/STORAGE.md).
+
+For PC/WSL replay, use the prepared app interpreter (adjust its location):
+
+```sh
+export FS_APP_PY="$HOME/.cache/forgesight/app-v1/venv/bin/python"
+"$FS_APP_PY" -B -m forgesight.operator_app
 ```
 
-Generate the development-only contact sheet (output directory must be new):
+Open **http://127.0.0.1:8765**. Default device is CUDA; add `--device cpu` to select CPU explicitly. This earlier replay UI does not automatically attach Jetson workers. [PC workflow](docs/OPERATOR_APP.md).
 
-```powershell
-wsl -d Ubuntu --exec .venv/bin/python -B -m forgesight.data_preview
+## Verify and explore
+
+From the repository root in the prepared Linux/WSL app environment:
+
+```sh
+"$FS_APP_PY" -B -m unittest discover -s tests -q
+"$FS_APP_PY" -B -m forgesight.data_manifest --check
 ```
 
-Open `artifacts/data/development_preview_v1/contact_sheet.png`. Its five rows
-contain one normal fitting image plus bent, color, flip, and scratch development
-samples. The red overlays are dataset annotations, not detector predictions.
-The source, license, manifest fingerprint, and pixel-area metadata accompany
-the image in `preview.json`. No holdout images are displayed.
+The second command requires original data. See [setup](docs/SETUP.md) for training, export and cached-result reproduction links. Do not rerun an exposed final holdout to select a model or clear its exposure ledger. No fresh application test-pass count is claimed here: WSL was inaccessible during this documentation audit.
 
-Run all 128 data-integrity, edge, vision, inspection, grading, storage, API and advisory tests:
+| Directory | Purpose |
+| --- | --- |
+| `forgesight/` | Vision, records, grading, storage, workers and local UI |
+| `configs/`, `guidance/`, `plugins/` | Policies, local checks and optional recipes |
+| `requirements/` | Separate app, vision, export and ARM Llama locks |
+| `scripts/`, `tests/` | Verification tools and automated checks |
+| `manifests/` | Experimental metadata and evidence summaries |
+| `docs/` | Setup, methods, status, decisions and limitations |
 
-```powershell
-wsl -d Ubuntu --exec /root/.cache/forgesight/app-v1/venv/bin/python -B -m unittest discover -s tests -v
-```
+## Limits and remaining work
 
-Read the Stage 2 [candidate, blockers, recipe, and capture instructions](docs/EDGE_RUNTIME.md)
-before installing export dependencies or attempting a device run.
+- Validate physical parts under controlled camera pose/lighting. Camera decisions remain REVIEW; no calibrated millimeters or certified industrial grades are claimed.
+- Deploy the latest combined source; verify its complete disconnected cold-start operator workflow. Earlier offline proofs do not establish that this build passed.
+- Measure camera-domain quality, throughput, simultaneous resources and missing metrics. Validate provisional subtype/severity and operator usefulness on fresh evidence and site-approved procedures.
+- Complete the demo video, consolidated report, reviewer-accessible asset handoff and code-license decision. [Submission audit](docs/SUBMISSION_AUDIT.md).
 
-Verify the downloaded source model against the publisher-checked reference:
+## Attribution and licensing
 
-```powershell
-wsl -d Ubuntu --exec .venv/bin/python -B -m forgesight.edge_assets
-```
+MVTec AD: MVTec Software GmbH and Bergmann et al., CVPR 2019. The documented dataset license is **CC BY-NC-SA 4.0**; see [dataset acquisition/terms](docs/DATASET.md). Dataset terms and source-code licensing are separate.
 
-Source-asset verification alone is not export or inference. A separate CPU
-export environment passed exporter startup and configuration parsing; later
-steps completed real export and desktop execution. Its [locked setup and checks](docs/EDGE_RUNTIME.md#25-isolated-export-environment)
-are verified on this WSL host. Conversion and desktop generation now pass;
-quality and Jetson execution remain open. The
-[export record and verification command](docs/EDGE_RUNTIME.md#26-actual-model-export)
-keep these distinct.
-
-Run the actual desktop generation smoke test with a new evidence directory:
-
-```powershell
-wsl -d Ubuntu --exec /root/.cache/forgesight/et1.5.1/venv/bin/python -B -m forgesight.edge_pc_smoke --output artifacts/edge/pc_generation_recheck
-```
-
-This uses local model/tokenizer files, the native ExecuTorch runner, and explicit
-registration of wheel-provided quantized/custom kernels. It does not certify
-offline or Jetson operation. See [the actual transcript and limits](docs/EDGE_RUNTIME.md#27-real-desktop-generation).
-
-Read the actual Stage 6 history without loading a model:
-
-```powershell
-wsl -d Ubuntu --exec .venv/bin/python -B -m forgesight.storage --db artifacts/storage/inspection_replay_v1/inspections.sqlite3 summary
-```
-
-The inspection CLI now defaults to `artifacts/runtime/inspections.sqlite3`;
-`--database PATH` selects another local database. Replay uses its own SQLite
-file inside the new output directory. See [storage, retry and query commands](docs/STORAGE.md).
-
-## Development
-
-Use Ubuntu WSL with CPython 3.12. The project `.venv` contains Pillow 13.0.0,
-pinned by version and wheel hash in [requirements.txt](requirements.txt).
-It is isolated from the existing GPU-accessible PyTorch environment.
-
-From PowerShell in this project directory, after following the
-[environment setup](docs/ENVIRONMENT.md#project-environment-stage-03):
-
-```powershell
-wsl -d Ubuntu --exec .venv/bin/python -B scripts/check_environment.py
-wsl -d Ubuntu --exec .venv/bin/python -B -m pip check
-```
-
-The smoke check verifies environment isolation and exact PNG pixel preservation.
-It does not load a defect dataset, run a model, or test Jetson. Installation and
-the check were also reproduced in a second fresh temporary environment.
-
-Datasets, model binaries, secrets, runtime databases, and generated outputs stay
-outside Git. Verified steps are committed and pushed under the user's standing authorization; recorded manifests contain permitted metadata only.
+Llama 3.2 uses Meta's Community License and Acceptable Use Policy; obtain publisher access and retain required notices. [Pinned sources/license references](docs/EDGE_RUNTIME.md). EfficientAD/Anomalib, PyTorch and ExecuTorch sources are credited in the [training](docs/VISION_TRAINING.md) and runtime documents. **There is currently no root code LICENSE**; do not assume a permissive license. Team attribution and distribution notices need submission review.
