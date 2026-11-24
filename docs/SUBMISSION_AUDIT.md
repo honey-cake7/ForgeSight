@@ -11,6 +11,11 @@ Markdown documents under `docs/` and 73 tracked JSON manifests. All 73 parsed.
 That confirms readable metadata, not independent reproduction or continued
 availability of private raw logs and models.
 
+**Offline proof is already present and verified for saved-image workflows on
+the Jetson.** The disconnected integrated replay, case series, loopback service
+and repeated vision/advice records are linked below and in the README. Remaining
+newest-build and physical-camera checks do not invalidate that offline proof.
+
 ## Required deliverables
 
 | Item | Found | Remaining gap |
@@ -63,7 +68,7 @@ are references, not public downloadable logs.
 - [ ] Publish/link the real demo video.
 - [ ] Assemble the consolidated technical report, including both runtimes.
 - [ ] Supply an authorized asset acquisition/handoff route and test a clean checkout.
-- [ ] Deploy reviewed combined source; verify the full disconnected cold-start workflow.
+- [ ] Revalidate the newest combined build from a disconnected cold start; existing saved-image offline proof is already verified.
 - [ ] Meet the project's physical-part camera gate; screen photos remain diagnostics.
 - [ ] Measure missing metrics or explicitly report them unavailable.
 - [ ] Obtain fresh subtype/severity evidence; resolve screw reliability before stronger claims.

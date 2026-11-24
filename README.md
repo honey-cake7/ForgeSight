@@ -6,7 +6,7 @@
 
 Built for the **On-Device Quality Inspector Challenge**. MVTec AD `metal_nut` is the primary benchmark; the optional screw recipe is experimental.
 
-**Evidence checkpoint: `081ba00`, 24 November 2026.** Saved-image inspection, SQLite history and real Jetson Llama generation have device evidence. Physical-part accuracy and full acceptance of the latest combined build remain unverified. The latest commit documents a partial guidance check, not a whole-station deployment.
+**Evidence checkpoint: `081ba00`, 24 November 2026.** Offline saved-image inspection, SQLite history and real ExecuTorch Llama advice are **verified on the Jetson**. Physical-part accuracy and full acceptance of the latest combined build remain unverified. The checkpoint commit documents a partial guidance check, not a whole-station deployment.
 
 ## Submission deliverables
 
@@ -28,10 +28,19 @@ The [submission audit](docs/SUBMISSION_AUDIT.md) maps records to requirements an
 | Severity | Deterministic pixel-response grading; optional type-conditioned Low/Medium/High/Unassessed metadata. Neither measures calibrated physical damage. |
 | Alert and advise | Operator decision/action display, real ExecuTorch advice, bounded background work and explicit unavailable/fallback states. Latest hybrid results are partial. |
 | Log | SQLite inspection IDs, decisions, source references, versions and advice states; accepted errors and append-only manual-review claims. Restart/readback evidence exists. |
-| Offline | Disconnected saved-image vision, advice, logging and loopback-service checks for earlier snapshots. Complete latest-build offline cold-start acceptance remains open. |
+| Offline | **VERIFIED on Jetson:** saved-image vision, grading, SQLite logging, ExecuTorch advice and loopback-service checks ran with Wi-Fi disconnected. Revalidation of the newest combined build remains open. |
 | Camera | C270 preview and model-path diagnostics. Room scenes and photos displayed on a screen do not establish physical-nut inspection accuracy. |
 
 Camera-domain decisions remain **REVIEW** pending validation. Overlays show model response, not confirmed defect masks. See [current status](docs/STATUS.md) and [requirement evidence](docs/COMPLIANCE.md).
+
+### Recorded offline proof
+
+- [Disconnected integrated replay pilot](manifests/jetson_offline_saved_replay_pilot_v1.json): a saved image ran through EfficientAD, ForgeGrade, SQLite and real ExecuTorch advice on the physical Jetson; network snapshots showed no upstream route or Wi-Fi/ethernet IPv4 address.
+- [Offline case series](manifests/jetson_offline_case_series_v1.json): normal and anomaly-candidate saved images produced PASS/REVIEW records with exact SQLite readback; a real advisory completed during the disconnected interval.
+- [Offline loopback service](manifests/jetson_offline_loopback_ui_v1.json): local page/API service, generated advice, timeout handling and UI process restart were exercised without Wi-Fi.
+- [Repeated vision](manifests/jetson_offline_vision_latency_v1.json) and [advisory](manifests/jetson_offline_advice_latency_v1.json) runs supply the disconnected latency/resource measurements below.
+
+These records establish offline operation for their tested saved-image workflows. Physical-part validation and a complete cold-start check of the newest combined source remain separate acceptance items. [Proof methods and scope](docs/STAGE10_VERIFICATION.md).
 
 ## Architecture
 
@@ -163,7 +172,7 @@ The second command requires original data. See [setup](docs/SETUP.md) for traini
 ## Limits and remaining work
 
 - Validate physical parts under controlled camera pose/lighting. Camera decisions remain REVIEW; no calibrated millimeters or certified industrial grades are claimed.
-- Deploy the latest combined source; verify its complete disconnected cold-start operator workflow. Earlier offline proofs do not establish that this build passed.
+- Revalidate the newest combined source from a disconnected cold start. Existing saved-image offline proof is verified; the latest-build regression and physical-camera acceptance are separate checks.
 - Measure camera-domain quality, throughput, simultaneous resources and missing metrics. Validate provisional subtype/severity and operator usefulness on fresh evidence and site-approved procedures.
 - Complete the demo video, consolidated report, reviewer-accessible asset handoff and code-license decision. [Submission audit](docs/SUBMISSION_AUDIT.md).
 
