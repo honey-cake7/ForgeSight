@@ -1,0 +1,91 @@
+{
+  "protocol": {
+    "status": "DIAGNOSTIC_REUSE_OF_EXPOSED_V1_SET_NOT_ACCEPTANCE",
+    "model_sha256": "494726eeececa7b6f194ea5ec6b471873aa41085913eab9b65ef64120519618e",
+    "classifier_sha256": "4635a19705fbb067546ff8c2b2393dad47572a001268895e041217408d4c7467",
+    "threshold": 0.2372681200504303,
+    "runtime": "PC TorchScript CPU FP32, 2 threads",
+    "images": 50,
+    "source_role": "final_holdout previously exposed by v1 evaluation",
+    "threshold_tuning": false,
+    "classifier_fitting_or_selection": false,
+    "fresh_acceptance": false,
+    "promotion_allowed": false,
+    "ground_truth_masks_read": 0
+  },
+  "detection_metrics": {
+    "images": 50,
+    "tp": 26,
+    "tn": 21,
+    "fp": 0,
+    "fn": 3,
+    "recall": 0.896551724137931,
+    "precision": 1.0,
+    "false_alarm_rate": 0.0,
+    "accuracy": 0.94,
+    "f1": 0.9454545454545454,
+    "image_auroc": 0.9835796387520526
+  },
+  "classifier_diagnostic": {
+    "defective_images": 29,
+    "correct_type": 19,
+    "type_calls": 25,
+    "accuracy_on_type_calls": 0.76,
+    "end_to_end_type_accuracy": 0.6551724137931034,
+    "per_truth_class": {
+      "manipulated_front": {
+        "images": 6,
+        "correct_type": 4,
+        "unknown": 0,
+        "not_flagged": 1
+      },
+      "scratch_head": {
+        "images": 6,
+        "correct_type": 5,
+        "unknown": 1,
+        "not_flagged": 0
+      },
+      "scratch_neck": {
+        "images": 5,
+        "correct_type": 4,
+        "unknown": 0,
+        "not_flagged": 0
+      },
+      "thread_side": {
+        "images": 6,
+        "correct_type": 1,
+        "unknown": 0,
+        "not_flagged": 2
+      },
+      "thread_top": {
+        "images": 6,
+        "correct_type": 5,
+        "unknown": 0,
+        "not_flagged": 0
+      }
+    }
+  },
+  "false_negatives": [
+    "test/manipulated_front/011.png",
+    "test/thread_side/015.png",
+    "test/thread_side/020.png"
+  ],
+  "false_positives": [],
+  "predictions_sha256": "32494d579cc3da477554764e8e57df5e0ca7ecb23d6d362443931c62392f7313",
+  "script_sha256": "16f42811cad7c3d750bc5041845c0fab5f570d45e1e67da263b8c2c6e6175d65",
+  "gate_1_passed": false,
+  "fresh_acceptance_verified": false,
+  "physical_camera_accuracy": "NOT_VERIFIED",
+  "post_review_revalidation": {
+    "cached_feature_rows_verified": 90,
+    "cached_diagnostic_predictions_verified": 50,
+    "model_threshold_binding_rechecked": true,
+    "float32_tree_labels_unchanged_on_cached_rows": true,
+    "no_new_inference_or_tuning": true,
+    "source_sha256": {
+      "forgesight/defect_type.py": "d5b9e35a9e8461b06eeef24c69fe286af79d66f62b8627202d6a484cb8ede7a0",
+      "forgesight/screw_classifier.py": "a73150cb34a1778b1bd45d80cf9c576874d14695d91678002c0f4473a5890a8d",
+      "forgesight/screw_guidance.py": "4cedaec972baeedd0935e2469e1958047cdb4fef44af39dacf7b94f0e562faf1"
+    }
+  }
+}

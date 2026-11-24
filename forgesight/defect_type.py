@@ -1,4 +1,4 @@
-"""Measure shape and color of an EfficientAD response on an MVTec nut image."""
+"""Opt-in benchmark defect features, with separate nut and screw geometry."""
 
 import json
 import math
@@ -17,13 +17,23 @@ FOREST_FEATURES = FEATURE_NAMES + (
     "face_contrast", "face_chroma", "response_brightness",
 )
 BENCHMARK_MODES = ("SAVED_IMAGE_REPLAY", "USER_DECLARED_MVTEC_METAL_NUT_UPLOAD")
+SCREW_TYPES = ("manipulated_front", "scratch_head", "scratch_neck", "thread_side", "thread_top")
+SCREW_FEATURES = (
+    "object_aspect", "head_tip_width_ratio", "response_fraction", "response_axial_mean",
+    "response_axial_std", "response_transverse_mean", "response_transverse_std",
+    "peak_axial", "peak_transverse", "head_response_fraction", "neck_response_fraction",
+    "thread_response_fraction", "tip_response_fraction", "head_texture", "neck_texture",
+    "thread_texture", "response_contrast", "peak_score",
+)
 
 
 def load_profile(path):
     with open(path, encoding="utf-8") as stream:
         profile = json.load(stream)
+    kind = profile.get("kind") if isinstance(profile, dict) else None
+    features = SCREW_FEATURES if kind == "screw_decision_tree" else FOREST_FEATURES if kind == "four_type_forest" else FEATURE_NAMES
     if (not isinstance(profile, dict) or profile.get("schema_version") != 1
-            or profile.get("feature_names") != list(FOREST_FEATURES if profile.get("kind") == "four_type_forest" else FEATURE_NAMES)
+            or profile.get("feature_names") != list(features)
             or not isinstance(profile.get("profile_id"), str) or not profile["profile_id"]
             or not isinstance(profile.get("model_sha256"), str)
             or not re.fullmatch(r"[a-f0-9]{64}", profile["model_sha256"])
@@ -34,6 +44,10 @@ def load_profile(path):
             raise ValueError("Invalid preview rule thresholds.")
     elif profile.get("kind") == "decision_tree":
         _validate_node(profile.get("tree"), depth=0)
+    elif kind == "screw_decision_tree":
+        if profile.get("category") != "screw" or profile.get("labels") != list(SCREW_TYPES):
+            raise ValueError("Invalid screw classifier domain/labels.")
+        _validate_node(profile.get("tree"), depth=0, screw=True)
     elif profile.get("kind") == "four_type_forest":
         trees = profile.get("trees")
         if (not isinstance(trees, list) or len(trees) != 31
@@ -50,21 +64,32 @@ def _finite(value):
     return type(value) in (int, float) and math.isfinite(value)
 
 
-def _validate_node(node, *, depth, forest=False):
+def _validate_node(node, *, depth, forest=False, screw=False):
     if not isinstance(node, dict):
         raise ValueError("Invalid defect-type tree node.")
-    if set(node) == {"label"} and node["label"] in (FOUR_TYPES + ("unknown",) if forest else LABELS):
+    labels = SCREW_TYPES + ("unknown",) if screw else FOUR_TYPES + ("unknown",) if forest else LABELS
+    features = SCREW_FEATURES if screw else FOREST_FEATURES if forest else FEATURE_NAMES
+    if set(node) == {"label"} and node["label"] in labels:
         return
-    if (depth >= (5 if forest else 3) or set(node) != {"feature", "threshold", "left", "right"}
-            or node["feature"] not in (FOREST_FEATURES if forest else FEATURE_NAMES) or not _finite(node["threshold"])):
+    if (depth >= (4 if screw else 5 if forest else 3) or set(node) != {"feature", "threshold", "left", "right"}
+            or node["feature"] not in features or not _finite(node["threshold"])):
         raise ValueError("Invalid defect-type tree split.")
-    _validate_node(node["left"], depth=depth + 1, forest=forest)
-    _validate_node(node["right"], depth=depth + 1, forest=forest)
+    _validate_node(node["left"], depth=depth + 1, forest=forest, screw=screw)
+    _validate_node(node["right"], depth=depth + 1, forest=forest, screw=screw)
 
 
 def predict_type(features, profile):
     if features is None or not all(_finite(features.get(name)) for name in profile.get("feature_names", FEATURE_NAMES)):
         return "unknown"
+    if profile["kind"] == "screw_decision_tree":
+        import struct
+        try:
+            values = {name: struct.unpack('f', struct.pack('f', features[name]))[0] for name in SCREW_FEATURES}
+        except (OverflowError, struct.error):
+            return "unknown"
+        if not all(_finite(v) for v in values.values()):
+            return "unknown"
+        return _tree_label(profile["tree"], values)
     if profile["kind"] == "preview_rules":
         if features["chroma_difference"] >= profile["min_chroma_difference"]:
             return "discoloration"
@@ -85,8 +110,10 @@ def _tree_label(node, features):
 
 def assess_response(record, image, score_map, profile):
     """Attach an explicitly provisional assessment to eligible vision records."""
+    modes = (("SAVED_IMAGE_REPLAY", "USER_DECLARED_MVTEC_SCREW_UPLOAD")
+             if profile is not None and profile.get("kind") == "screw_decision_tree" else BENCHMARK_MODES)
     if (profile is None or record["candidate"] != "ANOMALY_CANDIDATE"
-            or record["source"]["mode"] not in BENCHMARK_MODES):
+            or record["source"]["mode"] not in modes):
         return
     import cv2
 
@@ -99,6 +126,9 @@ def assess_response(record, image, score_map, profile):
         if matches_profile:
             if profile["kind"] == "four_type_forest":
                 features, outline = _four_type_features_and_outline(image, score_map, record["geometry"])
+            elif profile["kind"] == "screw_decision_tree":
+                if record["geometry"].get("threshold") == profile["image_threshold"]:
+                    features = screw_features(image, score_map, record["geometry"])
             else:
                 features = response_features(image, score_map, record["geometry"])
     except (cv2.error, ValueError, ArithmeticError):
@@ -204,3 +234,83 @@ def _four_type_features_and_outline(image, score_map, geometry):
     scale = image.width / gray.shape[1]
     outline = (sum(sides) / 2 * scale, area * scale ** 2)
     return features, outline
+
+
+def screw_features(image, score_map, geometry):
+    """Locate a predicted response along the screw axis; never use annotation masks.
+
+    A dark-object silhouette supplies a principal axis; the wider end is the head.
+    Head/shank/thread bands are approximate benchmark regions, not measured geometry.
+    Feature computation uses a fixed 256px grid for matching fit and inference paths.
+    """
+    import cv2
+    import numpy as np
+
+    values = np.asarray(score_map)
+    if (values.shape != (image.height, image.width) or not np.isfinite(values).all()
+            or geometry.get("source_size_px") != [image.width, image.height]
+            or not _finite(geometry.get("threshold"))):
+        return None
+    rgb = np.asarray(image.convert("RGB").resize((256, 256), resample=2))
+    gray = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY)
+    _, mask = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)
+    count, components, stats, _ = cv2.connectedComponentsWithStats(mask, connectivity=8)
+    if count < 2:
+        return None
+    component = 1 + int(np.argmax(stats[1:, cv2.CC_STAT_AREA]))
+    body = components == component
+    area = int(body.sum())
+    if not 128 <= area <= gray.size * .65:
+        return None
+    coordinates = np.column_stack(np.nonzero(body))[:, ::-1].astype(np.float64)
+    center = coordinates.mean(axis=0)
+    eigenvalues, vectors = np.linalg.eigh(np.cov(coordinates, rowvar=False, bias=True))
+    if eigenvalues[0] <= 0 or eigenvalues[1] / eigenvalues[0] < 2:
+        return None
+    axis = vectors[:, 1]
+    perpendicular = np.array([-axis[1], axis[0]])
+    axial = (coordinates - center) @ axis
+    transverse = (coordinates - center) @ perpendicular
+    lower, upper = np.percentile(axial, [1, 99])
+    span = upper - lower
+    if span <= 0:
+        return None
+    normalized = (axial - lower) / span
+    def end_width(low, high):
+        group = transverse[(normalized >= low) & (normalized <= high)]
+        return float(np.percentile(group, 95) - np.percentile(group, 5)) if len(group) >= 8 else 0.
+    first, last = end_width(.02, .22), end_width(.78, .98)
+    if min(first, last) <= 0:
+        return None
+    if first < last:
+        axis = -axis
+        perpendicular = -perpendicular
+        lower, upper = -upper, -lower
+        first, last = last, first
+    yy, xx = np.mgrid[:256, :256]
+    grid = np.stack((xx - center[0], yy - center[1]), axis=-1)
+    along = (grid @ axis - lower) / span
+    across = (grid @ perpendicular) / max(first / 2, 1)
+    response = cv2.resize(values.astype(np.float32), (256, 256), interpolation=cv2.INTER_LINEAR)
+    support = response > geometry["threshold"]
+    if int(support.sum()) < 4:
+        return None
+    peak = response == response.max()
+    weights = np.maximum(response[support] - geometry["threshold"], 1e-8)
+    weights = weights / weights.sum()
+    axial_mean = float(np.sum(along[support] * weights))
+    transverse_mean = float(np.sum(np.abs(across[support]) * weights))
+    bands = (along < .2, (along >= .2) & (along < .5),
+             (along >= .5) & (along < .9), along >= .9)
+    fractions = [float(np.sum(weights[band[support]])) for band in bands]
+    textures = [float(np.std(gray[body & band])) if np.any(body & band) else 0. for band in bands[:3]]
+    background = float(np.median(gray[~body]))
+    features = dict(zip(SCREW_FEATURES, (
+        float(np.sqrt(eigenvalues[1] / eigenvalues[0])), first / last,
+        float(support.sum()) / area, axial_mean,
+        float(np.sqrt(np.sum((along[support] - axial_mean) ** 2 * weights))),
+        transverse_mean, float(np.sqrt(np.sum((np.abs(across[support]) - transverse_mean) ** 2 * weights))),
+        float(np.mean(along[peak])), float(np.mean(np.abs(across[peak]))), *fractions, *textures,
+        background - float(np.mean(gray[support])), float(response.max()),
+    )))
+    return features if all(_finite(v) for v in features.values()) else None

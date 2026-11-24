@@ -1,58 +1,89 @@
 {
-    "schema_version":  1,
-    "plugin_id":  "screw",
-    "recipe_version":  "screw-efficientad-s-fp32-v1",
-    "status":  "GATE_1_FAILED_NOT_PROMOTED",
-    "ready_for_station":  false,
-    "model":  {
-                  "runtime":  "TorchScript CPU FP32",
-                  "sha256":  "25c0893dc773629ff02d7b3bd9b8b86086f70e3f38fcc948296555a7b8a39885",
-                  "file":  "efficientad_s.ts",
-                  "bytes":  32317777
-              },
-    "input":  {
-                  "source_grayscale":  "replicate to RGB",
-                  "color":  "RGB",
-                  "shape":  [
-                                1,
-                                3,
-                                256,
-                                256
-                            ],
-                  "range":  [
-                                0,
-                                1
-                            ],
-                  "resize":  "full frame PIL bilinear antialias",
-                  "external_normalization":  false,
-                  "dtype":  "float32"
-              },
-    "score_policy":  {
-                         "sha256":  "d8f3141ea16c141d4271fc933bae4db41d35b6db0e33f65267795ed526372f8e",
-                         "threshold":  0.19198325276374817,
-                         "file":  "score_policy.json",
-                         "comparison":  "strict_greater_than"
-                     },
-    "calibration_reference":  "manifests/screw_efficientad_s_calibration_v1.json",
-    "export_verification":  "manifests/screw_torchscript_export_v1.json",
-    "evaluation_reference":  "manifests/screw_efficientad_s_evaluation_v1.json",
-    "evaluation_reference_sha256":  "0d8ec37c58682404533ba3d16a6be60aaa6c502a0f62759b02b545a8bc08f66e",
-    "gate_1":  {
-                   "targets":  {
-                                   "image_auroc":  0.95,
-                                   "recall":  0.95,
-                                   "false_alarm_rate":  0.1
-                               },
-                   "checks":  {
-                                  "image_auroc":  false,
-                                  "recall":  false,
-                                  "false_alarm_rate":  true
-                              },
-                   "passed":  false
-               },
-    "classifier":  "NOT_IMPLEMENTED_STAGE_2_BLOCKED",
-    "grade_policy":  "NOT_IMPLEMENTED_STAGE_2_BLOCKED",
-    "guidance":  "NOT_IMPLEMENTED_STAGE_2_BLOCKED",
-    "jetson_proof":  "NOT_VERIFIED",
-    "physical_camera_accuracy":  "NOT_VERIFIED"
+  "schema_version": 1,
+  "plugin_id": "screw",
+  "recipe_version": "screw-efficientad-s-fp32-30k-v2",
+  "status": "DEVELOPMENT_BUNDLE_OFFLINE_EVALUATED_NOT_STATION_APPROVED",
+  "ready_for_station": false,
+  "model": {
+    "runtime": "TorchScript CPU FP32",
+    "cpu_threads_verified": 8,
+    "file": "efficientad_s.ts",
+    "sha256": "494726eeececa7b6f194ea5ec6b471873aa41085913eab9b65ef64120519618e",
+    "bytes": 32317777
+  },
+  "input": {
+    "source_grayscale": "replicate to RGB",
+    "color": "RGB",
+    "shape": [
+      1,
+      3,
+      256,
+      256
+    ],
+    "range": [
+      0,
+      1
+    ],
+    "resize": "full frame PIL bilinear antialias",
+    "external_normalization": false,
+    "dtype": "float32"
+  },
+  "dataset_manifest": "manifests/screw_v1.json",
+  "dataset_manifest_sha256": "1b1d3ff53822877520687e0e1d2446a5f52fdb0474a3868f72a4316799b26f23",
+  "score_policy": {
+    "file": "score_policy.json",
+    "sha256": "c67617a9294f4268ecd8250838326d294fc38fd926c8ed90ea25583d85608226",
+    "threshold": 0.2372681200504303,
+    "comparison": "strict_greater_than"
+  },
+  "training_reference": "manifests/screw_efficientad_s_training_30k_v2.json",
+  "calibration_reference": "manifests/screw_efficientad_s_calibration_30k_v2.json",
+  "export_verification": "manifests/screw_torchscript_export_30k_v2.json",
+  "diagnostic_reference": "manifests/screw_30k_gpu_diagnostic_v2.json",
+  "development_selection": "manifests/screw_30k_development_selection_v2.json",
+  "development_selection_sha256": "739094eda4fa0878c7a5ae51b7c6e938e0feff6c9fefe7fbc2fe9263a4c66369",
+  "gate_1": {
+    "passed": false,
+    "reason": "OPERATOR_DEVELOPMENT_CONTINUATION_WITH_KNOWN_RECALL_GAP",
+    "fresh_acceptance_verified": false,
+    "original_targets": {
+      "image_auroc": 0.95,
+      "recall": 0.95,
+      "false_alarm_rate": 0.1
+    }
+  },
+  "classifier": {
+    "file": "defect_type.json",
+    "sha256": "4635a19705fbb067546ff8c2b2393dad47572a001268895e041217408d4c7467",
+    "status": "PROVISIONAL_BENCHMARK_ONLY",
+    "training_reference": "manifests/screw_defect_classifier_30k_v3.json",
+    "training_reference_sha256": "90f62ac6ce17dccc911df4f15f9a9b36ab6b25673ecca3b8fe53e8200a26c5d8",
+    "all_native_classes_have_validation_support": true,
+    "validation_correct_type_calls": 16,
+    "validation_type_calls": 19,
+    "diagnostic_correct_type_calls": 19,
+    "diagnostic_type_calls": 25,
+    "fresh_accuracy_verified": false
+  },
+  "grade_policy": {
+    "file": "grade_policy.json",
+    "sha256": "573f3e6f1bece2f58e466320045a9890f4d780349628cb1f48100c8a0dd152ea"
+  },
+  "guidance": {
+    "file": "guidance.json",
+    "sha256": "3d20545d773ff56107432c5bd94dbe5fa33fa3f99779d0e583acbabcefd5766e",
+    "verification_reference": "manifests/jetson_screw_guidance_v2.json",
+    "verification_reference_sha256": "5aac615874f5b7df30bde3b6b1e42fb678111192da81555405bade30f0019746"
+  },
+  "jetson_proof": "NOT_VERIFIED",
+  "physical_camera_accuracy": "NOT_VERIFIED",
+  "evaluation_reference": "manifests/screw_cpu_bundle_diagnostic_30k_v3.json",
+  "evaluation_reference_sha256": "cc7eb1184fc358ef601978f9f87cb3a44990c033644dde63d56841be1ffd5a87",
+  "gate_2": {
+    "passed": false,
+    "offline_components_exercised": true,
+    "reason": "PROVISIONAL_CLASSIFIER_HAS_SIX_WRONG_TYPE_CALLS_ON_EXPOSED_DIAGNOSTIC",
+    "llama_choice_checks_passed": true,
+    "fresh_acceptance_verified": false
+  }
 }

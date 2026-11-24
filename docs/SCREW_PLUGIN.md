@@ -1,7 +1,55 @@
 # Screw plugin
 
 Approved order: EfficientAD training/export, classifier/policies/guidance, then UI hot-swap.
-Current scope: Stage 1 calibration/export/evaluation; no UI edits or Llama retraining.
+Current scope: selected 30k detector and Stage 2 offline prototype; UI hot-swap is not enabled.
+
+## Selected 30k development candidate
+
+The operator requested development continuation with the measured recall limitation.
+This does not pass or lower the original 95% recall target. Fresh acceptance and
+physical-camera accuracy remain unverified.
+
+- Training: 30,000 FP32 steps; final checkpoint reload verified on CPU.
+- CPU TorchScript: `plugins/screw/efficientad_s.ts`, SHA-256
+  `494726eeececa7b6f194ea5ec6b471873aa41085913eab9b65ef64120519618e`.
+- CPU threshold: `0.2372681200504303`, strict `score > threshold`, from reserved
+  normals only. The GPU diagnostic threshold is retained separately. A CPU/GPU
+  rounding difference at a threshold-normal tie required CPU-native calibration;
+  CPU source/export parity then passed on 24 reserved normals with zero map/score error.
+- Reused-image CPU diagnostic: 47/50 correct, 26/29 defects flagged, 0/21 false
+  alarms, AUROC 0.98358. This is descriptive evidence, not a fresh acceptance test.
+- Screw subtype tree: five actual dataset labels; 69 classifier-fit and 21
+  classifier-validation images. No annotation masks supply features. Selection
+  compares 27 small trees on validation only, prioritizing support for all types.
+  The selected depth-3 tree makes 16 correct type calls out of 19 validation calls;
+  three wrong calls and two detector misses remain. Validation also selects leaf
+  support, so these numbers are not unbiased final-test accuracy.
+- Final CPU bundle diagnostic: the classifier correctly labels 19/25 type calls
+  across the 29 exposed defective images (six wrong calls, one unknown, three
+  detector misses). Every native class has at least one correct call, but
+  `thread_side` remains weak. Stage 2 is a tested development prototype; its
+  reliability gate is not passed, and UI integration stays blocked.
+- `grade_policy.json` keeps physical images and anomalies at REVIEW. Benchmark
+  normals outside a 10% numerical review margin can receive provisional PASS;
+  no automatic physical-part release or manufacturing tolerance is authorized.
+- `guidance.json` contains pinned A/B manual inspection checks. All six label/
+  unknown prompts produced valid choices on one physical Jetson ExecuTorch worker.
+  Site QC approval is pending. The Llama weights and station UI were unchanged.
+- Reviews added detector/threshold binding before benchmark PASS, geometry-cutoff
+  consistency before subtype assessment, and float32 tree traversal matching
+  sklearn. All 90 cached classifier rows and 50 diagnostic predictions retained
+  their results after these guards. JSON hashes use LF bytes for Windows/Jetson portability.
+
+Run the classifier with the existing isolated WSL vision Python and a fresh output:
+```text
+python -B -m forgesight.screw_classifier --output artifacts/vision/screw_classifier_new_run
+```
+Model binaries stay ignored. `vision.json` pins the selected weights and policies;
+station readiness remains false while classification reliability and device vision
+are unverified. All 84 focused bundle/pipeline/metal-nut/dashboard tests passed.
+Existing v1 manifests below remain historical evidence.
+
+## Original 10k experiment
 
 - Model: existing pinned EfficientAD-S, 256px RGB, FP32, 10,000 steps, seed 42.
 - Data: `data/mvtec_ad/screw`; frozen hashes/splits in `manifests/screw_v1.json`.

@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "document_id": "screw-manual-inspection-choices-v1",
+  "plugin_id": "screw",
+  "approval_status": "PROTOTYPE_PENDING_SITE_QC_APPROVAL",
+  "scope": "Manual verification checklists for benchmark images; not a manufacturing SOP approval",
+  "authorizes_release_or_repair": false,
+  "fallback": "Hold the screw for manual inspection of the highlighted area; compare with a good reference screw.",
+  "checks": {
+    "manipulated_front": {
+      "A": "Compare the highlighted screw tip with a good reference screw under the same view and lighting.",
+      "B": "Inspect the highlighted tip outline from another view to verify its shape."
+    },
+    "scratch_head": {
+      "A": "Inspect the highlighted screw head under angled light for a visible surface mark.",
+      "B": "Compare the highlighted head surface with a good reference screw."
+    },
+    "scratch_neck": {
+      "A": "Inspect the highlighted shank below the head under angled light for a surface mark.",
+      "B": "Compare the highlighted shank surface with a good reference screw."
+    },
+    "thread_side": {
+      "A": "Inspect the highlighted thread flank and compare its profile with a good reference screw.",
+      "B": "View the highlighted thread from another angle to verify the visible response."
+    },
+    "thread_top": {
+      "A": "Inspect the highlighted thread crest and compare it with a good reference screw.",
+      "B": "View the highlighted thread crest under angled light to verify the visible response."
+    },
+    "unknown": {
+      "A": "Manually inspect the highlighted area and compare it with a good reference screw.",
+      "B": "Verify image quality and orientation, then capture another image for comparison."
+    }
+  }
+}
