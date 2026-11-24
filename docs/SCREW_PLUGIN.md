@@ -54,9 +54,11 @@ physical-camera accuracy remain unverified.
 - `grade_policy.json` keeps physical images and anomalies at REVIEW. Benchmark
   normals outside a 10% numerical review margin can receive provisional PASS;
   no automatic physical-part release or manufacturing tolerance is authorized.
-- `guidance.json` contains pinned A/B manual inspection checks. All six label/
-  unknown prompts produced valid choices on one physical Jetson ExecuTorch worker.
-  Site QC approval is pending. The Llama weights and station UI were unchanged.
+- `guidance.json` contains pinned A/B manual inspection checks. All six original
+  label/unknown prompts produced valid choices on one physical Jetson ExecuTorch
+  worker. That report is preserved as historical evidence; it does not verify
+  the revised hybrid guidance. Current guidance requires a new device check and
+  remains pending site QC approval. Llama weights have not been retrained.
 - Reviews added detector/threshold binding before benchmark PASS, geometry-cutoff
   consistency before subtype assessment, and float32 tree traversal matching
   sklearn. All 90 cached classifier rows and 50 diagnostic predictions retained

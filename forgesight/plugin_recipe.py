@@ -33,7 +33,7 @@ class PluginRegistry:
         self.recipes = {}
         for name in ('metal_nut', 'screw'):
             folder = self.root / name
-            metadata = json.loads((folder / 'recipe.json').read_text())
+            metadata = json.loads((folder / 'recipe.json').read_text(encoding='utf-8'))
             if metadata.get('schema_version') != 1 or metadata.get('plugin_id') != name:
                 raise ValueError('Invalid part recipe identity.')
             paths, documents = {}, {}
@@ -51,7 +51,7 @@ class PluginRegistry:
                     raise ValueError('Recipe asset hash mismatch: ' + name + '/' + component)
                 paths[component] = path
                 if component != 'model':
-                    documents[component] = json.loads(path.read_text())
+                    documents[component] = json.loads(path.read_text(encoding='utf-8'))
             threshold = documents['score_policy']['threshold']
             if (type(threshold) not in (int, float) or not math.isfinite(threshold)
                     or documents['grade_policy']['image_threshold'] != threshold):

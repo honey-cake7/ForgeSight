@@ -66,12 +66,12 @@ def vision_executable(path):
     return Path(os.path.abspath(path))
 
 
-def _linux_pdeathsig():
-    try:
-        import ctypes, signal
-        ctypes.CDLL(None).prctl(1, signal.SIGTERM)
-    except Exception:
-        pass
+def _worker_environment():
+    env = dict(os.environ)
+    env['PYTHONPATH'] = str(Path(__file__).resolve().parent.parent)
+    if sys.platform.startswith('linux'):
+        env['FORGESIGHT_STATION_PID'] = str(os.getpid())
+    return env
 
 
 def launch_vision_worker(args, worker_script=None):
@@ -98,9 +98,8 @@ def launch_vision_worker(args, worker_script=None):
                "--threads", str(args.vision_worker_threads)]
     if not getattr(args, 'plugins_root', None):
         command += ["--idle-timeout-seconds", str(args.vision_worker_idle_timeout_seconds)]
-    preexec = _linux_pdeathsig if sys.platform.startswith("linux") else None
     worker = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                              text=True, preexec_fn=preexec)
+                              text=True, env=_worker_environment())
     stderr_tail = deque(maxlen=50)
 
     def drain_stderr():
@@ -156,11 +155,8 @@ def launch_advice_worker(args, python_command=None):
             sock.unlink(missing_ok=True)
         else:
             probe.close()
-    env = dict(os.environ)
-    env["PYTHONPATH"] = str(Path(__file__).resolve().parent.parent)
-    preexec = _linux_pdeathsig if sys.platform.startswith("linux") else None
     worker = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                              text=True, env=env, preexec_fn=preexec)
+                              text=True, env=_worker_environment())
     stderr_tail = deque(maxlen=50)
 
     def drain_stderr():

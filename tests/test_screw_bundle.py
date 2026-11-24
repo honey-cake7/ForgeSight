@@ -6,6 +6,24 @@ import unittest
 
 
 class ScrewBundleTests(unittest.TestCase):
+    def test_guidance_verification_is_current_or_explicitly_historical(self):
+        from forgesight.assist_contract import canonical_hash
+        root = Path('plugins/screw')
+        vision = json.loads((root / 'vision.json').read_text(encoding='utf-8'))
+        binding = vision['guidance']
+        current = canonical_hash(json.loads((root / binding['file']).read_text(encoding='utf-8')))
+        reference = binding.get('verification_reference')
+        if reference:
+            report = json.loads(Path(reference).read_text(encoding='utf-8'))
+            hashes = {row['guidance_sha256'] for row in report['validated_choices'].values()}
+            self.assertEqual(hashes, {current}, 'Active verification must cover the current guidance')
+        else:
+            self.assertEqual(binding['verification_status'], 'NOT_VERIFIED_FOR_CURRENT_GUIDANCE')
+            historical = Path(binding['historical_verification_reference'])
+            self.assertEqual(hashlib.sha256(historical.read_bytes()).hexdigest(),
+                             binding['historical_verification_reference_sha256'])
+            self.assertFalse(vision['gate_2']['llama_choice_checks_passed'])
+
     def test_reference_paths_are_portable_between_windows_and_jetson(self):
         vision = json.loads(Path('plugins/screw/vision.json').read_text())
         for key in ('development_selection', 'dataset_manifest', 'training_reference',

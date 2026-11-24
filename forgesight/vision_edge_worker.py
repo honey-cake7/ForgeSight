@@ -297,6 +297,9 @@ def main():
     parser.add_argument("--request-read-timeout-seconds", type=float, default=30,
                         help="Drop a client whose request line takes longer than this to arrive; default 30.")
     args = parser.parse_args()
+    if os.environ.get('FORGESIGHT_STATION_PID'):
+        from forgesight.worker_lifecycle import watch_station_parent
+        watch_station_parent()
     if not 1 <= args.threads <= 4:
         parser.error("Expected one to four Torch threads")
     if not 0 < args.request_read_timeout_seconds <= 300:

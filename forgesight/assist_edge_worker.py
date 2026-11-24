@@ -394,6 +394,9 @@ def main():
     parser.add_argument("--idle-timeout-seconds", type=float, default=None)
     parser.add_argument("--request-read-timeout-seconds", type=float, default=30)
     args = parser.parse_args()
+    if os.environ.get('FORGESIGHT_STATION_PID'):
+        from forgesight.worker_lifecycle import watch_station_parent
+        watch_station_parent()
     if args.idle_timeout_seconds is not None and not 0 < args.idle_timeout_seconds <= 3600:
         parser.error("Idle timeout must be between 0 and 3600 seconds.")
     runtime = build_jetson_runtime(args.llama_root)

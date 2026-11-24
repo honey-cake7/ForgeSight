@@ -8,7 +8,8 @@ import unittest
 class ScrewGuidanceTests(unittest.TestCase):
     def documents(self):
         root = Path('plugins/screw')
-        return json.loads((root / 'grade_policy.json').read_text()), json.loads((root / 'guidance.json').read_text())
+        return (json.loads((root / 'grade_policy.json').read_text(encoding='utf-8')),
+                json.loads((root / 'guidance.json').read_text(encoding='utf-8')))
 
     def test_all_real_labels_have_reviewed_manual_inspection_choices(self):
         from forgesight.screw_guidance import validate_guidance
