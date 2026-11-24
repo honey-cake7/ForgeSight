@@ -64,3 +64,29 @@ python -B -m forgesight.screw_evaluate --summarize-only
 Next: review a separate model-improvement experiment and obtain a new untouched
 acceptance set. Do not retune the frozen threshold using this exposed holdout.
 Jetson validation, classifier, grading policy and guidance remain unverified.
+
+## 30k experiment preparation
+
+Recipe: `configs/screw_training_30k_v2.json`; review protocol:
+`configs/screw_30k_review_v2.json`. The running trainer and its inputs are unchanged.
+Review outputs use `artifacts/vision/screw_30k_v2/`, separate from training and v1.
+
+Using the existing WSL vision Python:
+```text
+python -B -m forgesight.screw_run_review --check
+python -B -m forgesight.screw_run_review --commands
+```
+The first command reads progress and checks training input hashes without inference.
+The second refuses incomplete training; after all 30k steps, it prints four commands
+to execute sequentially: CPU checkpoint reload, normal-only calibration, TorchScript
+export, then 24-image calibration parity. Each must pass before the next is run.
+Existing output files are preserved; nothing promotes the candidate automatically.
+Preparation verification: 56 focused tests passed. Readiness requires matching,
+nonempty start/final training-input hashes; missing or malformed evidence blocks it.
+
+Checkpoint comparison protocol: compare 10k/20k/30k using image AUROC on independent
+development normals and defects; break ties using the earlier checkpoint. Training
+loss is not detection accuracy. Independent development normals are currently missing;
+classifier-development defects alone cannot measure false alarms or binary AUROC.
+No new dataset roles were assigned and no comparison was run. Fresh independent
+acceptance data must be audited separately; exposed v1 test images cannot provide it.

@@ -62,9 +62,11 @@ def checked_outputs(values):
     return values[0], float(values[1].item())
 
 
-def verify_export():
+def verify_export(reference_path=REFERENCE, export_path=EXPORT, parity_path=PARITY, root=ROOT):
+    if parity_path.exists():
+        raise FileExistsError("Export parity evidence exists; never overwrite it.")
     import torch
-    reference = json.loads(REFERENCE.read_text())
+    reference = json.loads(reference_path.read_text())
     source, policy, saved = load_calibrated_bundle(reference, "cpu")
     if saved["model_config"].get("category") != "screw":
         raise ValueError("Expected the screw calibration bundle.")
@@ -72,7 +74,7 @@ def verify_export():
     if fingerprint(manifest)[1] != saved["model_config"]["data_manifest_sha256"]:
         raise ValueError("Training manifest fingerprint mismatch.")
     document = read_manifest(manifest)
-    model = torch.jit.load(str(EXPORT), map_location="cpu").eval()
+    model = torch.jit.load(str(export_path), map_location="cpu").eval()
     scores = reference["normal_scores"]
     # All threshold normals plus four map-fit normals; never open holdout images here.
     selected = [r for r in scores if r["calibration_subset"] == "threshold"]
@@ -84,7 +86,7 @@ def verify_export():
             row = by_path[known["path"]]
             if row["role"] not in {"validation_normal", "threshold_normal"}:
                 raise ValueError("Export parity cannot read holdout/classifier images.")
-            tensor = tensor_for(row, ROOT, "cpu")
+            tensor = tensor_for(row, root, "cpu")
             expected = source(tensor, normalize=True)
             actual_map, score = checked_outputs(model(tensor))
             error = float((actual_map - expected.anomaly_map).abs().max())
@@ -97,15 +99,15 @@ def verify_export():
             checks.append({"path": row["path"], "score": score,
                            "map_max_abs_error": error, "score_abs_error": score_error,
                            "calibration_score_abs_error": calibration_error})
-    size, digest = fingerprint(EXPORT)
+    size, digest = fingerprint(export_path)
     report = {"schema_version": 1, "status": "REAL_CALIBRATION_IMAGE_EXPORT_PARITY_VERIFIED_PC_CPU",
-        "artifact": str(EXPORT), "bytes": size, "sha256": digest,
-        "calibration_reference_sha256": fingerprint(REFERENCE)[1],
+        "artifact": str(export_path), "bytes": size, "sha256": digest,
+        "calibration_reference_sha256": fingerprint(reference_path)[1],
         "manifest": str(manifest), "manifest_sha256": fingerprint(manifest)[1],
         "calibrated_checkpoint_sha256": reference["calibrated_checkpoint"]["sha256"],
         "policy_sha256": reference["policy_file_sha256"], "threshold": policy["threshold"],
         "checks": checks, "final_holdout_images_read": 0, "jetson_proof": "NOT_VERIFIED"}
-    write_new(PARITY, report)
+    write_new(parity_path, report)
     return {"status": report["status"], "images": len(checks), "sha256": digest}
 
 

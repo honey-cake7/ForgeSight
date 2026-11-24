@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "experiment": "screw-30k-development-v2",
+  "expected_steps": 30000,
+  "candidate_steps": [10000, 20000, 30000],
+  "training_recipe": "configs/screw_training_30k_v2.json",
+  "model_profile": "configs/screw_efficientad_s_v1.json",
+  "dataset_manifest": "manifests/screw_v1.json",
+  "dataset_root": "data/mvtec_ad/screw",
+  "calibration_policy": "configs/screw_30k_score_policy_v2.json",
+  "paths": {
+    "run_config": "artifacts/vision/screw_train_30k_v2/run_config.json",
+    "progress": "artifacts/vision/screw_train_30k_v2/progress.json",
+    "training_report": "artifacts/vision/screw_train_30k_v2/training_report.json",
+    "reload_report": "artifacts/vision/screw_30k_v2/reload_verification.json",
+    "calibration_directory": "artifacts/vision/screw_30k_v2/calibration",
+    "export_model": "artifacts/vision/screw_30k_v2/export/efficientad_s.ts",
+    "export_parity": "artifacts/vision/screw_30k_v2/export_parity.json"
+  },
+  "development_manifest": null,
+  "acceptance_manifest": null,
+  "checkpoint_selection": {
+    "metric": "image_auroc",
+    "tie_break": "earlier_checkpoint",
+    "requires_independent_development_normals_and_defects": true,
+    "training_loss_is_not_selection_accuracy": true
+  },
+  "acceptance_targets": {"image_auroc": 0.95, "recall": 0.95, "false_alarm_rate": 0.1},
+  "reuse_exposed_holdout_for_acceptance": false,
+  "automatic_promotion": false
+}
