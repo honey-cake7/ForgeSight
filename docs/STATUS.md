@@ -7,7 +7,13 @@ the known recall gap. CPU export parity passed on 24 reserved normals; the reuse
 50-image diagnostic remains 94% detection accuracy and 26/29 defect recall.
 Stage 2 supplies an opt-in five-type tree and conservative manual-review guidance;
 the 21-image validation split also selects the tree and is not a fresh final test.
-Six A/B prompts were verified on one unchanged Jetson ExecuTorch worker. Screw
+Six A/B prompts for the original guidance were verified on one unchanged Jetson
+ExecuTorch worker. That evidence is historical. Revised prompts were exercised
+on the physical Jetson's existing warm worker: 12/15 matched allowed checks
+(metal nut 7/9, screw 5/6); three required pinned checklist fallback. PC replay
+of those replies verified all 15 output guards. No station upgrade or restart
+was performed; full PR deployment and site QC approval remain pending. See
+`manifests/jetson_hybrid_guidance_842c793_v1.json`. Screw
 subtype diagnostics produced 19 correct calls out of 25 calls, with six wrong
 calls, one unknown and three detector misses across 29 exposed defective images.
 The Stage 2 reliability gate and production readiness remain false. An optional

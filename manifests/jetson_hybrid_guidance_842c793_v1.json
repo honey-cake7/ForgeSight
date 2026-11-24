@@ -1,0 +1,380 @@
+{
+  "source_commit": "842c7933749578d78c3ff5f60102ecb0c3152a69",
+  "scope": "Guidance routing and prompt protocol test; metal scenarios adapt a saved inspection fixture. Not an accuracy or physical-defect validation.",
+  "source_file_sha256": {
+    "forgesight/grounded_advice.py": "2177f6ccbd1263c9bbeb0f71b3518327c97bce91b0b19f16f17e94fe64b1996d",
+    "forgesight/screw_guidance.py": "0a90af4eeaf008b954e372a9579bd971a4577b1a13fd668b83bd41e0d4d260bc",
+    "guidance/grounded_advice_v1.json": "c002f7116a03d1d3ad419fef686942fc9fc4d45fb3284c9a055a3e56374001ff",
+    "plugins/screw/guidance.json": "2202705a079c6d8dbbd7b5111e7ac33cd6d359cfb46fce55f952702a17b50a2e"
+  },
+  "device_model": "NVIDIA Jetson Orin Nano Engineering Reference Developer Kit Super",
+  "machine": "aarch64",
+  "started_utc": "2026-11-24T06:17:15Z",
+  "finished_utc": "2026-11-24T06:17:39Z",
+  "prefill_limit_tokens": 128,
+  "context_limit_tokens": 512,
+  "model_sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739",
+  "tokenizer_sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55",
+  "workers_before": [
+    {
+      "pid": 81863,
+      "start_ticks": "4274672",
+      "rss": "VmRSS:\t  957032 kB"
+    }
+  ],
+  "workers_after": [
+    {
+      "pid": 81863,
+      "start_ticks": "4274672",
+      "rss": "VmRSS:\t  964644 kB"
+    }
+  ],
+  "station_before": {
+    "busy": false,
+    "camera": {
+      "ready": true,
+      "running": true,
+      "message": "Live C270 preview"
+    },
+    "latest_inspection_id": "64a63d2f-fac6-44cb-b8e1-d018ecf62f6c"
+  },
+  "station_after": {
+    "busy": false,
+    "camera": {
+      "ready": true,
+      "running": true,
+      "message": "Live C270 preview"
+    },
+    "latest_inspection_id": "64a63d2f-fac6-44cb-b8e1-d018ecf62f6c"
+  },
+  "model_stat_before": {
+    "bytes": 802247040,
+    "mtime_ns": 1794429735385491050,
+    "inode": 1458160
+  },
+  "model_stat_after": {
+    "bytes": 802247040,
+    "mtime_ns": 1794429735385491050,
+    "inode": 1458160
+  },
+  "same_warm_worker_verified": true,
+  "model_unchanged_verified": true,
+  "host_response_validation_scope": "Captured device replies replayed through current host guards on PC; installed station code was not upgraded.",
+  "schema_version": 1,
+  "status": "DEVICE_PROMPTS_EXERCISED_WITH_THREE_CHECKLIST_FALLBACKS",
+  "installed_station_commit": "ce62d629bdcbe089c6993866ad8898621774ca5b",
+  "installed_worker_source_sha256": "fdfa7cd7cf1e33a8669bb541c2beda053a18643ef234fc6cb5144007868556c58",
+  "current_pr_deployed": false,
+  "full_pr_end_to_end_verified": false,
+  "runtime_packages": {
+    "torch": "2.14.0+cpu",
+    "executorch": "1.5.1+cpu",
+    "pytorch-tokenizers": "1.6.0"
+  },
+  "runtime_evidence": {
+    "host": {
+      "machine": "aarch64",
+      "model": "NVIDIA Jetson Orin Nano Engineering Reference Developer Kit Super",
+      "python": "3.12.14",
+      "venv": "/home/nvidia/.local/share/forgesight/llama_cpu_v1/venv",
+      "system_python": "Python 3.8.10"
+    },
+    "artifact": {
+      "bytes": 802247040,
+      "sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739"
+    },
+    "tokenizer": {
+      "bytes": 2183982,
+      "sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55"
+    },
+    "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+    "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+    "backend_requested": "xnnpack"
+  },
+  "worker_started_utc": "2026-11-24T05:14:30Z",
+  "model_choices_matched": 12,
+  "case_count": 15,
+  "safe_host_renderings": 15,
+  "all_model_choices_matched": false,
+  "site_qc_approval": false,
+  "physical_part_accuracy_verified": false,
+  "model_retrained": false,
+  "station_restarted": false,
+  "workers_restarted": false,
+  "packages_installed": false,
+  "raw_report_path": "artifacts/pr/jetson_guidance_842c793/report.json",
+  "raw_report_sha256": "a266e3773785aaa35ea1a40ca9075f46549bf7e3a11e893ecaaae91dc16b79f0",
+  "note": "One prompt per route, not an accuracy, reliability or memory-leak acceptance test. The running station was not upgraded. PC guards validated the captured device replies.",
+  "cases": [
+    {
+      "id": "metal_nut_scratch",
+      "plugin": "metal_nut",
+      "prompt_token_count": 93,
+      "validation_passed": true,
+      "host_rendered_status": "LLAMA_ADVICE",
+      "host_rendered_text": "Inspect internal thread crests under 10× optical magnifier; verify thread pitch with Go/No-Go plug gauge. Vision flagged possible scratch on annular face (38 px) with low severity. Hold part in Quarantine Bin B for review; do not release without QC sign-off.",
+      "safe_rendering_verified": true,
+      "request": {
+        "prompt_text": "Metal nut inspection. Possible scratch on annular face.\nChecks:\nInspect internal thread crests under 10× optical magnifier; verify thread pitch with Go/No-Go plug gauge.\nExamine outer hexagon flats under 45° directional shadow lighting for scratch depth and burrs.\nWhich is the best first check?",
+        "system_text": "Choose the best first inspection check. Reply with the exact check.",
+        "max_new_tokens": 36
+      },
+      "generated_text": "The best first inspection check is:\n\nInspect internal thread crests under 10× optical magnifier; verify thread pitch with Go/No-Go plug gauge.\n\nThis check is recommended",
+      "generation_ms": 2014.316291999421,
+      "native_status": "GENERATED_BY_PERSISTENT_WORKER",
+      "guidance_sha256": "460debbdc9a2b11ebaa0d0a89464fdabfbf2826c3d91e92d858a39fa5d42aab3"
+    },
+    {
+      "id": "metal_nut_inner_rim",
+      "plugin": "metal_nut",
+      "prompt_token_count": 69,
+      "validation_passed": false,
+      "host_rendered_status": "CHECKLIST_FALLBACK",
+      "host_rendered_text": "Inspect internal thread crests and lead-in chamfer for tooling marks, shearing, or chip buildup. Vision flagged possible scratch on inner rim (38 px) with medium severity. Hold part in Quarantine Bin B for review; do not release without QC sign-off.",
+      "safe_rendering_verified": true,
+      "request": {
+        "prompt_text": "Metal nut inspection. Possible scratch on inner rim.\nChecks:\nInspect internal thread crests and lead-in chamfer for tooling marks, shearing, or chip buildup.\nWhich is the best first check?",
+        "system_text": "Choose the best first inspection check. Reply with the exact check.",
+        "max_new_tokens": 36
+      },
+      "generated_text": "The best first inspection check for a metal nut inspection is:\n\n**Inspect internal thread crests and lead-in chamfer for tooling marks, shearing, or chip buildup.**\n\n",
+      "generation_ms": 1848.0478660057997,
+      "native_status": "GENERATED_BY_PERSISTENT_WORKER",
+      "guidance_sha256": "460debbdc9a2b11ebaa0d0a89464fdabfbf2826c3d91e92d858a39fa5d42aab3"
+    },
+    {
+      "id": "metal_nut_bent",
+      "plugin": "metal_nut",
+      "prompt_token_count": 80,
+      "validation_passed": true,
+      "host_rendered_status": "LLAMA_ADVICE",
+      "host_rendered_text": "Check hexagon flats and bearing face perpendicularity on granite surface plate with dial indicator. Vision flagged possible bent nut on annular face (38 px) with low severity. Hold part in Quarantine Bin B for review; do not release without QC sign-off.",
+      "safe_rendering_verified": true,
+      "request": {
+        "prompt_text": "Metal nut inspection. Possible bent nut on annular face.\nChecks:\nCheck hexagon flats and bearing face perpendicularity on granite surface plate with dial indicator.\nInspect flange rim under optical comparator against master nut profile for deformation.\nWhich is the best first check?",
+        "system_text": "Choose the best first inspection check. Reply with the exact check.",
+        "max_new_tokens": 36
+      },
+      "generated_text": "The best first inspection check is:\n\nCheck hexagon flats and bearing face perpendicularity on granite surface plate with dial indicator.\n\nThis check is recommended by the API (American Petroleum Institute)",
+      "generation_ms": 1870.8559120059363,
+      "native_status": "GENERATED_BY_PERSISTENT_WORKER",
+      "guidance_sha256": "460debbdc9a2b11ebaa0d0a89464fdabfbf2826c3d91e92d858a39fa5d42aab3"
+    },
+    {
+      "id": "metal_nut_flip",
+      "plugin": "metal_nut",
+      "prompt_token_count": 74,
+      "validation_passed": true,
+      "host_rendered_status": "LLAMA_ADVICE",
+      "host_rendered_text": "Verify fixture seating and seating pin alignment, then recapture in correct orientation. Vision flagged possible flip on whole nut orientation (38 px) with unassessed severity. Hold part in Quarantine Bin B for review; do not release without QC sign-off.",
+      "safe_rendering_verified": true,
+      "request": {
+        "prompt_text": "Metal nut inspection. Possible flip on whole nut orientation.\nChecks:\nVerify fixture seating and seating pin alignment, then recapture in correct orientation.\nInspect primary bearing face contact pattern against reference master nut.\nWhich is the best first check?",
+        "system_text": "Choose the best first inspection check. Reply with the exact check.",
+        "max_new_tokens": 36
+      },
+      "generated_text": "The best first inspection check is:\n\n**Verify fixture seating and seating pin alignment, then recapture in correct orientation.**\n\nThis check is recommended by the API (American Petroleum Institute)",
+      "generation_ms": 1837.0719669983373,
+      "native_status": "GENERATED_BY_PERSISTENT_WORKER",
+      "guidance_sha256": "460debbdc9a2b11ebaa0d0a89464fdabfbf2826c3d91e92d858a39fa5d42aab3"
+    },
+    {
+      "id": "metal_nut_discoloration",
+      "plugin": "metal_nut",
+      "prompt_token_count": 88,
+      "validation_passed": true,
+      "host_rendered_status": "LLAMA_ADVICE",
+      "host_rendered_text": "Examine highlighted surface under 5000K diffuse illumination for plating voids, oxidation, or chemical staining. Vision flagged possible discoloration on annular face (38 px) with low severity. Hold part in Quarantine Bin B for review; do not release without QC sign-off.",
+      "safe_rendering_verified": true,
+      "request": {
+        "prompt_text": "Metal nut inspection. Possible discoloration on annular face.\nChecks:\nExamine highlighted surface under 5000K diffuse illumination for plating voids, oxidation, or chemical staining.\nVerify anti-corrosion coating thickness and surface finish against reference master nut.\nWhich is the best first check?",
+        "system_text": "Choose the best first inspection check. Reply with the exact check.",
+        "max_new_tokens": 36
+      },
+      "generated_text": "The best first inspection check is:\n\nExamine highlighted surface under 5000K diffuse illumination for plating voids, oxidation, or chemical staining.\n\nThis check is recommended because it",
+      "generation_ms": 1940.1566469969111,
+      "native_status": "GENERATED_BY_PERSISTENT_WORKER",
+      "guidance_sha256": "460debbdc9a2b11ebaa0d0a89464fdabfbf2826c3d91e92d858a39fa5d42aab3"
+    },
+    {
+      "id": "metal_nut_unknown",
+      "plugin": "metal_nut",
+      "prompt_token_count": 67,
+      "validation_passed": true,
+      "host_rendered_status": "LLAMA_ADVICE",
+      "host_rendered_text": "Manually inspect the highlighted region with 10× loupe and compare with calibrated reference nut. Vision flagged an anomaly on annular face (38 px) with unassessed severity. Hold part in Quarantine Bin B for review; do not release without QC sign-off.",
+      "safe_rendering_verified": true,
+      "request": {
+        "prompt_text": "Metal nut inspection. Possible anomaly on annular face.\nChecks:\nManually inspect the highlighted region with 10× loupe and compare with calibrated reference nut.\nWhich is the best first check?",
+        "system_text": "Choose the best first inspection check. Reply with the exact check.",
+        "max_new_tokens": 36
+      },
+      "generated_text": "The best first inspection check is:\n\nManually inspect the highlighted region with 10× loupe and compare with calibrated reference nut.\n\nThis check is recommended by the API (American Petroleum",
+      "generation_ms": 1766.101395995065,
+      "native_status": "GENERATED_BY_PERSISTENT_WORKER",
+      "guidance_sha256": "460debbdc9a2b11ebaa0d0a89464fdabfbf2826c3d91e92d858a39fa5d42aab3"
+    },
+    {
+      "id": "metal_nut_uncertain",
+      "plugin": "metal_nut",
+      "prompt_token_count": 61,
+      "validation_passed": true,
+      "host_rendered_status": "LLAMA_ADVICE",
+      "host_rendered_text": "Perform full-envelope visual and dimensional verification across all nut faces and thread opening. Vision flagged an anomaly (38 px) with unassessed severity. Hold part in Quarantine Bin B for review; do not release without QC sign-off.",
+      "safe_rendering_verified": true,
+      "request": {
+        "prompt_text": "Metal nut inspection. Possible anomaly on uncertain.\nChecks:\nPerform full-envelope visual and dimensional verification across all nut faces and thread opening.\nWhich is the best first check?",
+        "system_text": "Choose the best first inspection check. Reply with the exact check.",
+        "max_new_tokens": 36
+      },
+      "generated_text": "The best first inspection check is:\n\n**Perform full-envelope visual and dimensional verification across all nut faces and thread opening.**\n\nThis check is recommended as a first inspection because:\n\n* It",
+      "generation_ms": 1719.0494269962073,
+      "native_status": "GENERATED_BY_PERSISTENT_WORKER",
+      "guidance_sha256": "460debbdc9a2b11ebaa0d0a89464fdabfbf2826c3d91e92d858a39fa5d42aab3"
+    },
+    {
+      "id": "metal_nut_camera",
+      "plugin": "metal_nut",
+      "prompt_token_count": 62,
+      "validation_passed": true,
+      "host_rendered_status": "LLAMA_ADVICE",
+      "host_rendered_text": "Verify part alignment and illumination in jig, then recapture frame for defect confirmation. The camera result is diagnostic and the defect is unconfirmed. Hold part for manual review.",
+      "safe_rendering_verified": true,
+      "request": {
+        "prompt_text": "Metal nut inspection. Possible anomaly on uncertain.\nChecks:\nVerify part alignment and illumination in jig, then recapture frame for defect confirmation.\nWhich is the best first check?",
+        "system_text": "Choose the best first inspection check. Reply with the exact check.",
+        "max_new_tokens": 36
+      },
+      "generated_text": "The best first inspection check is:\n\n**Verify part alignment and illumination in jig, then recapture frame for defect confirmation.**\n\nThis check is the most effective and efficient first inspection check",
+      "generation_ms": 1708.097655995516,
+      "native_status": "GENERATED_BY_PERSISTENT_WORKER",
+      "guidance_sha256": "460debbdc9a2b11ebaa0d0a89464fdabfbf2826c3d91e92d858a39fa5d42aab3"
+    },
+    {
+      "id": "metal_nut_screen_photo",
+      "plugin": "metal_nut",
+      "prompt_token_count": 55,
+      "validation_passed": false,
+      "host_rendered_status": "CHECKLIST_FALLBACK",
+      "host_rendered_text": "Use original calibrated image capture for benchmark inspection. The camera result is diagnostic and the defect is unconfirmed. Hold part for manual review.",
+      "safe_rendering_verified": true,
+      "request": {
+        "prompt_text": "Metal nut inspection. Possible anomaly on uncertain.\nChecks:\nUse original calibrated image capture for benchmark inspection.\nWhich is the best first check?",
+        "system_text": "Choose the best first inspection check. Reply with the exact check.",
+        "max_new_tokens": 36
+      },
+      "generated_text": "The best first inspection check is:\n\n**Metal Nut Inspection: Possible Anomaly on Uncertain**\n\nThis check is recommended because it allows for the use of an original calibrated image capture (",
+      "generation_ms": 1620.0961809954606,
+      "native_status": "GENERATED_BY_PERSISTENT_WORKER",
+      "guidance_sha256": "460debbdc9a2b11ebaa0d0a89464fdabfbf2826c3d91e92d858a39fa5d42aab3"
+    },
+    {
+      "id": "screw_manipulated_front",
+      "plugin": "screw",
+      "prompt_token_count": 103,
+      "validation_passed": true,
+      "host_rendered_status": "REVIEWED_CHOICE",
+      "host_rendered_text": "Inspect screw tip under 10× optical loupe; verify lead thread and point angle against calibrated template.",
+      "safe_rendering_verified": true,
+      "request": {
+        "prompt_text": "Possible screw defect: manipulated front. Type is provisional. Part remains for manual review.\nA. Inspect screw tip under 10× optical loupe; verify lead thread and point angle against calibrated template.\nB. Inspect screw tip outline under optical comparator from 90° rotated angle to verify tip symmetry.\nChoose the best first inspection check. Answer A or B only.",
+        "system_text": "Choose a supplied inspection check. Reply with A or B only.",
+        "max_new_tokens": 2
+      },
+      "generated_text": "A.\n\n",
+      "generation_ms": 841.8373120002798,
+      "native_status": "GENERATED_BY_PERSISTENT_WORKER",
+      "guidance_sha256": "414847e7eeb3d91a12024a59068118525bca7225089a40dc243734eaba8d8db7"
+    },
+    {
+      "id": "screw_scratch_head",
+      "plugin": "screw",
+      "prompt_token_count": 98,
+      "validation_passed": true,
+      "host_rendered_status": "REVIEWED_CHOICE",
+      "host_rendered_text": "Inspect screw head bearing surface and drive recess under 45° directional lighting for tooling burrs or cracks.",
+      "safe_rendering_verified": true,
+      "request": {
+        "prompt_text": "Possible screw defect: scratch head. Type is provisional. Part remains for manual review.\nA. Inspect screw head bearing surface and drive recess under 45° directional lighting for tooling burrs or cracks.\nB. Verify drive socket engagement and head surface finish against reference master screw.\nChoose the best first inspection check. Answer A or B only.",
+        "system_text": "Choose a supplied inspection check. Reply with A or B only.",
+        "max_new_tokens": 2
+      },
+      "generated_text": "A.\n\n",
+      "generation_ms": 804.948487006186,
+      "native_status": "GENERATED_BY_PERSISTENT_WORKER",
+      "guidance_sha256": "414847e7eeb3d91a12024a59068118525bca7225089a40dc243734eaba8d8db7"
+    },
+    {
+      "id": "screw_scratch_neck",
+      "plugin": "screw",
+      "prompt_token_count": 99,
+      "validation_passed": false,
+      "host_rendered_status": "FALLBACK_MANUAL_INSPECTION",
+      "host_rendered_text": "Hold screw in quarantine for manual verification of highlighted area; compare with calibrated reference.",
+      "safe_rendering_verified": true,
+      "request": {
+        "prompt_text": "Possible screw defect: scratch neck. Type is provisional. Part remains for manual review.\nA. Inspect underhead shank fillet under angled lighting for surface marks, notch stress risers, or galling.\nB. Verify shank diameter and underhead transition radius against specification tolerance.\nChoose the best first inspection check. Answer A or B only.",
+        "system_text": "Choose a supplied inspection check. Reply with A or B only.",
+        "max_new_tokens": 2
+      },
+      "generated_text": "The correct",
+      "generation_ms": 867.0111149986042,
+      "native_status": "GENERATED_BY_PERSISTENT_WORKER",
+      "guidance_sha256": "414847e7eeb3d91a12024a59068118525bca7225089a40dc243734eaba8d8db7"
+    },
+    {
+      "id": "screw_thread_side",
+      "plugin": "screw",
+      "prompt_token_count": 105,
+      "validation_passed": true,
+      "host_rendered_status": "REVIEWED_CHOICE",
+      "host_rendered_text": "Inspect thread flanks under 45° directional shadow lighting; check for thread shearing or pitch galling.",
+      "safe_rendering_verified": true,
+      "request": {
+        "prompt_text": "Possible screw defect: thread side. Type is provisional. Part remains for manual review.\nA. Inspect thread flanks under 45° directional shadow lighting; check for thread shearing or pitch galling.\nB. Inspect thread flank profile from 90° rotated angle; verify thread angle and pitch uniformity.\nChoose the best first inspection check. Answer A or B only.",
+        "system_text": "Choose a supplied inspection check. Reply with A or B only.",
+        "max_new_tokens": 2
+      },
+      "generated_text": "A\n\n",
+      "generation_ms": 943.143611002597,
+      "native_status": "GENERATED_BY_PERSISTENT_WORKER",
+      "guidance_sha256": "414847e7eeb3d91a12024a59068118525bca7225089a40dc243734eaba8d8db7"
+    },
+    {
+      "id": "screw_thread_top",
+      "plugin": "screw",
+      "prompt_token_count": 100,
+      "validation_passed": true,
+      "host_rendered_status": "REVIEWED_CHOICE",
+      "host_rendered_text": "Inspect thread crest under 10× optical loupe for crest flattening, micro-cracks, or height deviation.",
+      "safe_rendering_verified": true,
+      "request": {
+        "prompt_text": "Possible screw defect: thread top. Type is provisional. Part remains for manual review.\nA. Inspect thread crest under 10× optical loupe for crest flattening, micro-cracks, or height deviation.\nB. Verify major thread diameter and crest contour under shadow lighting against reference template.\nChoose the best first inspection check. Answer A or B only.",
+        "system_text": "Choose a supplied inspection check. Reply with A or B only.",
+        "max_new_tokens": 2
+      },
+      "generated_text": "A.\n\n",
+      "generation_ms": 879.4446850006352,
+      "native_status": "GENERATED_BY_PERSISTENT_WORKER",
+      "guidance_sha256": "414847e7eeb3d91a12024a59068118525bca7225089a40dc243734eaba8d8db7"
+    },
+    {
+      "id": "screw_unknown",
+      "plugin": "screw",
+      "prompt_token_count": 93,
+      "validation_passed": true,
+      "host_rendered_status": "REVIEWED_CHOICE",
+      "host_rendered_text": "Manually inspect highlighted area with optical comparator and compare against calibrated reference screw.",
+      "safe_rendering_verified": true,
+      "request": {
+        "prompt_text": "Possible screw defect: unknown. Type is provisional. Part remains for manual review.\nA. Manually inspect highlighted area with optical comparator and compare against calibrated reference screw.\nB. Verify image quality and part orientation in jig, then capture secondary angle frame for comparison.\nChoose the best first inspection check. Answer A or B only.",
+        "system_text": "Choose a supplied inspection check. Reply with A or B only.",
+        "max_new_tokens": 2
+      },
+      "generated_text": "A.\n\n",
+      "generation_ms": 833.6072439997224,
+      "native_status": "GENERATED_BY_PERSISTENT_WORKER",
+      "guidance_sha256": "414847e7eeb3d91a12024a59068118525bca7225089a40dc243734eaba8d8db7"
+    }
+  ]
+}

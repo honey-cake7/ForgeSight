@@ -62,10 +62,14 @@ def prepare(record, rules):
     defect_type = facts["type"]
     location = facts["location"]
     normal_type = TYPE_NAMES.get(defect_type)
+    severity_str = facts.get("severity", "UNASSESSED").lower()
+    area_px = facts.get("response_region_area_px")
+    area_str = f" ({area_px} px)" if area_px else ""
+    loc_str = f" on {location}" if location and location != "uncertain" else ""
     if normal_type:
-        reason = "vision flagged a possible " + normal_type
+        reason = f"Vision flagged possible {normal_type}{loc_str}{area_str} with {severity_str} severity. Hold part in Quarantine Bin B for review; do not release without QC sign-off."
     else:
-        reason = "vision flagged an anomaly of unknown type"
+        reason = f"Vision flagged an anomaly{loc_str}{area_str} with {severity_str} severity. Hold part in Quarantine Bin B for review; do not release without QC sign-off."
 
     rule = defect_type
     if defect_type != "flip" and location == "uncertain":
@@ -74,17 +78,15 @@ def prepare(record, rules):
         rule = "inner_rim"
     if diagnostic:
         rule = "screen_photo" if source_mode == "LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC" else "camera"
-        reason = "the camera result is diagnostic and the defect is unconfirmed"
+        reason = "The camera result is diagnostic and the defect is unconfirmed. Hold part for manual review."
     actions = rules["checks"][rule]
-    notes = {normalized(action): f"{action} {reason.capitalize()}." for action in actions}
+    notes = {normalized(action): f"{action} {reason}" for action in actions}
     grade = record["decision"]["grade"]
     prompt = (
-        f"Metal nut inspection. {reason.capitalize()}. "
-        f"Severity {facts['severity'].lower()}. Location {location}. "
-        f"Response {facts['response_region_area_px']} px.\n"
+        f"Metal nut inspection. Possible {normal_type or 'anomaly'} on {location}.\n"
         + "Checks:\n" + "\n".join(actions) + "\nWhich is the best first check?"
     )
-    request = {"prompt_text": prompt, "system_text": SYSTEM, "max_new_tokens": 24}
+    request = {"prompt_text": prompt, "system_text": SYSTEM, "max_new_tokens": 36}
     report = {
         "inspection_id": record["inspection_id"],
         "inspection_sha256": canonical_hash(record),
@@ -109,9 +111,9 @@ def selected_check(text):
     end_marker = "<|eot_id|>"
     if text.endswith(end_marker):
         text = text[:-len(end_marker)].rstrip()
-    # Some replies wrap the first check in a predictable Markdown field.
+    # Some replies wrap the first check in a predictable field with or without Markdown.
     # Only that field can influence the displayed text.
-    field = re.match(r"^The best first inspection check is:\s*\*\*([^*\r\n]+)\*\*",
+    field = re.match(r"^The best first (?:inspection )?check is:\s*(?:\*\*)?([^\r\n*]+)",
                      text, flags=re.IGNORECASE)
     return normalized(field.group(1) if field else text)
 

@@ -2,11 +2,14 @@
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 import tempfile
 import textwrap
 import unittest
+import threading
+import time
 from pathlib import Path
 from unittest import mock
 
@@ -46,6 +49,107 @@ def make_args(socket_path):
         vision_python=sys.executable, model=Path("model.ts"),
         vision_worker_socket=socket_path, vision_worker_threads=1,
         vision_worker_idle_timeout_seconds=60)
+
+
+@unittest.skipUnless(sys.platform.startswith('linux'), 'Linux worker lifetime regression')
+class RespawnThreadLifetimeTests(unittest.TestCase):
+    def test_workers_survive_the_thread_that_launched_them(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            stub = root / 'ready.py'
+            stub.write_text('from forgesight.worker_lifecycle import watch_station_parent\nwatch_station_parent()\n'
+                            'import json, time\nprint(json.dumps({"status":"WORKER_READY"}), flush=True)\ntime.sleep(30)\n',
+                            encoding='utf-8')
+            for kind in ('vision', 'advice'):
+                with self.subTest(worker=kind):
+                    workers, errors = [], []
+                    def launch():
+                        try:
+                            if kind == 'vision':
+                                workers.append(launch_vision_worker(make_args(root / 'vision.sock'), worker_script=stub))
+                            else:
+                                args = argparse.Namespace(llama_root=root, llama_worker_socket=root / 'advice.sock',
+                                                          llama_worker_idle_timeout_seconds=60)
+                                workers.append(launch_advice_worker(args, python_command=[sys.executable, str(stub)]))
+                        except Exception as error:
+                            errors.append(error)
+                    thread = threading.Thread(target=launch)
+                    thread.start()
+                    thread.join(timeout=10)
+                    try:
+                        self.assertFalse(thread.is_alive())
+                        self.assertEqual(errors, [])
+                        self.assertEqual(len(workers), 1)
+                        time.sleep(.2)  # let a parent-thread-death signal be delivered
+                        self.assertIsNone(workers[0].poll(), 'Worker died when its respawn thread returned')
+                    finally:
+                        for worker in workers:
+                            if worker.poll() is None:
+                                worker.terminate()
+                            worker.wait(timeout=5)
+                            worker.stdout.close()
+                            worker.stderr.close()
+
+    def test_owned_workers_exit_when_the_station_process_exits(self):
+        def running(pid):
+            try:
+                status = Path(f'/proc/{pid}/stat').read_text()
+                return status.rsplit(')', 1)[1].split()[0] != 'Z'
+            except FileNotFoundError:
+                return False
+
+        parent_script = textwrap.dedent('''
+            import argparse, sys, threading, time
+            from pathlib import Path
+            from forgesight.jetson_live_ui import launch_advice_worker, launch_vision_worker
+            root, kind = Path(sys.argv[1]), sys.argv[2]
+            workers = []
+            def launch():
+                if kind == 'vision':
+                    args = argparse.Namespace(vision_python=sys.executable, model=root/'model.ts',
+                        vision_worker_socket=root/'v.sock', vision_worker_threads=1,
+                        vision_worker_idle_timeout_seconds=60)
+                    workers.append(launch_vision_worker(args, worker_script=root/'stub.py'))
+                else:
+                    args = argparse.Namespace(llama_root=root, llama_worker_socket=root/'a.sock',
+                        llama_worker_idle_timeout_seconds=60)
+                    workers.append(launch_advice_worker(args, python_command=[sys.executable, str(root/'stub.py')]))
+            thread = threading.Thread(target=launch)
+            thread.start()
+            thread.join()
+            (root/'worker.pid').write_text(str(workers[0].pid))
+            time.sleep(30)
+        ''')
+        for kind in ('vision', 'advice'):
+            with self.subTest(worker=kind), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                (root / 'stub.py').write_text(
+                    'from forgesight.worker_lifecycle import watch_station_parent\nwatch_station_parent()\n'
+                    'import json,time\nprint(json.dumps({"status":"WORKER_READY"}),flush=True)\ntime.sleep(30)\n',
+                    encoding='utf-8')
+                parent = subprocess.Popen([sys.executable, '-B', '-c', parent_script, str(root), kind],
+                                          stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+                worker_pid = None
+                try:
+                    deadline = time.monotonic() + 10
+                    while not (root / 'worker.pid').exists() and parent.poll() is None and time.monotonic() < deadline:
+                        time.sleep(.02)
+                    self.assertTrue((root / 'worker.pid').exists(), 'Test station did not start its worker')
+                    worker_pid = int((root / 'worker.pid').read_text())
+                    self.assertTrue(running(worker_pid))
+                    parent.terminate()
+                    parent.wait(timeout=5)
+                    deadline = time.monotonic() + 5
+                    while running(worker_pid) and time.monotonic() < deadline:
+                        time.sleep(.05)
+                    self.assertFalse(running(worker_pid), 'Worker outlived its station process')
+                finally:
+                    if parent.poll() is None:
+                        parent.terminate()
+                    parent.wait(timeout=5)
+                    parent.stderr.close()
+                    if worker_pid is not None and running(worker_pid):
+                        os.kill(worker_pid, 15)
 
 
 class LaunchVisionWorkerTests(unittest.TestCase):

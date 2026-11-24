@@ -2,6 +2,9 @@
 from copy import deepcopy
 import hashlib
 import json
+import os
+import subprocess
+import sys
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from threading import Lock
@@ -10,6 +13,26 @@ import unittest
 
 
 class PluginTests(unittest.TestCase):
+    def test_unicode_recipe_guidance_is_read_as_utf8_under_a_non_utf8_locale(self):
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            text = 'Inspect at 45\N{DEGREE SIGN} with a 10\N{MULTIPLICATION SIGN} loupe.'
+            for name in ('metal_nut', 'screw'):
+                folder = self.fixture(root, name)
+                payload = json.dumps({'check': text}, ensure_ascii=False).encode('utf-8')
+                (folder / 'guidance.json').write_bytes(payload)
+                metadata = json.loads((folder / 'recipe.json').read_text(encoding='utf-8'))
+                metadata['guidance']['sha256'] = hashlib.sha256(payload).hexdigest()
+                (folder / 'recipe.json').write_text(json.dumps(metadata), encoding='utf-8')
+            env = dict(os.environ, PYTHONUTF8='0', PYTHONCOERCECLOCALE='0', LC_ALL='C')
+            script = ('import json,sys; from forgesight.plugin_recipe import PluginRegistry; '
+                      'r=PluginRegistry(sys.argv[1]); '
+                      'print(json.dumps(r.recipes["screw"].documents["guidance"]))')
+            result = subprocess.run([sys.executable, '-B', '-c', script, str(root)],
+                                    env=env, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(json.loads(result.stdout)['check'], text)
+
     def test_live_template_exposes_selector_without_removing_existing_controls(self):
         html = Path('forgesight/web/jetson_live.html').read_text()
         self.assertIn('id="active-plugin"', html)

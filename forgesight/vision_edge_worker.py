@@ -163,7 +163,7 @@ class Worker:
         return report
 
 
-def serve(socket_path, worker, idle_timeout_seconds=None, request_read_timeout_seconds=30):
+def serve(socket_path, worker, idle_timeout_seconds=None, request_read_timeout_seconds=30, ready_extra=None):
     if not 0 < request_read_timeout_seconds <= 300:
         raise ValueError("Request read timeout must be between 0 and 300 seconds.")
     socket_path = Path(socket_path)
@@ -184,6 +184,12 @@ def serve(socket_path, worker, idle_timeout_seconds=None, request_read_timeout_s
         server.bind(str(socket_path))
         os.chmod(socket_path, stat.S_IRUSR | stat.S_IWUSR)
         server.listen(4)
+        # Model metadata belongs to the CLI; the socket protocol only requires
+        # handle(), so protocol-only workers can serve without loading Torch.
+        ready = {"status": "WORKER_READY", "socket": str(socket_path)}
+        if ready_extra:
+            ready.update(ready_extra)
+        print(json.dumps(ready), flush=True)
         if idle_timeout_seconds is not None:
             server.settimeout(idle_timeout_seconds)
         while True:
@@ -291,14 +297,16 @@ def main():
     parser.add_argument("--request-read-timeout-seconds", type=float, default=30,
                         help="Drop a client whose request line takes longer than this to arrive; default 30.")
     args = parser.parse_args()
+    if os.environ.get('FORGESIGHT_STATION_PID'):
+        from forgesight.worker_lifecycle import watch_station_parent
+        watch_station_parent()
     if not 1 <= args.threads <= 4:
         parser.error("Expected one to four Torch threads")
     if not 0 < args.request_read_timeout_seconds <= 300:
         parser.error("Request read timeout must be between 0 and 300 seconds")
     worker = Worker(args.model, args.model_sha256, args.threads)
-    print(json.dumps({"status": "WORKER_READY", "model_sha256": args.model_sha256,
-                      "model_load_ms": worker.model_load_ms, "socket": str(args.socket)}), flush=True)
-    serve(args.socket, worker, args.idle_timeout_seconds, args.request_read_timeout_seconds)
+    serve(args.socket, worker, args.idle_timeout_seconds, args.request_read_timeout_seconds,
+          ready_extra={"model_sha256": args.model_sha256, "model_load_ms": worker.model_load_ms})
 
 
 if __name__ == "__main__":

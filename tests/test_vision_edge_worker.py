@@ -2,9 +2,11 @@
 
 import json
 import socket
+import sys
 import threading
 import time
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -101,11 +103,20 @@ class ProtocolTests(unittest.TestCase):
         self.thread = threading.Thread(
             target=serve, args=(self.socket_path, self.worker, 30.0), daemon=True)
         self.thread.start()
-        import time
         deadline = time.monotonic() + 5
-        while not self.socket_path.exists() and time.monotonic() < deadline:
-            time.sleep(0.01)
-        self.assertTrue(self.socket_path.exists(), "worker socket was not created")
+        ready = False
+        while time.monotonic() < deadline:
+            # bind() creates the path before listen(); existence alone races
+            # direct clients such as the malformed-request test below.
+            with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as probe:
+                try:
+                    probe.connect(str(self.socket_path))
+                except (FileNotFoundError, ConnectionRefusedError):
+                    time.sleep(0.01)
+                else:
+                    ready = True
+                    break
+        self.assertTrue(ready, "worker socket was not accepting connections")
 
     def tearDown(self):
         self._tmp.cleanup()
@@ -133,6 +144,44 @@ class ProtocolTests(unittest.TestCase):
             report = request(self.socket_path, {"tensor": f"t{index}", "threshold": 0.1})
             self.assertEqual(report["status"], "ONE_IMAGE_INFERENCE_VERIFIED")
         self.assertEqual(len(self.worker.requests), 3)
+
+
+class ReadyHandshakeTests(unittest.TestCase):
+    def test_cli_passes_loaded_model_metadata_to_the_bind_ready_handshake(self):
+        from types import SimpleNamespace
+        from forgesight.vision_edge_worker import main
+        worker = SimpleNamespace(model_load_ms=12.5)
+        with TemporaryDirectory() as directory:
+            argv = ['vision_edge_worker', '--model', 'model.ts', '--model-sha256', 'a' * 64,
+                    '--socket', str(Path(directory) / 'worker.sock')]
+            with patch.object(sys, 'argv', argv), \
+                    patch('forgesight.vision_edge_worker.Worker', return_value=worker), \
+                    patch('forgesight.vision_edge_worker.serve') as server:
+                main()
+            self.assertEqual(server.call_args.kwargs.get('ready_extra'),
+                             {'model_sha256': 'a' * 64, 'model_load_ms': 12.5})
+
+    def test_ready_is_emitted_after_listen_with_explicit_model_metadata(self):
+        with TemporaryDirectory() as directory:
+            socket_path = Path(directory) / 'ready.sock'
+            ready = []
+
+            def check_ready(message, **kwargs):
+                payload = json.loads(message)
+                self.assertEqual(payload['status'], 'WORKER_READY')
+                # Connecting during the READY callback proves listen() has completed.
+                with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as client:
+                    client.connect(str(socket_path))
+                ready.append(payload)
+
+            with patch('builtins.print', side_effect=check_ready):
+                serve(socket_path, StubWorker(), idle_timeout_seconds=.05,
+                      ready_extra={'model_sha256': 'a' * 64, 'model_load_ms': 12.5})
+            self.assertEqual(len(ready), 1)
+            self.assertEqual(ready[0]['model_sha256'], 'a' * 64)
+            self.assertEqual(ready[0]['model_load_ms'], 12.5)
+            self.assertEqual(ready[0]['socket'], str(socket_path))
+            self.assertFalse(socket_path.exists())
 
 
 class StalledClientTests(unittest.TestCase):

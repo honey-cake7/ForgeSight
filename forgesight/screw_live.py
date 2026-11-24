@@ -30,9 +30,10 @@ class ScrewLive(GroundedLive):
             payload = advice_request(label, self.guidance)
         except (KeyError, ValueError, TypeError):
             return {'status': 'INSPECTION_WITHHELD'}
+        finding_text = f"Vision flagged possible {label.replace('_', ' ')} on screw body. Hold part in Quarantine Bin B for review; do not release without QC sign-off."
         report = {'inspection_id': record['inspection_id'], 'inspection_sha256': canonical_hash(record),
                   'plugin_id': 'screw', 'status': 'CHECKLIST_FALLBACK',
-                  'advice': self.guidance['fallback'], 'llama_runtime_mode': 'NOT_REQUESTED',
+                  'advice': f"{self.guidance['fallback']} {finding_text}", 'llama_runtime_mode': 'NOT_REQUESTED',
                   'guidance_sha256': canonical_hash(self.guidance), 'part_release_authorized': False}
         started = time.perf_counter()
         try:
@@ -48,8 +49,9 @@ class ScrewLive(GroundedLive):
                     or artifact not in pinned[0] or tokenizer not in pinned[1]):
                 raise ValueError('Llama runtime evidence does not match the pinned assets.')
             choice = resolve_choice(reply['generated_text'], label, self.guidance)
+            hybrid_advice = f"{choice['text']} {finding_text}"
             report.update(status='LLAMA_ADVICE' if choice['status'] == 'REVIEWED_CHOICE' else 'CHECKLIST_FALLBACK',
-                          advice=choice['text'], llama_runtime_mode='PERSISTENT_WORKER',
+                          advice=hybrid_advice, llama_runtime_mode='PERSISTENT_WORKER',
                           worker={'worker_started_utc': reply['worker_started_utc'],
                                   'model_sha256': artifact, 'tokenizer_sha256': tokenizer})
         except (OSError, ValueError, RuntimeError, KeyError, TypeError) as error:

@@ -142,10 +142,13 @@ class WarmPathProvenanceTests(unittest.TestCase):
             (root / "model" / "llama3_2_1b_assets.json").write_text(assets)
         return root
 
-    def assert_gate_fails_closed(self, name, llama_root, needle="Pinned"):
+    def assert_gate_fails_closed(self, name, llama_root, needle="pinned"):
         report, root = self.run_warm(name, dict(self.VALID_EVIDENCE), llama_root=llama_root)
         self.assertIsNone(report.get("advisory"))
-        self.assertIn(needle, report.get("runtime_error", ""))
+        self.assertTrue(
+            needle.lower() in report.get("runtime_error", "").lower(),
+            f"Expected {needle!r} in {report.get('runtime_error', '')!r}",
+        )
         self.assertNotIn("persistent_worker_transport_error", report)
         self.assertFalse((root / "advisory.json").exists())
 

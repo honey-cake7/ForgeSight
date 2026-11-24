@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 import re
 import shutil
+import socket
 import sqlite3
 import subprocess
 import sys
@@ -65,6 +66,14 @@ def vision_executable(path):
     return Path(os.path.abspath(path))
 
 
+def _worker_environment():
+    env = dict(os.environ)
+    env['PYTHONPATH'] = str(Path(__file__).resolve().parent.parent)
+    if sys.platform.startswith('linux'):
+        env['FORGESIGHT_STATION_PID'] = str(os.getpid())
+    return env
+
+
 def launch_vision_worker(args, worker_script=None):
     """Start the persistent vision worker and wait for its READY line.
 
@@ -73,6 +82,15 @@ def launch_vision_worker(args, worker_script=None):
     mid-inference with no error. The buffer tail is included in boot errors.
     """
     from collections import deque
+    sock = Path(args.vision_worker_socket)
+    if sock.exists():
+        probe = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        try:
+            probe.connect(str(sock))
+        except OSError:
+            sock.unlink(missing_ok=True)
+        else:
+            probe.close()
     script = worker_script or (Path(__file__).resolve().parent / "vision_edge_worker.py")
     command = [str(args.vision_python), "-B", str(script),
                "--model", str(args.model), "--model-sha256", getattr(args, 'model_sha256', MODEL_SHA256),
@@ -80,7 +98,8 @@ def launch_vision_worker(args, worker_script=None):
                "--threads", str(args.vision_worker_threads)]
     if not getattr(args, 'plugins_root', None):
         command += ["--idle-timeout-seconds", str(args.vision_worker_idle_timeout_seconds)]
-    worker = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    worker = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                              text=True, env=_worker_environment())
     stderr_tail = deque(maxlen=50)
 
     def drain_stderr():
@@ -127,10 +146,17 @@ def launch_advice_worker(args, python_command=None):
         command += ["--idle-timeout-seconds", str(args.llama_worker_idle_timeout_seconds)]
     if getattr(args, "grounded_auto_advice", False):
         command = ["nice", "-n", "10", *command]
-    env = dict(os.environ)
-    env["PYTHONPATH"] = str(Path(__file__).resolve().parent.parent)
+    sock = Path(args.llama_worker_socket)
+    if sock.exists():
+        probe = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        try:
+            probe.connect(str(sock))
+        except OSError:
+            sock.unlink(missing_ok=True)
+        else:
+            probe.close()
     worker = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                              text=True, env=env)
+                              text=True, env=_worker_environment())
     stderr_tail = deque(maxlen=50)
 
     def drain_stderr():
@@ -1417,8 +1443,9 @@ def handler_for(service):
                         raise ValueError('Invalid recipe selection.')
                     result = service.select_plugin(body['plugin_id'])
                     self.send(200, json.dumps(result, allow_nan=False).encode(), 'application/json')
-                except (ValueError, TypeError, KeyError):
-                    self.send(409, b'{"error":"Recipe unavailable or inspection busy."}', 'application/json')
+                except (ValueError, TypeError, KeyError) as error:
+                    _log.warning('Plugin selection failed: %s', error)
+                    self.send(409, json.dumps({'error': str(error)}).encode(), 'application/json')
                 return
             if self.path in ("/api/camera/start", "/api/camera/stop"):
                 if self.headers.get("Content-Length", "0") != "0":
