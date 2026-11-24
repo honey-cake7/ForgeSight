@@ -111,6 +111,16 @@ class LiveHttpTests(unittest.TestCase):
         self.server.server_close()
         self.thread.join(timeout=2)
 
+    def test_primary_brand_asset_is_local_svg(self):
+        response = urlopen(self.base + "/icon.svg")
+        self.assertEqual(response.status, 200)
+        self.assertEqual(response.headers.get_content_type(), "image/svg+xml")
+        self.assertEqual(response.read(), Path("forgesight/web/icon.svg").read_bytes())
+        page = urlopen(self.base).read()
+        self.assertIn(b'<link rel="icon" href="/icon.svg" type="image/svg+xml">', page)
+        self.assertIn(b'<img class="mark" src="/icon.svg" alt="ForgeSight Logo" width="36" height="36">', page)
+        self.assertNotIn(b"/station-logo.png", page)
+
     def test_page_preview_state_and_same_origin_capture(self):
         self.assertIn(b"Camera preview", urlopen(self.base).read())
         self.assertEqual(urlopen(self.base + "/api/frame.jpg").headers.get_content_type(), "image/jpeg")

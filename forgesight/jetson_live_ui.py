@@ -1359,9 +1359,8 @@ def handler_for(service):
                 else:
                     self.send(200 if data else 404, data or b"Image unavailable",
                               mime if data else "text/plain")
-            elif path == "/station-logo.png":
-                logo = WEB_ROOT.parent.parent / "assets" / "forgesight-station.png"
-                self.send(200, logo.read_bytes(), "image/png")
+            elif path == "/icon.svg":
+                self.send(200, (WEB_ROOT / "icon.svg").read_bytes(), "image/svg+xml")
             elif path in ("/", "/app.js", "/style.css"):
                 file = {"/": "jetson_live.html", "/app.js": "jetson_live.js",
                         "/style.css": "jetson_live.css"}[path]

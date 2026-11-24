@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ForgeSight · Inspection station</title>
-  <link rel="icon" href="/station-logo.png" type="image/png">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/style.css">
   <script src="/app.js" defer></script>
 </head>
@@ -26,7 +26,6 @@
     <symbol id="icon-compare" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M12 2v20m-3-8-2-2 2-2m6 0 2 2-2 2"/></symbol>
     <symbol id="icon-heat" viewBox="0 0 24 24"><path d="M13 3c1 4-1 5-1 7 2 0 3-2 4-3 2 2 3 4 3 7a7 7 0 0 1-14 0c0-4 4-7 8-11Z"/><path d="M9 17a3 3 0 0 0 6 0c0-1-1-2-3-4-2 2-3 3-3 4Z"/></symbol>
     <symbol id="icon-contours" viewBox="0 0 24 24"><path d="M4 8c2-5 9-6 14-3s4 11-1 14c-4 3-10 2-13-1-2-3-1-7 0-10Z"/><path d="M7 9c2-3 6-4 9-2s3 7 0 9c-3 3-7 2-9 0-2-2-1-5 0-7Z"/><path d="M10 10c2-2 5-1 5 2 0 2-2 3-4 3s-3-3-1-5Z"/></symbol>
-    <symbol id="icon-spark" viewBox="0 0 24 24"><path d="M11 2c0 6 4 10 10 10-6 0-10 4-10 10 0-6-4-10-10-10 6 0 10-4 10-10Zm8 1v6m-3-3h6"/></symbol>
     <symbol id="icon-external" viewBox="0 0 24 24"><path d="M14 4h6v6m0-6-9 9M10 5H6a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2v-4"/></symbol>
     <symbol id="icon-pdf" viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Zm0 0v7h7m-8 3v6m-3-3 3 3 3-3"/></symbol>
     <symbol id="icon-edit" viewBox="0 0 24 24"><path d="m15 5 4 4m-8 8-5 1 1-5L17 3a2 2 0 0 1 3 3Zm-7 4h16"/></symbol>
@@ -41,7 +40,7 @@
     <!-- ===== Sidebar: navigation, pipeline status, station notes ===== -->
     <aside id="station-sidebar" class="sidebar">
       <a class="brand" href="#/inspect" aria-label="ForgeSight inspection station">
-        <img class="mark" src="/station-logo.png" alt="" width="44" height="44">
+        <img class="mark" src="/icon.svg" alt="ForgeSight Logo" width="36" height="36">
         <span class="brand-text"><strong>ForgeSight</strong><small>Inspection station</small></span>
       </a>
 
@@ -161,9 +160,9 @@
               </section>
 
               <section class="advice-panel" aria-labelledby="advice-title">
-                <div class="card-head"><div><h2 id="advice-title"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-spark"></use></svg>Llama operator note</h2><p class="card-sub">On-device ExecuTorch · separate advisory</p></div></div>
+                <div class="card-head"><div><h2 id="advice-title">Llama operator note</h2><p class="card-sub">On-device ExecuTorch · separate advisory</p></div></div>
                 <p id="advice-status" class="status-line" role="status" aria-live="polite">Analyze an image to see whether advice is available.</p>
-                <button id="advice-request" class="btn" type="button" disabled><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-spark"></use></svg><span class="button-label">Generate Llama advice</span></button>
+                <button id="advice-request" class="btn" type="button" disabled><span class="button-label">Generate Llama advice</span></button>
                 <ul id="advice-note" class="advice-points" hidden></ul>
                 <p class="help">Review this note before acting. It cannot change the saved grade or identify a confirmed defect cause.</p>
                 <details class="technical-details"><summary>Advisory runtime</summary><p id="advice-runtime">Waiting for station status.</p></details>
