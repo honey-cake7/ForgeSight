@@ -1,6 +1,6 @@
-# ForgeSight AI
+# ForgeSight
 
-<img src="assets/forgesight-station.png" alt="ForgeSight project icon" width="88">
+<img src="forgesight/web/icon.svg" alt="ForgeSight logo" width="88">
 
 **Offline quality-inspection prototype on NVIDIA Jetson Orin Nano 8GB:** EfficientAD finds visual anomalies, deterministic rules grade the inspection, and Llama generates operator guidance on-device through ExecuTorch. Images, decisions, advice and inspection history stay local during inference.
 
@@ -212,8 +212,8 @@ The opt-in `--plugins-root` selector adds a screw recipe. Its selected 30k devel
 ## Get started
 
 ```sh
-git clone https://github.com/honey-cake7/Forge_Sight.git
-cd Forge_Sight
+git clone https://github.com/honey-cake7/ForgeSight.git
+cd ForgeSight
 ```
 
 Follow [setup and asset staging](docs/SETUP.md) first. Models, licensed datasets, generated outputs and databases are excluded from Git. Root `requirements.txt` installs only the early Pillow environment, not the application.

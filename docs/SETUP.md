@@ -9,8 +9,8 @@ or change global packages.
 ## Source and platform
 
 ```sh
-git clone https://github.com/honey-cake7/Forge_Sight.git
-cd Forge_Sight
+git clone https://github.com/honey-cake7/ForgeSight.git
+cd ForgeSight
 ```
 
 After the documentation branch is published, select the reviewed revision
