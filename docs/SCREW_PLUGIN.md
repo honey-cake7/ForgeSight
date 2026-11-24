@@ -1,7 +1,28 @@
 # Screw plugin
 
 Approved order: EfficientAD training/export, classifier/policies/guidance, then UI hot-swap.
-Current scope: selected 30k detector and Stage 2 offline prototype; UI hot-swap is not enabled.
+Current scope: the selected 30k detector and an optional dual-recipe station
+demonstration. The selector is enabled only with `--plugins-root`. This
+demonstration does not pass the detector or subtype reliability gates.
+The existing single-part station remains the default.
+
+## Optional station demonstration assets
+
+Model binaries are excluded from Git. Before launching with `--plugins-root
+plugins`, place the frozen metal-nut TorchScript export at
+`plugins/metal_nut/efficientad_s.ts` and the selected 30k screw TorchScript
+export at `plugins/screw/efficientad_s.ts`. Obtain both from existing local
+training/export artifacts or a trusted project transfer. Check their SHA-256
+values against each `recipe.json` model entry before launch. The recipe
+registry checks every component at startup and names a missing asset. Keep
+model files and the licensed MVTec datasets outside Git. The configured
+baseline `--model` must have the same pinned metal-nut bytes.
+
+For optional screw replay, stage the original MVTec screw dataset under
+`data/mvtec_ad/screw`. Camera capture and arbitrary uploads remain
+diagnostic because physical-part acceptance has not passed. The selector
+changes the active recipe for new inspections. Saved records retain their
+original evidence and plugin ID.
 
 ## Selected 30k development candidate
 
@@ -28,7 +49,8 @@ physical-camera accuracy remain unverified.
   across the 29 exposed defective images (six wrong calls, one unknown, three
   detector misses). Every native class has at least one correct call, but
   `thread_side` remains weak. Stage 2 is a tested development prototype; its
-  reliability gate is not passed, and UI integration stays blocked.
+  reliability gate is not passed. The opt-in UI demonstration carries this
+  limitation and must not be presented as production inspection.
 - `grade_policy.json` keeps physical images and anomalies at REVIEW. Benchmark
   normals outside a 10% numerical review margin can receive provisional PASS;
   no automatic physical-part release or manufacturing tolerance is authorized.
@@ -45,8 +67,8 @@ Run the classifier with the existing isolated WSL vision Python and a fresh outp
 python -B -m forgesight.screw_classifier --output artifacts/vision/screw_classifier_new_run
 ```
 Model binaries stay ignored. `vision.json` pins the selected weights and policies;
-station readiness remains false while classification reliability and device vision
-are unverified. All 84 focused bundle/pipeline/metal-nut/dashboard tests passed.
+production readiness remains false while classification reliability and device
+vision are unverified. All 84 focused bundle/pipeline/metal-nut/dashboard tests passed.
 Existing v1 manifests below remain historical evidence.
 
 ## Original 10k experiment

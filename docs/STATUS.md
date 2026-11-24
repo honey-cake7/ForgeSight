@@ -10,8 +10,9 @@ the 21-image validation split also selects the tree and is not a fresh final tes
 Six A/B prompts were verified on one unchanged Jetson ExecuTorch worker. Screw
 subtype diagnostics produced 19 correct calls out of 25 calls, with six wrong
 calls, one unknown and three detector misses across 29 exposed defective images.
-The Stage 2 reliability gate and station readiness remain false; no hot-swap UI
-integration is included. Next work is improving subtype reliability, particularly
+The Stage 2 reliability gate and production readiness remain false. An optional
+dual-recipe UI demonstration is included behind `--plugins-root`; its selection
+does not establish production acceptance. Next work is improving subtype reliability, particularly
 `thread_side`, using development data rather than claiming new final-test accuracy.
 See [screw evidence and limitations](SCREW_PLUGIN.md).
 

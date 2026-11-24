@@ -43,7 +43,11 @@ class PluginRegistry:
                 if not isinstance(filename, str) or Path(filename).name != filename or '\\' in filename:
                     raise ValueError('Recipe assets must be files inside their bundle.')
                 path = (folder / filename).resolve()
-                if path.parent != folder.resolve() or not path.is_file() or digest(path) != entry['sha256']:
+                if path.parent != folder.resolve():
+                    raise ValueError('Recipe asset leaves its bundle: ' + name + '/' + component)
+                if not path.is_file():
+                    raise ValueError('Missing recipe asset: ' + str(path))
+                if digest(path) != entry['sha256']:
                     raise ValueError('Recipe asset hash mismatch: ' + name + '/' + component)
                 paths[component] = path
                 if component != 'model':

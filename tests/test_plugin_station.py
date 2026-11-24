@@ -44,6 +44,10 @@ class PluginTests(unittest.TestCase):
             registry = PluginRegistry(root)
             self.assertEqual(set(registry.recipes), {'metal_nut', 'screw'})
             self.assertEqual(registry.recipes['screw'].threshold, .2)
+            (root / 'screw/model.ts').unlink()
+            with self.assertRaisesRegex(ValueError, 'Missing recipe asset: .*screw'):
+                PluginRegistry(root)
+            (root / 'screw/model.ts').write_bytes(b'screw')
             (folder / 'grade.json').write_text('{}')
             with self.assertRaises(ValueError):
                 PluginRegistry(root)
