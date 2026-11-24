@@ -18,6 +18,7 @@ from urllib.request import Request, urlopen
 
 from PIL import Image
 
+from forgesight.history_tools import read_request
 from forgesight.jetson_live_ui import CameraFeed, LiveService, handler_for, vision_executable
 from forgesight.storage import InspectionStore
 
@@ -624,6 +625,15 @@ class ReplayIntakeTests(unittest.TestCase):
             self.assertEqual(record["error"]["message"], "Worker failed: TOKEN=[redacted]")
             self.assertNotIn("private", json.dumps(latest))
             self.assertIn("support_id=" + latest["support_id"], " ".join(log.output))
+            service.advice_root = root / "advice"
+            history, _ = read_request(service, "/api/history")
+            self.assertEqual(history["rows"][0]["support_id"], latest["support_id"])
+            path = "/api/history/" + latest["inspection_id"]
+            details, _ = read_request(service, path)
+            self.assertEqual(details["support_id"], latest["support_id"])
+            report, _ = read_request(service, path + "/report.html")
+            self.assertIn("Support ID:</strong> " + latest["support_id"], report)
+            self.assertNotIn("Worker failed", report)
             image = Path(record["source"]["path"])
             self.assertEqual(record["source"]["sha256"], hashlib.sha256(png.getvalue()).hexdigest())
             self.assertEqual(service.inspection_image(latest["inspection_id"], "source"),
