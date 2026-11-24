@@ -584,7 +584,7 @@ function renderAdvice(advice) {
       const entry = document.createElement('li');
       if (pieces.length === 2 && /^(Vision flagged|The camera result)/.test(pieces[1])) {
         const label = document.createElement('strong');
-        label.textContent = index === 0 ? 'Next check' : 'Why';
+        label.textContent = index === 0 ? 'Recommended Action (Verified SOP)' : 'Visual Finding & Disposition';
         entry.append(label);
       }
       entry.append(document.createTextNode(piece));

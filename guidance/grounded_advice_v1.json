@@ -3,35 +3,35 @@
   "approval_status": "PROTOTYPE_PENDING_SITE_QC_APPROVAL",
   "checks": {
     "scratch": [
-      "Inspect the highlighted surface for a groove.",
-      "Compare the highlighted surface with a reference nut."
+      "Inspect internal thread crests under 10× optical magnifier; verify thread pitch with Go/No-Go plug gauge.",
+      "Examine outer hexagon flats under 45° directional shadow lighting for scratch depth and burrs."
     ],
     "bent": [
-      "Compare the highlighted profile with a reference nut.",
-      "Inspect the highlighted edge for distortion."
+      "Check hexagon flats and bearing face perpendicularity on granite surface plate with dial indicator.",
+      "Inspect flange rim under optical comparator against master nut profile for deformation."
     ],
     "flip": [
-      "Verify the fixture orientation and recapture.",
-      "Compare the visible face with the reference nut."
+      "Verify fixture seating and seating pin alignment, then recapture in correct orientation.",
+      "Inspect primary bearing face contact pattern against reference master nut."
     ],
     "discoloration": [
-      "Compare the highlighted area with a reference under the same lighting.",
-      "Inspect the highlighted area for a finish difference."
+      "Examine highlighted surface under 5000K diffuse illumination for plating voids, oxidation, or chemical staining.",
+      "Verify anti-corrosion coating thickness and surface finish against reference master nut."
     ],
     "unknown": [
-      "Manually inspect the highlighted area."
+      "Manually inspect the highlighted region with 10× loupe and compare with calibrated reference nut."
     ],
     "uncertain": [
-      "Manually inspect the whole nut."
+      "Perform full-envelope visual and dimensional verification across all nut faces and thread opening."
     ],
     "inner_rim": [
-      "Manually inspect the highlighted thread opening."
+      "Inspect internal thread crests and lead-in chamfer for tooling marks, shearing, or chip buildup."
     ],
     "camera": [
-      "Manually inspect the part and verify the highlighted response."
+      "Verify part alignment and illumination in jig, then recapture frame for defect confirmation."
     ],
     "screen_photo": [
-      "Use the original image for benchmark inspection."
+      "Use original calibrated image capture for benchmark inspection."
     ]
   }
 }

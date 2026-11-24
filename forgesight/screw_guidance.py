@@ -5,7 +5,7 @@ import re
 from forgesight.assist_contract import canonical_hash
 from forgesight.defect_type import SCREW_TYPES
 
-GUIDANCE_DOCUMENT_SHA256 = '11138245b406db3c88d24f8754ca013057c76ef50b48a7ea128a4b0b57ac065f'
+GUIDANCE_DOCUMENT_SHA256 = '414847e7eeb3d91a12024a59068118525bca7225089a40dc243734eaba8d8db7'
 
 
 def validate_guidance(guidance):
