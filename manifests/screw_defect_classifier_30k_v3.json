@@ -1,0 +1,1127 @@
+{
+  "status": "PROVISIONAL_CLASSIFIER_SELECTED_ON_VALIDATION_NOT_FRESH_TESTED",
+  "metrics": {
+    "fit": {
+      "images": 69,
+      "correct": 51,
+      "type_calls": 58,
+      "incorrect_type_calls": 7,
+      "unknown": 3,
+      "not_flagged": 8,
+      "end_to_end_type_accuracy": 0.7391304347826086,
+      "accuracy_on_type_calls": 0.8793103448275862,
+      "type_call_coverage": 0.8405797101449275,
+      "counts_by_truth": {
+        "manipulated_front": {
+          "manipulated_front": 10,
+          "unknown": 2,
+          "scratch_head": 1,
+          "not_flagged": 1
+        },
+        "scratch_head": {
+          "scratch_head": 13,
+          "unknown": 1
+        },
+        "scratch_neck": {
+          "scratch_neck": 14,
+          "scratch_head": 1
+        },
+        "thread_side": {
+          "not_flagged": 7,
+          "thread_side": 5,
+          "scratch_head": 1
+        },
+        "thread_top": {
+          "thread_top": 9,
+          "thread_side": 3,
+          "manipulated_front": 1
+        }
+      },
+      "predictions": [
+        {
+          "source_path": "test/manipulated_front/000.png",
+          "truth": "manipulated_front",
+          "prediction": "manipulated_front"
+        },
+        {
+          "source_path": "test/manipulated_front/001.png",
+          "truth": "manipulated_front",
+          "prediction": "manipulated_front"
+        },
+        {
+          "source_path": "test/manipulated_front/004.png",
+          "truth": "manipulated_front",
+          "prediction": "manipulated_front"
+        },
+        {
+          "source_path": "test/manipulated_front/005.png",
+          "truth": "manipulated_front",
+          "prediction": "manipulated_front"
+        },
+        {
+          "source_path": "test/manipulated_front/006.png",
+          "truth": "manipulated_front",
+          "prediction": "manipulated_front"
+        },
+        {
+          "source_path": "test/manipulated_front/007.png",
+          "truth": "manipulated_front",
+          "prediction": "manipulated_front"
+        },
+        {
+          "source_path": "test/manipulated_front/009.png",
+          "truth": "manipulated_front",
+          "prediction": "manipulated_front"
+        },
+        {
+          "source_path": "test/manipulated_front/010.png",
+          "truth": "manipulated_front",
+          "prediction": "manipulated_front"
+        },
+        {
+          "source_path": "test/manipulated_front/014.png",
+          "truth": "manipulated_front",
+          "prediction": "manipulated_front"
+        },
+        {
+          "source_path": "test/manipulated_front/015.png",
+          "truth": "manipulated_front",
+          "prediction": "unknown"
+        },
+        {
+          "source_path": "test/manipulated_front/017.png",
+          "truth": "manipulated_front",
+          "prediction": "manipulated_front"
+        },
+        {
+          "source_path": "test/manipulated_front/018.png",
+          "truth": "manipulated_front",
+          "prediction": "scratch_head"
+        },
+        {
+          "source_path": "test/manipulated_front/019.png",
+          "truth": "manipulated_front",
+          "prediction": "not_flagged"
+        },
+        {
+          "source_path": "test/manipulated_front/021.png",
+          "truth": "manipulated_front",
+          "prediction": "unknown"
+        },
+        {
+          "source_path": "test/scratch_head/000.png",
+          "truth": "scratch_head",
+          "prediction": "scratch_head"
+        },
+        {
+          "source_path": "test/scratch_head/001.png",
+          "truth": "scratch_head",
+          "prediction": "scratch_head"
+        },
+        {
+          "source_path": "test/scratch_head/002.png",
+          "truth": "scratch_head",
+          "prediction": "scratch_head"
+        },
+        {
+          "source_path": "test/scratch_head/004.png",
+          "truth": "scratch_head",
+          "prediction": "scratch_head"
+        },
+        {
+          "source_path": "test/scratch_head/005.png",
+          "truth": "scratch_head",
+          "prediction": "scratch_head"
+        },
+        {
+          "source_path": "test/scratch_head/007.png",
+          "truth": "scratch_head",
+          "prediction": "scratch_head"
+        },
+        {
+          "source_path": "test/scratch_head/009.png",
+          "truth": "scratch_head",
+          "prediction": "scratch_head"
+        },
+        {
+          "source_path": "test/scratch_head/011.png",
+          "truth": "scratch_head",
+          "prediction": "scratch_head"
+        },
+        {
+          "source_path": "test/scratch_head/012.png",
+          "truth": "scratch_head",
+          "prediction": "scratch_head"
+        },
+        {
+          "source_path": "test/scratch_head/016.png",
+          "truth": "scratch_head",
+          "prediction": "unknown"
+        },
+        {
+          "source_path": "test/scratch_head/017.png",
+          "truth": "scratch_head",
+          "prediction": "scratch_head"
+        },
+        {
+          "source_path": "test/scratch_head/018.png",
+          "truth": "scratch_head",
+          "prediction": "scratch_head"
+        },
+        {
+          "source_path": "test/scratch_head/019.png",
+          "truth": "scratch_head",
+          "prediction": "scratch_head"
+        },
+        {
+          "source_path": "test/scratch_head/023.png",
+          "truth": "scratch_head",
+          "prediction": "scratch_head"
+        },
+        {
+          "source_path": "test/scratch_neck/001.png",
+          "truth": "scratch_neck",
+          "prediction": "scratch_neck"
+        },
+        {
+          "source_path": "test/scratch_neck/004.png",
+          "truth": "scratch_neck",
+          "prediction": "scratch_neck"
+        },
+        {
+          "source_path": "test/scratch_neck/005.png",
+          "truth": "scratch_neck",
+          "prediction": "scratch_neck"
+        },
+        {
+          "source_path": "test/scratch_neck/006.png",
+          "truth": "scratch_neck",
+          "prediction": "scratch_neck"
+        },
+        {
+          "source_path": "test/scratch_neck/007.png",
+          "truth": "scratch_neck",
+          "prediction": "scratch_neck"
+        },
+        {
+          "source_path": "test/scratch_neck/009.png",
+          "truth": "scratch_neck",
+          "prediction": "scratch_neck"
+        },
+        {
+          "source_path": "test/scratch_neck/010.png",
+          "truth": "scratch_neck",
+          "prediction": "scratch_neck"
+        },
+        {
+          "source_path": "test/scratch_neck/011.png",
+          "truth": "scratch_neck",
+          "prediction": "scratch_neck"
+        },
+        {
+          "source_path": "test/scratch_neck/012.png",
+          "truth": "scratch_neck",
+          "prediction": "scratch_neck"
+        },
+        {
+          "source_path": "test/scratch_neck/013.png",
+          "truth": "scratch_neck",
+          "prediction": "scratch_neck"
+        },
+        {
+          "source_path": "test/scratch_neck/016.png",
+          "truth": "scratch_neck",
+          "prediction": "scratch_neck"
+        },
+        {
+          "source_path": "test/scratch_neck/020.png",
+          "truth": "scratch_neck",
+          "prediction": "scratch_head"
+        },
+        {
+          "source_path": "test/scratch_neck/022.png",
+          "truth": "scratch_neck",
+          "prediction": "scratch_neck"
+        },
+        {
+          "source_path": "test/scratch_neck/023.png",
+          "truth": "scratch_neck",
+          "prediction": "scratch_neck"
+        },
+        {
+          "source_path": "test/scratch_neck/024.png",
+          "truth": "scratch_neck",
+          "prediction": "scratch_neck"
+        },
+        {
+          "source_path": "test/thread_side/000.png",
+          "truth": "thread_side",
+          "prediction": "not_flagged"
+        },
+        {
+          "source_path": "test/thread_side/001.png",
+          "truth": "thread_side",
+          "prediction": "thread_side"
+        },
+        {
+          "source_path": "test/thread_side/002.png",
+          "truth": "thread_side",
+          "prediction": "scratch_head"
+        },
+        {
+          "source_path": "test/thread_side/003.png",
+          "truth": "thread_side",
+          "prediction": "not_flagged"
+        },
+        {
+          "source_path": "test/thread_side/005.png",
+          "truth": "thread_side",
+          "prediction": "thread_side"
+        },
+        {
+          "source_path": "test/thread_side/006.png",
+          "truth": "thread_side",
+          "prediction": "thread_side"
+        },
+        {
+          "source_path": "test/thread_side/008.png",
+          "truth": "thread_side",
+          "prediction": "thread_side"
+        },
+        {
+          "source_path": "test/thread_side/009.png",
+          "truth": "thread_side",
+          "prediction": "not_flagged"
+        },
+        {
+          "source_path": "test/thread_side/010.png",
+          "truth": "thread_side",
+          "prediction": "not_flagged"
+        },
+        {
+          "source_path": "test/thread_side/012.png",
+          "truth": "thread_side",
+          "prediction": "not_flagged"
+        },
+        {
+          "source_path": "test/thread_side/016.png",
+          "truth": "thread_side",
+          "prediction": "not_flagged"
+        },
+        {
+          "source_path": "test/thread_side/019.png",
+          "truth": "thread_side",
+          "prediction": "not_flagged"
+        },
+        {
+          "source_path": "test/thread_side/022.png",
+          "truth": "thread_side",
+          "prediction": "thread_side"
+        },
+        {
+          "source_path": "test/thread_top/005.png",
+          "truth": "thread_top",
+          "prediction": "thread_top"
+        },
+        {
+          "source_path": "test/thread_top/006.png",
+          "truth": "thread_top",
+          "prediction": "thread_top"
+        },
+        {
+          "source_path": "test/thread_top/010.png",
+          "truth": "thread_top",
+          "prediction": "thread_top"
+        },
+        {
+          "source_path": "test/thread_top/011.png",
+          "truth": "thread_top",
+          "prediction": "thread_top"
+        },
+        {
+          "source_path": "test/thread_top/012.png",
+          "truth": "thread_top",
+          "prediction": "thread_side"
+        },
+        {
+          "source_path": "test/thread_top/013.png",
+          "truth": "thread_top",
+          "prediction": "thread_top"
+        },
+        {
+          "source_path": "test/thread_top/014.png",
+          "truth": "thread_top",
+          "prediction": "thread_top"
+        },
+        {
+          "source_path": "test/thread_top/015.png",
+          "truth": "thread_top",
+          "prediction": "thread_side"
+        },
+        {
+          "source_path": "test/thread_top/016.png",
+          "truth": "thread_top",
+          "prediction": "thread_top"
+        },
+        {
+          "source_path": "test/thread_top/017.png",
+          "truth": "thread_top",
+          "prediction": "thread_side"
+        },
+        {
+          "source_path": "test/thread_top/019.png",
+          "truth": "thread_top",
+          "prediction": "thread_top"
+        },
+        {
+          "source_path": "test/thread_top/020.png",
+          "truth": "thread_top",
+          "prediction": "thread_top"
+        },
+        {
+          "source_path": "test/thread_top/022.png",
+          "truth": "thread_top",
+          "prediction": "manipulated_front"
+        }
+      ]
+    },
+    "validation_before_leaf_abstention": {
+      "images": 21,
+      "correct": 16,
+      "type_calls": 19,
+      "incorrect_type_calls": 3,
+      "unknown": 0,
+      "not_flagged": 2,
+      "end_to_end_type_accuracy": 0.7619047619047619,
+      "accuracy_on_type_calls": 0.8421052631578947,
+      "type_call_coverage": 0.9047619047619048,
+      "counts_by_truth": {
+        "manipulated_front": {
+          "manipulated_front": 4
+        },
+        "scratch_head": {
+          "scratch_head": 4
+        },
+        "scratch_neck": {
+          "scratch_head": 1,
+          "scratch_neck": 4
+        },
+        "thread_side": {
+          "not_flagged": 2,
+          "scratch_head": 1,
+          "thread_side": 1
+        },
+        "thread_top": {
+          "thread_top": 3,
+          "thread_side": 1
+        }
+      },
+      "predictions": [
+        {
+          "source_path": "test/manipulated_front/003.png",
+          "truth": "manipulated_front",
+          "prediction": "manipulated_front"
+        },
+        {
+          "source_path": "test/manipulated_front/012.png",
+          "truth": "manipulated_front",
+          "prediction": "manipulated_front"
+        },
+        {
+          "source_path": "test/manipulated_front/013.png",
+          "truth": "manipulated_front",
+          "prediction": "manipulated_front"
+        },
+        {
+          "source_path": "test/manipulated_front/020.png",
+          "truth": "manipulated_front",
+          "prediction": "manipulated_front"
+        },
+        {
+          "source_path": "test/scratch_head/006.png",
+          "truth": "scratch_head",
+          "prediction": "scratch_head"
+        },
+        {
+          "source_path": "test/scratch_head/008.png",
+          "truth": "scratch_head",
+          "prediction": "scratch_head"
+        },
+        {
+          "source_path": "test/scratch_head/013.png",
+          "truth": "scratch_head",
+          "prediction": "scratch_head"
+        },
+        {
+          "source_path": "test/scratch_head/015.png",
+          "truth": "scratch_head",
+          "prediction": "scratch_head"
+        },
+        {
+          "source_path": "test/scratch_neck/000.png",
+          "truth": "scratch_neck",
+          "prediction": "scratch_head"
+        },
+        {
+          "source_path": "test/scratch_neck/002.png",
+          "truth": "scratch_neck",
+          "prediction": "scratch_neck"
+        },
+        {
+          "source_path": "test/scratch_neck/008.png",
+          "truth": "scratch_neck",
+          "prediction": "scratch_neck"
+        },
+        {
+          "source_path": "test/scratch_neck/014.png",
+          "truth": "scratch_neck",
+          "prediction": "scratch_neck"
+        },
+        {
+          "source_path": "test/scratch_neck/018.png",
+          "truth": "scratch_neck",
+          "prediction": "scratch_neck"
+        },
+        {
+          "source_path": "test/thread_side/004.png",
+          "truth": "thread_side",
+          "prediction": "not_flagged"
+        },
+        {
+          "source_path": "test/thread_side/013.png",
+          "truth": "thread_side",
+          "prediction": "scratch_head"
+        },
+        {
+          "source_path": "test/thread_side/018.png",
+          "truth": "thread_side",
+          "prediction": "not_flagged"
+        },
+        {
+          "source_path": "test/thread_side/021.png",
+          "truth": "thread_side",
+          "prediction": "thread_side"
+        },
+        {
+          "source_path": "test/thread_top/001.png",
+          "truth": "thread_top",
+          "prediction": "thread_top"
+        },
+        {
+          "source_path": "test/thread_top/004.png",
+          "truth": "thread_top",
+          "prediction": "thread_top"
+        },
+        {
+          "source_path": "test/thread_top/009.png",
+          "truth": "thread_top",
+          "prediction": "thread_side"
+        },
+        {
+          "source_path": "test/thread_top/018.png",
+          "truth": "thread_top",
+          "prediction": "thread_top"
+        }
+      ]
+    },
+    "validation_after_leaf_abstention": {
+      "images": 21,
+      "correct": 16,
+      "type_calls": 19,
+      "incorrect_type_calls": 3,
+      "unknown": 0,
+      "not_flagged": 2,
+      "end_to_end_type_accuracy": 0.7619047619047619,
+      "accuracy_on_type_calls": 0.8421052631578947,
+      "type_call_coverage": 0.9047619047619048,
+      "counts_by_truth": {
+        "manipulated_front": {
+          "manipulated_front": 4
+        },
+        "scratch_head": {
+          "scratch_head": 4
+        },
+        "scratch_neck": {
+          "scratch_head": 1,
+          "scratch_neck": 4
+        },
+        "thread_side": {
+          "not_flagged": 2,
+          "scratch_head": 1,
+          "thread_side": 1
+        },
+        "thread_top": {
+          "thread_top": 3,
+          "thread_side": 1
+        }
+      },
+      "predictions": [
+        {
+          "source_path": "test/manipulated_front/003.png",
+          "truth": "manipulated_front",
+          "prediction": "manipulated_front"
+        },
+        {
+          "source_path": "test/manipulated_front/012.png",
+          "truth": "manipulated_front",
+          "prediction": "manipulated_front"
+        },
+        {
+          "source_path": "test/manipulated_front/013.png",
+          "truth": "manipulated_front",
+          "prediction": "manipulated_front"
+        },
+        {
+          "source_path": "test/manipulated_front/020.png",
+          "truth": "manipulated_front",
+          "prediction": "manipulated_front"
+        },
+        {
+          "source_path": "test/scratch_head/006.png",
+          "truth": "scratch_head",
+          "prediction": "scratch_head"
+        },
+        {
+          "source_path": "test/scratch_head/008.png",
+          "truth": "scratch_head",
+          "prediction": "scratch_head"
+        },
+        {
+          "source_path": "test/scratch_head/013.png",
+          "truth": "scratch_head",
+          "prediction": "scratch_head"
+        },
+        {
+          "source_path": "test/scratch_head/015.png",
+          "truth": "scratch_head",
+          "prediction": "scratch_head"
+        },
+        {
+          "source_path": "test/scratch_neck/000.png",
+          "truth": "scratch_neck",
+          "prediction": "scratch_head"
+        },
+        {
+          "source_path": "test/scratch_neck/002.png",
+          "truth": "scratch_neck",
+          "prediction": "scratch_neck"
+        },
+        {
+          "source_path": "test/scratch_neck/008.png",
+          "truth": "scratch_neck",
+          "prediction": "scratch_neck"
+        },
+        {
+          "source_path": "test/scratch_neck/014.png",
+          "truth": "scratch_neck",
+          "prediction": "scratch_neck"
+        },
+        {
+          "source_path": "test/scratch_neck/018.png",
+          "truth": "scratch_neck",
+          "prediction": "scratch_neck"
+        },
+        {
+          "source_path": "test/thread_side/004.png",
+          "truth": "thread_side",
+          "prediction": "not_flagged"
+        },
+        {
+          "source_path": "test/thread_side/013.png",
+          "truth": "thread_side",
+          "prediction": "scratch_head"
+        },
+        {
+          "source_path": "test/thread_side/018.png",
+          "truth": "thread_side",
+          "prediction": "not_flagged"
+        },
+        {
+          "source_path": "test/thread_side/021.png",
+          "truth": "thread_side",
+          "prediction": "thread_side"
+        },
+        {
+          "source_path": "test/thread_top/001.png",
+          "truth": "thread_top",
+          "prediction": "thread_top"
+        },
+        {
+          "source_path": "test/thread_top/004.png",
+          "truth": "thread_top",
+          "prediction": "thread_top"
+        },
+        {
+          "source_path": "test/thread_top/009.png",
+          "truth": "thread_top",
+          "prediction": "thread_side"
+        },
+        {
+          "source_path": "test/thread_top/018.png",
+          "truth": "thread_top",
+          "prediction": "thread_top"
+        }
+      ]
+    },
+    "validation_scope": "Used for 27-candidate selection and leaf support; not a fresh or unbiased final test",
+    "selection": {
+      "data_role": "classifier_validation",
+      "final_holdout_used": false,
+      "metric": "Native classes with correct validation support, then correct labels; tie: fewer leaves then fewer features",
+      "selected": {
+        "feature_group": 1,
+        "max_depth": 3,
+        "min_samples_leaf": 8,
+        "validation_correct": 16,
+        "usable_validation_images": 19,
+        "supported_labels": [
+          "manipulated_front",
+          "scratch_head",
+          "scratch_neck",
+          "thread_side",
+          "thread_top"
+        ],
+        "feature_count": 14,
+        "leaf_count": 6
+      },
+      "candidates": [
+        {
+          "feature_group": 0,
+          "max_depth": 2,
+          "min_samples_leaf": 3,
+          "validation_correct": 16,
+          "usable_validation_images": 19,
+          "supported_labels": [
+            "manipulated_front",
+            "scratch_head",
+            "scratch_neck",
+            "thread_top"
+          ],
+          "feature_count": 18,
+          "leaf_count": 4
+        },
+        {
+          "feature_group": 0,
+          "max_depth": 2,
+          "min_samples_leaf": 5,
+          "validation_correct": 16,
+          "usable_validation_images": 19,
+          "supported_labels": [
+            "manipulated_front",
+            "scratch_head",
+            "scratch_neck",
+            "thread_top"
+          ],
+          "feature_count": 18,
+          "leaf_count": 4
+        },
+        {
+          "feature_group": 0,
+          "max_depth": 2,
+          "min_samples_leaf": 8,
+          "validation_correct": 16,
+          "usable_validation_images": 19,
+          "supported_labels": [
+            "manipulated_front",
+            "scratch_head",
+            "scratch_neck",
+            "thread_top"
+          ],
+          "feature_count": 18,
+          "leaf_count": 4
+        },
+        {
+          "feature_group": 0,
+          "max_depth": 3,
+          "min_samples_leaf": 3,
+          "validation_correct": 16,
+          "usable_validation_images": 19,
+          "supported_labels": [
+            "manipulated_front",
+            "scratch_head",
+            "scratch_neck",
+            "thread_side",
+            "thread_top"
+          ],
+          "feature_count": 18,
+          "leaf_count": 7
+        },
+        {
+          "feature_group": 0,
+          "max_depth": 3,
+          "min_samples_leaf": 5,
+          "validation_correct": 16,
+          "usable_validation_images": 19,
+          "supported_labels": [
+            "manipulated_front",
+            "scratch_head",
+            "scratch_neck",
+            "thread_side",
+            "thread_top"
+          ],
+          "feature_count": 18,
+          "leaf_count": 7
+        },
+        {
+          "feature_group": 0,
+          "max_depth": 3,
+          "min_samples_leaf": 8,
+          "validation_correct": 16,
+          "usable_validation_images": 19,
+          "supported_labels": [
+            "manipulated_front",
+            "scratch_head",
+            "scratch_neck",
+            "thread_side",
+            "thread_top"
+          ],
+          "feature_count": 18,
+          "leaf_count": 6
+        },
+        {
+          "feature_group": 0,
+          "max_depth": 4,
+          "min_samples_leaf": 3,
+          "validation_correct": 16,
+          "usable_validation_images": 19,
+          "supported_labels": [
+            "manipulated_front",
+            "scratch_head",
+            "scratch_neck",
+            "thread_side",
+            "thread_top"
+          ],
+          "feature_count": 18,
+          "leaf_count": 9
+        },
+        {
+          "feature_group": 0,
+          "max_depth": 4,
+          "min_samples_leaf": 5,
+          "validation_correct": 16,
+          "usable_validation_images": 19,
+          "supported_labels": [
+            "manipulated_front",
+            "scratch_head",
+            "scratch_neck",
+            "thread_side",
+            "thread_top"
+          ],
+          "feature_count": 18,
+          "leaf_count": 7
+        },
+        {
+          "feature_group": 0,
+          "max_depth": 4,
+          "min_samples_leaf": 8,
+          "validation_correct": 16,
+          "usable_validation_images": 19,
+          "supported_labels": [
+            "manipulated_front",
+            "scratch_head",
+            "scratch_neck",
+            "thread_side",
+            "thread_top"
+          ],
+          "feature_count": 18,
+          "leaf_count": 6
+        },
+        {
+          "feature_group": 1,
+          "max_depth": 2,
+          "min_samples_leaf": 3,
+          "validation_correct": 16,
+          "usable_validation_images": 19,
+          "supported_labels": [
+            "manipulated_front",
+            "scratch_head",
+            "scratch_neck",
+            "thread_top"
+          ],
+          "feature_count": 14,
+          "leaf_count": 4
+        },
+        {
+          "feature_group": 1,
+          "max_depth": 2,
+          "min_samples_leaf": 5,
+          "validation_correct": 16,
+          "usable_validation_images": 19,
+          "supported_labels": [
+            "manipulated_front",
+            "scratch_head",
+            "scratch_neck",
+            "thread_top"
+          ],
+          "feature_count": 14,
+          "leaf_count": 4
+        },
+        {
+          "feature_group": 1,
+          "max_depth": 2,
+          "min_samples_leaf": 8,
+          "validation_correct": 16,
+          "usable_validation_images": 19,
+          "supported_labels": [
+            "manipulated_front",
+            "scratch_head",
+            "scratch_neck",
+            "thread_top"
+          ],
+          "feature_count": 14,
+          "leaf_count": 4
+        },
+        {
+          "feature_group": 1,
+          "max_depth": 3,
+          "min_samples_leaf": 3,
+          "validation_correct": 16,
+          "usable_validation_images": 19,
+          "supported_labels": [
+            "manipulated_front",
+            "scratch_head",
+            "scratch_neck",
+            "thread_side",
+            "thread_top"
+          ],
+          "feature_count": 14,
+          "leaf_count": 7
+        },
+        {
+          "feature_group": 1,
+          "max_depth": 3,
+          "min_samples_leaf": 5,
+          "validation_correct": 16,
+          "usable_validation_images": 19,
+          "supported_labels": [
+            "manipulated_front",
+            "scratch_head",
+            "scratch_neck",
+            "thread_side",
+            "thread_top"
+          ],
+          "feature_count": 14,
+          "leaf_count": 7
+        },
+        {
+          "feature_group": 1,
+          "max_depth": 3,
+          "min_samples_leaf": 8,
+          "validation_correct": 16,
+          "usable_validation_images": 19,
+          "supported_labels": [
+            "manipulated_front",
+            "scratch_head",
+            "scratch_neck",
+            "thread_side",
+            "thread_top"
+          ],
+          "feature_count": 14,
+          "leaf_count": 6
+        },
+        {
+          "feature_group": 1,
+          "max_depth": 4,
+          "min_samples_leaf": 3,
+          "validation_correct": 16,
+          "usable_validation_images": 19,
+          "supported_labels": [
+            "manipulated_front",
+            "scratch_head",
+            "scratch_neck",
+            "thread_side",
+            "thread_top"
+          ],
+          "feature_count": 14,
+          "leaf_count": 9
+        },
+        {
+          "feature_group": 1,
+          "max_depth": 4,
+          "min_samples_leaf": 5,
+          "validation_correct": 16,
+          "usable_validation_images": 19,
+          "supported_labels": [
+            "manipulated_front",
+            "scratch_head",
+            "scratch_neck",
+            "thread_side",
+            "thread_top"
+          ],
+          "feature_count": 14,
+          "leaf_count": 7
+        },
+        {
+          "feature_group": 1,
+          "max_depth": 4,
+          "min_samples_leaf": 8,
+          "validation_correct": 16,
+          "usable_validation_images": 19,
+          "supported_labels": [
+            "manipulated_front",
+            "scratch_head",
+            "scratch_neck",
+            "thread_side",
+            "thread_top"
+          ],
+          "feature_count": 14,
+          "leaf_count": 6
+        },
+        {
+          "feature_group": 2,
+          "max_depth": 2,
+          "min_samples_leaf": 3,
+          "validation_correct": 16,
+          "usable_validation_images": 19,
+          "supported_labels": [
+            "manipulated_front",
+            "scratch_head",
+            "scratch_neck",
+            "thread_top"
+          ],
+          "feature_count": 8,
+          "leaf_count": 4
+        },
+        {
+          "feature_group": 2,
+          "max_depth": 2,
+          "min_samples_leaf": 5,
+          "validation_correct": 16,
+          "usable_validation_images": 19,
+          "supported_labels": [
+            "manipulated_front",
+            "scratch_head",
+            "scratch_neck",
+            "thread_top"
+          ],
+          "feature_count": 8,
+          "leaf_count": 4
+        },
+        {
+          "feature_group": 2,
+          "max_depth": 2,
+          "min_samples_leaf": 8,
+          "validation_correct": 16,
+          "usable_validation_images": 19,
+          "supported_labels": [
+            "manipulated_front",
+            "scratch_head",
+            "scratch_neck",
+            "thread_top"
+          ],
+          "feature_count": 8,
+          "leaf_count": 4
+        },
+        {
+          "feature_group": 2,
+          "max_depth": 3,
+          "min_samples_leaf": 3,
+          "validation_correct": 16,
+          "usable_validation_images": 19,
+          "supported_labels": [
+            "manipulated_front",
+            "scratch_head",
+            "scratch_neck",
+            "thread_side",
+            "thread_top"
+          ],
+          "feature_count": 8,
+          "leaf_count": 7
+        },
+        {
+          "feature_group": 2,
+          "max_depth": 3,
+          "min_samples_leaf": 5,
+          "validation_correct": 16,
+          "usable_validation_images": 19,
+          "supported_labels": [
+            "manipulated_front",
+            "scratch_head",
+            "scratch_neck",
+            "thread_side",
+            "thread_top"
+          ],
+          "feature_count": 8,
+          "leaf_count": 7
+        },
+        {
+          "feature_group": 2,
+          "max_depth": 3,
+          "min_samples_leaf": 8,
+          "validation_correct": 15,
+          "usable_validation_images": 19,
+          "supported_labels": [
+            "manipulated_front",
+            "scratch_head",
+            "scratch_neck",
+            "thread_top"
+          ],
+          "feature_count": 8,
+          "leaf_count": 6
+        },
+        {
+          "feature_group": 2,
+          "max_depth": 4,
+          "min_samples_leaf": 3,
+          "validation_correct": 16,
+          "usable_validation_images": 19,
+          "supported_labels": [
+            "manipulated_front",
+            "scratch_head",
+            "scratch_neck",
+            "thread_side",
+            "thread_top"
+          ],
+          "feature_count": 8,
+          "leaf_count": 9
+        },
+        {
+          "feature_group": 2,
+          "max_depth": 4,
+          "min_samples_leaf": 5,
+          "validation_correct": 16,
+          "usable_validation_images": 19,
+          "supported_labels": [
+            "manipulated_front",
+            "scratch_head",
+            "scratch_neck",
+            "thread_side",
+            "thread_top"
+          ],
+          "feature_count": 8,
+          "leaf_count": 7
+        },
+        {
+          "feature_group": 2,
+          "max_depth": 4,
+          "min_samples_leaf": 8,
+          "validation_correct": 15,
+          "usable_validation_images": 19,
+          "supported_labels": [
+            "manipulated_front",
+            "scratch_head",
+            "scratch_neck",
+            "thread_top"
+          ],
+          "feature_count": 8,
+          "leaf_count": 6
+        }
+      ]
+    },
+    "final_holdout_images_read": 0,
+    "ground_truth_masks_read": 0
+  },
+  "source_features": "artifacts/vision/screw_classifier_30k_v2/features.jsonl",
+  "features_sha256": "5ca1874b03a123f64e4335736c6501840c1fe612cd026212b39e7e56d34eeb42",
+  "profile_sha256": "4635a19705fbb067546ff8c2b2393dad47572a001268895e041217408d4c7467",
+  "model_sha256": "494726eeececa7b6f194ea5ec6b471873aa41085913eab9b65ef64120519618e",
+  "image_threshold": 0.2372681200504303,
+  "dataset_manifest_sha256": "1b1d3ff53822877520687e0e1d2446a5f52fdb0474a3868f72a4316799b26f23",
+  "source_sha256": {
+    "forgesight/screw_classifier.py": "a73150cb34a1778b1bd45d80cf9c576874d14695d91678002c0f4473a5890a8d",
+    "forgesight/defect_type.py": "41f0a6bc22db48ee34cc6a543603dc99c1599aa606910b3254b1196edad50649"
+  },
+  "final_holdout_images_read": 0,
+  "ground_truth_masks_read": 0,
+  "promotion_allowed": false
+}

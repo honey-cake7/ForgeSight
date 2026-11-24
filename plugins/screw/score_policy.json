@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "policy_version": "screw-efficientad-s-fp32-30k-v2",
+  "status": "CPU_CALIBRATED_OPERATOR_SELECTED_DEVELOPMENT_NOT_ACCEPTANCE_VERIFIED",
+  "validation_role": "validation_normal",
+  "split_seed": 42,
+  "split_method": "Frozen screw_v1 manifest roles; no resplitting",
+  "map_fit_count": 64,
+  "map_quantiles": [
+    0.9,
+    0.995
+  ],
+  "branch_scale": 0.1,
+  "branch_weights": [
+    0.5,
+    0.5
+  ],
+  "image_score": "maximum of the equally weighted normalized branch maps",
+  "nominal_normal_flag_level": 0.05,
+  "threshold_rule": "ceil((n+1)*(1-alpha))-th smallest independent normal threshold score",
+  "comparison": "strict_greater_than",
+  "above_threshold": "ANOMALY_CANDIDATE",
+  "at_or_below_threshold": "NORMAL_CANDIDATE",
+  "nonfinite_score": "ERROR",
+  "is_probability": false,
+  "is_final_quality_grade": false,
+  "defect_recall": "NOT_EVALUATED",
+  "guarantee_scope": "Rank calculation assumes exchangeable future normal images and a score function fixed independently of threshold samples. These assumptions and production false-alarm performance are not verified.",
+  "final_holdout_access": false,
+  "category": "screw",
+  "threshold_role": "threshold_normal",
+  "threshold_count": 20,
+  "threshold": 0.2372681200504303,
+  "n": 20,
+  "order_statistic_rank": 20,
+  "nominal_alpha": 0.05,
+  "rank_tail_fraction_under_assumptions": 0.047619047619047616,
+  "map_quantile_values": {
+    "qa_st": 0.21476569771766663,
+    "qb_st": 0.4063326120376587,
+    "qa_ae": 0.04209917038679123,
+    "qb_ae": 0.12811416387557983
+  },
+  "calibrated_checkpoint_sha256": "f32555abd69c39cce04f6acb324b1433de4154d893ea9409e989bd8293b93ef5",
+  "source_checkpoint_sha256": "80c7ab8b6f627391eb0fd9bb4797ff5b05d31a4ac5c6baf0595209fd5ffe884f"
+}

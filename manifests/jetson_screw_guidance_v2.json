@@ -1,0 +1,370 @@
+{
+  "status": "JETSON_EXECUTORCH_SCREW_CHOICES_VERIFIED_SINGLE_WORKER",
+  "scope": "Physical Jetson; supplied screw manual-inspection choices only",
+  "dashboard_modified": false,
+  "llama_retrained": false,
+  "cases": {
+    "manipulated_front": {
+      "status": "GENERATED_BY_PERSISTENT_WORKER",
+      "worker_mode": "PERSISTENT_PROCESS",
+      "worker_started_utc": "2026-11-24T02:14:38Z",
+      "runtime_evidence": {
+        "host": {
+          "machine": "aarch64",
+          "model": "NVIDIA Jetson Orin Nano Engineering Reference Developer Kit Super",
+          "python": "3.12.14",
+          "venv": "/home/nvidia/.local/share/forgesight/llama_cpu_v1/venv",
+          "system_python": "Python 3.8.10"
+        },
+        "artifact": {
+          "bytes": 802247040,
+          "sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739"
+        },
+        "tokenizer": {
+          "bytes": 2183982,
+          "sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55"
+        },
+        "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+        "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+        "backend_requested": "xnnpack"
+      },
+      "prompt_token_count": 93,
+      "max_new_tokens": 2,
+      "generated_text": "A.\n\n",
+      "stats": {
+        "prefill_token_per_sec": 117.871,
+        "decode_token_per_sec": 17.5439,
+        "prompt_tokens": 93,
+        "generated_tokens": 1,
+        "model_load_start_ms": 1795486478691,
+        "model_load_end_ms": 1795486481624,
+        "inference_start_ms": 1795486481900,
+        "inference_end_ms": 1795486482746,
+        "model_execution_start_ms": 1795486482689,
+        "model_execution_end_ms": 1795486482746,
+        "prompt_eval_end_ms": 1795486482689,
+        "first_token_ms": 1795486482689,
+        "aggregate_sampling_time_ms": 0,
+        "aggregate_model_execution_time_ms": 845,
+        "SCALING_FACTOR_UNITS_PER_SECOND": 1000
+      },
+      "generate_ms": 846.5032339991012,
+      "state_isolation": "no reply cache; every request re-tokenized and re-generated",
+      "timing_scope": "persistent worker: tokenize+generate per request; verification/imports/model load once at worker start"
+    },
+    "scratch_head": {
+      "status": "GENERATED_BY_PERSISTENT_WORKER",
+      "worker_mode": "PERSISTENT_PROCESS",
+      "worker_started_utc": "2026-11-24T02:14:38Z",
+      "runtime_evidence": {
+        "host": {
+          "machine": "aarch64",
+          "model": "NVIDIA Jetson Orin Nano Engineering Reference Developer Kit Super",
+          "python": "3.12.14",
+          "venv": "/home/nvidia/.local/share/forgesight/llama_cpu_v1/venv",
+          "system_python": "Python 3.8.10"
+        },
+        "artifact": {
+          "bytes": 802247040,
+          "sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739"
+        },
+        "tokenizer": {
+          "bytes": 2183982,
+          "sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55"
+        },
+        "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+        "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+        "backend_requested": "xnnpack"
+      },
+      "prompt_token_count": 88,
+      "max_new_tokens": 2,
+      "generated_text": "A.\n\n",
+      "stats": {
+        "prefill_token_per_sec": 116.095,
+        "decode_token_per_sec": 16.6667,
+        "prompt_tokens": 88,
+        "generated_tokens": 1,
+        "model_load_start_ms": 1795486478691,
+        "model_load_end_ms": 1795486481624,
+        "inference_start_ms": 1795486482751,
+        "inference_end_ms": 1795486483569,
+        "model_execution_start_ms": 1795486483509,
+        "model_execution_end_ms": 1795486483569,
+        "prompt_eval_end_ms": 1795486483509,
+        "first_token_ms": 1795486483509,
+        "aggregate_sampling_time_ms": 0,
+        "aggregate_model_execution_time_ms": 816,
+        "SCALING_FACTOR_UNITS_PER_SECOND": 1000
+      },
+      "generate_ms": 818.5683550000249,
+      "state_isolation": "no reply cache; every request re-tokenized and re-generated",
+      "timing_scope": "persistent worker: tokenize+generate per request; verification/imports/model load once at worker start"
+    },
+    "scratch_neck": {
+      "status": "GENERATED_BY_PERSISTENT_WORKER",
+      "worker_mode": "PERSISTENT_PROCESS",
+      "worker_started_utc": "2026-11-24T02:14:38Z",
+      "runtime_evidence": {
+        "host": {
+          "machine": "aarch64",
+          "model": "NVIDIA Jetson Orin Nano Engineering Reference Developer Kit Super",
+          "python": "3.12.14",
+          "venv": "/home/nvidia/.local/share/forgesight/llama_cpu_v1/venv",
+          "system_python": "Python 3.8.10"
+        },
+        "artifact": {
+          "bytes": 802247040,
+          "sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739"
+        },
+        "tokenizer": {
+          "bytes": 2183982,
+          "sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55"
+        },
+        "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+        "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+        "backend_requested": "xnnpack"
+      },
+      "prompt_token_count": 91,
+      "max_new_tokens": 2,
+      "generated_text": "A.\n\n",
+      "stats": {
+        "prefill_token_per_sec": 117.268,
+        "decode_token_per_sec": 15.1515,
+        "prompt_tokens": 91,
+        "generated_tokens": 1,
+        "model_load_start_ms": 1795486478691,
+        "model_load_end_ms": 1795486481624,
+        "inference_start_ms": 1795486483574,
+        "inference_end_ms": 1795486484416,
+        "model_execution_start_ms": 1795486484351,
+        "model_execution_end_ms": 1795486484415,
+        "prompt_eval_end_ms": 1795486484350,
+        "first_token_ms": 1795486484350,
+        "aggregate_sampling_time_ms": 0,
+        "aggregate_model_execution_time_ms": 839,
+        "SCALING_FACTOR_UNITS_PER_SECOND": 1000
+      },
+      "generate_ms": 841.9585800002096,
+      "state_isolation": "no reply cache; every request re-tokenized and re-generated",
+      "timing_scope": "persistent worker: tokenize+generate per request; verification/imports/model load once at worker start"
+    },
+    "thread_side": {
+      "status": "GENERATED_BY_PERSISTENT_WORKER",
+      "worker_mode": "PERSISTENT_PROCESS",
+      "worker_started_utc": "2026-11-24T02:14:38Z",
+      "runtime_evidence": {
+        "host": {
+          "machine": "aarch64",
+          "model": "NVIDIA Jetson Orin Nano Engineering Reference Developer Kit Super",
+          "python": "3.12.14",
+          "venv": "/home/nvidia/.local/share/forgesight/llama_cpu_v1/venv",
+          "system_python": "Python 3.8.10"
+        },
+        "artifact": {
+          "bytes": 802247040,
+          "sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739"
+        },
+        "tokenizer": {
+          "bytes": 2183982,
+          "sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55"
+        },
+        "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+        "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+        "backend_requested": "xnnpack"
+      },
+      "prompt_token_count": 91,
+      "max_new_tokens": 2,
+      "generated_text": "A.\n\n",
+      "stats": {
+        "prefill_token_per_sec": 118.799,
+        "decode_token_per_sec": 15.625,
+        "prompt_tokens": 91,
+        "generated_tokens": 1,
+        "model_load_start_ms": 1795486478691,
+        "model_load_end_ms": 1795486481624,
+        "inference_start_ms": 1795486484421,
+        "inference_end_ms": 1795486485251,
+        "model_execution_start_ms": 1795486485187,
+        "model_execution_end_ms": 1795486485250,
+        "prompt_eval_end_ms": 1795486485187,
+        "first_token_ms": 1795486485187,
+        "aggregate_sampling_time_ms": 0,
+        "aggregate_model_execution_time_ms": 828,
+        "SCALING_FACTOR_UNITS_PER_SECOND": 1000
+      },
+      "generate_ms": 830.3173409985902,
+      "state_isolation": "no reply cache; every request re-tokenized and re-generated",
+      "timing_scope": "persistent worker: tokenize+generate per request; verification/imports/model load once at worker start"
+    },
+    "thread_top": {
+      "status": "GENERATED_BY_PERSISTENT_WORKER",
+      "worker_mode": "PERSISTENT_PROCESS",
+      "worker_started_utc": "2026-11-24T02:14:38Z",
+      "runtime_evidence": {
+        "host": {
+          "machine": "aarch64",
+          "model": "NVIDIA Jetson Orin Nano Engineering Reference Developer Kit Super",
+          "python": "3.12.14",
+          "venv": "/home/nvidia/.local/share/forgesight/llama_cpu_v1/venv",
+          "system_python": "Python 3.8.10"
+        },
+        "artifact": {
+          "bytes": 802247040,
+          "sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739"
+        },
+        "tokenizer": {
+          "bytes": 2183982,
+          "sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55"
+        },
+        "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+        "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+        "backend_requested": "xnnpack"
+      },
+      "prompt_token_count": 91,
+      "max_new_tokens": 2,
+      "generated_text": "A\n\n",
+      "stats": {
+        "prefill_token_per_sec": 114.178,
+        "decode_token_per_sec": 15.873,
+        "prompt_tokens": 91,
+        "generated_tokens": 1,
+        "model_load_start_ms": 1795486478691,
+        "model_load_end_ms": 1795486481624,
+        "inference_start_ms": 1795486485256,
+        "inference_end_ms": 1795486486116,
+        "model_execution_start_ms": 1795486486053,
+        "model_execution_end_ms": 1795486486116,
+        "prompt_eval_end_ms": 1795486486053,
+        "first_token_ms": 1795486486053,
+        "aggregate_sampling_time_ms": 0,
+        "aggregate_model_execution_time_ms": 859,
+        "SCALING_FACTOR_UNITS_PER_SECOND": 1000
+      },
+      "generate_ms": 861.2029159994563,
+      "state_isolation": "no reply cache; every request re-tokenized and re-generated",
+      "timing_scope": "persistent worker: tokenize+generate per request; verification/imports/model load once at worker start"
+    },
+    "unknown": {
+      "status": "GENERATED_BY_PERSISTENT_WORKER",
+      "worker_mode": "PERSISTENT_PROCESS",
+      "worker_started_utc": "2026-11-24T02:14:38Z",
+      "runtime_evidence": {
+        "host": {
+          "machine": "aarch64",
+          "model": "NVIDIA Jetson Orin Nano Engineering Reference Developer Kit Super",
+          "python": "3.12.14",
+          "venv": "/home/nvidia/.local/share/forgesight/llama_cpu_v1/venv",
+          "system_python": "Python 3.8.10"
+        },
+        "artifact": {
+          "bytes": 802247040,
+          "sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739"
+        },
+        "tokenizer": {
+          "bytes": 2183982,
+          "sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55"
+        },
+        "model_id": "meta-llama/Llama-3.2-1B-Instruct",
+        "model_revision": "9213176726f574b556790deb65791e0c5aa438b6",
+        "backend_requested": "xnnpack"
+      },
+      "prompt_token_count": 89,
+      "max_new_tokens": 2,
+      "generated_text": "A.\n\n",
+      "stats": {
+        "prefill_token_per_sec": 120.108,
+        "decode_token_per_sec": 15.1515,
+        "prompt_tokens": 89,
+        "generated_tokens": 1,
+        "model_load_start_ms": 1795486478691,
+        "model_load_end_ms": 1795486481624,
+        "inference_start_ms": 1795486486122,
+        "inference_end_ms": 1795486486929,
+        "model_execution_start_ms": 1795486486863,
+        "model_execution_end_ms": 1795486486929,
+        "prompt_eval_end_ms": 1795486486863,
+        "first_token_ms": 1795486486863,
+        "aggregate_sampling_time_ms": 0,
+        "aggregate_model_execution_time_ms": 806,
+        "SCALING_FACTOR_UNITS_PER_SECOND": 1000
+      },
+      "generate_ms": 808.2156900018163,
+      "state_isolation": "no reply cache; every request re-tokenized and re-generated",
+      "timing_scope": "persistent worker: tokenize+generate per request; verification/imports/model load once at worker start"
+    }
+  },
+  "worker_pid": 65310,
+  "worker_starts": 1,
+  "all_prompts_served_by_pid": 65310,
+  "existing_station_workers_terminated": false,
+  "probe_idle_timeout_seconds": 300,
+  "note": "Isolated probe idles out naturally; installed station configuration is unchanged.",
+  "validated_choices": {
+    "manipulated_front": {
+      "status": "REVIEWED_CHOICE",
+      "choice": "A",
+      "text": "Compare the highlighted screw tip with a good reference screw under the same view and lighting.",
+      "guidance_sha256": "11138245b406db3c88d24f8754ca013057c76ef50b48a7ea128a4b0b57ac065f",
+      "approval_status": "PROTOTYPE_PENDING_SITE_QC_APPROVAL",
+      "quality_grade_authority": "DETERMINISTIC_RULES_ONLY",
+      "part_release_authorized": false,
+      "type_is_provisional": true,
+      "root_cause": "UNKNOWN"
+    },
+    "scratch_head": {
+      "status": "REVIEWED_CHOICE",
+      "choice": "A",
+      "text": "Inspect the highlighted screw head under angled light for a visible surface mark.",
+      "guidance_sha256": "11138245b406db3c88d24f8754ca013057c76ef50b48a7ea128a4b0b57ac065f",
+      "approval_status": "PROTOTYPE_PENDING_SITE_QC_APPROVAL",
+      "quality_grade_authority": "DETERMINISTIC_RULES_ONLY",
+      "part_release_authorized": false,
+      "type_is_provisional": true,
+      "root_cause": "UNKNOWN"
+    },
+    "scratch_neck": {
+      "status": "REVIEWED_CHOICE",
+      "choice": "A",
+      "text": "Inspect the highlighted shank below the head under angled light for a surface mark.",
+      "guidance_sha256": "11138245b406db3c88d24f8754ca013057c76ef50b48a7ea128a4b0b57ac065f",
+      "approval_status": "PROTOTYPE_PENDING_SITE_QC_APPROVAL",
+      "quality_grade_authority": "DETERMINISTIC_RULES_ONLY",
+      "part_release_authorized": false,
+      "type_is_provisional": true,
+      "root_cause": "UNKNOWN"
+    },
+    "thread_side": {
+      "status": "REVIEWED_CHOICE",
+      "choice": "A",
+      "text": "Inspect the highlighted thread flank and compare its profile with a good reference screw.",
+      "guidance_sha256": "11138245b406db3c88d24f8754ca013057c76ef50b48a7ea128a4b0b57ac065f",
+      "approval_status": "PROTOTYPE_PENDING_SITE_QC_APPROVAL",
+      "quality_grade_authority": "DETERMINISTIC_RULES_ONLY",
+      "part_release_authorized": false,
+      "type_is_provisional": true,
+      "root_cause": "UNKNOWN"
+    },
+    "thread_top": {
+      "status": "REVIEWED_CHOICE",
+      "choice": "A",
+      "text": "Inspect the highlighted thread crest and compare it with a good reference screw.",
+      "guidance_sha256": "11138245b406db3c88d24f8754ca013057c76ef50b48a7ea128a4b0b57ac065f",
+      "approval_status": "PROTOTYPE_PENDING_SITE_QC_APPROVAL",
+      "quality_grade_authority": "DETERMINISTIC_RULES_ONLY",
+      "part_release_authorized": false,
+      "type_is_provisional": true,
+      "root_cause": "UNKNOWN"
+    },
+    "unknown": {
+      "status": "REVIEWED_CHOICE",
+      "choice": "A",
+      "text": "Manually inspect the highlighted area and compare it with a good reference screw.",
+      "guidance_sha256": "11138245b406db3c88d24f8754ca013057c76ef50b48a7ea128a4b0b57ac065f",
+      "approval_status": "PROTOTYPE_PENDING_SITE_QC_APPROVAL",
+      "quality_grade_authority": "DETERMINISTIC_RULES_ONLY",
+      "part_release_authorized": false,
+      "type_is_provisional": true,
+      "root_cause": "UNKNOWN"
+    }
+  }
+}

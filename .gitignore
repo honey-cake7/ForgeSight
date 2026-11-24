@@ -28,6 +28,7 @@ __pycache__/
 *.pte
 *.engine
 *.safetensors
+/plugins/*/efficientad_s.ts
 *.sqlite
 *.sqlite3
 *.sqlite-wal

@@ -1,6 +1,49 @@
 'use strict';
 
 const byId = id => document.getElementById(id);
+let pluginState = null;
+let pluginChanging = false;
+function renderPlugin(value) {
+  pluginState = value;
+  byId('plugin-control').hidden = !value;
+  byId('active-plugin-title').hidden = !value;
+  if (!value) return;
+  const select = byId('active-plugin');
+  if (Array.from(select.options).map(o => o.value).join(',') !== value.plugins.map(p => p.id).join(',')) {
+    select.options.length = 0;
+    for (const plugin of value.plugins) select.add(new Option(plugin.label, plugin.id));
+  }
+  for (const option of select.options) option.disabled = !value.plugins.find(p => p.id === option.value).ready;
+  select.value = value.active_plugin;
+  select.disabled = busy || pluginChanging;
+  byId('active-plugin-title').textContent = 'QUALITY CONTROL / ' + value.label.toUpperCase();
+  byId('benchmark-part-label').textContent = 'This is an original-size MVTec ' + value.active_plugin + ' PNG.';
+}
+byId('active-plugin').addEventListener('change', async () => {
+  if (!pluginState || pluginChanging) return;
+  const selected = byId('active-plugin').value;
+  pluginChanging = commandPending = true;
+  commandEpoch += 1;
+  byId('active-plugin').disabled = true;
+  updateButton();
+  try {
+    const result = await requestJSON('/api/plugin/select', {method: 'POST',
+      headers: {'Content-Type': 'application/json'}, body: JSON.stringify({plugin_id: selected})});
+    pluginState.active_plugin = result.active_plugin;
+    pluginState.label = result.label;
+    byId('plugin-status').textContent = 'DEMO / ' + result.switch_ms.toFixed(1) + ' ms / labels provisional';
+    currentLatest = null;
+    byId('diagnostic-file').value = '';
+    byId('mvtec-benchmark').checked = false;
+    resetResult();
+  } catch {
+    byId('plugin-status').textContent = 'Change unavailable; current recipe retained.';
+  } finally {
+    pluginChanging = commandPending = false;
+    renderPlugin(pluginState);
+    await refreshState();
+  }
+});
 
 /* ---------- Theme (dark by default, light on request) ---------- */
 let theme = 'dark';
@@ -222,6 +265,7 @@ async function refreshState() {
     cameraReady = !!state.camera.ready;
     cameraRunning = state.camera.running !== false;
     busy = !!state.busy;
+    renderPlugin(state.plugin || null);
     if (currentLatest?.inspection_id !== state.latest?.inspection_id) {
       byId('review-outcome').value = '';
       byId('review-reason').value = '';
@@ -583,18 +627,19 @@ function renderLatest(item, processing) {
   byId('review-status').textContent = item.status === 'ANALYZED'
     ? 'Compare the saved original and overlay, then record your observation.'
     : 'Manual review is available after a completed analysis.';
-  if (['SAVED_IMAGE_REPLAY', 'USER_UPLOADED_IMAGE_DIAGNOSTIC', 'USER_DECLARED_MVTEC_METAL_NUT_UPLOAD'].includes(item.source_mode)) byId('diagnostic-status').textContent = statusText;
+  if (['SAVED_IMAGE_REPLAY', 'USER_UPLOADED_IMAGE_DIAGNOSTIC', 'USER_DECLARED_MVTEC_METAL_NUT_UPLOAD', 'USER_DECLARED_MVTEC_SCREW_UPLOAD'].includes(item.source_mode)) byId('diagnostic-status').textContent = statusText;
   else byId('request-status').textContent = statusText;
   byId('result-empty').hidden = true;
   byId('result-content').hidden = false;
   const grade = byId('grade');
-  const benchmark = item.source_mode === 'USER_DECLARED_MVTEC_METAL_NUT_UPLOAD';
+  const benchmark = ['USER_DECLARED_MVTEC_METAL_NUT_UPLOAD', 'USER_DECLARED_MVTEC_SCREW_UPLOAD'].includes(item.source_mode);
   grade.textContent = item.grade || 'ERROR';
   byId('decision-context').textContent = benchmark ? 'Provisional benchmark decision' : 'Prototype decision';
   byId('decision-context').hidden = !item.grade;
   grade.className = 'grade ' + (item.grade || 'ERROR').toLowerCase();
   const uploaded = item.source_mode === 'USER_UPLOADED_IMAGE_DIAGNOSTIC';
-  byId('source-mode').textContent = benchmark ? 'User-declared MVTec metal_nut PNG · origin unverified · no physical nut inspected' : uploaded ? 'User uploaded PNG · diagnostic only · no physical nut inspected' : item.source_mode === 'SAVED_IMAGE_REPLAY' ? 'Original dataset replay · ' + item.dataset_path + ' · no physical nut inspected' : item.source_mode === 'LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC' ? 'Screen photo diagnostic · no physical nut inspected' : item.source_mode === 'LIVE_CAMERA' ? 'Marked physical by operator · not independently verified' : 'Camera capture';
+  const partName = (item.plugin_id === 'screw') ? 'screw' : 'metal_nut';
+  byId('source-mode').textContent = benchmark ? 'User-declared MVTec ' + partName + ' PNG · origin unverified · no physical part inspected' : uploaded ? 'User uploaded PNG · diagnostic only · no physical part inspected' : item.source_mode === 'SAVED_IMAGE_REPLAY' ? 'Original dataset replay · ' + item.dataset_path + ' · no physical part inspected' : item.source_mode === 'LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC' ? 'Screen photo diagnostic · no physical part inspected' : item.source_mode === 'LIVE_CAMERA' ? 'Marked physical by operator · not independently verified' : 'Camera capture';
   byId('candidate').textContent = item.candidate === 'ANOMALY_CANDIDATE' ? 'Above MVTec threshold' : item.candidate === 'NORMAL_CANDIDATE' ? 'At/below MVTec threshold' : 'Unavailable';
   byId('score').textContent = item.score == null ? '—' : Number(item.score).toFixed(4);
   byId('latency').textContent = item.model_forward_ms == null ? '—' : Math.round(item.model_forward_ms) + ' ms';
@@ -662,6 +707,11 @@ function assessmentLabel(assessment) {
     ['bent', 'Possible bent nut (provisional)'],
     ['flip', 'Possible flipped nut (provisional)'],
     ['scratch', 'Possible scratch (provisional)'],
+    ['manipulated_front', 'Possible altered screw tip (provisional)'],
+    ['scratch_head', 'Possible head scratch (provisional)'],
+    ['scratch_neck', 'Possible shank scratch (provisional)'],
+    ['thread_side', 'Possible thread-flank defect (provisional)'],
+    ['thread_top', 'Possible thread-crest defect (provisional)'],
   ]);
   const label = names.get(assessment.defect_type) || 'Defect type unknown';
   const severity = assessment.severity;

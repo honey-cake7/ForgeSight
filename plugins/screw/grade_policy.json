@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "policy_id": "forgegrade-screw-30k-development-v2",
+  "plugin_id": "screw",
+  "scope": "UNCERTIFIED_BENCHMARK_IMAGE_PROTOTYPE",
+  "model_sha256": "494726eeececa7b6f194ea5ec6b471873aa41085913eab9b65ef64120519618e",
+  "image_threshold": 0.2372681200504303,
+  "comparison": "strict_greater_than",
+  "normal_review_margin_fraction": 0.1,
+  "normal_outside_margin_grade": "PASS",
+  "near_threshold_grade": "REVIEW",
+  "anomaly_grade": "REVIEW",
+  "physical_part_grade": "REVIEW",
+  "industrial_certified": false,
+  "physical_scale_calibrated": false,
+  "pixel_threshold_validated": false,
+  "automatic_physical_part_release": false,
+  "notes": "Scores screen benchmark images only. Review margin is a numerical guard, not confidence. No manufacturing tolerance or severity cutoff is asserted."
+}

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "plugin_id": "screw",
+  "label": "Screw",
+  "demo_only": true,
+  "production_approved": false,
+  "benchmark_size_px": [
+    1024,
+    1024
+  ],
+  "replay_roles": [
+    "classifier_validation"
+  ],
+  "model": {
+    "file": "efficientad_s.ts",
+    "sha256": "494726eeececa7b6f194ea5ec6b471873aa41085913eab9b65ef64120519618e"
+  },
+  "score_policy": {
+    "file": "score_policy.json",
+    "sha256": "c67617a9294f4268ecd8250838326d294fc38fd926c8ed90ea25583d85608226"
+  },
+  "grade_policy": {
+    "file": "station_grade_policy.json",
+    "sha256": "b34451998fe481e0293c87141735ba61162fd06e2a56922a8325b0483cd22996"
+  },
+  "classifier": {
+    "file": "defect_type.json",
+    "sha256": "4635a19705fbb067546ff8c2b2393dad47572a001268895e041217408d4c7467"
+  },
+  "guidance": {
+    "file": "guidance.json",
+    "sha256": "3d20545d773ff56107432c5bd94dbe5fa33fa3f99779d0e583acbabcefd5766e"
+  },
+  "dataset": {
+    "file": "dataset.json",
+    "sha256": "1b1d3ff53822877520687e0e1d2446a5f52fdb0474a3868f72a4316799b26f23"
+  }
+}

@@ -8,7 +8,8 @@ from pathlib import Path
 import time
 
 from forgesight.data_loader import load_verified_image
-from forgesight.data_manifest import DEFAULT_ROOT, read_manifest
+from forgesight.data_manifest import DEFAULT_ROOT
+from forgesight.vision_recipe import read_manifest
 from forgesight.edge_assets import fingerprint
 from forgesight.vision_checkpoint import load_checkpoint
 from forgesight.vision_probe import timing_summary
@@ -18,6 +19,20 @@ from forgesight.vision_train import normal_rows, state_digest
 def calibration_split(document: dict, policy: dict) -> tuple[list, list]:
     if policy["validation_role"] != "validation_normal" or policy["final_holdout_access"] is not False:
         raise ValueError("Calibration must preserve the frozen normal/holdout boundaries.")
+    if document.get("category") == "screw":
+        from forgesight.screw_recipe import validate_manifest
+        validate_manifest(document)
+        if (policy.get("category") != "screw" or policy.get("threshold_role") != "threshold_normal"
+                or policy.get("map_fit_count") != document["counts"]["validation_normal"]
+                or policy.get("threshold_count") != document["counts"]["threshold_normal"]):
+            raise ValueError("Screw calibration must use its frozen map and threshold roles.")
+        maps = normal_rows(document, "validation_normal")
+        threshold = [r for r in document["samples"] if r["role"] == "threshold_normal"]
+        if any(r["label"] != "good" or r["mask"] is not None
+               or r["source_split"] != "test" or not r["path"].startswith("test/good/")
+               for r in threshold):
+            raise ValueError("Threshold calibration requires reserved test normals only.")
+        return maps, threshold
     rows = normal_rows(document, "validation_normal")
     if len({row["path"] for row in rows}) != len(rows):
         raise ValueError("Duplicate calibration paths are not permitted.")
@@ -67,7 +82,7 @@ def configure_math(recipe: dict) -> None:
 def tensor_for(row: dict, root: Path, device: str):
     from torchvision.transforms import Compose, Resize, ToTensor
     with load_verified_image(root, row) as image:
-        return Compose([Resize((256, 256), antialias=True), ToTensor()])(image).unsqueeze(0).to(device)
+        return Compose([Resize((256, 256), antialias=True), ToTensor()])(image.convert("RGB")).unsqueeze(0).to(device)
 
 
 def calibrate(args) -> dict:
@@ -81,7 +96,7 @@ def calibrate(args) -> dict:
     if training["status"] != "TRAINED_UNCALIBRATED_NOT_ACCURACY_VERIFIED":
         raise ValueError("Expected the verified original uncalibrated training record.")
     configure_math(training["training_config"])
-    source_checkpoint = training["final_checkpoint"]
+    source_checkpoint = training.get("final_checkpoint") or training["checkpoints"][-1]
     model, saved = load_checkpoint(Path(source_checkpoint["path"]), source_checkpoint["sha256"], args.device)
     profile = saved["model_config"]
     manifest_path = Path(profile["data_manifest"])
@@ -89,7 +104,10 @@ def calibrate(args) -> dict:
         raise ValueError("Dataset manifest differs from the frozen training reference.")
     document = read_manifest(manifest_path)
     map_rows, threshold_rows = calibration_split(document, policy)
-    if len(map_rows) + len(threshold_rows) != profile["validation_normal_images"]:
+    expected_normal_count = profile["validation_normal_images"]
+    if document.get("category") == "screw":
+        expected_normal_count += document["counts"]["threshold_normal"]
+    if len(map_rows) + len(threshold_rows) != expected_normal_count:
         raise ValueError("Calibration partition count differs from the selected profile.")
     before = {name: state_digest(getattr(model, name)) for name in ("teacher", "student", "ae", "mean_std")}
     if any(before[name] != training["state_sha256_final"][name] for name in ("teacher", "student", "ae")):

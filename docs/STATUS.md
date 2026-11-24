@@ -2,6 +2,20 @@
 
 ## Current stage
 
+Screw plugin branch: the operator selected the 30k detector for development despite
+the known recall gap. CPU export parity passed on 24 reserved normals; the reused
+50-image diagnostic remains 94% detection accuracy and 26/29 defect recall.
+Stage 2 supplies an opt-in five-type tree and conservative manual-review guidance;
+the 21-image validation split also selects the tree and is not a fresh final test.
+Six A/B prompts were verified on one unchanged Jetson ExecuTorch worker. Screw
+subtype diagnostics produced 19 correct calls out of 25 calls, with six wrong
+calls, one unknown and three detector misses across 29 exposed defective images.
+The Stage 2 reliability gate and production readiness remain false. An optional
+dual-recipe UI demonstration is included behind `--plugins-root`; its selection
+does not establish production acceptance. Next work is improving subtype reliability, particularly
+`thread_side`, using development data rather than claiming new final-test accuracy.
+See [screw evidence and limitations](SCREW_PLUGIN.md).
+
 The classifier, provisional severity and vision-choice advisory are integrated
 with the composed v5 advisory contract on main: v5 stays the default, the A/B
 mode is explicit-only, and records carrying an assessment must be routed

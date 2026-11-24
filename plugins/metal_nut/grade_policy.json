@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "policy_id": "forgegrade-metal-nut-upload-benchmark-v1",
+  "benchmark_upload_scope": "USER_DECLARED_MVTEC_METAL_NUT_UPLOAD_ONLY",
+  "scope": "UNCERTIFIED_BENCHMARK_SAVED_IMAGE_PROTOTYPE",
+  "units": "pixels",
+  "source_size_px": [700, 700],
+  "checkpoint_sha256": "aa2407dba9f74db8472ee6adc5968eefc7c243d9f200d70f2d3a792fd0b7f4fd",
+  "score_policy_sha256": "33a28c23328c63abf93fa0e01d270eda52f4a0195f7b8df89c14dda44e77a687",
+  "image_threshold": 0.22776579856872559,
+  "normal_review_margin_fraction": 0.1,
+  "accepted_types": ["bent", "color", "flip", "scratch"],
+  "required_type_status": "VALIDATED_SAME_DOMAIN_RELIABLE",
+  "reject_response_area_fraction": 0.01,
+  "reject_bbox_diagonal_px": 140.0,
+  "critical_zones": [],
+  "geometry_cutoffs": "Illustrative rule-engine examples, not manufacturing tolerances. Not selected to optimize holdout results.",
+  "score_margin": "Numerical proximity guard only, not calibrated confidence.",
+  "pixel_threshold_validated": false,
+  "physical_scale_calibrated": false,
+  "industrial_certified": false
+}

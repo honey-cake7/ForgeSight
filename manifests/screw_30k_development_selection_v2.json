@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "plugin_id": "screw",
+  "status": "OPERATOR_SELECTED_FOR_DEVELOPMENT_WITH_KNOWN_RECALL_GAP",
+  "operator_instruction": "Ok use this model and move to next step",
+  "completed_steps": 30000,
+  "fresh_acceptance_verified": false,
+  "ready_for_station": false,
+  "known_limitations": [
+    "GPU diagnostic reused exposed v1 images",
+    "Defect recall 26/29 is below the original 95% target",
+    "CPU calibration is independently frozen from reserved normals",
+    "Physical-camera accuracy is unverified"
+  ],
+  "gpu_diagnostic_metrics": {
+    "images": 50,
+    "tp": 26,
+    "tn": 21,
+    "fp": 0,
+    "fn": 3,
+    "recall": 0.896551724137931,
+    "precision": 1.0,
+    "false_alarm_rate": 0.0,
+    "accuracy": 0.94,
+    "f1": 0.9454545454545454,
+    "image_auroc": 0.9835796387520526
+  },
+  "original_acceptance_targets": {
+    "image_auroc": 0.95,
+    "recall": 0.95,
+    "false_alarm_rate": 0.1
+  },
+  "acceptance_gate_passed": false,
+  "model_sha256": "494726eeececa7b6f194ea5ec6b471873aa41085913eab9b65ef64120519618e",
+  "source_checkpoint_sha256": "80c7ab8b6f627391eb0fd9bb4797ff5b05d31a4ac5c6baf0595209fd5ffe884f",
+  "cpu_threshold": 0.2372681200504303,
+  "operator_selected_detector_only": true,
+  "cpu_diagnostic_reference": "manifests/screw_cpu_bundle_diagnostic_30k_v3.json",
+  "cpu_diagnostic_metrics": {
+    "images": 50,
+    "tp": 26,
+    "tn": 21,
+    "fp": 0,
+    "fn": 3,
+    "recall": 0.896551724137931,
+    "precision": 1.0,
+    "false_alarm_rate": 0.0,
+    "accuracy": 0.94,
+    "f1": 0.9454545454545454,
+    "image_auroc": 0.9835796387520526
+  }
+}

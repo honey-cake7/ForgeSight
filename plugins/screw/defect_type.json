@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "profile_id": "screw-30k-tree-v3",
+  "category": "screw",
+  "kind": "screw_decision_tree",
+  "feature_names": [
+    "object_aspect",
+    "head_tip_width_ratio",
+    "response_fraction",
+    "response_axial_mean",
+    "response_axial_std",
+    "response_transverse_mean",
+    "response_transverse_std",
+    "peak_axial",
+    "peak_transverse",
+    "head_response_fraction",
+    "neck_response_fraction",
+    "thread_response_fraction",
+    "tip_response_fraction",
+    "head_texture",
+    "neck_texture",
+    "thread_texture",
+    "response_contrast",
+    "peak_score"
+  ],
+  "labels": [
+    "manipulated_front",
+    "scratch_head",
+    "scratch_neck",
+    "thread_side",
+    "thread_top"
+  ],
+  "model_sha256": "494726eeececa7b6f194ea5ec6b471873aa41085913eab9b65ef64120519618e",
+  "image_threshold": 0.2372681200504303,
+  "manifest_sha256": "1b1d3ff53822877520687e0e1d2446a5f52fdb0474a3868f72a4316799b26f23",
+  "fresh_acceptance_verified": false,
+  "physical_camera_accuracy": "NOT_VERIFIED",
+  "feature_geometry": "PCA dark-object axis, wider end=head, approximate axial bands; 256px grid",
+  "training": {
+    "max_depth": 3,
+    "min_samples_leaf": 8,
+    "selected_features": [
+      "object_aspect",
+      "head_tip_width_ratio",
+      "response_fraction",
+      "response_axial_mean",
+      "response_axial_std",
+      "response_transverse_mean",
+      "response_transverse_std",
+      "peak_axial",
+      "peak_transverse",
+      "head_response_fraction",
+      "neck_response_fraction",
+      "thread_response_fraction",
+      "tip_response_fraction",
+      "peak_score"
+    ],
+    "class_weight": "balanced",
+    "seed": 42
+  },
+  "leaf_policy": "Provisional label only when at least one separate validation example correctly supports the leaf; otherwise unknown. Wrong validation calls are reported.",
+  "tree": {
+    "feature": "peak_axial",
+    "threshold": 0.41025350987911224,
+    "left": {
+      "feature": "neck_response_fraction",
+      "threshold": 0.9952549636363983,
+      "left": {
+        "feature": "response_axial_std",
+        "threshold": 0.015088528860360384,
+        "left": {
+          "label": "scratch_head"
+        },
+        "right": {
+          "label": "scratch_head"
+        }
+      },
+      "right": {
+        "label": "scratch_neck"
+      }
+    },
+    "right": {
+      "feature": "peak_axial",
+      "threshold": 0.9620268046855927,
+      "left": {
+        "feature": "peak_score",
+        "threshold": 0.39409463107585907,
+        "left": {
+          "label": "thread_side"
+        },
+        "right": {
+          "label": "thread_top"
+        }
+      },
+      "right": {
+        "label": "manipulated_front"
+      }
+    }
+  }
+}

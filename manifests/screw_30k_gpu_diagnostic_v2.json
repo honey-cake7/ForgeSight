@@ -1,0 +1,87 @@
+{
+  "protocol": {
+    "status": "DIAGNOSTIC_REUSE_OF_EXPOSED_V1_SET_NOT_FRESH_ACCEPTANCE",
+    "started_utc": "2026-11-24T01:55:34.231903+00:00",
+    "completed_steps": 30000,
+    "runtime": "PC CUDA FP32 calibrated checkpoint; not Jetson or TorchScript validation",
+    "threshold": 0.23726797103881836,
+    "threshold_source": "20 reserved normals; frozen before diagnostic",
+    "calibration_map_normals": 64,
+    "evaluated_images": 50,
+    "fresh_acceptance": false,
+    "promotion_allowed": false,
+    "threshold_tuning_from_diagnostic": false,
+    "original_exposure_ledger_modified": false,
+    "input_sha256": {
+      "manifests/screw_v1.json": "1b1d3ff53822877520687e0e1d2446a5f52fdb0474a3868f72a4316799b26f23",
+      "artifacts/vision/screw_30k_v2/calibration_cuda/calibration_report.json": "d2d85760a9994a036227ba103a17524ad48c512815f7c6fb95182db388bd4902",
+      "artifacts/vision/screw_holdout_exposure_v1.json": "3285630d8cb3a251cf625e26352157878ea26cfb42ee7356857e5a7f3026b33d",
+      "artifacts/vision/screw_30k_v2/calibration_cuda/efficientad_s_calibrated.pth": "27e3d7bef1da23f70365f1ffd682fb972b9a6f0c94d426db03fd12f86611cad1",
+      "artifacts/vision/screw_evaluation_v1/predictions.jsonl": "53c78b1cb985634f58558879a5ae2a0f1197d30091d72e3660e4eb4307ae46da"
+    },
+    "script_sha256": "b017bb81a7be88c1f69184887f407883769e4852d212dfddf51bb03acee24d45"
+  },
+  "metrics": {
+    "images": 50,
+    "tp": 26,
+    "tn": 21,
+    "fp": 0,
+    "fn": 3,
+    "recall": 0.896551724137931,
+    "precision": 1.0,
+    "false_alarm_rate": 0.0,
+    "accuracy": 0.94,
+    "f1": 0.9454545454545454,
+    "image_auroc": 0.9835796387520526
+  },
+  "previous_10k_metrics_same_exposed_images": {
+    "images": 50,
+    "tp": 22,
+    "tn": 20,
+    "fp": 1,
+    "fn": 7,
+    "recall": 0.7586206896551724,
+    "precision": 0.9565217391304348,
+    "false_alarm_rate": 0.047619047619047616,
+    "accuracy": 0.84,
+    "f1": 0.8461538461538461,
+    "image_auroc": 0.9408866995073891
+  },
+  "per_ground_truth_class_not_type_predictions": {
+    "good": {
+      "images": 21,
+      "flagged": 0
+    },
+    "manipulated_front": {
+      "images": 6,
+      "flagged": 5
+    },
+    "scratch_head": {
+      "images": 6,
+      "flagged": 6
+    },
+    "scratch_neck": {
+      "images": 5,
+      "flagged": 5
+    },
+    "thread_side": {
+      "images": 6,
+      "flagged": 4
+    },
+    "thread_top": {
+      "images": 6,
+      "flagged": 6
+    }
+  },
+  "false_negatives": [
+    "test/manipulated_front/011.png",
+    "test/thread_side/015.png",
+    "test/thread_side/020.png"
+  ],
+  "false_positives": [],
+  "elapsed_inference_seconds": 2.2795788899998115,
+  "predictions_sha256": "cd81f99827189e4feae4fc493155ceff2812e5ccad2f6a6e2fa584ca852f2899",
+  "gate_1": "NOT_ACCEPTANCE_EVIDENCE_PREVIOUSLY_EXPOSED_SET",
+  "jetson_accuracy": "NOT_VERIFIED",
+  "defect_type_classifier_accuracy": "NOT_EVALUATED"
+}

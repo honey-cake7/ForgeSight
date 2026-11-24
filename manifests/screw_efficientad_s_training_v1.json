@@ -1,0 +1,107 @@
+{
+    "schema_version":  1,
+    "category":  "screw",
+    "status":  "TRAINED_UNCALIBRATED_NOT_ACCURACY_VERIFIED",
+    "completed_steps":  10000,
+    "precision":  "fp32",
+    "seed":  42,
+    "gpu":  "NVIDIA RTX 2000 Ada Generation",
+    "packages":  {
+                     "torch":  "2.6.0+cu124",
+                     "torchvision":  "0.21.0+cu124",
+                     "anomalib":  "2.6.2",
+                     "numpy":  "2.2.6",
+                     "pillow":  "13.0.0"
+                 },
+    "training_wall_seconds":  1163.537000666,
+    "cuda_peak_allocated_bytes":  542685184,
+    "memory_scope":  "Peak PyTorch training allocation; not total GPU memory or Jetson memory",
+    "dataset_pixel_reads_during_training":  {
+                                                "fit":  256,
+                                                "validation_normal":  0,
+                                                "development_preview":  0,
+                                                "final_holdout":  0
+                                            },
+    "auxiliary_images":  9469,
+    "teacher_statistics":  {
+                               "fit_images":  256,
+                               "spatial_values_per_channel":  802816,
+                               "std_clamped_channels":  0,
+                               "accumulation_dtype":  "float64"
+                           },
+    "state_sha256_initial":  {
+                                 "teacher":  "948b2631aea60da41d74633652de7f55033d899a111740739aa5f6125f47900e",
+                                 "student":  "a822be0024aefe767c78fd395edc242440ce3f02c1ad5e8b13847b36d447ad31",
+                                 "ae":  "5b00871e14a1b1c3d3b0959dc14fdb3bb5356b05b6b193b46685db4611e8b357"
+                             },
+    "state_sha256_final":  {
+                               "teacher":  "948b2631aea60da41d74633652de7f55033d899a111740739aa5f6125f47900e",
+                               "student":  "ed58629d09cd7e8eb5e25462ad569da4697f761633a0735b8f29dd284553e5cc",
+                               "ae":  "6d5f6b89c6f2d540a0f12b94c41a97a9e3b9b25f6eaae15692fdfc6eae8424b7"
+                           },
+    "final_checkpoint":  {
+                             "path":  "artifacts/vision/screw_train_v1/checkpoint_step_010000.pth",
+                             "bytes":  75197620,
+                             "sha256":  "a9113ea3fd8dff74fc90a5fd632660e9d12361e53e3f4815eb4696df39bcfc42",
+                             "step":  10000
+                         },
+    "loss_summary":  {
+                         "log_rows":  101,
+                         "note":  "Training loss only; not accuracy",
+                         "final_window_mean":  4.864430789854378,
+                         "first_window_mean":  29.25363342687864
+                     },
+    "reload_verification":  {
+                                "status":  "CHECKPOINT_RELOAD_VERIFIED_NOT_ACCURACY_EVALUATED",
+                                "accuracy":  "NOT_EVALUATED",
+                                "holdout_images_read":  0,
+                                "step":  10000,
+                                "checkpoint":  {
+                                                   "path":  "artifacts/vision/screw_train_v1/checkpoint_step_010000.pth",
+                                                   "bytes":  75197620,
+                                                   "sha256":  "a9113ea3fd8dff74fc90a5fd632660e9d12361e53e3f4815eb4696df39bcfc42",
+                                                   "step":  10000
+                                               },
+                                "device":  "cuda",
+                                "state_sha256":  {
+                                                     "teacher":  "948b2631aea60da41d74633652de7f55033d899a111740739aa5f6125f47900e",
+                                                     "student":  "ed58629d09cd7e8eb5e25462ad569da4697f761633a0735b8f29dd284553e5cc",
+                                                     "ae":  "6d5f6b89c6f2d540a0f12b94c41a97a9e3b9b25f6eaae15692fdfc6eae8424b7"
+                                                 },
+                                "fit_anchor":  "train/good/001.png",
+                                "raw_score":  0.477173775434494,
+                                "score_difference":  0.0,
+                                "map_shape":  [
+                                                  1,
+                                                  1,
+                                                  256,
+                                                  256
+                                              ],
+                                "map_calibration":  "NOT_RUN",
+                                "decision_threshold":  "NOT_SET",
+                                "jetson_proof":  "NOT_VERIFIED"
+                            },
+    "input_sha256":  {
+                         "configs/screw_efficientad_s_v1.json":  "096581a0690d2b7c90476eaaab8ac35492312199f97dcedf5a9022810b1ad03c",
+                         "configs/screw_training_v1.json":  "ae32e280bdc18c2eb667f79a1294b9f9e2b43efef61fae794204d1f02b0ba6b7",
+                         "artifacts/vision/stage3_2/assets.json":  "25b6f65acb466afa5a8e258c6f9ee7f41061080c54aa91b40b54186e1bc2fc7e",
+                         "manifests/screw_v1.json":  "1b1d3ff53822877520687e0e1d2446a5f52fdb0474a3868f72a4316799b26f23",
+                         "requirements/pylock.vision.toml":  "dc7dcf3d1696429277aacd0c7cb282741957deb354434bfd7d15970fe4683e15",
+                         "/mnt/c/Users/RF AND SIMULATION/Desktop/honey/ForgeSight/forgesight/vision_train.py":  "18f0434faa243ecc6af55fe3618a887cc9cbea2685bafcbf51093553263b7d90"
+                     },
+    "evidence_sha256":  {
+                            "reload_verification":  "71ff300406d8bd881fc8571e7ff2aec336f55e735fcbb631fcd14a1ad79811ce",
+                            "losses":  "018b089db9d18d0c8d0a74bc1be9284157d7566e5118d6d71023c371c6e83e5f",
+                            "training_report":  "902488e2b8275bbf0f08e406c07c0e92d265cc5cfe04f0463b3521d62a626e23"
+                        },
+    "accuracy":  "NOT_EVALUATED",
+    "calibration":  "NOT_RUN",
+    "torchscript_export":  "NOT_RUN",
+    "jetson_proof":  "NOT_VERIFIED",
+    "profile_provenance":  {
+                               "note":  "Input hashes record exact training-time bytes. Repository profile subsequently normalized CRLF to LF; parsed values match the embedded training profile exactly.",
+                               "archived_original":  "artifacts/vision/screw_train_v1/training_profile_original.json",
+                               "archived_original_sha256":  "096581a0690d2b7c90476eaaab8ac35492312199f97dcedf5a9022810b1ad03c",
+                               "repository_profile_sha256":  "fa619a53a436b53d59ab32c18515d07598bd1a9790b6c970c5cb7dd1c912e3c3"
+                           }
+}

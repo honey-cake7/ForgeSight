@@ -50,7 +50,8 @@ def main():
     try:
         import torch
         from torchvision.transforms import Compose, Resize, ToTensor
-        from forgesight.data_manifest import DEFAULT_ROOT, read_manifest
+        from forgesight.data_manifest import DEFAULT_ROOT
+        from forgesight.vision_recipe import read_manifest
         from forgesight.data_loader import load_verified_image
         from forgesight.vision_train import normal_rows, state_digest
 
@@ -73,7 +74,7 @@ def main():
             raise ValueError("Reloaded network states differ from the actual trained model.")
         row = normal_rows(read_manifest(Path(saved["model_config"]["data_manifest"])), "fit")[0]
         with load_verified_image(args.root or DEFAULT_ROOT, row) as image:
-            tensor = Compose([Resize((256, 256), antialias=True), ToTensor()])(image).unsqueeze(0).to(args.device)
+            tensor = Compose([Resize((256, 256), antialias=True), ToTensor()])(image.convert("RGB")).unsqueeze(0).to(args.device)
         with torch.inference_mode():
             result = model(tensor, normalize=False)
         score = float(result.pred_score.item())

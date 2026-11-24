@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "policy_id": "forgegrade-screw-switch-demo-v1",
+  "benchmark_upload_scope": null,
+  "scope": "UNCERTIFIED_BENCHMARK_SAVED_IMAGE_PROTOTYPE",
+  "units": "pixels",
+  "source_size_px": [
+    1024,
+    1024
+  ],
+  "checkpoint_sha256": "80c7ab8b6f627391eb0fd9bb4797ff5b05d31a4ac5c6baf0595209fd5ffe884f",
+  "score_policy_sha256": "c67617a9294f4268ecd8250838326d294fc38fd926c8ed90ea25583d85608226",
+  "image_threshold": 0.2372681200504303,
+  "normal_review_margin_fraction": 0.1,
+  "accepted_types": [
+    "manipulated_front",
+    "scratch_head",
+    "scratch_neck",
+    "thread_side",
+    "thread_top"
+  ],
+  "required_type_status": "VALIDATED_SAME_DOMAIN_RELIABLE",
+  "reject_response_area_fraction": 1.0,
+  "reject_bbox_diagonal_px": 1448.1546878700494,
+  "critical_zones": [],
+  "geometry_cutoffs": "Demo only; no physical tolerance or validated subtype status is supplied.",
+  "score_margin": "Numerical proximity guard only, not calibrated confidence.",
+  "pixel_threshold_validated": false,
+  "physical_scale_calibrated": false,
+  "industrial_certified": false,
+  "plugin_id": "screw"
+}

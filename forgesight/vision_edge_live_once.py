@@ -58,16 +58,21 @@ def child(argv):
 
 
 def inspect(args):
+    recipe = getattr(args, 'plugin_recipe', None)
+    screw = recipe is not None and recipe.plugin_id == 'screw'
+    replay = getattr(args, 'plugin_replay', None)
+    expected_hash = recipe.model_sha256 if screw else MODEL_SHA256
     if args.output_dir.exists():
         raise ValueError("Choose a new output directory for each inspection.")
     if not args.image.is_file() or args.image.stat().st_size > 32 * 1024 * 1024:
         raise ValueError("Expected a bounded camera PNG.")
     with Image.open(args.image) as image:
-        if image.format != "PNG" or image.mode != "RGB":
+        if image.format != "PNG" or image.mode not in (('RGB', 'L') if screw else ('RGB',)):
             raise ValueError("Expected an RGB PNG.")
         width, height = image.size
-        if args.mvtec_benchmark_upload:
-            if image.size != (700, 700):
+        if args.mvtec_benchmark_upload or replay:
+            expected_size = tuple(recipe.metadata['benchmark_size_px']) if recipe else (700, 700)
+            if image.size != expected_size:
                 raise ValueError("The MVTec metal_nut benchmark upload must be an original-size 700x700 RGB PNG.")
         elif args.uploaded_image_diagnostic:
             if not 64 <= width <= 1024 or not 64 <= height <= 1024:
@@ -78,17 +83,17 @@ def inspect(args):
             image.load()
         except (OSError, SyntaxError) as error:
             raise ValueError("Image could not be decoded as a PNG.") from error
-    if args.model_sha256 != MODEL_SHA256:
+    if args.model_sha256 != expected_hash:
         raise ValueError("Frozen EfficientAD export hash mismatch.")
     if args.vision_worker_socket is None:
-        if sha256(args.model) != MODEL_SHA256:
+        if sha256(args.model) != expected_hash:
             raise ValueError("Frozen EfficientAD export hash mismatch.")
         model_verified_at = "THIS_INSPECTION"
     else:
         # The persistent worker verified the frozen export hash at boot and holds
         # the loaded model; re-hashing the full file per inspection is redundant.
         model_verified_at = "WORKER_START_FROZEN_MODEL"
-    policy = json.loads(args.grade_policy.read_text())
+    policy = recipe.documents['grade_policy'] if recipe else json.loads(args.grade_policy.read_text())
     validate_policy(policy)
     store = InspectionStore(args.database)
     if store.has_part(args.part_id):
@@ -107,7 +112,8 @@ def inspect(args):
         "schema_version": 1, "inspection_id": str(uuid4()), "part_id": args.part_id,
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
         "source": {"path": str(args.image.resolve()),
-                   "mode": ("USER_DECLARED_MVTEC_METAL_NUT_UPLOAD" if args.mvtec_benchmark_upload else
+                   "mode": ("SAVED_IMAGE_REPLAY" if replay else
+                            ("USER_DECLARED_MVTEC_SCREW_UPLOAD" if screw else "USER_DECLARED_MVTEC_METAL_NUT_UPLOAD") if args.mvtec_benchmark_upload else
                             "USER_UPLOADED_IMAGE_DIAGNOSTIC" if args.uploaded_image_diagnostic else
                             "LIVE_CAMERA" if args.operator_declared_part else
                             "LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC" if args.screen_photo_diagnostic else
@@ -116,7 +122,8 @@ def inspect(args):
                    "sha256": source_hash,
                    "size_px": [width, height],
                    "camera_index": None if (args.uploaded_image_diagnostic or args.mvtec_benchmark_upload) else args.camera_index,
-                   **({"dataset_origin_verified": False} if args.mvtec_benchmark_upload else {})},
+                   **({"dataset_origin_verified": False} if args.mvtec_benchmark_upload else {}),
+                   **({'dataset_path': replay} if replay else {})},
         "model": {"name": "EfficientAD-S", "input_size_px": [256, 256], "precision": "fp32",
                   "checkpoint_sha256": policy["checkpoint_sha256"],
                   "export_sha256": args.model_sha256,
@@ -130,6 +137,8 @@ def inspect(args):
         "geometry": None, "decision": None, "advice_status": "NOT_REQUESTED",
         "error": None, "artifacts": {}, "timings": {}
     }
+    if recipe:
+        record['plugin_id'] = recipe.plugin_id
     try:
         script_dir = Path(__file__).resolve().parent
         tensor, model_map, source_map = root / "input.npy", root / "map_model.npy", root / "map_source.npy"
@@ -199,7 +208,7 @@ def inspect(args):
         record["score"] = inference["score"]
         record["candidate"] = inference["candidate"]
         record["geometry"] = response_regions(
-            values, policy["image_threshold"], mvtec_nut_layout=args.mvtec_benchmark_upload)
+            values, policy["image_threshold"], mvtec_nut_layout=args.mvtec_benchmark_upload and not screw)
         record["artifacts"].update({"score_map_model": str(model_map),
                                     "score_map_model_sha256": model_map_hash,
                                     "score_map_source": str(source_map),
