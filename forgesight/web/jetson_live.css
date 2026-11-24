@@ -386,3 +386,7 @@ textarea { resize: vertical; }
 .status.live { color: var(--ink); border-color: var(--pass); }
 .status.connecting { color: var(--ink); border-color: var(--review); }
 .status.error, .error-banner { color: var(--ink); border-color: var(--reject); }
+.plugin-control { display: grid; gap: 3px; color: var(--muted); font-size: 10px; letter-spacing: .05em; }
+.plugin-control[hidden] { display: none; }
+.plugin-control select { padding: 6px 10px; min-width: 140px; font: 12px var(--font); }
+.plugin-control small { font: 10px var(--mono); letter-spacing: 0; }

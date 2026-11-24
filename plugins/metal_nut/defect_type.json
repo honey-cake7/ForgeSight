@@ -1,0 +1,1947 @@
+{
+  "schema_version": 1,
+  "split_sha256": "5b25c00a924d6039fb03985a6e98fbd03d537cfefdebfc85e3c3657d977de394",
+  "model_sha256": "8766c41a51a5444f57f564134427bbd2d2d95dd6ec5ff08b24698f00f7f55dcd",
+  "image_threshold": 0.22776579856872559,
+  "kind": "four_type_forest",
+  "feature_names": [
+    "elongation",
+    "chroma_difference",
+    "response_fraction",
+    "primary_fraction",
+    "radial_offset",
+    "peak_score",
+    "outline_solidity",
+    "outline_aspect",
+    "face_brightness",
+    "rim_brightness",
+    "face_contrast",
+    "face_chroma",
+    "response_brightness"
+  ],
+  "profile_id": "metal-nut-four-type-v1-5b25c00a924d",
+  "trees": [
+    {
+      "feature": "peak_score",
+      "threshold": 0.8706971406936646,
+      "left": {
+        "feature": "elongation",
+        "threshold": 1.684489667415619,
+        "left": {
+          "feature": "response_brightness",
+          "threshold": 50.5,
+          "left": {
+            "feature": "chroma_difference",
+            "threshold": 6.140054941177368,
+            "left": {
+              "label": "unknown"
+            },
+            "right": {
+              "feature": "outline_solidity",
+              "threshold": 0.875188797712326,
+              "left": {
+                "label": "discoloration"
+              },
+              "right": {
+                "label": "flip"
+              }
+            }
+          },
+          "right": {
+            "feature": "primary_fraction",
+            "threshold": 0.0033142857428174466,
+            "left": {
+              "label": "scratch"
+            },
+            "right": {
+              "label": "bent"
+            }
+          }
+        },
+        "right": {
+          "feature": "face_brightness",
+          "threshold": 90.5790023803711,
+          "left": {
+            "label": "unknown"
+          },
+          "right": {
+            "label": "scratch"
+          }
+        }
+      },
+      "right": {
+        "feature": "peak_score",
+        "threshold": 0.9528868794441223,
+        "left": {
+          "label": "flip"
+        },
+        "right": {
+          "feature": "outline_solidity",
+          "threshold": 0.8878831565380096,
+          "left": {
+            "label": "discoloration"
+          },
+          "right": {
+            "label": "bent"
+          }
+        }
+      }
+    },
+    {
+      "feature": "primary_fraction",
+      "threshold": 0.0651204101741314,
+      "left": {
+        "feature": "radial_offset",
+        "threshold": 0.9759594202041626,
+        "left": {
+          "feature": "outline_solidity",
+          "threshold": 0.8823855817317963,
+          "left": {
+            "feature": "response_fraction",
+            "threshold": 0.01434285705909133,
+            "left": {
+              "label": "scratch"
+            },
+            "right": {
+              "feature": "chroma_difference",
+              "threshold": 10.348510265350342,
+              "left": {
+                "label": "scratch"
+              },
+              "right": {
+                "label": "discoloration"
+              }
+            }
+          },
+          "right": {
+            "feature": "rim_brightness",
+            "threshold": 98.87133407592773,
+            "left": {
+              "label": "discoloration"
+            },
+            "right": {
+              "label": "bent"
+            }
+          }
+        },
+        "right": {
+          "feature": "primary_fraction",
+          "threshold": 0.011124489828944206,
+          "left": {
+            "label": "unknown"
+          },
+          "right": {
+            "feature": "face_chroma",
+            "threshold": 27.0,
+            "left": {
+              "label": "bent"
+            },
+            "right": {
+              "feature": "response_brightness",
+              "threshold": 70.5,
+              "left": {
+                "label": "scratch"
+              },
+              "right": {
+                "label": "discoloration"
+              }
+            }
+          }
+        }
+      },
+      "right": {
+        "label": "flip"
+      }
+    },
+    {
+      "feature": "outline_solidity",
+      "threshold": 0.8757748305797577,
+      "left": {
+        "feature": "face_contrast",
+        "threshold": 23.7921142578125,
+        "left": {
+          "label": "flip"
+        },
+        "right": {
+          "feature": "outline_aspect",
+          "threshold": 0.9998217523097992,
+          "left": {
+            "label": "flip"
+          },
+          "right": {
+            "label": "discoloration"
+          }
+        }
+      },
+      "right": {
+        "feature": "peak_score",
+        "threshold": 0.9159834086894989,
+        "left": {
+          "feature": "elongation",
+          "threshold": 1.9970913529396057,
+          "left": {
+            "feature": "radial_offset",
+            "threshold": 0.9649198651313782,
+            "left": {
+              "feature": "response_brightness",
+              "threshold": 86.5,
+              "left": {
+                "label": "bent"
+              },
+              "right": {
+                "label": "scratch"
+              }
+            },
+            "right": {
+              "feature": "face_contrast",
+              "threshold": 18.60204315185547,
+              "left": {
+                "label": "scratch"
+              },
+              "right": {
+                "label": "unknown"
+              }
+            }
+          },
+          "right": {
+            "label": "scratch"
+          }
+        },
+        "right": {
+          "feature": "outline_aspect",
+          "threshold": 0.9751302003860474,
+          "left": {
+            "label": "bent"
+          },
+          "right": {
+            "label": "discoloration"
+          }
+        }
+      }
+    },
+    {
+      "feature": "outline_solidity",
+      "threshold": 0.8773132860660553,
+      "left": {
+        "feature": "response_brightness",
+        "threshold": 85.5,
+        "left": {
+          "feature": "rim_brightness",
+          "threshold": 89.78419494628906,
+          "left": {
+            "label": "flip"
+          },
+          "right": {
+            "label": "bent"
+          }
+        },
+        "right": {
+          "label": "flip"
+        }
+      },
+      "right": {
+        "feature": "radial_offset",
+        "threshold": 0.9717828631401062,
+        "left": {
+          "feature": "peak_score",
+          "threshold": 1.1956098079681396,
+          "left": {
+            "feature": "chroma_difference",
+            "threshold": 7.68997049331665,
+            "left": {
+              "feature": "face_chroma",
+              "threshold": 22.5,
+              "left": {
+                "label": "bent"
+              },
+              "right": {
+                "label": "flip"
+              }
+            },
+            "right": {
+              "label": "discoloration"
+            }
+          },
+          "right": {
+            "label": "discoloration"
+          }
+        },
+        "right": {
+          "feature": "outline_solidity",
+          "threshold": 0.8812880516052246,
+          "left": {
+            "feature": "elongation",
+            "threshold": 1.7545433640480042,
+            "left": {
+              "label": "bent"
+            },
+            "right": {
+              "label": "scratch"
+            }
+          },
+          "right": {
+            "feature": "rim_brightness",
+            "threshold": 114.11056518554688,
+            "left": {
+              "feature": "face_chroma",
+              "threshold": 17.0,
+              "left": {
+                "label": "scratch"
+              },
+              "right": {
+                "label": "unknown"
+              }
+            },
+            "right": {
+              "label": "discoloration"
+            }
+          }
+        }
+      }
+    },
+    {
+      "feature": "outline_solidity",
+      "threshold": 0.8771980702877045,
+      "left": {
+        "label": "flip"
+      },
+      "right": {
+        "feature": "primary_fraction",
+        "threshold": 0.017820408567786217,
+        "left": {
+          "feature": "peak_score",
+          "threshold": 0.7044323086738586,
+          "left": {
+            "feature": "face_contrast",
+            "threshold": 33.23374366760254,
+            "left": {
+              "feature": "rim_brightness",
+              "threshold": 105.20267868041992,
+              "left": {
+                "label": "discoloration"
+              },
+              "right": {
+                "label": "scratch"
+              }
+            },
+            "right": {
+              "label": "unknown"
+            }
+          },
+          "right": {
+            "feature": "rim_brightness",
+            "threshold": 98.2072982788086,
+            "left": {
+              "label": "unknown"
+            },
+            "right": {
+              "label": "bent"
+            }
+          }
+        },
+        "right": {
+          "feature": "primary_fraction",
+          "threshold": 0.12848163396120071,
+          "left": {
+            "label": "discoloration"
+          },
+          "right": {
+            "label": "flip"
+          }
+        }
+      }
+    },
+    {
+      "feature": "response_fraction",
+      "threshold": 0.11774490028619766,
+      "left": {
+        "feature": "outline_solidity",
+        "threshold": 0.8937999606132507,
+        "left": {
+          "feature": "face_contrast",
+          "threshold": 36.78483200073242,
+          "left": {
+            "feature": "response_brightness",
+            "threshold": 69.5,
+            "left": {
+              "feature": "rim_brightness",
+              "threshold": 98.32151412963867,
+              "left": {
+                "label": "bent"
+              },
+              "right": {
+                "label": "discoloration"
+              }
+            },
+            "right": {
+              "feature": "chroma_difference",
+              "threshold": 2.532247543334961,
+              "left": {
+                "label": "bent"
+              },
+              "right": {
+                "label": "scratch"
+              }
+            }
+          },
+          "right": {
+            "label": "unknown"
+          }
+        },
+        "right": {
+          "feature": "chroma_difference",
+          "threshold": 5.008269488811493,
+          "left": {
+            "label": "scratch"
+          },
+          "right": {
+            "feature": "rim_brightness",
+            "threshold": 99.2460823059082,
+            "left": {
+              "label": "unknown"
+            },
+            "right": {
+              "label": "scratch"
+            }
+          }
+        }
+      },
+      "right": {
+        "label": "flip"
+      }
+    },
+    {
+      "feature": "outline_solidity",
+      "threshold": 0.8773132860660553,
+      "left": {
+        "feature": "primary_fraction",
+        "threshold": 0.04594796057790518,
+        "left": {
+          "label": "bent"
+        },
+        "right": {
+          "label": "flip"
+        }
+      },
+      "right": {
+        "feature": "peak_score",
+        "threshold": 0.7044323086738586,
+        "left": {
+          "feature": "peak_score",
+          "threshold": 0.30501846224069595,
+          "left": {
+            "feature": "peak_score",
+            "threshold": 0.2470272108912468,
+            "left": {
+              "label": "scratch"
+            },
+            "right": {
+              "label": "unknown"
+            }
+          },
+          "right": {
+            "label": "scratch"
+          }
+        },
+        "right": {
+          "feature": "face_brightness",
+          "threshold": 100.6383056640625,
+          "left": {
+            "feature": "outline_solidity",
+            "threshold": 0.8948107957839966,
+            "left": {
+              "feature": "response_brightness",
+              "threshold": 52.0,
+              "left": {
+                "label": "discoloration"
+              },
+              "right": {
+                "label": "bent"
+              }
+            },
+            "right": {
+              "feature": "radial_offset",
+              "threshold": 0.9995927810668945,
+              "left": {
+                "label": "unknown"
+              },
+              "right": {
+                "label": "scratch"
+              }
+            }
+          },
+          "right": {
+            "label": "discoloration"
+          }
+        }
+      }
+    },
+    {
+      "feature": "chroma_difference",
+      "threshold": 10.625718116760254,
+      "left": {
+        "feature": "outline_aspect",
+        "threshold": 0.994555801153183,
+        "left": {
+          "feature": "face_chroma",
+          "threshold": 22.0,
+          "left": {
+            "feature": "elongation",
+            "threshold": 1.8758227229118347,
+            "left": {
+              "feature": "response_brightness",
+              "threshold": 94.5,
+              "left": {
+                "label": "bent"
+              },
+              "right": {
+                "label": "scratch"
+              }
+            },
+            "right": {
+              "label": "scratch"
+            }
+          },
+          "right": {
+            "label": "flip"
+          }
+        },
+        "right": {
+          "feature": "primary_fraction",
+          "threshold": 0.01261122478172183,
+          "left": {
+            "feature": "face_chroma",
+            "threshold": 25.5,
+            "left": {
+              "feature": "outline_aspect",
+              "threshold": 0.9974129796028137,
+              "left": {
+                "label": "unknown"
+              },
+              "right": {
+                "label": "bent"
+              }
+            },
+            "right": {
+              "label": "unknown"
+            }
+          },
+          "right": {
+            "feature": "chroma_difference",
+            "threshold": 5.464985609054565,
+            "left": {
+              "label": "flip"
+            },
+            "right": {
+              "label": "scratch"
+            }
+          }
+        }
+      },
+      "right": {
+        "label": "discoloration"
+      }
+    },
+    {
+      "feature": "face_brightness",
+      "threshold": 96.5023307800293,
+      "left": {
+        "feature": "elongation",
+        "threshold": 1.6922067999839783,
+        "left": {
+          "feature": "face_brightness",
+          "threshold": 86.91149139404297,
+          "left": {
+            "label": "discoloration"
+          },
+          "right": {
+            "feature": "face_contrast",
+            "threshold": 24.300703048706055,
+            "left": {
+              "label": "scratch"
+            },
+            "right": {
+              "label": "bent"
+            }
+          }
+        },
+        "right": {
+          "feature": "peak_score",
+          "threshold": 0.7290417551994324,
+          "left": {
+            "label": "scratch"
+          },
+          "right": {
+            "feature": "elongation",
+            "threshold": 2.0322094559669495,
+            "left": {
+              "label": "unknown"
+            },
+            "right": {
+              "label": "bent"
+            }
+          }
+        }
+      },
+      "right": {
+        "feature": "primary_fraction",
+        "threshold": 0.06003163382411003,
+        "left": {
+          "feature": "radial_offset",
+          "threshold": 0.951166033744812,
+          "left": {
+            "feature": "rim_brightness",
+            "threshold": 116.46487808227539,
+            "left": {
+              "label": "discoloration"
+            },
+            "right": {
+              "label": "scratch"
+            }
+          },
+          "right": {
+            "feature": "response_brightness",
+            "threshold": 55.5,
+            "left": {
+              "label": "unknown"
+            },
+            "right": {
+              "feature": "response_brightness",
+              "threshold": 71.5,
+              "left": {
+                "label": "scratch"
+              },
+              "right": {
+                "label": "bent"
+              }
+            }
+          }
+        },
+        "right": {
+          "label": "flip"
+        }
+      }
+    },
+    {
+      "feature": "chroma_difference",
+      "threshold": 9.448977947235107,
+      "left": {
+        "feature": "response_fraction",
+        "threshold": 0.1235459204763174,
+        "left": {
+          "feature": "response_brightness",
+          "threshold": 127.0,
+          "left": {
+            "feature": "face_contrast",
+            "threshold": 22.517972946166992,
+            "left": {
+              "feature": "response_brightness",
+              "threshold": 73.0,
+              "left": {
+                "label": "bent"
+              },
+              "right": {
+                "label": "scratch"
+              }
+            },
+            "right": {
+              "feature": "peak_score",
+              "threshold": 0.7034100592136383,
+              "left": {
+                "label": "scratch"
+              },
+              "right": {
+                "label": "bent"
+              }
+            }
+          },
+          "right": {
+            "label": "unknown"
+          }
+        },
+        "right": {
+          "label": "flip"
+        }
+      },
+      "right": {
+        "label": "discoloration"
+      }
+    },
+    {
+      "feature": "primary_fraction",
+      "threshold": 0.0651204101741314,
+      "left": {
+        "feature": "response_brightness",
+        "threshold": 48.5,
+        "left": {
+          "label": "discoloration"
+        },
+        "right": {
+          "feature": "chroma_difference",
+          "threshold": 8.109049320220947,
+          "left": {
+            "feature": "elongation",
+            "threshold": 1.6994686722755432,
+            "left": {
+              "feature": "primary_fraction",
+              "threshold": 0.0033142857428174466,
+              "left": {
+                "label": "scratch"
+              },
+              "right": {
+                "label": "bent"
+              }
+            },
+            "right": {
+              "label": "scratch"
+            }
+          },
+          "right": {
+            "feature": "peak_score",
+            "threshold": 1.0351788997650146,
+            "left": {
+              "label": "unknown"
+            },
+            "right": {
+              "label": "discoloration"
+            }
+          }
+        }
+      },
+      "right": {
+        "label": "flip"
+      }
+    },
+    {
+      "feature": "response_fraction",
+      "threshold": 0.13153163343667984,
+      "left": {
+        "feature": "outline_aspect",
+        "threshold": 0.9948222637176514,
+        "left": {
+          "feature": "face_contrast",
+          "threshold": 24.300703048706055,
+          "left": {
+            "feature": "outline_aspect",
+            "threshold": 0.9898079931735992,
+            "left": {
+              "label": "discoloration"
+            },
+            "right": {
+              "label": "scratch"
+            }
+          },
+          "right": {
+            "feature": "response_fraction",
+            "threshold": 0.03818979673087597,
+            "left": {
+              "label": "bent"
+            },
+            "right": {
+              "label": "scratch"
+            }
+          }
+        },
+        "right": {
+          "feature": "response_brightness",
+          "threshold": 48.0,
+          "left": {
+            "label": "discoloration"
+          },
+          "right": {
+            "feature": "radial_offset",
+            "threshold": 1.0085428953170776,
+            "left": {
+              "feature": "primary_fraction",
+              "threshold": 0.01261122478172183,
+              "left": {
+                "label": "unknown"
+              },
+              "right": {
+                "label": "bent"
+              }
+            },
+            "right": {
+              "feature": "elongation",
+              "threshold": 1.930200219154358,
+              "left": {
+                "label": "bent"
+              },
+              "right": {
+                "label": "discoloration"
+              }
+            }
+          }
+        }
+      },
+      "right": {
+        "label": "flip"
+      }
+    },
+    {
+      "feature": "peak_score",
+      "threshold": 0.8627653419971466,
+      "left": {
+        "feature": "response_brightness",
+        "threshold": 50.5,
+        "left": {
+          "feature": "chroma_difference",
+          "threshold": 7.027692794799805,
+          "left": {
+            "label": "unknown"
+          },
+          "right": {
+            "label": "discoloration"
+          }
+        },
+        "right": {
+          "feature": "face_contrast",
+          "threshold": 20.654869079589844,
+          "left": {
+            "label": "unknown"
+          },
+          "right": {
+            "feature": "elongation",
+            "threshold": 1.7727272510528564,
+            "left": {
+              "feature": "chroma_difference",
+              "threshold": 2.532247543334961,
+              "left": {
+                "label": "bent"
+              },
+              "right": {
+                "label": "scratch"
+              }
+            },
+            "right": {
+              "label": "scratch"
+            }
+          }
+        }
+      },
+      "right": {
+        "feature": "response_fraction",
+        "threshold": 0.11774490028619766,
+        "left": {
+          "feature": "outline_aspect",
+          "threshold": 0.9942855536937714,
+          "left": {
+            "label": "bent"
+          },
+          "right": {
+            "label": "discoloration"
+          }
+        },
+        "right": {
+          "label": "flip"
+        }
+      }
+    },
+    {
+      "feature": "response_fraction",
+      "threshold": 0.13085000216960907,
+      "left": {
+        "feature": "response_brightness",
+        "threshold": 48.0,
+        "left": {
+          "label": "discoloration"
+        },
+        "right": {
+          "feature": "elongation",
+          "threshold": 1.6922067999839783,
+          "left": {
+            "feature": "response_fraction",
+            "threshold": 0.012164285872131586,
+            "left": {
+              "feature": "primary_fraction",
+              "threshold": 0.004290816199500114,
+              "left": {
+                "label": "unknown"
+              },
+              "right": {
+                "label": "scratch"
+              }
+            },
+            "right": {
+              "feature": "response_fraction",
+              "threshold": 0.03253367356956005,
+              "left": {
+                "label": "bent"
+              },
+              "right": {
+                "label": "discoloration"
+              }
+            }
+          },
+          "right": {
+            "feature": "face_brightness",
+            "threshold": 90.7940788269043,
+            "left": {
+              "label": "unknown"
+            },
+            "right": {
+              "feature": "response_fraction",
+              "threshold": 0.041334694251418114,
+              "left": {
+                "label": "scratch"
+              },
+              "right": {
+                "label": "discoloration"
+              }
+            }
+          }
+        }
+      },
+      "right": {
+        "label": "flip"
+      }
+    },
+    {
+      "feature": "peak_score",
+      "threshold": 0.7044323086738586,
+      "left": {
+        "feature": "face_chroma",
+        "threshold": 26.5,
+        "left": {
+          "feature": "response_fraction",
+          "threshold": 0.0061897956766188145,
+          "left": {
+            "feature": "response_brightness",
+            "threshold": 71.0,
+            "left": {
+              "label": "discoloration"
+            },
+            "right": {
+              "label": "scratch"
+            }
+          },
+          "right": {
+            "feature": "response_brightness",
+            "threshold": 46.5,
+            "left": {
+              "label": "discoloration"
+            },
+            "right": {
+              "label": "scratch"
+            }
+          }
+        },
+        "right": {
+          "label": "unknown"
+        }
+      },
+      "right": {
+        "feature": "radial_offset",
+        "threshold": 1.0197179913520813,
+        "left": {
+          "feature": "chroma_difference",
+          "threshold": 10.877635955810547,
+          "left": {
+            "feature": "primary_fraction",
+            "threshold": 0.05336632765829563,
+            "left": {
+              "feature": "chroma_difference",
+              "threshold": 8.109049320220947,
+              "left": {
+                "label": "bent"
+              },
+              "right": {
+                "label": "unknown"
+              }
+            },
+            "right": {
+              "label": "flip"
+            }
+          },
+          "right": {
+            "label": "discoloration"
+          }
+        },
+        "right": {
+          "label": "flip"
+        }
+      }
+    },
+    {
+      "feature": "primary_fraction",
+      "threshold": 0.0651204101741314,
+      "left": {
+        "feature": "outline_solidity",
+        "threshold": 0.8801319897174835,
+        "left": {
+          "feature": "elongation",
+          "threshold": 3.1913548707962036,
+          "left": {
+            "feature": "peak_score",
+            "threshold": 6.830389320850372,
+            "left": {
+              "label": "scratch"
+            },
+            "right": {
+              "label": "discoloration"
+            }
+          },
+          "right": {
+            "label": "discoloration"
+          }
+        },
+        "right": {
+          "feature": "peak_score",
+          "threshold": 0.7978071868419647,
+          "left": {
+            "feature": "response_brightness",
+            "threshold": 48.0,
+            "left": {
+              "label": "discoloration"
+            },
+            "right": {
+              "feature": "outline_aspect",
+              "threshold": 0.994555801153183,
+              "left": {
+                "label": "bent"
+              },
+              "right": {
+                "label": "unknown"
+              }
+            }
+          },
+          "right": {
+            "feature": "radial_offset",
+            "threshold": 0.9340628683567047,
+            "left": {
+              "feature": "peak_score",
+              "threshold": 1.1238818764686584,
+              "left": {
+                "label": "bent"
+              },
+              "right": {
+                "label": "discoloration"
+              }
+            },
+            "right": {
+              "label": "bent"
+            }
+          }
+        }
+      },
+      "right": {
+        "label": "flip"
+      }
+    },
+    {
+      "feature": "face_brightness",
+      "threshold": 98.17843246459961,
+      "left": {
+        "feature": "peak_score",
+        "threshold": 0.466319277882576,
+        "left": {
+          "label": "scratch"
+        },
+        "right": {
+          "feature": "rim_brightness",
+          "threshold": 96.88395690917969,
+          "left": {
+            "feature": "face_brightness",
+            "threshold": 87.52877426147461,
+            "left": {
+              "feature": "face_contrast",
+              "threshold": 20.105904579162598,
+              "left": {
+                "label": "flip"
+              },
+              "right": {
+                "label": "discoloration"
+              }
+            },
+            "right": {
+              "label": "unknown"
+            }
+          },
+          "right": {
+            "feature": "face_brightness",
+            "threshold": 89.80018997192383,
+            "left": {
+              "label": "discoloration"
+            },
+            "right": {
+              "feature": "elongation",
+              "threshold": 1.863826036453247,
+              "left": {
+                "label": "bent"
+              },
+              "right": {
+                "label": "scratch"
+              }
+            }
+          }
+        }
+      },
+      "right": {
+        "feature": "outline_aspect",
+        "threshold": 0.998453676700592,
+        "left": {
+          "feature": "rim_brightness",
+          "threshold": 114.91786575317383,
+          "left": {
+            "label": "discoloration"
+          },
+          "right": {
+            "label": "scratch"
+          }
+        },
+        "right": {
+          "feature": "response_brightness",
+          "threshold": 89.5,
+          "left": {
+            "label": "unknown"
+          },
+          "right": {
+            "label": "flip"
+          }
+        }
+      }
+    },
+    {
+      "feature": "radial_offset",
+      "threshold": 0.9372651875019073,
+      "left": {
+        "feature": "primary_fraction",
+        "threshold": 0.01724897976964712,
+        "left": {
+          "feature": "rim_brightness",
+          "threshold": 104.78924560546875,
+          "left": {
+            "label": "discoloration"
+          },
+          "right": {
+            "feature": "response_brightness",
+            "threshold": 87.0,
+            "left": {
+              "label": "bent"
+            },
+            "right": {
+              "label": "scratch"
+            }
+          }
+        },
+        "right": {
+          "feature": "response_fraction",
+          "threshold": 0.14333469420671463,
+          "left": {
+            "label": "discoloration"
+          },
+          "right": {
+            "label": "flip"
+          }
+        }
+      },
+      "right": {
+        "feature": "outline_solidity",
+        "threshold": 0.8808647990226746,
+        "left": {
+          "feature": "face_brightness",
+          "threshold": 96.5023307800293,
+          "left": {
+            "feature": "face_contrast",
+            "threshold": 24.748905181884766,
+            "left": {
+              "label": "scratch"
+            },
+            "right": {
+              "label": "bent"
+            }
+          },
+          "right": {
+            "feature": "face_brightness",
+            "threshold": 110.56875991821289,
+            "left": {
+              "label": "flip"
+            },
+            "right": {
+              "label": "scratch"
+            }
+          }
+        },
+        "right": {
+          "feature": "face_chroma",
+          "threshold": 25.0,
+          "left": {
+            "feature": "primary_fraction",
+            "threshold": 0.012370408046990633,
+            "left": {
+              "feature": "face_contrast",
+              "threshold": 18.60204315185547,
+              "left": {
+                "label": "scratch"
+              },
+              "right": {
+                "label": "unknown"
+              }
+            },
+            "right": {
+              "feature": "face_brightness",
+              "threshold": 91.63804244995117,
+              "left": {
+                "label": "scratch"
+              },
+              "right": {
+                "label": "bent"
+              }
+            }
+          },
+          "right": {
+            "feature": "primary_fraction",
+            "threshold": 0.02186428551794961,
+            "left": {
+              "label": "unknown"
+            },
+            "right": {
+              "label": "discoloration"
+            }
+          }
+        }
+      }
+    },
+    {
+      "feature": "face_contrast",
+      "threshold": 34.45812225341797,
+      "left": {
+        "feature": "primary_fraction",
+        "threshold": 0.05393673665821552,
+        "left": {
+          "feature": "peak_score",
+          "threshold": 0.8842073976993561,
+          "left": {
+            "feature": "response_brightness",
+            "threshold": 127.0,
+            "left": {
+              "feature": "face_brightness",
+              "threshold": 90.27032852172852,
+              "left": {
+                "label": "discoloration"
+              },
+              "right": {
+                "label": "scratch"
+              }
+            },
+            "right": {
+              "label": "unknown"
+            }
+          },
+          "right": {
+            "feature": "radial_offset",
+            "threshold": 0.9654999673366547,
+            "left": {
+              "label": "discoloration"
+            },
+            "right": {
+              "label": "bent"
+            }
+          }
+        },
+        "right": {
+          "label": "flip"
+        }
+      },
+      "right": {
+        "feature": "face_contrast",
+        "threshold": 38.70340347290039,
+        "left": {
+          "label": "unknown"
+        },
+        "right": {
+          "label": "discoloration"
+        }
+      }
+    },
+    {
+      "feature": "peak_score",
+      "threshold": 0.7958761155605316,
+      "left": {
+        "feature": "response_brightness",
+        "threshold": 48.0,
+        "left": {
+          "label": "discoloration"
+        },
+        "right": {
+          "feature": "response_fraction",
+          "threshold": 0.000640816317172721,
+          "left": {
+            "label": "unknown"
+          },
+          "right": {
+            "feature": "rim_brightness",
+            "threshold": 97.24008178710938,
+            "left": {
+              "label": "unknown"
+            },
+            "right": {
+              "feature": "outline_aspect",
+              "threshold": 0.9992038309574127,
+              "left": {
+                "label": "scratch"
+              },
+              "right": {
+                "label": "bent"
+              }
+            }
+          }
+        }
+      },
+      "right": {
+        "feature": "primary_fraction",
+        "threshold": 0.060670409351587296,
+        "left": {
+          "feature": "outline_aspect",
+          "threshold": 0.9935799241065979,
+          "left": {
+            "feature": "outline_solidity",
+            "threshold": 0.9031327068805695,
+            "left": {
+              "label": "bent"
+            },
+            "right": {
+              "label": "scratch"
+            }
+          },
+          "right": {
+            "feature": "response_fraction",
+            "threshold": 0.02132346946746111,
+            "left": {
+              "feature": "radial_offset",
+              "threshold": 0.9505393505096436,
+              "left": {
+                "label": "bent"
+              },
+              "right": {
+                "label": "discoloration"
+              }
+            },
+            "right": {
+              "label": "discoloration"
+            }
+          }
+        },
+        "right": {
+          "label": "flip"
+        }
+      }
+    },
+    {
+      "feature": "response_fraction",
+      "threshold": 0.11774490028619766,
+      "left": {
+        "feature": "peak_score",
+        "threshold": 0.7044323086738586,
+        "left": {
+          "feature": "face_contrast",
+          "threshold": 33.23374366760254,
+          "left": {
+            "label": "scratch"
+          },
+          "right": {
+            "label": "unknown"
+          }
+        },
+        "right": {
+          "feature": "primary_fraction",
+          "threshold": 0.011821428779512644,
+          "left": {
+            "label": "unknown"
+          },
+          "right": {
+            "feature": "chroma_difference",
+            "threshold": 10.132441997528076,
+            "left": {
+              "feature": "elongation",
+              "threshold": 1.8758227229118347,
+              "left": {
+                "label": "bent"
+              },
+              "right": {
+                "label": "discoloration"
+              }
+            },
+            "right": {
+              "label": "discoloration"
+            }
+          }
+        }
+      },
+      "right": {
+        "label": "flip"
+      }
+    },
+    {
+      "feature": "peak_score",
+      "threshold": 0.7034100592136383,
+      "left": {
+        "feature": "primary_fraction",
+        "threshold": 0.0005255102005321532,
+        "left": {
+          "label": "unknown"
+        },
+        "right": {
+          "feature": "face_contrast",
+          "threshold": 24.314268112182617,
+          "left": {
+            "feature": "outline_aspect",
+            "threshold": 0.996825784444809,
+            "left": {
+              "label": "scratch"
+            },
+            "right": {
+              "label": "bent"
+            }
+          },
+          "right": {
+            "feature": "chroma_difference",
+            "threshold": 1.6180340051651,
+            "left": {
+              "label": "scratch"
+            },
+            "right": {
+              "feature": "radial_offset",
+              "threshold": 0.7723005712032318,
+              "left": {
+                "label": "discoloration"
+              },
+              "right": {
+                "label": "bent"
+              }
+            }
+          }
+        }
+      },
+      "right": {
+        "feature": "response_fraction",
+        "threshold": 0.10705306380987167,
+        "left": {
+          "feature": "rim_brightness",
+          "threshold": 96.88395690917969,
+          "left": {
+            "label": "unknown"
+          },
+          "right": {
+            "feature": "outline_aspect",
+            "threshold": 0.9931703507900238,
+            "left": {
+              "feature": "outline_solidity",
+              "threshold": 0.9031327068805695,
+              "left": {
+                "label": "bent"
+              },
+              "right": {
+                "label": "scratch"
+              }
+            },
+            "right": {
+              "label": "discoloration"
+            }
+          }
+        },
+        "right": {
+          "label": "flip"
+        }
+      }
+    },
+    {
+      "feature": "response_fraction",
+      "threshold": 0.12726122699677944,
+      "left": {
+        "feature": "face_chroma",
+        "threshold": 24.100000381469727,
+        "left": {
+          "feature": "response_brightness",
+          "threshold": 127.0,
+          "left": {
+            "feature": "primary_fraction",
+            "threshold": 0.01948979590088129,
+            "left": {
+              "feature": "elongation",
+              "threshold": 1.6194028854370117,
+              "left": {
+                "label": "bent"
+              },
+              "right": {
+                "label": "scratch"
+              }
+            },
+            "right": {
+              "label": "bent"
+            }
+          },
+          "right": {
+            "label": "unknown"
+          }
+        },
+        "right": {
+          "feature": "face_brightness",
+          "threshold": 107.70484161376953,
+          "left": {
+            "feature": "primary_fraction",
+            "threshold": 0.03573061153292656,
+            "left": {
+              "label": "discoloration"
+            },
+            "right": {
+              "label": "bent"
+            }
+          },
+          "right": {
+            "feature": "chroma_difference",
+            "threshold": 3.914213538169861,
+            "left": {
+              "label": "discoloration"
+            },
+            "right": {
+              "label": "unknown"
+            }
+          }
+        }
+      },
+      "right": {
+        "label": "flip"
+      }
+    },
+    {
+      "feature": "outline_aspect",
+      "threshold": 0.9839170277118683,
+      "left": {
+        "label": "bent"
+      },
+      "right": {
+        "feature": "primary_fraction",
+        "threshold": 0.0651204101741314,
+        "left": {
+          "feature": "response_fraction",
+          "threshold": 0.025917346589267254,
+          "left": {
+            "feature": "chroma_difference",
+            "threshold": 2.532247543334961,
+            "left": {
+              "label": "bent"
+            },
+            "right": {
+              "feature": "rim_brightness",
+              "threshold": 100.57868194580078,
+              "left": {
+                "label": "unknown"
+              },
+              "right": {
+                "label": "scratch"
+              }
+            }
+          },
+          "right": {
+            "feature": "response_brightness",
+            "threshold": 63.0,
+            "left": {
+              "label": "discoloration"
+            },
+            "right": {
+              "feature": "primary_fraction",
+              "threshold": 0.0309051014482975,
+              "left": {
+                "label": "scratch"
+              },
+              "right": {
+                "label": "discoloration"
+              }
+            }
+          }
+        },
+        "right": {
+          "label": "flip"
+        }
+      }
+    },
+    {
+      "feature": "outline_solidity",
+      "threshold": 0.8773132860660553,
+      "left": {
+        "feature": "chroma_difference",
+        "threshold": 8.787870168685913,
+        "left": {
+          "feature": "primary_fraction",
+          "threshold": 0.05329796113073826,
+          "left": {
+            "label": "bent"
+          },
+          "right": {
+            "label": "flip"
+          }
+        },
+        "right": {
+          "label": "discoloration"
+        }
+      },
+      "right": {
+        "feature": "outline_aspect",
+        "threshold": 0.9841696321964264,
+        "left": {
+          "label": "bent"
+        },
+        "right": {
+          "feature": "outline_aspect",
+          "threshold": 0.9998198449611664,
+          "left": {
+            "feature": "face_contrast",
+            "threshold": 20.109375953674316,
+            "left": {
+              "feature": "face_contrast",
+              "threshold": 18.60204315185547,
+              "left": {
+                "label": "scratch"
+              },
+              "right": {
+                "label": "unknown"
+              }
+            },
+            "right": {
+              "feature": "peak_score",
+              "threshold": 0.7201549112796783,
+              "left": {
+                "label": "scratch"
+              },
+              "right": {
+                "label": "discoloration"
+              }
+            }
+          },
+          "right": {
+            "feature": "response_fraction",
+            "threshold": 0.02186428551794961,
+            "left": {
+              "label": "unknown"
+            },
+            "right": {
+              "label": "discoloration"
+            }
+          }
+        }
+      }
+    },
+    {
+      "feature": "response_fraction",
+      "threshold": 0.12726122699677944,
+      "left": {
+        "feature": "response_fraction",
+        "threshold": 0.000640816317172721,
+        "left": {
+          "label": "unknown"
+        },
+        "right": {
+          "feature": "face_brightness",
+          "threshold": 84.31484603881836,
+          "left": {
+            "label": "discoloration"
+          },
+          "right": {
+            "feature": "response_brightness",
+            "threshold": 127.0,
+            "left": {
+              "feature": "chroma_difference",
+              "threshold": 11.186245441436768,
+              "left": {
+                "label": "scratch"
+              },
+              "right": {
+                "label": "discoloration"
+              }
+            },
+            "right": {
+              "label": "unknown"
+            }
+          }
+        }
+      },
+      "right": {
+        "label": "flip"
+      }
+    },
+    {
+      "feature": "outline_aspect",
+      "threshold": 0.9794099926948547,
+      "left": {
+        "label": "bent"
+      },
+      "right": {
+        "feature": "chroma_difference",
+        "threshold": 4.5615527629852295,
+        "left": {
+          "feature": "response_brightness",
+          "threshold": 112.5,
+          "left": {
+            "feature": "face_contrast",
+            "threshold": 20.817997932434082,
+            "left": {
+              "label": "flip"
+            },
+            "right": {
+              "feature": "elongation",
+              "threshold": 1.657642662525177,
+              "left": {
+                "label": "bent"
+              },
+              "right": {
+                "label": "scratch"
+              }
+            }
+          },
+          "right": {
+            "label": "flip"
+          }
+        },
+        "right": {
+          "feature": "peak_score",
+          "threshold": 0.7958761155605316,
+          "left": {
+            "feature": "response_fraction",
+            "threshold": 0.025917346589267254,
+            "left": {
+              "feature": "radial_offset",
+              "threshold": 0.8376434743404388,
+              "left": {
+                "label": "discoloration"
+              },
+              "right": {
+                "label": "unknown"
+              }
+            },
+            "right": {
+              "label": "scratch"
+            }
+          },
+          "right": {
+            "feature": "radial_offset",
+            "threshold": 0.8968633115291595,
+            "left": {
+              "label": "discoloration"
+            },
+            "right": {
+              "label": "flip"
+            }
+          }
+        }
+      }
+    },
+    {
+      "feature": "peak_score",
+      "threshold": 1.1814947128295898,
+      "left": {
+        "feature": "rim_brightness",
+        "threshold": 110.47385025024414,
+        "left": {
+          "feature": "face_brightness",
+          "threshold": 97.85997009277344,
+          "left": {
+            "feature": "face_contrast",
+            "threshold": 20.7518949508667,
+            "left": {
+              "feature": "response_fraction",
+              "threshold": 0.029772449284791946,
+              "left": {
+                "label": "unknown"
+              },
+              "right": {
+                "label": "flip"
+              }
+            },
+            "right": {
+              "feature": "outline_solidity",
+              "threshold": 0.8754225671291351,
+              "left": {
+                "label": "discoloration"
+              },
+              "right": {
+                "label": "bent"
+              }
+            }
+          },
+          "right": {
+            "label": "flip"
+          }
+        },
+        "right": {
+          "feature": "outline_aspect",
+          "threshold": 0.999786913394928,
+          "left": {
+            "feature": "primary_fraction",
+            "threshold": 0.01816224493086338,
+            "left": {
+              "label": "scratch"
+            },
+            "right": {
+              "label": "discoloration"
+            }
+          },
+          "right": {
+            "label": "unknown"
+          }
+        }
+      },
+      "right": {
+        "label": "discoloration"
+      }
+    },
+    {
+      "feature": "primary_fraction",
+      "threshold": 0.06575918570160866,
+      "left": {
+        "feature": "primary_fraction",
+        "threshold": 0.0005255102005321532,
+        "left": {
+          "label": "unknown"
+        },
+        "right": {
+          "feature": "chroma_difference",
+          "threshold": 9.757587432861328,
+          "left": {
+            "feature": "peak_score",
+            "threshold": 0.8842073976993561,
+            "left": {
+              "feature": "face_brightness",
+              "threshold": 90.5790023803711,
+              "left": {
+                "label": "unknown"
+              },
+              "right": {
+                "label": "scratch"
+              }
+            },
+            "right": {
+              "feature": "face_contrast",
+              "threshold": 34.862135887145996,
+              "left": {
+                "label": "bent"
+              },
+              "right": {
+                "label": "discoloration"
+              }
+            }
+          },
+          "right": {
+            "label": "discoloration"
+          }
+        }
+      },
+      "right": {
+        "label": "flip"
+      }
+    },
+    {
+      "feature": "peak_score",
+      "threshold": 0.344914011657238,
+      "left": {
+        "feature": "face_chroma",
+        "threshold": 25.0,
+        "left": {
+          "label": "scratch"
+        },
+        "right": {
+          "label": "unknown"
+        }
+      },
+      "right": {
+        "feature": "outline_solidity",
+        "threshold": 0.8847944140434265,
+        "left": {
+          "feature": "primary_fraction",
+          "threshold": 0.0651204101741314,
+          "left": {
+            "feature": "peak_score",
+            "threshold": 0.7201549112796783,
+            "left": {
+              "feature": "response_brightness",
+              "threshold": 54.5,
+              "left": {
+                "label": "discoloration"
+              },
+              "right": {
+                "label": "scratch"
+              }
+            },
+            "right": {
+              "feature": "outline_solidity",
+              "threshold": 0.8772511780261993,
+              "left": {
+                "label": "bent"
+              },
+              "right": {
+                "label": "discoloration"
+              }
+            }
+          },
+          "right": {
+            "label": "flip"
+          }
+        },
+        "right": {
+          "feature": "chroma_difference",
+          "threshold": 6.8011627197265625,
+          "left": {
+            "feature": "response_fraction",
+            "threshold": 0.02942551113665104,
+            "left": {
+              "label": "bent"
+            },
+            "right": {
+              "label": "scratch"
+            }
+          },
+          "right": {
+            "label": "unknown"
+          }
+        }
+      }
+    },
+    {
+      "feature": "chroma_difference",
+      "threshold": 10.934327602386475,
+      "left": {
+        "feature": "outline_solidity",
+        "threshold": 0.8812880516052246,
+        "left": {
+          "feature": "response_fraction",
+          "threshold": 0.10592245124280453,
+          "left": {
+            "feature": "outline_solidity",
+            "threshold": 0.8768041431903839,
+            "left": {
+              "label": "bent"
+            },
+            "right": {
+              "label": "scratch"
+            }
+          },
+          "right": {
+            "label": "flip"
+          }
+        },
+        "right": {
+          "feature": "face_chroma",
+          "threshold": 25.0,
+          "left": {
+            "feature": "response_brightness",
+            "threshold": 116.0,
+            "left": {
+              "label": "bent"
+            },
+            "right": {
+              "label": "unknown"
+            }
+          },
+          "right": {
+            "label": "unknown"
+          }
+        }
+      },
+      "right": {
+        "label": "discoloration"
+      }
+    }
+  ],
+  "min_votes": 17,
+  "training_protocol": "mvtec-metal-nut-subtype-on-detector-evaluated-images-v1"
+}

@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "policy_version": "metal-nut-efficientad-s-fp32-v1",
+  "status": "PROVISIONAL_NORMAL_ONLY_POLICY",
+  "validation_role": "validation_normal",
+  "split_seed": 42,
+  "split_method": "sort by SHA-256 of seed:path, then path; first map_fit_count fit maps",
+  "map_fit_count": 22,
+  "map_quantiles": [
+    0.9,
+    0.995
+  ],
+  "branch_scale": 0.1,
+  "branch_weights": [
+    0.5,
+    0.5
+  ],
+  "image_score": "maximum of the equally weighted normalized branch maps",
+  "nominal_normal_flag_level": 0.05,
+  "threshold_rule": "ceil((n+1)*(1-alpha))-th smallest independent normal threshold score",
+  "comparison": "strict_greater_than",
+  "above_threshold": "ANOMALY_CANDIDATE",
+  "at_or_below_threshold": "NORMAL_CANDIDATE",
+  "nonfinite_score": "ERROR",
+  "is_probability": false,
+  "is_final_quality_grade": false,
+  "defect_recall": "NOT_EVALUATED",
+  "guarantee_scope": "Rank calculation assumes exchangeable future normal images and a score function fixed independently of threshold samples. These assumptions and production false-alarm performance are not verified.",
+  "final_holdout_access": false,
+  "threshold": 0.22776579856872559,
+  "n": 22,
+  "order_statistic_rank": 22,
+  "nominal_alpha": 0.05,
+  "rank_tail_fraction_under_assumptions": 0.043478260869565216,
+  "map_quantile_values": {
+    "qa_st": 0.22039654850959778,
+    "qb_st": 0.265423059463501,
+    "qa_ae": 0.04703303799033165,
+    "qb_ae": 0.1132587194442749
+  },
+  "calibrated_checkpoint_sha256": "aa2407dba9f74db8472ee6adc5968eefc7c243d9f200d70f2d3a792fd0b7f4fd",
+  "source_checkpoint_sha256": "85106f4a9ef6ec3e9c8acb4056dc2db2124e54284209e10d686dd36dea66ca0d"
+}

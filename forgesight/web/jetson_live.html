@@ -62,10 +62,15 @@
       <button id="sidebar-toggle" class="icon-button sidebar-handle" type="button" aria-controls="station-sidebar" aria-expanded="true" title="Hide navigation" aria-label="Hide navigation"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-sidebar"></use></svg></button>
       <header class="page-header">
         <div class="page-title">
+          <span id="active-plugin-title" class="eyebrow" hidden>QUALITY CONTROL / METAL NUT</span>
           <h1 id="view-title" tabindex="-1">New inspection</h1>
           <p id="view-intro" class="page-intro" hidden></p>
         </div>
         <div class="header-tools"><button id="close-report" class="btn secondary" type="button" hidden><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-close"></use></svg>Close report</button>
+          <label id="plugin-control" class="plugin-control" hidden>PART RECIPE
+            <select id="active-plugin" aria-label="Active part recipe"></select>
+            <small id="plugin-status" role="status">DEMONSTRATION</small>
+          </label>
           <span id="connection-status" class="connection" role="status">Connecting to station…</span>
           <button id="theme-toggle" class="icon-button" type="button" aria-label="Switch to light theme" title="Switch to light theme"><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-theme"></use></svg></button>
         </div>
@@ -105,7 +110,7 @@
               <p class="help lead-help">Choose a file from this browser’s computer. RGB PNG · 64–1024 pixels per side · under 8 MiB.</p>
               <form id="upload-form" class="form">
                 <div class="replay-fields"><label class="field">Choose PNG<input id="diagnostic-file" type="file" accept="image/png,.png" required></label></div>
-                <label class="confirm"><input id="mvtec-benchmark" type="checkbox"><span>This is an original-size MVTec metal_nut PNG.<small>Show provisional benchmark PASS / REVIEW / REJECT.</small></span></label>
+                <label class="confirm"><input id="mvtec-benchmark" type="checkbox"><span><span id="benchmark-part-label">This is an original-size MVTec metal_nut PNG.</span><small>Show provisional benchmark PASS / REVIEW / REJECT.</small></span></label>
                 <button id="diagnostic-submit" class="btn primary block" type="submit" disabled><svg class="ui-icon" aria-hidden="true" focusable="false"><use href="#icon-scan"></use></svg><span class="button-label">Analyze uploaded PNG</span></button>
               </form>
               <p id="diagnostic-status" class="status-line" role="status" aria-live="polite">Choose a PNG to inspect.</p>

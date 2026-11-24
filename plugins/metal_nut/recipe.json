@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "plugin_id": "metal_nut",
+  "label": "Metal nut",
+  "demo_only": true,
+  "production_approved": false,
+  "benchmark_size_px": [
+    700,
+    700
+  ],
+  "replay_roles": [
+    "development_preview"
+  ],
+  "model": {
+    "file": "efficientad_s.ts",
+    "sha256": "8766c41a51a5444f57f564134427bbd2d2d95dd6ec5ff08b24698f00f7f55dcd"
+  },
+  "score_policy": {
+    "file": "score_policy.json",
+    "sha256": "33a28c23328c63abf93fa0e01d270eda52f4a0195f7b8df89c14dda44e77a687"
+  },
+  "grade_policy": {
+    "file": "grade_policy.json",
+    "sha256": "22edb41921f2f4c94ec2e5ab417508d54e4e4169845f4b3aa375b64904b5ab6d"
+  },
+  "classifier": {
+    "file": "defect_type.json",
+    "sha256": "742ab377ce2b06c0d5c6b42c9e4bed2a45f1ac3f5bdeaf6e5b69c99d021a52f0"
+  },
+  "guidance": {
+    "file": "guidance.json",
+    "sha256": "c1d3cab90bba2891b75b984e463836d30e46d6ad16d53983f7740be71596565d"
+  },
+  "dataset": {
+    "file": "dataset.json",
+    "sha256": "14b11ebd03d5107c7ef3478e1c4d20887237e2fbef58601ac043014b8f0e340f"
+  }
+}

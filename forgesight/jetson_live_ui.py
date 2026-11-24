@@ -25,6 +25,7 @@ from forgesight.operation_log import configure_operation_log, operation_logger, 
 from forgesight.defect_type import load_profile
 from forgesight.grade import grade_record
 from forgesight.storage import AUTOMATIC_PART_ID, InspectionStore, new_correction
+from forgesight.plugin_station import PluginStation
 from forgesight.vision_edge_live_once import (
     CHILD_TIMEOUT_SECONDS, MODEL_SHA256, WORKER_REQUEST_TIMEOUT_SECONDS, sha256)
 
@@ -74,10 +75,11 @@ def launch_vision_worker(args, worker_script=None):
     from collections import deque
     script = worker_script or (Path(__file__).resolve().parent / "vision_edge_worker.py")
     command = [str(args.vision_python), "-B", str(script),
-               "--model", str(args.model), "--model-sha256", MODEL_SHA256,
+               "--model", str(args.model), "--model-sha256", getattr(args, 'model_sha256', MODEL_SHA256),
                "--socket", str(args.vision_worker_socket),
-               "--threads", str(args.vision_worker_threads),
-               "--idle-timeout-seconds", str(args.vision_worker_idle_timeout_seconds)]
+               "--threads", str(args.vision_worker_threads)]
+    if not getattr(args, 'plugins_root', None):
+        command += ["--idle-timeout-seconds", str(args.vision_worker_idle_timeout_seconds)]
     worker = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     stderr_tail = deque(maxlen=50)
 
@@ -120,8 +122,9 @@ def launch_advice_worker(args, python_command=None):
                      "-m", "forgesight.assist_edge_worker"])
     command = list(command) + [
                "--socket", str(args.llama_worker_socket),
-               "--llama-root", str(args.llama_root),
-               "--idle-timeout-seconds", str(args.llama_worker_idle_timeout_seconds)]
+               "--llama-root", str(args.llama_root)]
+    if not getattr(args, 'plugins_root', None):
+        command += ["--idle-timeout-seconds", str(args.llama_worker_idle_timeout_seconds)]
     if getattr(args, "grounded_auto_advice", False):
         command = ["nice", "-n", "10", *command]
     env = dict(os.environ)
@@ -315,9 +318,10 @@ ADVICE_FUTURES_COMPLETED_KEPT = 32
 WORKER_RESPAWN_MIN_INTERVAL_SECONDS = 60
 
 
-class LiveService:
+class LiveService(PluginStation):
     def __init__(self, args, camera):
         self.args = args
+        args.model_sha256 = MODEL_SHA256
         self.camera = camera
         profile_path = getattr(args, "defect_type_profile", None)
         self.defect_type_profile = load_profile(profile_path) if profile_path else None
@@ -382,6 +386,12 @@ class LiveService:
                            "cold-fall back and retry: %s", scrub(error))
             else:
                 _log.info("Advisory worker started at boot.")
+        if getattr(args, 'plugins_root', None) is not None:
+            try:
+                self._start_plugins()
+            except Exception:
+                self.close()
+                raise
 
     def _inspect_inline(self, image, part_id, root, mode_flags):
         """Run the same inspection in this long-lived process; worker mode only.
@@ -394,12 +404,13 @@ class LiveService:
         args = argparse.Namespace(
             image=image, part_id=part_id,
             vision_python=self.args.vision_python, model=self.args.model,
-            model_sha256=MODEL_SHA256, grade_policy=self.args.grade_policy,
+            model_sha256=getattr(self.args, 'model_sha256', MODEL_SHA256), grade_policy=self.args.grade_policy,
             database=self.args.database, output_dir=root / "result",
             camera_index=self.args.camera_index,
             vision_worker_socket=self.args.vision_worker_socket,
             overlay_format=self.args.overlay_format,
             defect_type_profile=getattr(self, "defect_type_profile", None),
+            plugin_recipe=getattr(self, 'active_recipe', None),
             **mode_flags)
         record = live_once.inspect(args)
 
@@ -502,6 +513,8 @@ class LiveService:
                             new.kill()
                         return
                     self.vision_worker = new
+                    if getattr(self, 'plugin_registry', None) is not None:
+                        self.plugin_workers[self.active_plugin] = new
                 _log.info("Vision worker respawned.")
             except Exception:
                 # Next inspection cold-falls-back again and retries the
@@ -530,6 +543,13 @@ class LiveService:
                 self.vision_worker.wait(timeout=10)
             except subprocess.TimeoutExpired:
                 self.vision_worker.kill()
+        for worker in getattr(self, 'plugin_workers', {}).values():
+            if worker is not self.vision_worker and worker.poll() is None:
+                worker.terminate()
+                try:
+                    worker.wait(timeout=10)
+                except subprocess.TimeoutExpired:
+                    worker.kill()
 
     def advice_state(self):
         with self.lock:
@@ -778,6 +798,7 @@ class LiveService:
                    if latest and latest.get("inspection_id") else [])
         grounded = getattr(self, "grounded_advice", None)
         return {"camera": self.camera.state(), "busy": busy, "latest": latest,
+                "plugin": self.plugin_state(),
                 "manual_reviews": reviews,
                 "grounded_auto_advice": grounded is not None,
                 "vision_advice_available": bool(getattr(self.args, "defect_type_profile", None)),
@@ -1039,15 +1060,20 @@ class LiveService:
         try:
             with Image.open(BytesIO(data)) as source:
                 width, height = source.size
-                if (source.format != "PNG" or source.mode != "RGB"
+                screw = getattr(self, 'active_plugin', None) == 'screw'
+                recipe = getattr(self, 'active_recipe', None)
+                size = tuple(recipe.metadata['benchmark_size_px']) if recipe else (700, 700)
+                if (source.format != "PNG" or source.mode not in (('RGB', 'L') if screw else ('RGB',))
                         or not 64 <= width <= 1024 or not 64 <= height <= 1024):
                     raise ValueError("Expected an RGB PNG between 64 and 1024 pixels per side")
-                if benchmark and (width, height) != (700, 700):
-                    raise ValueError("MVTec benchmark mode requires an original-size 700x700 PNG")
+                if benchmark and (width, height) != size:
+                    raise ValueError('Benchmark mode requires the active recipe original image size.')
                 source.load()
         except OSError as error:
             raise ValueError("The selected file is not a readable PNG") from error
         with self.lock:
+            if recipe is not getattr(self, 'active_recipe', None):
+                raise ValueError('Part recipe changed while decoding; upload again.')
             if self.busy:
                 raise ValueError("An inspection is already running")
             if upload_id is not None and self.store.has_part(upload_id):
@@ -1059,7 +1085,7 @@ class LiveService:
                 stream.write(data)
             upload_id = upload_id or self.store.reserve_part_id()
             self.busy = True
-            mode = "USER_DECLARED_MVTEC_METAL_NUT_UPLOAD" if benchmark else "USER_UPLOADED_IMAGE_DIAGNOSTIC"
+            mode = ("USER_DECLARED_MVTEC_SCREW_UPLOAD" if screw else "USER_DECLARED_MVTEC_METAL_NUT_UPLOAD") if benchmark else "USER_UPLOADED_IMAGE_DIAGNOSTIC"
             self.latest = {"status": "PROCESSING", "part_id": upload_id, "source_mode": mode}
         return self._start_inspection(upload_id, image, root, mode,
                                       self._run_upload, upload_id, image, root, benchmark)
@@ -1109,6 +1135,11 @@ class LiveService:
         self._publish_result(upload_id, root / "result", image, result)
 
     def _run_replay(self, replay_id, image, sample, root):
+        if getattr(self, 'active_plugin', None) == 'screw':
+            self._inspect_inline(image, replay_id, root, {'plugin_replay': sample['path'],
+                'mvtec_benchmark_upload': False, 'uploaded_image_diagnostic': False,
+                'operator_declared_part': False, 'screen_photo_diagnostic': False, 'diagnostic_no_part': False})
+            return
         command = [sys.executable, "-B", "-m", "forgesight.vision_edge_replay",
                    "--image", str(image), "--image-sha256", sample["sha256"],
                    "--dataset-manifest", str(self.args.dataset_manifest),
@@ -1149,6 +1180,7 @@ class LiveService:
         source_size = record["source"]["size_px"]
         geometry = record["geometry"] or {}
         latest = {"status": record["status"], "part_id": part_id, "inspection_id": inspection_id,
+                  "plugin_id": record.get('plugin_id', 'metal_nut'),
                   "source_mode": record["source"]["mode"], "dataset_path": record["source"].get("dataset_path"),
                   "grade": record["decision"]["grade"], "reason": record["decision"]["reason"],
                   "action": record["decision"]["operator_action"], "assessment": record.get("assessment"),
@@ -1198,7 +1230,7 @@ class LiveService:
                 "source": {"path": str(image.resolve()), "mode": mode, "sha256": source_digest, "size_px": None,
                            "physical_part": "OPERATOR_DECLARED_UNVERIFIED" if mode == "LIVE_CAMERA" else False},
                 "model": {"name": "EfficientAD-S", "checkpoint_sha256": policy["checkpoint_sha256"],
-                          "export_sha256": MODEL_SHA256, "score_policy_sha256": policy["score_policy_sha256"],
+                          "export_sha256": getattr(self.args, 'model_sha256', MODEL_SHA256), "score_policy_sha256": policy["score_policy_sha256"],
                           "image_threshold": policy["image_threshold"], "jetson_verified": False},
                 "status": "ERROR", "score": None, "candidate": None, "geometry": None,
                 "predicted_defect_type": "unknown", "type_status": "NO_VALIDATED_SUBTYPE_CLASSIFIER",
@@ -1375,6 +1407,19 @@ def handler_for(service):
                     "http://" + self.headers.get("Host", "")):
                 self.send(403, b"Forbidden", "text/plain")
                 return
+            if self.path == '/api/plugin/select':
+                try:
+                    length = int(self.headers.get('Content-Length', '0'))
+                    if not 0 < length <= 256:
+                        raise ValueError('Invalid recipe selection.')
+                    body = json.loads(self.rfile.read(length))
+                    if not isinstance(body, dict) or set(body) != {'plugin_id'}:
+                        raise ValueError('Invalid recipe selection.')
+                    result = service.select_plugin(body['plugin_id'])
+                    self.send(200, json.dumps(result, allow_nan=False).encode(), 'application/json')
+                except (ValueError, TypeError, KeyError):
+                    self.send(409, b'{"error":"Recipe unavailable or inspection busy."}', 'application/json')
+                return
             if self.path in ("/api/camera/start", "/api/camera/stop"):
                 if self.headers.get("Content-Length", "0") != "0":
                     self.send(400, b"Invalid camera control request", "text/plain")
@@ -1518,6 +1563,8 @@ def main():
     parser.add_argument("--defect-type-profile", type=Path,
                         help="Enable provisional defect assessment for benchmark images.")
     parser.add_argument("--guidance", type=Path, default=Path("guidance/prototype_inspection_v2.json"))
+    parser.add_argument('--plugins-root', type=Path,
+                        help='Enable the operator-requested demonstration selector; models remain provisional.')
     parser.add_argument("--llama-worker-socket", type=Path, default=None,
                         help="Optional persistent advisory worker socket; omit for the per-request cold path")
     parser.add_argument("--grounded-auto-advice", action="store_true",
@@ -1541,6 +1588,11 @@ def main():
                         help="Worker exits after this long without a request, freeing model memory; default 3600.")
     parser.add_argument("--port", type=int, default=8770)
     args = parser.parse_args()
+    if args.plugins_root is not None:
+        args.plugins_root = args.plugins_root.resolve()
+        if args.vision_worker_socket is None or args.llama_worker_socket is None:
+            parser.error('Plugin demonstration requires vision and Llama worker sockets.')
+        args.grounded_auto_advice = True
     if not 1024 <= args.port <= 65535:
         parser.error("Use an unprivileged port")
     if not 60 <= args.llama_worker_idle_timeout_seconds <= 3600:
