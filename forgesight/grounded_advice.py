@@ -83,9 +83,7 @@ def prepare(record, rules):
     notes = {normalized(action): f"{action} {reason}" for action in actions}
     grade = record["decision"]["grade"]
     prompt = (
-        f"Metal nut inspection. {reason} "
-        f"Severity {facts['severity'].lower()}. Location {location}. "
-        f"Response {facts['response_region_area_px']} px.\n"
+        f"Metal nut inspection. Possible {normal_type or 'anomaly'} on {location}.\n"
         + "Checks:\n" + "\n".join(actions) + "\nWhich is the best first check?"
     )
     request = {"prompt_text": prompt, "system_text": SYSTEM, "max_new_tokens": 36}
@@ -113,9 +111,9 @@ def selected_check(text):
     end_marker = "<|eot_id|>"
     if text.endswith(end_marker):
         text = text[:-len(end_marker)].rstrip()
-    # Some replies wrap the first check in a predictable Markdown field.
+    # Some replies wrap the first check in a predictable field with or without Markdown.
     # Only that field can influence the displayed text.
-    field = re.match(r"^The best first inspection check is:\s*\*\*([^*\r\n]+)\*\*",
+    field = re.match(r"^The best first (?:inspection )?check is:\s*(?:\*\*)?([^\r\n*]+)",
                      text, flags=re.IGNORECASE)
     return normalized(field.group(1) if field else text)
 
