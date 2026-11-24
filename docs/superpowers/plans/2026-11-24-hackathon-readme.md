@@ -196,3 +196,25 @@ Application tests were not rerun because WSL returned `E_ACCESSDENIED`.
 The existing untracked `scripts/record_timings.py` remains outside the change.
 This execution record supersedes the original planning-only scope for the
 authorized documentation edits; it does not authorize submission publication.
+
+### Feature catalogue expansion
+
+The user requested an exhaustive Phase 1 feature inventory, including plugins
+and features absent from older docs, plus future development for report writing.
+The README was expanded from source/templates/tests into six capability groups
+and a roadmap-ordered future-work table. Source inspection also clarified
+history concealment, HTML versus GTK PDF export, current camera-source UI,
+backend-only replay routes and the fixed two-recipe registry. An absent repo
+link is now distinguished from an artifact potentially prepared elsewhere.
+
+Focused existing PC/WSL tests passed in two runs: 58 plugin/advice/health/logging/
+desktop/bundle checks and 63 UI/storage/worker/queue checks. Earlier WSL access
+denial was overcome for these isolated software tests. No new hardware proof,
+packages, application features or future-stage implementation were introduced.
+Push remains prohibited until the user confirms.
+
+Independent catalogue review found no important issues. Its two minor
+corrections were addressed: grayscale screw uploads are listed, and the
+linked Jetson UI guide now distinguishes current controls from historical
+source-selector proof. The final catalogue contains 38 feature entries across
+six groups. No source-code changes were needed.

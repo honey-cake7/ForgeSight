@@ -1,14 +1,22 @@
 # Jetson live camera inspection prototype
 
+For the complete current feature catalogue, see the [README](../README.md#phase-1-feature-catalogue).
+This guide also preserves earlier device-proof snapshots. The current page has
+Camera and Upload PNG tabs, Results, Review and History views; optional part
+recipes and grounded advice are described in [SCREW_PLUGIN](SCREW_PLUGIN.md)
+and [GROUNDED_ADVICE](GROUNDED_ADVICE.md).
+
 The live page shows the C270 camera feed and captures one frame when the operator
 clicks **Capture & analyze**. That frame is passed to the frozen EfficientAD-S
 TorchScript model. The source image, two anomaly maps, overlay, ForgeGrade
 decision and immutable SQLite record are saved locally. The station assigns a
 sequential ID such as `INS-000001` when it accepts a capture.
 
-The operator chooses **Dataset photo on a screen** or **Physical nut** before
-capture. The former is saved as `LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC` with
-`physical_part: false`. A photograph displayed on a monitor is a useful
+The current page's Camera **Analyze** action declares a physical part. The
+backend still accepts an explicit `screen_photo` source through its API,
+saved as `LIVE_CAMERA_SCREEN_PHOTO_DIAGNOSTIC` with `physical_part: false`;
+the earlier on-page source selector is no longer present. A photograph
+displayed on a monitor is a useful
 camera-path diagnostic, but glare, screen pixels and camera perspective change
 the image. It cannot establish physical-part accuracy or real-nut acceptance.
 
@@ -73,8 +81,10 @@ ssh -N -L 8770:127.0.0.1:8770 nvidia@<JETSON_IP>
 ```
 
 Open `http://127.0.0.1:8770` in the PC browser, or open the same address in
-Firefox on the Jetson desktop. For camera use, choose the source mode,
-confirm it is visible, then click **Capture & analyze**. The camera
+Firefox on the Jetson desktop. For camera use, place the physical component
+in view, use **Start Camera** if needed, then click **Analyze**. For saved
+dataset photos, use **Upload PNG**; screen-photo capture diagnostics require
+the explicit backend source mode. The camera
 preview stays visible while the saved frame is analyzed. Stop the server with
 Ctrl+C. Local output is under `runs/live_inspections_v1/` in the Jetson vision
 directory; the SQLite file is `runs/live_inspections_v1/inspections.sqlite3`.

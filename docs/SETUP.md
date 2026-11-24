@@ -2,8 +2,9 @@
 
 Reviewed against source `081ba00`, 24 November 2026. This collects existing
 workflows; it is not a new clean-machine or Jetson deployment proof. WSL access
-was denied during this documentation update. Do not install into Jetson system
-Python or change global packages.
+was denied during the initial audit; a later feature audit ran focused tests in
+the existing isolated WSL environment. Do not install into Jetson system Python
+or change global packages.
 
 ## Source and platform
 

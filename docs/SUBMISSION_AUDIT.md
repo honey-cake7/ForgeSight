@@ -22,8 +22,8 @@ newest-build and physical-camera checks do not invalidate that offline proof.
 | --- | --- | --- |
 | Runnable documented source | Modules, tests, policies, separate locks, asset hashes; [setup index](SETUP.md) | Clean-checkout reproduction and reviewer-accessible asset handoff are not established. Root requirements alone are insufficient. |
 | Target-device application | Camera/UI, saved-image inspection, SQLite and real Llama/ExecuTorch evidence | Latest whole-build deployment/acceptance is pending; retain the build/scope of historical results. |
-| Demo showing detection, alerts and logging | Device/browser records can inform a demo | No demo video or video URL identified in the reviewed tracked README/docs. Record, publish and link the real workflow with source mode labeled. |
-| Technical report: design, runtimes, results, limits | [Runtime report](MERGE_LATENCY_REPORT.md), methods, hardware, compliance and offline ledger | No consolidated submission report identified. Assemble from these sources, including failures and unmeasured metrics. |
+| Demo showing detection, alerts and logging | Device/browser records can inform a demo | No demo video or video URL identified in the reviewed tracked README/docs. Link an existing artifact or record/publish the workflow with source mode labeled. |
+| Technical report: design, runtimes, results, limits | [Runtime report](MERGE_LATENCY_REPORT.md), methods, hardware, compliance and offline ledger | No consolidated submission report identified in the repo. Link it if prepared elsewhere, or assemble from these sources, including failures and unmeasured metrics. |
 
 ## Evidence inventory
 
@@ -65,8 +65,8 @@ are references, not public downloadable logs.
 
 ## Outstanding submission checklist
 
-- [ ] Publish/link the real demo video.
-- [ ] Assemble the consolidated technical report, including both runtimes.
+- [ ] Link the real demo video, publishing it if it is not yet accessible.
+- [ ] Link or assemble the consolidated technical report, including both runtimes.
 - [ ] Supply an authorized asset acquisition/handoff route and test a clean checkout.
 - [ ] Revalidate the newest combined build from a disconnected cold start; existing saved-image offline proof is already verified.
 - [ ] Meet the project's physical-part camera gate; screen photos remain diagnostics.
@@ -82,9 +82,61 @@ not an application screenshot or device proof.
 
 ## Documentation verification
 
-Checks cover JSON parsing, selected source hashes, metric recalculation,
-relative links/anchors, CLI option definitions, Markdown structure and diff
-whitespace. Application tests/device measurements were not rerun: the prepared
-WSL interpreter returned `Wsl/Service/E_ACCESSDENIED`. No packages, device
-files, datasets, inference outputs or existing evidence manifests were changed.
-Push is withheld pending explicit user confirmation.
+Initial checks covered JSON parsing, selected source hashes, metric recalculation,
+relative links/anchors, CLI option definitions, Markdown structure and whitespace.
+The initial WSL attempt returned `Wsl/Service/E_ACCESSDENIED`; the later feature
+audit successfully used the existing isolated interpreter as described below.
+No packages, device files, datasets, inference outputs or existing evidence
+manifests were changed. Push is withheld pending explicit user confirmation.
+
+## Phase 1 feature catalogue follow-up
+
+The user clarified that Phase 1 implementation is complete and that older docs
+may omit features. The README catalogue was therefore checked against current
+source, templates, JavaScript, recipe definitions and existing tests, rather
+than relying only on stage summaries.
+
+Newly expanded coverage includes image comparison/heatmap/contours, camera
+controls, two preloaded part recipes, verified bundle switching, grounded
+automatic advice, paginated history, editable/hideable review claims, HTML
+inspection reports, GTK WebKit PDF export, storage health, rotating logs,
+worker recovery/cleanup, desktop launch and model activation/rollback tools.
+
+Scope corrections from source inspection:
+
+- Current camera Analyze declares `physical_nut`; the backend supports
+  `screen_photo`, but the current page has no separate source selector.
+- Jetson-copy replay endpoints remain implemented, while the current station
+  page presents Camera and Upload PNG tabs rather than a replay button.
+- History delete controls conceal entries/claims; original audit data remains.
+- Ordinary browsers download self-contained HTML reports. Native PDF saving
+  belongs to the GTK WebKit desktop viewer; it is not a universal browser export.
+- The plugin registry explicitly supports metal_nut and screw. More categories
+  require registry integration, assets and validation, not just a new folder.
+- Current operator claims and local checklists are foundations for ForgeLoop
+  and ForgeAssist+; verified-label curation and approved SOP retrieval are future work.
+
+Focused verification on 24 November 2026 used the existing isolated PC/WSL app
+interpreter, with no installs or model/device inference:
+
+```sh
+FS_APP_PY=/root/.cache/forgesight/app-v1/venv/bin/python
+"$FS_APP_PY" -B -m unittest tests.test_plugin_station tests.test_grounded_advice tests.test_grounded_live tests.test_storage_health tests.test_operation_log tests.test_jetson_desktop_launcher tests.test_screw_bundle -q
+# 58 tests, OK
+
+"$FS_APP_PY" -B -m unittest tests.test_jetson_live_ui tests.test_storage tests.test_ui_worker_lifecycle tests.test_worker_respawn_lifecycle tests.test_assist_queue -q
+# 63 tests, OK
+```
+
+Both commands passed: 121 focused checks in total, not the full suite. These
+exercise fixtures, mocks and local helper processes/HTTP services. Injected
+failure logs and unclosed-file ResourceWarnings appeared; neither run reported
+test failures. PDF rendering, a new browser session and Jetson hardware were
+not exercised by these runs. Device claims continue to refer to their recorded
+manifests. The future-work table follows roadmap Stages 12-17 and does not
+present those extensions as already delivered.
+
+Independent documentation review found no important issues. Its small
+corrections were applied: include native grayscale screw PNG intake, and
+reconcile the linked Jetson guide with the current Camera/Upload PNG interface
+instead of its historical source selector.
