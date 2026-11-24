@@ -55,12 +55,12 @@ are references, not public downloadable logs.
 | --- | --- |
 | Precision, recall, F1, false alarms/misses | Frozen metal-nut benchmark recorded. F1 recomputes to 97.75% from TP=87, FP=2, FN=2; no physical-camera accuracy claim. |
 | Per-image latency | Jetson CPU cold series and separate persistent observations recorded. |
-| End-to-end latency | Replay-to-SQLite and advisory scopes exist separately; no current-build camera-to-displayed-advice distribution. |
+| End-to-end latency | Replay-to-SQLite and advisory scopes exist separately. Supplied warm inspection and direct Llama timings are recorded in [JETSON_TIMINGS](JETSON_TIMINGS.md); their roughly 3.8 s sum is an estimate, not a camera-to-displayed-advice distribution. |
 | FPS / parts throughput | No accepted application FPS or distinct physical parts/minute. Reciprocal forward latency does not fill this gap. |
-| Memory | Per-process RSS and sampled system observations exist; simultaneous camera/vision/Llama peak remains unestablished. |
-| Power | No measured consumption series identified in the reviewed submission evidence. |
-| Llama TTFT / tokens per second | Individual native generation stats/token counts exist; no comparable current-build series with explicit scope established for README. Total process time is not TTFT. |
-| Response time | Historical cold distributions and separate first persistent request recorded; different prompts/token counts prevent equivalent speedup claims. |
+| Memory | Per-process RSS, sampled system observations and a supplied resident dual-recipe station snapshot exist; simultaneous peak remains unestablished. |
+| Power | Supplied report names a 25 W mode; no measured electrical consumption series is established. |
+| Llama TTFT / tokens per second | Supplied direct-worker microbenchmark reports 28.18 decode tokens/s and 237 ms prefill/TTFT. Raw first-token timing and a repeated current-build throughput distribution are not independently verified. |
+| Response time | Historical cold distributions, a first persistent request and supplied 1,622.65 ms warm direct-worker call exist. Different scopes/prompts prevent an equivalent speedup claim. |
 | Advice quality | Contract/prompt checks include wrong replies and fallbacks. Operator usefulness and site QC approval are unverified. |
 
 ## Outstanding submission checklist
@@ -140,3 +140,23 @@ Independent documentation review found no important issues. Its small
 corrections were applied: include native grayscale screw PNG intake, and
 reconcile the linked Jetson guide with the current Camera/Upload PNG interface
 instead of its historical source selector.
+
+## Supplied timing report follow-up
+
+The user supplied `artifacts/jetson_timings_report.md`. The original report and
+untracked collector remain unchanged. A portable, scope-qualified account is
+saved in [JETSON_TIMINGS](JETSON_TIMINGS.md), with a
+[structured transcription](../manifests/jetson_timings_summary_v1.json) and
+the source SHA-256. No raw device JSON was present locally and no new benchmark
+was run. This adds warm inspection, direct Llama throughput, preloaded recipe
+switching and resident-memory observations to the README.
+
+The source's cycle-time sum, unprofiled stage diagram, additive RAM pie,
+no-thrashing/OOM assertions and factory-SOP wording are not adopted as measured
+claims. Timer boundaries were checked against current source and the collector;
+the unpinned deployed revision remains a provenance gap. The source's TTFT
+label is attributed, not promoted to independently observed UI token latency.
+
+Independent read-only review found no significant transcription or scope errors.
+Its native token-count clarification was applied: the reported 39 is the
+runner's decode-loop statistic, not an asserted complete output length.

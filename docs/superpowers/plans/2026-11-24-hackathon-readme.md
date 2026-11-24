@@ -218,3 +218,17 @@ corrections were addressed: grayscale screw uploads are listed, and the
 linked Jetson UI guide now distinguishes current controls from historical
 source-selector proof. The final catalogue contains 38 feature entries across
 six groups. No source-code changes were needed.
+
+### Supplied timings report integration
+
+The user supplied `artifacts/jetson_timings_report.md` as timing evidence.
+README now includes warm per-recipe vision work, a separate direct Llama
+microbenchmark, recipe switching, a resident-memory snapshot and an explicit
+explanation of the runtime optimizations. A portable account and structured
+transcription preserve the source hash without modifying the ignored original
+or untracked collector. Raw device JSON and deployed commit are unavailable
+locally, so these are attributed observations. The 3.8 s combined budget is
+labeled derived; UI latency, memory peaks, electrical draw and SOP approval
+are not inferred. Historical cold/first-request measurements remain separate.
+No device run, package installation, source-code change or push is authorized
+or performed by this documentation update.

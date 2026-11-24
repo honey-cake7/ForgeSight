@@ -1,5 +1,10 @@
 # Merged runtime changes and measured Jetson latency
 
+This is the historical PR-by-PR account through `ca499bd`. The subsequently
+supplied [warm dual-recipe timing report](JETSON_TIMINGS.md) adds separate
+inspection, direct Llama and recipe-switch observations; its scopes differ
+from the cold and first-request results below.
+
 This report covers the runtime PRs merged through `ca499bd` (PR #12), the
 version deployed on the physical Jetson Orin Nano 8GB. Vision uses the frozen
 EfficientAD-S FP32 CPU model. Advice uses Llama 3.2 1B Instruct through the

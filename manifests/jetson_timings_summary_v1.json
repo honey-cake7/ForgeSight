@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "status": "USER_SUPPLIED_TIMING_REPORT_TRANSCRIBED_NOT_RERUN",
+  "source": {
+    "path": "artifacts/jetson_timings_report.md",
+    "sha256": "00f74d8c3f8a1728d64433866c690b6a90551270e6f6f0c238b2fc6acc0fd4fb",
+    "benchmark_utc": "2026-11-24T05:35:53Z",
+    "device_json_path": "/home/nvidia/forgesight-feature-audits/plugin-recipe-test/timings_report.json",
+    "raw_json_available_locally": false,
+    "deployed_commit": null
+  },
+  "reported_configuration": {
+    "device": "NVIDIA Jetson Orin Nano 8GB",
+    "vision_backend": "TorchScript CPU persistent workers",
+    "llama_backend": "ExecuTorch XNNPACK CPU persistent worker",
+    "openmp_threads": 4,
+    "power_mode_w": 25,
+    "power_draw_measured": false
+  },
+  "vision_single_observations": [
+    {
+      "recipe": "metal_nut",
+      "part_id": "INS-000032",
+      "source": "test/bent/017.png replay",
+      "n": 1,
+      "model_forward_ms": 1500.12,
+      "other_inspection_work_ms_derived": 697.45,
+      "inspection_ms": 2197.57,
+      "score_rounded": 0.6828,
+      "threshold_rounded": 0.2278,
+      "grade": "REVIEW",
+      "reported_type": "bent candidate"
+    },
+    {
+      "recipe": "screw",
+      "part_id": "INS-000033",
+      "source": "1024x1024 diagnostic upload.png; original identity unverified",
+      "n": 1,
+      "model_forward_ms": 1489.37,
+      "other_inspection_work_ms_derived": 685.6,
+      "inspection_ms": 2174.97,
+      "score_rounded": 0.9572,
+      "threshold_rounded": 0.2373,
+      "grade": "REVIEW",
+      "reported_type": "scratch_neck"
+    }
+  ],
+  "llama_direct_worker_single_observation": {
+    "n": 1,
+    "prompt_tokens": 24,
+    "reported_native_generated_tokens": 39,
+    "generated_token_count_scope": "native decode-loop statistic excludes first token emitted during prefill",
+    "generate_ms": 1622.65,
+    "socket_round_trip_ms": 1627.3,
+    "round_trip_minus_generate_ms_derived": 4.65,
+    "reported_decode_tokens_per_second": 28.18,
+    "reported_prefill_tokens_per_second": 101.27,
+    "reported_prefill_or_ttft_ms": 237,
+    "first_token_timestamp_independently_verified": false
+  },
+  "recipe_switch_ms": {
+    "metal_nut_to_screw": {
+      "runs": [0.281, 0.7, 0.591, 0.505, 0.619],
+      "mean_rounded": 0.539,
+      "min": 0.281,
+      "max": 0.7
+    },
+    "screw_to_metal_nut": {
+      "runs": [0.526, 0.527, 0.556, 0.479, 0.434],
+      "mean_rounded": 0.504,
+      "min": 0.434,
+      "max": 0.556
+    },
+    "scope": "server in-memory switch_ms; excludes HTTP/browser/model startup"
+  },
+  "memory_snapshot": {
+    "units": "MiB interpreted from collector free -m",
+    "total": 7450,
+    "used": 3008,
+    "available": 4186,
+    "buffer_cache": 1833,
+    "swap_used": 498,
+    "swap_total": 3725,
+    "simultaneous_peak_measured": false,
+    "thrashing_measured": false
+  },
+  "scope_notes": [
+    "Supplied Markdown summary; no fresh device execution or raw JSON verification",
+    "Inspection timer does not establish camera-to-browser or SQLite-complete latency",
+    "3.8-second cycle is a derived combination of separate measurements, not observed end-to-end latency",
+    "No new accuracy, measured power, disconnected-network verification or site SOP approval follows"
+  ]
+}

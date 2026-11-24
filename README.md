@@ -189,6 +189,63 @@ The opt-in four-type profile correctly labeled 17/19 defective images, abstained
 
 ### Jetson CPU performance
 
+The supplied [Jetson timing report](docs/JETSON_TIMINGS.md), timestamped
+24 November 2026 at 11:05:53 IST, records a warm dual-recipe station. These
+are reported observations; the raw device JSON and deployed commit were not
+available locally for this documentation update.
+
+| Warm vision measurement: one inspection per recipe | Metal nut | Screw |
+| --- | ---: | ---: |
+| EfficientAD forward | **1,500.12 ms** | **1,489.37 ms** |
+| Other work within the inspection timer, derived | 697.45 ms | 685.60 ms |
+| Inspection work | **2,197.57 ms** | **2,174.97 ms** |
+| Reported grade / type | REVIEW / bent candidate | REVIEW / scratch_neck |
+
+The nut input was a saved development-image replay; the screw was a diagnostic
+PNG upload whose original identity is not recorded in the supplied summary.
+The inspection timer does not establish camera capture, browser display or
+SQLite-complete latency. These observations add timing evidence, not accuracy.
+
+| Warm Llama and recipe switching | Reported measurement |
+| --- | ---: |
+| Direct Llama generation call: 24 prompt / 39 reported native generated tokens, n=1 | **1,622.65 ms** |
+| Same request, socket round-trip | **1,627.30 ms** |
+| Decode throughput for that request | **28.18 tokens/s** |
+| Prefill throughput / reported prefill-TTFT | **101.27 tokens/s / 237 ms** |
+| Metal nut to screw: mean of 5 server-side switches | **0.539 ms** |
+| Screw to metal nut: mean of 5 server-side switches | **0.504 ms** |
+
+The Llama measurement is a short direct-worker microbenchmark, separate from
+the full inspection-linked advisory. The source calls the prefill value TTFT;
+first-token display latency was not independently checked. Recipe timings
+exclude HTTP, browser updates and model startup.
+
+The reported resident-station memory snapshot shows **3,008 MiB used**,
+**4,186 MiB available** and **498 MiB swap used**. Available memory includes
+reclaimable cache; this is not peak memory or proof of no thrashing. The
+configured 25 W mode is not a measured power-consumption value.
+
+#### How we reduced latency
+
+- **Keep vision loaded:** reuse a verified model over a local worker socket
+  rather than repeat Torch imports and model loading for every inspection.
+- **Avoid extra setup processes:** perform the supported preprocessing and
+  inspection work in the station process while the worker handles inference.
+- **Keep Llama loaded:** reuse the ExecuTorch runner and reset request state,
+  avoiding repeated model/runtime startup.
+- **Preload both part recipes:** switch existing worker/model/policy references
+  instead of loading weights when the operator changes part type.
+- **Run advice asynchronously:** show the inspection outcome while advisory
+  work proceeds separately; this changes waiting behavior, not model compute.
+
+The roughly **1.49-1.50 s forward** remains part of the roughly **2.17-2.20 s
+inspection work**. Keeping models resident trades memory for less setup delay.
+The source's **approximately 3.8 s total** adds this inspection work to the
+separate direct Llama call; it is an illustrative budget, not a measured full
+camera-to-advice cycle. [Methods, provenance and limits](docs/JETSON_TIMINGS.md).
+
+#### Historical cold-process reference
+
 | Historical disconnected test scope | n | p50 | p95 |
 | --- | ---: | ---: | ---: |
 | Cold vision: model forward only | 20 | 1,585 ms | 1,684 ms |
@@ -201,7 +258,11 @@ Vision repeated two known images; advice repeated one inspection. These separate
 
 At earlier persistent-runtime build `ca499bd`, one saved-image inspection took **2.337 s**, including a **1.768 s** forward but excluding SQLite, camera, UI and advice. Its first advisory request took **5.311 s**, including reported model load. These single observations have different timing scopes/prompts from the cold series: no direct speedup or warm p50/p95 claim is valid. [Runtime report](docs/MERGE_LATENCY_REPORT.md).
 
-Application FPS, physical parts/minute, complete camera-to-advice latency, simultaneous peak RAM, power, TTFT and a comparable current-build tokens/s series are not established by these tables.
+The warm observations above and historical cold series use different timing
+scopes, inputs and prompts; no controlled percentage speedup is established.
+Application FPS, physical parts/minute, complete camera-to-advice latency,
+simultaneous peak RAM, measured power, UI first-token latency and a repeated
+current-build throughput distribution remain separate measurements.
 
 ### Latest guidance and experimental screw recipe
 
@@ -295,7 +356,7 @@ retraining is claimed.
 | Documented source | This repository; [setup and required assets](docs/SETUP.md). A clone alone excludes models and datasets. |
 | Target-device application | [Jetson operator guide](docs/JETSON_LIVE_UI.md), [desktop launcher](docs/JETSON_DESKTOP_LAUNCHER.md) and device evidence above. Current feature implementation and tested device snapshots are recorded separately. |
 | Demo: detection, alerts and logging | **No video link is currently recorded here.** Add the demo file/URL to the submission package. |
-| Overall technical report | [Runtime report](docs/MERGE_LATENCY_REPORT.md), [evaluation](docs/VISION_EVALUATION.md), [offline proof](docs/STAGE10_VERIFICATION.md) and this feature catalogue provide source material. Link the consolidated hackathon report separately from the app's per-inspection exports. |
+| Overall technical report | [Supplied timings](docs/JETSON_TIMINGS.md), [runtime changes](docs/MERGE_LATENCY_REPORT.md), [evaluation](docs/VISION_EVALUATION.md), [offline proof](docs/STAGE10_VERIFICATION.md) and this feature catalogue provide source material. Link the consolidated hackathon report separately from the app's per-inspection exports. |
 
 The [submission audit](docs/SUBMISSION_AUDIT.md) maps records to requirements.
 The supplied guide permits static, camera or recorded-video demonstrations and
