@@ -8,10 +8,14 @@
 | Vision environment | Separate Python 3.12.14 / Torch 2.14.0+cpu |
 | Advisory environment | Separate ExecuTorch 1.5.1+cpu / XNNPACK runtime under `~/.local/share/forgesight/llama_cpu_v1` |
 
-The supplied timing report names a 25 W power mode. Electrical consumption,
-peak watts and energy per inspection have not been measured. Its resident
-memory snapshot is not a peak-resource benchmark. CPU results do not establish
-GPU inference speed or physical-camera accuracy.
+On 25 November, INA3221 VDD_IN readings measured **8.52 W sampled peak** and
+**6.60 W active-phase mean** during 12 saved-image attempts with live preview
+(584 samples over 58.07 s; 100 ms target interval). Same-run preview-only mean
+was 4.16 W; an earlier 30 s preview window averaged 5.46 W. These are module
+input watts, not wall/whole-carrier power or absolute worst-case peaks. The
+configured 25 W mode was unchanged. Energy per inspection and peak memory
+remain unmeasured. [Power evidence](../manifests/jetson_power_measurement_v1.json).
+CPU results do not establish GPU speed or physical-camera accuracy.
 
 [Device audit](../manifests/jetson_device_audit_v1.json),
 [runtime installation](../manifests/jetson_runtime_installation_v1.json),

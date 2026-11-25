@@ -13,9 +13,10 @@
 | Technical report | [Consolidated report](TECHNICAL_REPORT.md), including both runtimes, results and limits. |
 
 The guide permits static/camera/video demonstrations and publishes no fixed FPS
-target. The project roadmap adds a physical-part proof gate. Actual power draw,
-full-cycle throughput/latency and simultaneous peaks remain unmeasured; a
-25 W mode setting is not power-consumption evidence.
+target. The project roadmap adds a physical-part proof gate. Module input power
+now has [sampled workload evidence](../manifests/jetson_power_measurement_v1.json):
+8.52 W peak / 6.60 W active-phase mean. Wall power, full-cycle throughput/latency
+and simultaneous resource peaks remain unmeasured; 25 W is the mode setting.
 
 [Current status](STATUS.md), [measurement/evidence links](TECHNICAL_REPORT.md),
 [original requirement history](archive/2026-11-25/COMPLIANCE.md),

@@ -18,6 +18,9 @@ recovery/logging, storage health and desktop launch tools. See the
 - Metal-nut holdout: TP 87, TN 20, FP 2, FN 2; Jetson matched PC decisions.
 - Supplied warm timings: roughly 2.17-2.20 s inspection work and a separate
   1.62 s direct Llama call; recipe switching averaged 0.50-0.54 ms.
+- Module input power: 8.52 W sampled peak / 6.60 W active-phase mean across
+  12 saved-image attempts with live preview; [power evidence](../manifests/jetson_power_measurement_v1.json).
+  Real Llama generation was confirmed; all 12 advisory reports used checklist fallback.
 - Latest recorded hybrid prompt check: 12/15 model choices matched; three
   checklist fallbacks. This was not a whole-station upgrade.
 
@@ -26,8 +29,8 @@ Measurement boundaries and supporting manifests are in [TECHNICAL_REPORT](TECHNI
 ## Still to document or verify
 
 Fresh subtype/screw reliability, physical-camera accuracy, newest-build full
-disconnected cold start, full-cycle throughput/resource peaks and actual power
-draw remain scoped acceptance items. The roughly 3.8 s timing sum is an estimate.
+disconnected cold start, full-cycle throughput/resource peaks, wall power and worst-case power
+remain scoped acceptance items. The roughly 3.8 s timing sum is an estimate.
 Link the demo and confirm asset handoff/code licensing for submission; artifacts
 may exist outside this repo. The consolidated technical report now exists here.
 

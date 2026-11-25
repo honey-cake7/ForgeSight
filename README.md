@@ -63,7 +63,7 @@ measurements use CPU inference; GPU speedup has not been verified.
 | Direct warm Llama request | **1.62 s generation**, reported **28.18 decode tokens/s**; separate short worker microbenchmark. |
 | Preloaded recipe switching | Mean **0.539 ms nut to screw / 0.504 ms reverse**, five server-side switches each. |
 | Resident memory snapshot | **3,008 MiB used / 4,186 MiB available**; not peak memory. |
-| Electrical power | **Not measured**; 25 W is the reported power-mode setting. |
+| Module input power | **8.52 W sampled peak; 6.60 W active-phase mean**, 12 saved-image attempts / 58 s, 100 ms target sampling; [measurement scope](manifests/jetson_power_measurement_v1.json). Wall power unmeasured. |
 
 Persistent vision/Llama workers avoid repeated imports, verification and model
 loading. In-process inspection avoids additional setup work, while preloaded

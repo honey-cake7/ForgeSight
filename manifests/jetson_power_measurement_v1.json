@@ -1,0 +1,408 @@
+{
+  "schema_version": 1,
+  "measurement_date": "2026-11-25",
+  "scope": "AUTHORIZED_SAVED_IMAGE_STATION_WORKLOAD_WITH_LIVE_CAMERA_PREVIEW",
+  "device_started_utc": "2026-11-25T10:48:09.720231+00:00",
+  "device_finished_utc": "2026-11-25T10:49:08.077380+00:00",
+  "device": "NVIDIA Jetson Orin Nano 8GB",
+  "configured_power_mode": "NV Power Mode: 25W\n1",
+  "method": {
+    "sensor": "INA3221 at I2C 1-0040",
+    "sysfs_path": "/sys/class/hwmon/hwmon3",
+    "rail": "VDD_IN",
+    "formula": "power_w = voltage_mv * current_ma / 1000000",
+    "scope": "Total module input; excludes wall-adapter/carrier measurement. Do not add subrails to VDD_IN.",
+    "reference": "https://docs.nvidia.com/jetson/archives/r35.6.2/DeveloperGuide/SD/PlatformPowerAndPerformance/JetsonOrinNanoSeriesJetsonOrinNxSeriesAndJetsonAgxOrinSeries.html",
+    "target_sample_period_ms": 100,
+    "sample_count": 584,
+    "sample_span_s": 58.07270551300007,
+    "observed_interval_median_ms": 99.99839400006749,
+    "observed_interval_max_ms": 102.6261990000421,
+    "averaging": "Arithmetic mean of samples; active includes inspection/advice scheduling and waits within named workload phases.",
+    "limitations": "Voltage/current read sequentially; no calibration uncertainty measured. Sampled maximum is not absolute/transient maximum."
+  },
+  "results": {
+    "whole_window_mean_w": 5.9555443287671235,
+    "active_phase_sample_count": 427,
+    "active_phase_mean_w": 6.601248824355972,
+    "sampled_peak_w": 8.518912,
+    "peak_sample": {
+      "elapsed_s": 31.600667448000195,
+      "phase": "overlap_metal_nut",
+      "rails": {
+        "VDD_IN": {
+          "voltage_mv": 4976,
+          "current_ma": 1712,
+          "power_w": 8.518912
+        },
+        "VDD_CPU_GPU_CV": {
+          "voltage_mv": 4960,
+          "current_ma": 592,
+          "power_w": 2.93632
+        },
+        "VDD_SOC": {
+          "voltage_mv": 4968,
+          "current_ma": 392,
+          "power_w": 1.947456
+        }
+      }
+    },
+    "phase_summary": {
+      "overlap_metal_nut": {
+        "n": 150,
+        "mean_w": 7.156359253333333,
+        "min_w": 4.8,
+        "sampled_max_w": 8.518912
+      },
+      "overlap_screw": {
+        "n": 114,
+        "mean_w": 6.354975438596491,
+        "min_w": 4.88,
+        "sampled_max_w": 7.37632
+      },
+      "resting_preview": {
+        "n": 105,
+        "mean_w": 4.159400838095238,
+        "min_w": 4.093056,
+        "sampled_max_w": 4.84
+      },
+      "restore_original_recipe": {
+        "n": 1,
+        "mean_w": 4.173312,
+        "min_w": 4.173312,
+        "sampled_max_w": 4.173312
+      },
+      "sequential_metal_nut": {
+        "n": 98,
+        "mean_w": 6.322799673469388,
+        "min_w": 4.20672,
+        "sampled_max_w": 8.399488
+      },
+      "sequential_screw": {
+        "n": 65,
+        "mean_w": 6.171966030769231,
+        "min_w": 4.8,
+        "sampled_max_w": 7.643136
+      },
+      "settling_preview": {
+        "n": 51,
+        "mean_w": 4.28224,
+        "min_w": 4.093056,
+        "sampled_max_w": 5.950464
+      }
+    },
+    "earlier_separate_preview_window": {
+      "device_started_utc": "2026-11-25T10:44:59.697136+00:00",
+      "sample_count": 121,
+      "sample_period_target_ms": 250,
+      "duration_s": 30.00020047800001,
+      "vdd_in_mean_w": 5.464600330578513,
+      "vdd_in_sampled_max_w": 7.216832
+    }
+  },
+  "workload": {
+    "inspection_count": 12,
+    "source_mode": "SAVED_IMAGE_REPLAY",
+    "camera": "Live C270 preview remained running",
+    "models": "Both part vision workers and persistent Llama resident",
+    "scheduling": "Two sequential attempts per recipe, then four back-to-back attempts per recipe while previous advice was pending. Thread concurrency not independently established.",
+    "advice_outcome": "All 12 reports CHECKLIST_FALLBACK; six metal-nut reports confirm 1874.82-2787.20 ms real generation and UNAPPROVED_MODEL_OUTPUT. Screw reports omit generation_ms/fallback reason; do not infer accepted advice or generation duration from them.",
+    "benchmark_records": [
+      {
+        "part_id": "POWER-TEST-20261125T104809-METAL_NUT-SEQUENTIAL-1",
+        "recipe": "metal_nut",
+        "sample": "test/bent/017.png",
+        "inspection_id": "fe43597e-1e52-4e5b-9411-2bdb1fe05c66"
+      },
+      {
+        "part_id": "POWER-TEST-20261125T104809-METAL_NUT-SEQUENTIAL-2",
+        "recipe": "metal_nut",
+        "sample": "test/bent/017.png",
+        "inspection_id": "eef2b4b9-8b8e-4719-878c-bb8f5fec42db"
+      },
+      {
+        "part_id": "POWER-TEST-20261125T104809-SCREW-SEQUENTIAL-1",
+        "recipe": "screw",
+        "sample": "test/scratch_neck/008.png",
+        "inspection_id": "f5d75e7b-ab2a-4fb9-87db-e306b86ce214"
+      },
+      {
+        "part_id": "POWER-TEST-20261125T104809-SCREW-SEQUENTIAL-2",
+        "recipe": "screw",
+        "sample": "test/scratch_neck/008.png",
+        "inspection_id": "e34628b3-a202-4f58-95c6-25030b3d19e9"
+      },
+      {
+        "part_id": "POWER-TEST-20261125T104809-METAL_NUT-OVERLAP-1",
+        "recipe": "metal_nut",
+        "sample": "test/bent/017.png",
+        "inspection_id": "12a7ff53-0a66-4754-a7ea-17f294cc6cb2"
+      },
+      {
+        "part_id": "POWER-TEST-20261125T104809-METAL_NUT-OVERLAP-2",
+        "recipe": "metal_nut",
+        "sample": "test/bent/017.png",
+        "inspection_id": "b3653bf2-4087-4eac-9406-3e8d7404fd94"
+      },
+      {
+        "part_id": "POWER-TEST-20261125T104809-METAL_NUT-OVERLAP-3",
+        "recipe": "metal_nut",
+        "sample": "test/bent/017.png",
+        "inspection_id": "12bef032-4ec9-47ca-9c37-6da14f4656d6"
+      },
+      {
+        "part_id": "POWER-TEST-20261125T104809-METAL_NUT-OVERLAP-4",
+        "recipe": "metal_nut",
+        "sample": "test/bent/017.png",
+        "inspection_id": "1ea87226-41a9-4433-86dd-ef50d481beb6"
+      },
+      {
+        "part_id": "POWER-TEST-20261125T104809-SCREW-OVERLAP-1",
+        "recipe": "screw",
+        "sample": "test/scratch_neck/008.png",
+        "inspection_id": "e96451e8-d8a6-487b-aa90-75c642b4fa31"
+      },
+      {
+        "part_id": "POWER-TEST-20261125T104809-SCREW-OVERLAP-2",
+        "recipe": "screw",
+        "sample": "test/scratch_neck/008.png",
+        "inspection_id": "27328d42-42b1-4934-adef-5527368c4d70"
+      },
+      {
+        "part_id": "POWER-TEST-20261125T104809-SCREW-OVERLAP-3",
+        "recipe": "screw",
+        "sample": "test/scratch_neck/008.png",
+        "inspection_id": "77698864-5d57-4ae9-9450-8647db315651"
+      },
+      {
+        "part_id": "POWER-TEST-20261125T104809-SCREW-OVERLAP-4",
+        "recipe": "screw",
+        "sample": "test/scratch_neck/008.png",
+        "inspection_id": "93c9c3a0-a73d-4b40-abcd-203bf2373429"
+      }
+    ]
+  },
+  "advice_provenance": [
+    {
+      "inspection_id": "fe43597e-1e52-4e5b-9411-2bdb1fe05c66",
+      "report_sha256": "8ca7f441b2c0b773814cb3ef3fc48d4a4bd910207b4cf6f5c7b3760cf9b571f2",
+      "status": "CHECKLIST_FALLBACK",
+      "llama_runtime_mode": "PERSISTENT_WORKER",
+      "generation_ms": 1929.6717600000193,
+      "advice_elapsed_ms": 1933.38,
+      "fallback_reason": "UNAPPROVED_MODEL_OUTPUT",
+      "worker": {
+        "worker_mode": "PERSISTENT_PROCESS",
+        "worker_started_utc": "2026-11-25T10:37:27Z",
+        "model_sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739",
+        "tokenizer_sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55"
+      }
+    },
+    {
+      "inspection_id": "eef2b4b9-8b8e-4719-878c-bb8f5fec42db",
+      "report_sha256": "a151f146183cdf577a680f333734ff180c57fcebfc96785d3e270245db66e706",
+      "status": "CHECKLIST_FALLBACK",
+      "llama_runtime_mode": "PERSISTENT_WORKER",
+      "generation_ms": 1874.815339999941,
+      "advice_elapsed_ms": 1878.29,
+      "fallback_reason": "UNAPPROVED_MODEL_OUTPUT",
+      "worker": {
+        "worker_mode": "PERSISTENT_PROCESS",
+        "worker_started_utc": "2026-11-25T10:37:27Z",
+        "model_sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739",
+        "tokenizer_sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55"
+      }
+    },
+    {
+      "inspection_id": "f5d75e7b-ab2a-4fb9-87db-e306b86ce214",
+      "report_sha256": "867ea6c84716eca5c6c79399f70b06b8aa0de7273a0bfa9f9ae67c7be8857ae2",
+      "status": "CHECKLIST_FALLBACK",
+      "llama_runtime_mode": "PERSISTENT_WORKER",
+      "generation_ms": null,
+      "advice_elapsed_ms": 927.957392999815,
+      "fallback_reason": null,
+      "worker": {
+        "worker_started_utc": "2026-11-25T10:37:27Z",
+        "model_sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739",
+        "tokenizer_sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55"
+      }
+    },
+    {
+      "inspection_id": "e34628b3-a202-4f58-95c6-25030b3d19e9",
+      "report_sha256": "fa805710672db5639b9af50b4dea44db21a933f3c5394a7e0e19fd7c17069130",
+      "status": "CHECKLIST_FALLBACK",
+      "llama_runtime_mode": "PERSISTENT_WORKER",
+      "generation_ms": null,
+      "advice_elapsed_ms": 948.5941410000578,
+      "fallback_reason": null,
+      "worker": {
+        "worker_started_utc": "2026-11-25T10:37:27Z",
+        "model_sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739",
+        "tokenizer_sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55"
+      }
+    },
+    {
+      "inspection_id": "12a7ff53-0a66-4754-a7ea-17f294cc6cb2",
+      "report_sha256": "24905579fdc8c7d171acbe74cb3d63e2b66ed7a8fb809d0ad2a6f20420ba7b33",
+      "status": "CHECKLIST_FALLBACK",
+      "llama_runtime_mode": "PERSISTENT_WORKER",
+      "generation_ms": 2774.815035000074,
+      "advice_elapsed_ms": 2778.26,
+      "fallback_reason": "UNAPPROVED_MODEL_OUTPUT",
+      "worker": {
+        "worker_mode": "PERSISTENT_PROCESS",
+        "worker_started_utc": "2026-11-25T10:37:27Z",
+        "model_sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739",
+        "tokenizer_sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55"
+      }
+    },
+    {
+      "inspection_id": "b3653bf2-4087-4eac-9406-3e8d7404fd94",
+      "report_sha256": "fe35c561601707e00b525f5175fc243338399416936844930a8eb3bcfb9f1e38",
+      "status": "CHECKLIST_FALLBACK",
+      "llama_runtime_mode": "PERSISTENT_WORKER",
+      "generation_ms": 2766.5582390000054,
+      "advice_elapsed_ms": 2769.59,
+      "fallback_reason": "UNAPPROVED_MODEL_OUTPUT",
+      "worker": {
+        "worker_mode": "PERSISTENT_PROCESS",
+        "worker_started_utc": "2026-11-25T10:37:27Z",
+        "model_sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739",
+        "tokenizer_sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55"
+      }
+    },
+    {
+      "inspection_id": "12bef032-4ec9-47ca-9c37-6da14f4656d6",
+      "report_sha256": "8e6323605bf7c34dbb2eaec7e6cbc49ba3a69b869fc561fbf9e7623bc12f2dc5",
+      "status": "CHECKLIST_FALLBACK",
+      "llama_runtime_mode": "PERSISTENT_WORKER",
+      "generation_ms": 2787.202795999974,
+      "advice_elapsed_ms": 2790.19,
+      "fallback_reason": "UNAPPROVED_MODEL_OUTPUT",
+      "worker": {
+        "worker_mode": "PERSISTENT_PROCESS",
+        "worker_started_utc": "2026-11-25T10:37:27Z",
+        "model_sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739",
+        "tokenizer_sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55"
+      }
+    },
+    {
+      "inspection_id": "1ea87226-41a9-4433-86dd-ef50d481beb6",
+      "report_sha256": "5634c59155c8e15ca72c897d5a1a590cebc45bc80b3e49b72cd6f1b39bbd75db",
+      "status": "CHECKLIST_FALLBACK",
+      "llama_runtime_mode": "PERSISTENT_WORKER",
+      "generation_ms": 1891.7226089999986,
+      "advice_elapsed_ms": 1894.4,
+      "fallback_reason": "UNAPPROVED_MODEL_OUTPUT",
+      "worker": {
+        "worker_mode": "PERSISTENT_PROCESS",
+        "worker_started_utc": "2026-11-25T10:37:27Z",
+        "model_sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739",
+        "tokenizer_sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55"
+      }
+    },
+    {
+      "inspection_id": "e96451e8-d8a6-487b-aa90-75c642b4fa31",
+      "report_sha256": "6c2de1ff2995bd2ca3061d5ce5630f08d5ad0c071fd554007db823e1cd2871ef",
+      "status": "CHECKLIST_FALLBACK",
+      "llama_runtime_mode": "PERSISTENT_WORKER",
+      "generation_ms": null,
+      "advice_elapsed_ms": 1591.3205890001336,
+      "fallback_reason": null,
+      "worker": {
+        "worker_started_utc": "2026-11-25T10:37:27Z",
+        "model_sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739",
+        "tokenizer_sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55"
+      }
+    },
+    {
+      "inspection_id": "27328d42-42b1-4934-adef-5527368c4d70",
+      "report_sha256": "31237fab5c75ebc1e805ac95971f95ab9aba6298c066bf48720a0239d7c9cd34",
+      "status": "CHECKLIST_FALLBACK",
+      "llama_runtime_mode": "PERSISTENT_WORKER",
+      "generation_ms": null,
+      "advice_elapsed_ms": 1873.7550909997935,
+      "fallback_reason": null,
+      "worker": {
+        "worker_started_utc": "2026-11-25T10:37:27Z",
+        "model_sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739",
+        "tokenizer_sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55"
+      }
+    },
+    {
+      "inspection_id": "77698864-5d57-4ae9-9450-8647db315651",
+      "report_sha256": "25b839aa23c72fb3d472b73a7639279bf1a407abf4be15772dc94341d6878701",
+      "status": "CHECKLIST_FALLBACK",
+      "llama_runtime_mode": "PERSISTENT_WORKER",
+      "generation_ms": null,
+      "advice_elapsed_ms": 1638.7856860001193,
+      "fallback_reason": null,
+      "worker": {
+        "worker_started_utc": "2026-11-25T10:37:27Z",
+        "model_sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739",
+        "tokenizer_sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55"
+      }
+    },
+    {
+      "inspection_id": "93c9c3a0-a73d-4b40-abcd-203bf2373429",
+      "report_sha256": "706b4451e817589d7beb4bbb54150ecb4aa6217eb1df47f887ec3e00d12a6617",
+      "status": "CHECKLIST_FALLBACK",
+      "llama_runtime_mode": "PERSISTENT_WORKER",
+      "generation_ms": null,
+      "advice_elapsed_ms": 895.2342330001102,
+      "fallback_reason": null,
+      "worker": {
+        "worker_started_utc": "2026-11-25T10:37:27Z",
+        "model_sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739",
+        "tokenizer_sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55"
+      }
+    }
+  ],
+  "station_provenance": [
+    {
+      "pid": 5201,
+      "cwd": "/home/nvidia/.local/share/forgesight/releases/phase1-e7abf57",
+      "git_head": null,
+      "source_sha256": {
+        "forgesight/jetson_live_ui.py": "f6383755e736137bc9b987b67f60a542c68864c151da25cdb037bade82457f8e",
+        "forgesight/vision_edge_live_once.py": "e7e8882eaa35de74380e95dbc7742219a48d67b34b2f5401e740dfb6fa1f3811",
+        "forgesight/plugin_station.py": "518c85a3ba835ea5f883500f0e475f78439ea4118b1b31576f5a40c128f9112f",
+        "forgesight/assist_edge_worker.py": "74eb02a4e7db4690abe1107ab8e567877725f6d3cdb551cce96a547a889b373b"
+      }
+    }
+  ],
+  "source_hashes_unchanged": true,
+  "original_recipe_restored": true,
+  "final_camera": {
+    "ready": true,
+    "running": true,
+    "message": "Live C270 preview"
+  },
+  "workload_errors": [],
+  "changes": "Benchmark records added with POWER-TEST prefix. No packages, clocks or power-mode settings changed.",
+  "evidence_files": [
+    {
+      "path": "artifacts/power/jetson_power_workload_20261125T104907Z/measurement.json",
+      "sha256": "35eed636f8ccc8c7e1413b197798a2c3798c472f838fd16e7a46858a2658f516",
+      "availability": "Local ignored artifact; not bundled in a repository clone."
+    },
+    {
+      "path": "artifacts/power/jetson_power_workload_20261125T104907Z/advice_provenance.json",
+      "sha256": "f74440df05668fdc13eac5b79ad0dc2f799a7ddb8b3b675535dcf6466a72c0a0",
+      "availability": "Local ignored artifact; not bundled in a repository clone."
+    },
+    {
+      "path": "artifacts/power/jetson_power_resting_20261125T104528Z/measurement.json",
+      "sha256": "0c9446416dfb58c3ddd1b22ad42add23b224c561607ca77ff8428fcfc4d45197",
+      "availability": "Local ignored artifact; not bundled in a repository clone."
+    }
+  ],
+  "not_established": [
+    "Wall-socket or whole-carrier watts",
+    "Absolute worst-case/transient or cold-start peak",
+    "Energy per inspection",
+    "Multi-hour thermal/resource stability",
+    "New accuracy or accepted-advice quality",
+    "New disconnected offline acceptance; SSH was connected"
+  ]
+}

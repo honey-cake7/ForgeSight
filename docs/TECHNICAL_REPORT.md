@@ -2,7 +2,8 @@
 
 Consolidated on 25 November 2026 from the repository's implementation and
 recorded experiments. This describes Phase 1 functionality and the scope of
-its evidence; it does not claim new training or device measurements.
+its evidence, including the separately scoped 25 November module-power test.
+No new training is claimed.
 
 ## Problem and scope
 
@@ -169,9 +170,31 @@ not measured camera-to-advice latency.
 The supplied resident-station snapshot reports **3,008 MiB used**, **4,186 MiB
 available**, **498 MiB swap used**. It describes both vision models and Llama
 resident, but does not measure peak memory or thrashing. **25 W is a configured
-power mode; actual consumption, peak watts and energy per inspection are not
-measured.** [Structured timing summary](../manifests/jetson_timings_summary_v1.json),
+power mode**, separate from the measured module input watts below. [Structured timing summary](../manifests/jetson_timings_summary_v1.json),
 [full timing interpretation](archive/2026-11-25/JETSON_TIMINGS.md).
+
+A separate **25 November 2026** power test sampled INA3221 **VDD_IN** at a
+100 ms target interval: **584 samples / 58.07 s**, with live C270 preview and
+resident vision/Llama workers. Across 12 saved-image attempts (six per recipe),
+active-phase sample mean was **6.60 W** and highest sampled input was **8.52 W**
+(4,976 mV x 1,712 mA). Same-run preview-only mean was **4.16 W**; a separate
+30 s preview window averaged **5.46 W**, showing resting-window variability.
+Whole-window mean including baseline/settling was 5.96 W.
+
+Two sequential attempts per recipe were followed by four back-to-back attempts
+per recipe while preceding advice was pending; concurrent threads were not
+independently verified. Six metal-nut reports confirm real Llama generation
+(1.87-2.79 s) with unapproved-output fallback; all 12 advisory reports were
+CHECKLIST_FALLBACK. Screw reports omit generation duration/reason. This test
+establishes power under that actual workload, not accepted-advice quality.
+The running release had no Git metadata; four source-file hashes were recorded
+and unchanged. The original screw recipe was restored, with preview/workers ready.
+
+Voltage/current reads estimate total module input; subrails must not be added.
+This is not wall/whole-carrier consumption, absolute transient maximum,
+energy per inspection or long-duration thermal acceptance. Settings/packages
+were unchanged and SSH remained connected. [Power manifest, provenance and local
+raw-trace hashes](../manifests/jetson_power_measurement_v1.json).
 
 Historical disconnected cold series measured vision-forward p50/p95
 **1,585/1,684 ms** (n=20), replay-to-SQLite **7,499/7,677 ms** (n=20), and native
@@ -190,7 +213,7 @@ claim to a newer untested build.
 
 Physical-part camera accuracy, a complete newest-build disconnected cold start,
 full camera-to-displayed-advice percentiles, application FPS/parts throughput,
-simultaneous peak resources and electrical power remain separate acceptance
+simultaneous peak resources, wall power and worst-case power remain separate acceptance
 items. Camera room scenes and displayed photos are diagnostics. No factory
 SOP approval, certified grading or general industrial reliability is claimed.
 [Integrated offline pilot](../manifests/jetson_offline_saved_replay_pilot_v1.json),
