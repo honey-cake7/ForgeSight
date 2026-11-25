@@ -3,8 +3,7 @@
 Updated 25 November 2026. This report covers Phase 1 architecture, methods,
 recorded experiments and their evidence boundaries.
 
-[Two-minute demonstration](https://youtu.be/NZccgnyDJrY) / [Submission PDF](https://github.com/honey-cake7/ForgeSight/releases/download/v1.0.0/ForgeSight_Submission_Report_Revised.pdf) /
-[Portable LaTeX source](https://github.com/honey-cake7/ForgeSight/releases/download/v1.0.0/ForgeSight_LaTeX_Revised.zip).
+[Two-minute demonstration](https://youtu.be/NZccgnyDJrY) / [Submission PDF](https://github.com/honey-cake7/ForgeSight/releases/download/v1.0.0/ForgeSight_Report.pdf).
 
 ## Problem and scope
 

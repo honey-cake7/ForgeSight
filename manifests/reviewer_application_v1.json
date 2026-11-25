@@ -142,7 +142,7 @@
   },
   "submission_links": {
     "demonstration": "https://youtu.be/NZccgnyDJrY",
-    "technical_report_pdf": "https://github.com/honey-cake7/ForgeSight/releases/download/v1.0.0/ForgeSight_Submission_Report_Revised.pdf",
-    "portable_latex_source": "https://github.com/honey-cake7/ForgeSight/releases/download/v1.0.0/ForgeSight_LaTeX_Revised.zip"
+    "technical_report_pdf": "https://github.com/honey-cake7/ForgeSight/releases/download/v1.0.0/ForgeSight_Report.pdf",
+    "technical_report_sha256": "596f1a5d5a3fab5860f2a79c82ab05b5a7f89422a0ea1467d20433bed5ce0a61"
   }
 }

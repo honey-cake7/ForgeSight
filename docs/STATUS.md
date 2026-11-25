@@ -11,8 +11,7 @@ and the Jetson desktop launcher. See the [features](../README.md#features) and
 | --- | --- |
 | Application and trained-model package | [v1.0.0 release](https://github.com/honey-cake7/ForgeSight/releases/tag/v1.0.0) |
 | Two-minute demonstration | [YouTube](https://youtu.be/NZccgnyDJrY) |
-| Technical report | [PDF](https://github.com/honey-cake7/ForgeSight/releases/download/v1.0.0/ForgeSight_Submission_Report_Revised.pdf) / [repository report](TECHNICAL_REPORT.md) |
-| LaTeX report source | [Portable ZIP](https://github.com/honey-cake7/ForgeSight/releases/download/v1.0.0/ForgeSight_LaTeX_Revised.zip) |
+| Technical report | [PDF](https://github.com/honey-cake7/ForgeSight/releases/download/v1.0.0/ForgeSight_Report.pdf) / [repository report](TECHNICAL_REPORT.md) |
 
 ## Evidence
 
