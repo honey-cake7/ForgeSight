@@ -14,7 +14,3 @@
 The [technical report](TECHNICAL_REPORT.md) explains current implementation and
 trade-offs. The [historical decision log](archive/2026-11-25/DECISIONS.md)
 preserves alternatives, experiments and earlier checkpoints.
-
-On 25 November 2026, documentation was consolidated into five reading entry
-points and four compact engineering records. Historical documents were archived
-with relocated links and a source map; model/data evidence was retained.

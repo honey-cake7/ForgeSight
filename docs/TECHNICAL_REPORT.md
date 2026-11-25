@@ -1,11 +1,9 @@
 # ForgeSight technical report
 
-Consolidated on 25 November 2026 from the repository's implementation and
-recorded experiments. This describes Phase 1 functionality and the scope of
-its evidence, including the separately scoped 25 November module-power test.
-No new training is claimed.
+Updated 25 November 2026. This report covers Phase 1 architecture, methods,
+recorded experiments and their evidence boundaries.
 
-[Two-minute demonstration](https://youtu.be/NZccgnyDJrY) ? [Submission PDF](https://github.com/honey-cake7/ForgeSight/releases/download/v1.0.0/ForgeSight_Submission_Report_Revised.pdf) ?
+[Two-minute demonstration](https://youtu.be/NZccgnyDJrY) / [Submission PDF](https://github.com/honey-cake7/ForgeSight/releases/download/v1.0.0/ForgeSight_Submission_Report_Revised.pdf) /
 [Portable LaTeX source](https://github.com/honey-cake7/ForgeSight/releases/download/v1.0.0/ForgeSight_LaTeX_Revised.zip).
 
 ## Problem and scope
@@ -150,7 +148,7 @@ claims. Evidence: [detector evaluation](../manifests/efficientad_s_evaluation_v1
 
 The supplied report is timestamped **24 November 2026, 05:35:53 UTC**. Its raw
 JSON remains cited on the device and the deployed commit is unpinned. Values
-are attributed observations, not a benchmark rerun during consolidation.
+are attributed observations with an unpinned deployment, not a controlled rerun.
 
 | Warm observation | Metal nut | Screw |
 | --- | ---: | ---: |
@@ -242,8 +240,7 @@ available as archived snapshots:
   [calibration](archive/2026-11-25/VISION_CALIBRATION.md), [cached evaluation](archive/2026-11-25/VISION_EVALUATION.md).
 - [Llama export](archive/2026-11-25/EDGE_RUNTIME.md), [ARM runtime](archive/2026-11-25/JETSON_RUNTIME.md),
   [vision export/parity](archive/2026-11-25/JETSON_VISION.md), [model activation/rollback](archive/2026-11-25/EDGE_LLAMA_ACTIVATION.md).
-- [All historical documents and source map](archive/README.md). Evidence manifests,
-  runtime policies and binaries were not changed by documentation consolidation.
+- [Historical methods, checkpoints and source map](archive/README.md).
 
 ## Attribution and development direction
 

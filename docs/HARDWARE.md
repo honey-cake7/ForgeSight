@@ -6,7 +6,7 @@
 | Audited software | Ubuntu 20.04.6, L4T 35.6.1, system Python 3.8.10, CUDA 11.4 |
 | Camera | Logitech C270 USB; 640 x 480 MJPG capture diagnostics recorded |
 | Vision environment | Separate Python 3.12.14 / Torch 2.14.0+cpu |
-| Advisory environment | Separate ExecuTorch 1.5.1+cpu / XNNPACK runtime under `~/.local/share/forgesight/llama_cpu_v1` |
+| Advisory environment | Private ExecuTorch 1.5.1+cpu / XNNPACK environment; release layout in [SETUP](SETUP.md#launch-files-and-logs) |
 
 On 25 November, INA3221 VDD_IN readings measured **8.52 W sampled peak** and
 **6.60 W active-phase mean** during 12 saved-image attempts with live preview

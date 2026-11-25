@@ -1,5 +1,9 @@
 # Documentation archive
 
+These snapshots preserve training methods and development evidence. They are
+not required for reviewer installation; use the current [setup guide](../SETUP.md).
+Older paths, blockers and stage labels describe their recorded checkpoint.
+
 Historical snapshots moved on 25 November 2026. These preserve the complete
 original engineering records; archive banners and Markdown relative links were
 updated for their new locations. Read current instructions in the

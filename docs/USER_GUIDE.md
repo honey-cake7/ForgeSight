@@ -1,8 +1,8 @@
 # User guide
 
-Use [SETUP](SETUP.md) to prepare the station, enable optional modes and start
-its local page. This guide covers current controls; the technical report owns
-measurement details and acceptance limits.
+Open **ForgeSight** after [installation](../README.md#download-and-install-on-jetson).
+The release enables both part recipes and automatic grounded advice. [SETUP](SETUP.md)
+covers deployment; [TECHNICAL_REPORT](TECHNICAL_REPORT.md) holds measurement scope.
 
 ## Inspect a component or saved image
 
@@ -29,7 +29,8 @@ measurement details and acceptance limits.
    busy, unavailable and checklist fallback have explicit states.
 6. Use **Review** or **History** to save observations and reopen results.
    The UI supports light/dark preference, responsive navigation and keyboard
-   labels. Ctrl+C in the service terminal stops the station.
+   labels. Closing the desktop window leaves the backend running; Ctrl+C stops
+   a directly launched service in its own terminal.
 
 Inspection numbers count accepted attempts. Repeated photos or frames do not
 by themselves establish distinct physical parts. Camera results stay REVIEW
@@ -75,8 +76,9 @@ These are individual inspection reports, separate from the project technical rep
 | Missing/mismatched model or policy | Restore the matching authorized bundle; never bypass hash checks or install into system Python. |
 | Missing images or storage warning | Check referenced files/free space and reported orphan findings; do not delete evidence automatically. |
 
-Default Jetson records live under `runs/live_inspections_v1/` relative to the
-source root, with SQLite at `inspections.sqlite3` and rotating logs under `logs/`.
+Release records live under `<installation>/runs/`, including
+`inspections.sqlite3`, advice and rotating `logs/`. Manual source launches default
+to `runs/live_inspections_v1/`; `station.json` records the installed paths.
 The local API provides state, camera controls, upload/replay, advice, history,
 media and review routes; mutations check origin and bounds. PC API/CLI queries
 also support history filters and summaries.

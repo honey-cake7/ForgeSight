@@ -9,7 +9,7 @@ Images, advice and inspection history stay local during inference.
 
 Built with Llama.
 
-**[Watch the 2-minute demonstration](https://youtu.be/NZccgnyDJrY)** ?
+**[Watch the 2-minute demonstration](https://youtu.be/NZccgnyDJrY)** /
 [Technical report (PDF)](https://github.com/honey-cake7/ForgeSight/releases/download/v1.0.0/ForgeSight_Submission_Report_Revised.pdf)
 
 Phase 1 includes the inspection station, metal-nut/screw recipes, guidance,
@@ -146,28 +146,16 @@ differ, so no controlled percentage speedup is claimed. Type/severity and the
 screw diagnostic are provisional; they are not physical-camera accuracy.
 See [methods, failure cases, timings and offline proof](docs/TECHNICAL_REPORT.md).
 
-## Get started
+## Source and desktop development
 
 ```sh
 git clone https://github.com/honey-cake7/ForgeSight.git
 cd ForgeSight
 ```
 
-Follow [SETUP](docs/SETUP.md) to obtain permitted model/data assets and select
-the correct environment. A clone alone is not a complete runtime installation.
-On an already prepared Jetson, from the matching source root:
-
-```sh
-export FS_VISION="$HOME/.local/share/forgesight/vision_cpu_v1"
-/usr/bin/python3 -B -m forgesight.jetson_live_ui \
-  --vision-python "$FS_VISION/venv/bin/python" \
-  --model "$FS_VISION/efficientad_s_calibrated.ts" --port 8770
-```
-
-Open **http://127.0.0.1:8770** on the Jetson. Use Camera for physical parts or
-Upload PNG for saved images, inspect Results, then Review or History. Plugin/
-automatic-advice mode needs extra flags and both recipe assets. The PC replay
-app, tests and asset checks are documented in [SETUP](docs/SETUP.md).
+[SETUP](docs/SETUP.md#source-and-pc-development) covers the PC environment,
+release asset locations, tests and source-based workflows. A clone alone
+excludes models; use the release installation above to run the Jetson app.
 
 ## Future development
 
@@ -189,7 +177,7 @@ foundations for these extensions. They do not establish completed Phase 2 proof.
 | --- | --- |
 | [Setup](docs/SETUP.md) | Assets, environments, launch commands and tests |
 | [User guide](docs/USER_GUIDE.md) | Features, operation, plugins, review and export |
-| [Technical report](docs/TECHNICAL_REPORT.md) ? [PDF](https://github.com/honey-cake7/ForgeSight/releases/download/v1.0.0/ForgeSight_Submission_Report_Revised.pdf) | Architecture, datasets/models, both runtimes, measured results and limits |
+| [Technical report](docs/TECHNICAL_REPORT.md) / [PDF](https://github.com/honey-cake7/ForgeSight/releases/download/v1.0.0/ForgeSight_Submission_Report_Revised.pdf) | Architecture, datasets/models, both runtimes, measured results and limits |
 | [Status](docs/STATUS.md) | Current evidence and remaining submission work |
 
 The [reviewer application setup](docs/SETUP.md#reviewer-application-install-once-then-click-forgesight)
