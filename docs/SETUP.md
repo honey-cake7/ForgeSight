@@ -1,8 +1,89 @@
 # Setup
 
 Run commands from a matching ForgeSight checkout. Models, datasets and runtime
-databases are excluded from Git. The procedures below use the recorded isolated
-environments; a clean-machine asset package has not yet been published.
+databases are excluded from Git. The reviewer application package supplies the
+exact trained models and offline ARM runtime inputs separately. Publication of
+that package requires the owner to attach it to the submission or a release.
+
+## Reviewer application: install once, then click ForgeSight
+
+Use **`forgesight-reviewer-v1.tar`** and its **`.tar.sha256`** file from the
+submission handoff. The package includes application source, both trained
+TorchScript vision exports, the calibrated PC checkpoint/policy, matching Llama
+PTE/tokenizer/manifests and model terms, pinned ARM Python and the offline
+wheelhouse. It excludes datasets, credentials and previous inspection history.
+It is a runnable application distribution, separate from the source-only clone.
+No public download URL is recorded until the owner publishes the prepared files.
+[Verified application evidence](../manifests/reviewer_application_v1.json): fresh
+private installation, native Llama generation, visible desktop window and both
+saved-image recipes passed on the recorded Jetson. This was not a wiped-OS test;
+camera index 99 preserved the running station, and advice used checklist fallback.
+
+The supported baseline is **Jetson Orin Nano 8GB, Ubuntu 20.04.6 / L4T 35.6.1,
+ARM64, system Python 3.8.10**, with a graphical session and USB camera. Other
+JetPack/Python baselines require separate validation. Reserve at least **8 GiB
+free**. Setup preserves system Python, CUDA, power settings and existing stations.
+The controller needs system OpenCV, NumPy and Pillow; the viewer needs Chromium
+or GTK3/WebKit2 4.0/PyGObject. Preflight reports missing dependencies; the installer
+does not use sudo or install system packages. On the recorded Ubuntu baseline,
+an administrator can provision missing controller/viewer packages with
+`sudo apt-get install python3-opencv python3-numpy python3-pil python3-gi gir1.2-gtk-3.0 gir1.2-webkit2-4.0`.
+
+Obtain the original **metal_nut** and **screw** categories from
+[MVTec AD](https://www.mvtec.com/research-teaching/datasets/mvtec-ad), accepting its
+terms. Extract into a directory containing `metal_nut/train`, `metal_nut/test`,
+`screw/train`, `screw/test` and their original `ground_truth` directories.
+The installer verifies the recorded image/mask hashes without changing the data.
+Do not substitute AD 2 or resized images. Review the bundled Llama license and
+use policy before using its model. No cloud inference or publisher token is
+needed to launch an already-authorized package.
+
+From the folder containing the two submission files, in a fresh working directory:
+
+```sh
+sha256sum -c forgesight-reviewer-v1.tar.sha256
+# Compare the checksum with the independently supplied submission checksum.
+tar -xf forgesight-reviewer-v1.tar app
+export FS_REVIEWER="$HOME/.local/share/forgesight/reviewer_v1"
+export FS_DATA="$HOME/datasets/mvtec_ad"
+export FS_SHA="$(cut -d ' ' -f 1 forgesight-reviewer-v1.tar.sha256)"
+/usr/bin/python3 -B app/scripts/reviewer_bundle.py install \
+  --bundle forgesight-reviewer-v1.tar --sha256 "$FS_SHA" \
+  --prefix "$FS_REVIEWER" --dataset-root "$FS_DATA"
+```
+
+Use a fresh prefix; an existing prefix/shortcut or occupied port is refused.
+Installation uses the bundled interpreter/wheels offline, creates separate vision
+and Llama environments, verifies vision imports and a bounded two-token native Llama generation, and generates absolute paths in `station.json`. Dataset files remain
+external through a link. The icon is the application SVG `forgesight/web/icon.svg`.
+It adds **ForgeSight** to the application menu and desktop. Select **Allow
+Launching** if the desktop requests trust, then double-click **ForgeSight**.
+Cold startup may take up to six minutes; subsequent clicks reuse the station.
+Closing the window leaves the backend available. Run from the installed user's
+graphical session; no terminal commands are needed for subsequent launches.
+
+The app opens the inspection screen with both part recipes, camera preview,
+saved-image/upload inspection, local history/report tools and local advice.
+Advice may correctly return unavailable/checklist fallback when validation
+rejects generation; startup/model loading does not establish advice quality.
+Logs: `~/.cache/forgesight-desktop/8770/station.log` and `browser.log`.
+New inspection history: `$FS_REVIEWER/runs/`. Startup failures use a desktop
+notification when available. Preserve these files for review.
+
+```sh
+# Recheck installed files and runtime/generation without starting a station:
+/usr/bin/python3 -B "$FS_REVIEWER/app/scripts/reviewer_bundle.py" check --prefix "$FS_REVIEWER"
+# Terminal equivalent of clicking the icon, useful for diagnostics:
+/usr/bin/python3 -B "$FS_REVIEWER/app/scripts/jetson_desktop_launcher.py" \
+  --station "$FS_REVIEWER/station.json"
+```
+
+For an additional isolated installation, use a fresh prefix and port, and
+`--no-shortcuts` to preserve an existing icon. `--camera-index` selects another
+camera; do not share one camera between running stations. Removing menu/desktop
+shortcuts does not delete runtime files or inspection history. Installation
+reports are saved as `reviewer_installation.json`; actual startup and reviewer
+click acceptance are separate from the import checks.
 
 ## 1. Source and assets
 
@@ -106,4 +187,27 @@ Tests need the appropriate locked dependencies/assets. PC checks are separate
 from device proof. Training/export/cached evaluation commands are indexed in
 [TECHNICAL_REPORT](TECHNICAL_REPORT.md#reproducibility). Preserve existing
 artifacts and final-holdout exposure records; never clear them to tune a model.
-Exact clean-checkout reproduction still needs an authorized asset handoff.
+A source-only clone still needs the authorized reviewer package above. Training
+reproduction is separate from replaying the exact released inference artifacts.
+
+### Maintainer: reproduce the application package
+
+Use authorized staged copies of `stage/python.tar.gz`, `stage/inputs.tar` and
+`model/` from the verified runtime; `pack` never copies a live venv or inspection
+history. Run from the source checkout:
+
+```sh
+python3 -B scripts/reviewer_bundle.py pack \
+  --runtime /path/to/authorized-runtime-inputs \
+  --model-terms /path/to/llama3_2_1b \
+  --checkpoint artifacts/vision/calibration_v1/efficientad_s_calibrated.pth \
+  --output artifacts/submission/forgesight-reviewer-v1.tar
+```
+
+Keep the generated `.tar.sha256` and `.tar.manifest.json` with the archive.
+The manifest identifies working-tree source bytes and individual asset hashes;
+archive metadata/order is normalized. A new package requires a fresh output
+filename. Attach all three files to the submission or approved release. Do not
+commit model/runtime binaries into source Git. Re-training/exporting instead of
+using these exact artifacts follows the technical report's archived methods and
+produces a new experiment requiring new hash/accuracy/device validation.

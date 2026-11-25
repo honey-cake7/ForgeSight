@@ -21,6 +21,10 @@ recovery/logging, storage health and desktop launch tools. See the
 - Module input power: 8.52 W sampled peak / 6.60 W active-phase mean across
   12 saved-image attempts with live preview; [power evidence](../manifests/jetson_power_measurement_v1.json).
   Real Llama generation was confirmed; all 12 advisory reports used checklist fallback.
+- Reviewer application package: fresh private install, bounded native Llama
+  generation, generated desktop entry/visible window and both saved-image recipes
+  passed on the recorded Jetson. [Evidence](../manifests/reviewer_application_v1.json).
+  The binary package is prepared locally; submission attachment/publication remains.
 - Latest recorded hybrid prompt check: 12/15 model choices matched; three
   checklist fallbacks. This was not a whole-station upgrade.
 

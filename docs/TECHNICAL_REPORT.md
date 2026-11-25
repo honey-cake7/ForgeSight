@@ -223,6 +223,14 @@ SOP approval, certified grading or general industrial reliability is claimed.
 
 ## Reproducibility
 
+The checksum-verified reviewer application package supplies both trained vision
+exports, the PC checkpoint/policy, matching Llama assets/terms and offline ARM
+runtime inputs. A fresh private install, bounded native generation, generated
+desktop entry with a visible window, and both saved-image recipes passed on the
+existing Jetson OS. Camera index 99 preserved the original station; advice used
+checklist fallback. This is not new-machine/camera/disconnected acceptance.
+[Application evidence and package checksum](../manifests/reviewer_application_v1.json).
+
 Use [SETUP](SETUP.md) for current assets, locks and launch commands. Preserve
 model hashes and holdout exposure records. Existing detailed methods remain
 available as archived snapshots:

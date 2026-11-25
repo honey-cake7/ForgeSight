@@ -260,10 +260,13 @@ def start_station(port, command, working_dir, cache):
 
 def launcher_icon():
     data = Path(os.environ.get("XDG_DATA_HOME", str(Path.home() / ".local/share")))
+    svg = data / "icons/forgesight.svg"
+    if svg.is_file():
+        return svg
     return data / "icons/forgesight-station.png"
 
 
-def install_entry(station):
+def install_entry(station, desktop=None):
     script = Path(__file__).resolve()
     # Launcher paths are local deployment paths, with any spaces quoted.
     paths = [str(script), str(station)]
@@ -282,11 +285,12 @@ def install_entry(station):
     entry = applications / "forgesight.desktop"
     entry.write_text(desktop_file, encoding="utf-8")
     print(entry)
-    desktop = Path.home() / "Desktop"
-    if shutil.which("xdg-user-dir"):
-        target = subprocess.check_output(["xdg-user-dir", "DESKTOP"], text=True).strip()
-        if target:
-            desktop = Path(target)
+    if desktop is None:
+        desktop = Path.home() / "Desktop"
+        if shutil.which("xdg-user-dir"):
+            target = subprocess.check_output(["xdg-user-dir", "DESKTOP"], text=True).strip()
+            if target:
+                desktop = Path(target)
     if desktop.is_dir() and desktop != Path.home():
         entry = desktop / "ForgeSight.desktop"
         entry.write_text(desktop_file, encoding="utf-8")
@@ -300,12 +304,14 @@ def main():
                         help="The existing Jetson station activation JSON.")
     parser.add_argument("--install-icon", action="store_true",
                         help="Add ForgeSight to the application menu and desktop.")
+    parser.add_argument("--desktop-dir", type=Path,
+                        help="Use an existing desktop directory instead of the session default.")
     args = parser.parse_args()
     station = args.station.resolve()
     try:
         port, command, working_dir = load_station(station)
         if args.install_icon:
-            install_entry(station)
+            install_entry(station, args.desktop_dir)
             return 0
         browser = browser_executable()
         open_window = None if browser else webkit_window()

@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "recorded_date": "2026-11-25",
+  "scope": "VERIFIED_FRESH_PRIVATE_PREFIX_ON_EXISTING_RECORDED_JETSON_OS_NOT_NEW_MACHINE_OR_CAMERA_ACCEPTANCE",
+  "distribution": {
+    "archive": "forgesight-reviewer-v1.tar",
+    "bytes": 1169817600,
+    "sha256": "f284c9d555ac6cde8109c5f7e6cca96925d583875e14087753ba774248db2691",
+    "indexed_files": 363,
+    "local_directory": "artifacts/submission/",
+    "companions": [
+      "forgesight-reviewer-v1.tar.sha256",
+      "forgesight-reviewer-v1.tar.manifest.json"
+    ],
+    "publication": "PREPARED_LOCALLY_NOT_PUBLISHED",
+    "download_url": null,
+    "application_source": "Bundled working-tree source files individually hashed; source-only Git clone does not contain binary assets."
+  },
+  "target": {
+    "device": "NVIDIA Jetson Orin Nano 8GB",
+    "os": "Ubuntu 20.04.6 / L4T 35.6.1",
+    "architecture": "aarch64",
+    "system_python": "3.8.10",
+    "private_python": "3.12.14",
+    "executorch": "1.5.1+cpu / XNNPACK",
+    "torch": "2.14.0+cpu"
+  },
+  "asset_hashes": {
+    "app/plugins/metal_nut/efficientad_s.ts": {
+      "sha256": "8766c41a51a5444f57f564134427bbd2d2d95dd6ec5ff08b24698f00f7f55dcd",
+      "bytes": 32320235
+    },
+    "app/plugins/screw/efficientad_s.ts": {
+      "sha256": "494726eeececa7b6f194ea5ec6b471873aa41085913eab9b65ef64120519618e",
+      "bytes": 32317777
+    },
+    "app/artifacts/vision/calibration_v1/efficientad_s_calibrated.pth": {
+      "sha256": "aa2407dba9f74db8472ee6adc5968eefc7c243d9f200d70f2d3a792fd0b7f4fd",
+      "bytes": 32258710
+    },
+    "model/llama3_2_1b_xnnpack.pte": {
+      "sha256": "b82d0de5e0785269112d818be5a6c675225aab02c4e2a3b6c98d9e599da86739",
+      "bytes": 802247040
+    },
+    "model/tokenizer.model": {
+      "sha256": "82e9d31979e92ab929cd544440f129d9ecd797b69e327f80f17e1c50d5551b55",
+      "bytes": 2183982
+    },
+    "stage/python.tar.gz": {
+      "sha256": "577b4bec0793ad1ff0cbff9adbd0df078eddde38a4c41bf5d83ad381a85ee39d",
+      "bytes": 29199399
+    },
+    "stage/inputs.tar": {
+      "sha256": "b4715e7cd6b108907b379ea0c33014e2dbbeb51165650513213bb65c095d09ab",
+      "bytes": 234782720
+    }
+  },
+  "tested_application_source_sha256": {
+    "scripts/reviewer_bundle.py": "d9e916f014baf6fb05efc6d246d9d9dd9d3a73542a1dbd5ade11b60a8983250e",
+    "scripts/jetson_desktop_launcher.py": "a352e3b805c67deea6cffcaa9b5cffe6fc26210ad214d3dd1e3bc5332a905403",
+    "forgesight/jetson_live_ui.py": "f6383755e736137bc9b987b67f60a542c68864c151da25cdb037bade82457f8e",
+    "forgesight/assist_edge_worker.py": "74eb02a4e7db4690abe1107ab8e567877725f6d3cdb551cce96a547a889b373b"
+  },
+  "installation": {
+    "prefix": "/home/nvidia/.local/share/forgesight/reviewer_v1_test",
+    "fresh_private_prefix": true,
+    "system_baseline_unchanged": true,
+    "package_installation": "Offline wheelhouse with --no-index; full runtime uses locked hashes. Separate vision and Llama venvs. Network was not disconnected.",
+    "dataset_files_and_masks_verified": 1027,
+    "dataset_distribution": "Original MVTec AD metal_nut/screw obtained separately; images excluded from application package.",
+    "native_generation_probe": {
+      "warmup_generate_ms": 3847.6983680002377,
+      "warmup_prompt_tokens": 14,
+      "warmup_generated_tokens": 1,
+      "warmup_scope": "bounded two-token non-advisory generation at boot; absorbs lazy model load; output discarded"
+    }
+  },
+  "verification": {
+    "focused_tests": {
+      "windows_bundle_tests": 8,
+      "wsl_linux_tests": 20,
+      "jetson_native_tests": 20
+    },
+    "desktop_activation": "Gio.DesktopAppInfo.launch on the generated .desktop file in an isolated D-Bus session; visible window verified by X11 PID/title.",
+    "visible_window": [
+      {
+        "id": "0x4000003",
+        "properties": "_NET_WM_PID(CARDINAL) = 13762\n_NET_WM_NAME(UTF8_STRING) = \"New inspection \u00b7 ForgeSight\"\nWM_NAME(STRING) = \"New inspection \\267 ForgeSight\"\n"
+      }
+    ],
+    "icon": "Copy of forgesight/web/icon.svg; installed bytes matched source.",
+    "loopback_application_http": 200,
+    "saved_image_inspections": [
+      {
+        "part_id": "REVIEWER-SETUP-METAL_NUT-1795605965",
+        "inspection_id": "e09caf7b-c524-4e19-b7f9-9d99683a7ceb",
+        "source_mode": "SAVED_IMAGE_REPLAY",
+        "plugin_id": "metal_nut",
+        "sample": "test/bent/017.png",
+        "grade": "REVIEW",
+        "advice_status": "CHECKLIST_FALLBACK",
+        "llama_runtime": "PERSISTENT_WORKER",
+        "generation_ms": 2261.5405149999788,
+        "fallback_reason": "UNAPPROVED_MODEL_OUTPUT"
+      },
+      {
+        "part_id": "REVIEWER-SETUP-SCREW-1795605976",
+        "inspection_id": "e42c3181-54e6-4bc7-a5fb-610a09da93d3",
+        "source_mode": "SAVED_IMAGE_REPLAY",
+        "plugin_id": "screw",
+        "sample": "test/scratch_neck/008.png",
+        "grade": "REVIEW",
+        "advice_status": "CHECKLIST_FALLBACK",
+        "llama_runtime": "PERSISTENT_WORKER",
+        "generation_ms": null,
+        "fallback_reason": null
+      }
+    ],
+    "advice_scope": "Both advisory outcomes were CHECKLIST_FALLBACK; native generation confirmed at install and in the metal-nut report. No new accepted-advice quality claim.",
+    "human_double_click": "NOT_OBSERVED; desktop API activation tested. Allow Launching may be needed on a new desktop entry.",
+    "test_camera": "Index 99 intentionally absent to preserve the original station camera. No new camera proof.",
+    "test_station_stopped": true,
+    "remaining_test_workers": [],
+    "original_station_http_after": 200
+  },
+  "required_reviewer_inputs": [
+    "Original MVTec AD metal_nut and screw images/masks",
+    "Recorded OS/controller and graphical viewer prerequisites",
+    "Acceptance of supplied upstream model terms"
+  ],
+  "limitations": [
+    "Fresh private environments were tested on the existing recorded Jetson, not a wiped OS or second machine.",
+    "Other JetPack/system-Python versions require separate validation.",
+    "No new disconnected cold-start, physical-camera accuracy, throughput or advice-quality acceptance.",
+    "Prepared archive must be attached to the submission/release; no public download is claimed."
+  ],
+  "raw_evidence": {
+    "path": "artifacts/reviewer/reviewer_evidence.json",
+    "sha256": "c135256ebc7ff4ae9f06190b60334aa41c64d32f2f30ed3d9f13cf72cfd0f8db",
+    "availability": "Local ignored evidence; not included in a source clone."
+  }
+}

@@ -7,6 +7,8 @@ finds visual anomalies, ForgeGrade applies deterministic decisions, and a
 Llama-family model gives operator guidance on-device through ExecuTorch.
 Images, advice and inspection history stay local during inference.
 
+Built with Llama.
+
 Phase 1 includes the inspection station, metal-nut/screw recipes, guidance,
 review and reporting. Recorded Jetson saved-image workflows have offline
 proof. Physical-camera accuracy and newest-build acceptance remain scoped
@@ -122,6 +124,12 @@ foundations for these extensions. They do not establish completed Phase 2 proof.
 | [User guide](docs/USER_GUIDE.md) | Features, operation, plugins, review and export |
 | [Technical report](docs/TECHNICAL_REPORT.md) | Architecture, datasets/models, both runtimes, measured results and limits |
 | [Status](docs/STATUS.md) | Current evidence and remaining submission work |
+
+The [reviewer application setup](docs/SETUP.md#reviewer-application-install-once-then-click-forgesight)
+installs the exact vision/Llama assets and a click-to-run Jetson desktop icon.
+The prepared package must accompany the submission; a clone alone excludes models.
+[Device verification](manifests/reviewer_application_v1.json) covers a fresh private
+installation, native generation, visible desktop launch and both saved-image recipes.
 
 The challenge submission needs source, a target-device application, demo video
 and technical report. No demo URL is recorded here yet. The app's inspection
