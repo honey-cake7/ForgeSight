@@ -1,7 +1,7 @@
 # Documentation archive
 
 Historical snapshots moved on 25 November 2026. These preserve the complete
-original development records; archive banners and Markdown relative links were
+original engineering records; archive banners and Markdown relative links were
 updated for their new locations. Read current instructions in the
 [README](../../README.md), [setup](../SETUP.md), [user guide](../USER_GUIDE.md),
 [technical report](../TECHNICAL_REPORT.md) and [status](../STATUS.md).
@@ -45,4 +45,3 @@ were not moved or rewritten. Original snapshots come from commit `8fef9231e5a773
 | `VISION_CALIBRATION.md` | [Open](2026-11-25/VISION_CALIBRATION.md) |
 | `VISION_EVALUATION.md` | [Open](2026-11-25/VISION_EVALUATION.md) |
 | `VISION_TRAINING.md` | [Open](2026-11-25/VISION_TRAINING.md) |
-| `superpowers/plans/2026-11-24-hackathon-readme.md` | [Open](2026-11-25/superpowers/plans/2026-11-24-hackathon-readme.md) |

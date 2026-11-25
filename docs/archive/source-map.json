@@ -223,8 +223,8 @@
       "archive": "docs/archive/2026-11-25/SUBMISSION_AUDIT.md",
       "original_sha256": "4d7dad7ed3f732b32dd4539cede25f423dbb03203d042a3404bfcc0e1acac7e1",
       "original_git_blob": "cb42817b856da4001da97957c4f7ce81b9f5e411",
-      "archived_sha256": "ef26ced0e359e13834b65b9d6c2c4898cf5a3870faf053618e9c90a49e375903",
-      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+      "archived_sha256": "08f18fcf539127832863b3388803df03a26baea19a16b8ff2dc9000653459a28",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated. Submission cleanup replaced the removed development-plan link with a historical note."
     },
     {
       "original": "docs/VISION_BASELINE.md",
@@ -256,14 +256,6 @@
       "original_sha256": "ab10c854103f6ee3ea4a73992a4d2fc357ce182417c6edcd07ee763775db93d5",
       "original_git_blob": "c49262261eae3c8c7a700319901efa88fb349499",
       "archived_sha256": "8abd6f37e0af91c818f36acf876fcc914b2c55a2c82bb05a95335335be75e5fb",
-      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
-    },
-    {
-      "original": "docs/superpowers/plans/2026-11-24-hackathon-readme.md",
-      "archive": "docs/archive/2026-11-25/superpowers/plans/2026-11-24-hackathon-readme.md",
-      "original_sha256": "248dbb6f4c44b0069b372f71c6ee6e85b5eae16a4520b02f14b506b4243a6dc5",
-      "original_git_blob": "d63861827fb0f0d8f6ab1a6ce9ee598c0ed21699",
-      "archived_sha256": "75197c17c29d66b63874680ecf1b5870cc2faf5ad82bd0b2fdf4c71557c2b96b",
       "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
     }
   ]

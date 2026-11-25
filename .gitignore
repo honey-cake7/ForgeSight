@@ -53,3 +53,11 @@ __pycache__/
 # OS-generated files
 Thumbs.db
 .DS_Store
+
+# Local coding-assistant instructions and state (not submission assets)
+/AGENTS.md
+/CLAUDE.md
+/.claude/
+/.cursor/
+/.aider*
+/.github/copilot-instructions.md

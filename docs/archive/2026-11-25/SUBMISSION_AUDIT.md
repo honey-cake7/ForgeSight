@@ -4,7 +4,7 @@
 
 Reviewed 24 November 2026 against local source `081ba00` on
 `feat/hybrid-llama-advisory`, using the supplied challenge guide and
-[README plan](superpowers/plans/2026-11-24-hackathon-readme.md).
+the development README plan (removed from submission files).
 This is a repository audit, not a fresh hardware or accuracy test.
 
 **Finding: core methods and device evidence are documented; the complete
