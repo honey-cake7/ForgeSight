@@ -38,6 +38,33 @@ remain scoped acceptance items. The roughly 3.8 s timing sum is an estimate.
 Link the demo and confirm asset handoff/code licensing for submission; artifacts
 may exist outside this repo. The consolidated technical report now exists here.
 
-Next action: review the concise documentation and close the required evidence/
-submission items before the roadmap's Phase 2 extensions. Push requires explicit
-user confirmation; current work remains local.
+Next action: publish the approved application assets, add the demo link and close
+submission items before Phase 2. The user authorized pushing source on
+25 November 2026; application release publication remains separate.
+
+## Continue on another PC
+
+- Clone `https://github.com/honey-cake7/ForgeSight.git` and use `main`.
+  Start with [SETUP](SETUP.md); both runtimes and device evidence are in
+  [TECHNICAL_REPORT](TECHNICAL_REPORT.md).
+- User confirmed the Downloads package installed and opened successfully with
+  camera index 0 on 25 November. Desktop portal/keyring warnings appeared but
+  the application worked. This is user-reported operation, not new accuracy or
+  disconnected acceptance evidence.
+- Active user installation on Jetson:
+  `/home/nvidia/.local/share/forgesight/reviewer_camera_v1`;
+  configuration `station.json`, port `18770`. It was installed with
+  `--no-shortcuts`; the older desktop icon still points to the old station.
+- Application archive and its checksum/manifest are in Jetson
+  `/home/nvidia/Downloads/ForgeSight/` and this PC's `artifacts/submission/`.
+  Archive SHA-256:
+  `f284c9d555ac6cde8109c5f7e6cca96925d583875e14087753ba774248db2691`.
+  These binaries are ignored by Git; copy them separately to the other PC.
+  The checksum sidecar was corrected to Linux line endings. No public release
+  download exists yet.
+- This PC also has an untracked user file `scripts/record_timings.py`; it was
+  preserved and must be copied separately if needed.
+- Remaining submission work: publish the three application files as release
+  assets, add release/demo URLs, decide the source-code license, and complete
+  any remaining scoped device acceptance. Do not claim checklist fallback as
+  accepted Llama advice or a successful camera scene as measured accuracy.
