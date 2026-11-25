@@ -1,0 +1,270 @@
+{
+  "source_commit": "8fef9231e5a7739df344c5eb7ab54528d5ccb92f",
+  "snapshot_date": "2026-11-25",
+  "files": [
+    {
+      "original": "docs/COMPLIANCE.md",
+      "archive": "docs/archive/2026-11-25/COMPLIANCE.md",
+      "original_sha256": "b3947a0ccf6b464e43a8ba6fcd60586a7bfa5f1b8652453d70e30e6d87a185ed",
+      "original_git_blob": "9d2514d5d26e616cbef12842776df1ce9c150cfc",
+      "archived_sha256": "2c197240701bceb1df2d310bffc4b473bb037b485131a9a555f7f029cb6bc469",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    },
+    {
+      "original": "docs/DATASET.md",
+      "archive": "docs/archive/2026-11-25/DATASET.md",
+      "original_sha256": "b735343c4ea5f5781c29b17ae1fb77785c0589e63ed7f71aefe0903dec8d40c8",
+      "original_git_blob": "14850681426cd8883160698a8fba4aa689804625",
+      "archived_sha256": "dae7e0ee131e739c3106d9d9ba985330ff7507fc23274c0079058fcc44e71ed6",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    },
+    {
+      "original": "docs/DECISIONS.md",
+      "archive": "docs/archive/2026-11-25/DECISIONS.md",
+      "original_sha256": "e444040e876542bdccbba3085099289921c9cf155bfe5e83a038b36e59528b85",
+      "original_git_blob": "9716de0388c261363bcf42468abf7a997629e521",
+      "archived_sha256": "8e88327d0dce37b91da0082dde31faa29d8b501fa396b9d4b3d7c421728007fd",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    },
+    {
+      "original": "docs/DEFECT_SEVERITY.md",
+      "archive": "docs/archive/2026-11-25/DEFECT_SEVERITY.md",
+      "original_sha256": "29bc0be647668ff8b58c04f9b235c28745694eb49255f69110738a5935c8b73b",
+      "original_git_blob": "3a3ffa524dad09754913de5ed5c1c60aaac488ad",
+      "archived_sha256": "1a230d7b8a8397d8f4e6dbf8116fbe4a2887275c9e16ac8b2b895600f94f49b9",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    },
+    {
+      "original": "docs/DEFECT_TYPE.md",
+      "archive": "docs/archive/2026-11-25/DEFECT_TYPE.md",
+      "original_sha256": "ef5a789d4cb8e658c672d6be99737346191c2881fde0428a31873cc46bb7d739",
+      "original_git_blob": "3bfb39e6231624af2bd9869ae8733aa8376d1c8e",
+      "archived_sha256": "1b7153be62b0eb979ec62fa88bca610480b8b5ec8e0d1e84709239b658edfac7",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    },
+    {
+      "original": "docs/EDGE_LLAMA_ACTIVATION.md",
+      "archive": "docs/archive/2026-11-25/EDGE_LLAMA_ACTIVATION.md",
+      "original_sha256": "036e99038b04e33526e1bff3c16f569a7918b49f87f17e7da96be0bbd440a1da",
+      "original_git_blob": "a99d6918d4c3a8100222d061018413531c92de51",
+      "archived_sha256": "ab1ccdf87585b1684222328b59d22fe2281eaad8c559fef40d056be63db8700f",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    },
+    {
+      "original": "docs/EDGE_RUNTIME.md",
+      "archive": "docs/archive/2026-11-25/EDGE_RUNTIME.md",
+      "original_sha256": "3005dcfda37b12566893af2e49767df2b474d86586f5c6b64eed23aef79a94a8",
+      "original_git_blob": "6dc19e059d96bc88b9ec08938e55d9227d27913a",
+      "archived_sha256": "660c9e9a96dff32fce974c25bfe3cf82fc549abc97814b470007bf613786b7ac",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    },
+    {
+      "original": "docs/ENVIRONMENT.md",
+      "archive": "docs/archive/2026-11-25/ENVIRONMENT.md",
+      "original_sha256": "c1a7b049959b028098f1f76dd9822db80057bc74930b1c98ac4b9265a34b1b4b",
+      "original_git_blob": "101c233d8abf51ab426b1c50b4681c7de274a74d",
+      "archived_sha256": "336f39b2eb361dbb30a5074b8f5a7a8319e13fc953808043bf224fdadb67f9d8",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    },
+    {
+      "original": "docs/FORGEASSIST.md",
+      "archive": "docs/archive/2026-11-25/FORGEASSIST.md",
+      "original_sha256": "89f4ab6d245315f48ac271ba8a0c595d0153909ad9cd3e171934934a5518f5dc",
+      "original_git_blob": "1bb222f7cb4edecac2eb63981954114e07f0691e",
+      "archived_sha256": "31ee910bb3bff8974ff6bb4c3c032a8ffbd684fe9d02943e85e01c82b855808b",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    },
+    {
+      "original": "docs/FORGEGRADE.md",
+      "archive": "docs/archive/2026-11-25/FORGEGRADE.md",
+      "original_sha256": "faf0aeb2d0ee4318c85b45e7bdeb72f7acf59d76f6a9f31f9b6932fec83954c9",
+      "original_git_blob": "6f3d789b3a034c675c28b6df69bbe922e29297dc",
+      "archived_sha256": "06e2d16b4723349e6a58b0836fac73093057584d968fb60247d87d895110f55d",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    },
+    {
+      "original": "docs/GROUNDED_ADVICE.md",
+      "archive": "docs/archive/2026-11-25/GROUNDED_ADVICE.md",
+      "original_sha256": "87a7b6375eb5c7f631f485daed6ce67b4b110819ac48db7c46a907c71d5948d0",
+      "original_git_blob": "131255b1b08b86544e85428fd4347854acb305a5",
+      "archived_sha256": "ad01e183d2436f8782934df4084f01b6f9394ce22341eac64791388392ec0ac6",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    },
+    {
+      "original": "docs/HARDWARE.md",
+      "archive": "docs/archive/2026-11-25/HARDWARE.md",
+      "original_sha256": "d9cb99505aa4f0b99782e5b292109da1b5c13a25711dbecc4e340f16752ab924",
+      "original_git_blob": "b13f56a16ead97b85332dea9d2c91e124e8b5275",
+      "archived_sha256": "3a16c9c0f26b589db4f7a78af9739e3ac2ffe1242b7fe82e1db9db8145500895",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    },
+    {
+      "original": "docs/INSPECTION.md",
+      "archive": "docs/archive/2026-11-25/INSPECTION.md",
+      "original_sha256": "2684052d49a6b67669fecd62581124197ec81fabbbfa98f241f7c9169dda03b0",
+      "original_git_blob": "12793e8034ab8bd3419d92a99468933d900ce1d5",
+      "archived_sha256": "f230f0f36a04e8bceb1ba156841be445dfd01236a2740ffe5f3affcb1ee10d3f",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    },
+    {
+      "original": "docs/JETSON_DESKTOP_LAUNCHER.md",
+      "archive": "docs/archive/2026-11-25/JETSON_DESKTOP_LAUNCHER.md",
+      "original_sha256": "e772021b3c4a73eba7757a686825985484eb8d43c39f3f99c9c4ecc46370f6de",
+      "original_git_blob": "451fab47cdd6418c6ff1c1da1bb68343124e15d6",
+      "archived_sha256": "3c562df331a8d6006c7073bd9f6545b2b9073e69e14b9a0c11c709bd0659ad26",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    },
+    {
+      "original": "docs/JETSON_LIVE_UI.md",
+      "archive": "docs/archive/2026-11-25/JETSON_LIVE_UI.md",
+      "original_sha256": "257f9e6a5846e22ba0c6c5962771f10b509c1c5d9bf05b9feb8e50720dfcb4a4",
+      "original_git_blob": "7a2c6557a5321cce86bc9268995b96f5b8b846d1",
+      "archived_sha256": "3ecf313b216b66aa57492d0c8a51c6d1022d43e14bd0389e9541656cf93f8aa6",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    },
+    {
+      "original": "docs/JETSON_RUNTIME.md",
+      "archive": "docs/archive/2026-11-25/JETSON_RUNTIME.md",
+      "original_sha256": "950b9279ac9558146c8d690520dc6dcd4c06c4d6ffaeb0388309ca88525f1b30",
+      "original_git_blob": "c608e33f42baef674d79ddd7362de4069dbf565e",
+      "archived_sha256": "e6635ebdd0c99bdd256278dddf05993165b8ad3721322d0aba7ed605d6d01758",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    },
+    {
+      "original": "docs/JETSON_TIMINGS.md",
+      "archive": "docs/archive/2026-11-25/JETSON_TIMINGS.md",
+      "original_sha256": "80310fe5202bc6fb8c3c3875d95f57ebb5c4f6ec971453680e72097a1cdabdad",
+      "original_git_blob": "ea222d6d5a1d1185212394611a029a3639b0e75c",
+      "archived_sha256": "8a27a82a32d3481a5c224094a01dcfa64ae124456d575698b2e8314bfd4230c9",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    },
+    {
+      "original": "docs/JETSON_VISION.md",
+      "archive": "docs/archive/2026-11-25/JETSON_VISION.md",
+      "original_sha256": "a20238149f75aec23c6dde4f3e81db031bc220950fba418c0a7d4dd936055dcf",
+      "original_git_blob": "6f74796d7b29cce5b5478d83a57fd7ff7e074ed6",
+      "archived_sha256": "a4be2a1d18b96df2b2a88bf3d754b5e3272a91e3039837996f8f14289d9bd311",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    },
+    {
+      "original": "docs/LEARNING_LOG.md",
+      "archive": "docs/archive/2026-11-25/LEARNING_LOG.md",
+      "original_sha256": "4e3b0d9fae3d3ea8acf668a288198c0a69bf7ee3d80953a63ab89efba1728975",
+      "original_git_blob": "afa708bbe4f5b30b220467b07458faa5cb71fc78",
+      "archived_sha256": "3cff5daba777f8a6d97e10bdda2e6c6139e09fc7d961e69440278d7cb9f7aa74",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    },
+    {
+      "original": "docs/MERGE_LATENCY_REPORT.md",
+      "archive": "docs/archive/2026-11-25/MERGE_LATENCY_REPORT.md",
+      "original_sha256": "93adffe4cdd637d6e519741da8ae666a967ae86a66e17190ea01d199080774af",
+      "original_git_blob": "1be77e813e2d7ba7d3739544e895a16019262c3f",
+      "archived_sha256": "3f1f4bb4131e69e1aaf4d5f69512057fbf0dec02e7fb5f09f5aaf10e89990c04",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    },
+    {
+      "original": "docs/OPERATOR_APP.md",
+      "archive": "docs/archive/2026-11-25/OPERATOR_APP.md",
+      "original_sha256": "aecfee1c729e6702cd131b6916e970b42ceb8a25ec53f69eecffb65edb8a9e5c",
+      "original_git_blob": "3124aff2115fdb72c5b2c4105be4667012cb92ed",
+      "archived_sha256": "814b11984b570633efaccdcf5553f1332501cb27cbbec0f56dcf15d7f0c41e9e",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    },
+    {
+      "original": "docs/ORGANIZER_CLARIFICATION.md",
+      "archive": "docs/archive/2026-11-25/ORGANIZER_CLARIFICATION.md",
+      "original_sha256": "c82b08e7ba15393ac3006a6778cc99f3d574af4e81b3f34e0861776f7ac68b06",
+      "original_git_blob": "853881375a5ca8e8dd6616fae59f44321d2f601f",
+      "archived_sha256": "2f2e01a0739d1d26878c6dd6e74f98a4f2222b986c5517214cdf45ce107c5c09",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    },
+    {
+      "original": "docs/SCREW_PLUGIN.md",
+      "archive": "docs/archive/2026-11-25/SCREW_PLUGIN.md",
+      "original_sha256": "8a9dcdf78e2d72b138b63c833e34d2b945f7c4332fc2ff2676b28df32de68055",
+      "original_git_blob": "e2323c271b017f0b7d93d7cbb2c4d2dae0e5f6e4",
+      "archived_sha256": "a69942aa862f795398ff5b6bcc7f1b9c9a1b72a662d4b858976b9edc18aee9a8",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    },
+    {
+      "original": "docs/SETUP.md",
+      "archive": "docs/archive/2026-11-25/SETUP.md",
+      "original_sha256": "209dc39f2f3a0f352dd5af93513a79e69f6f4d1581075f431c1e7ce431b5c48b",
+      "original_git_blob": "e6bf20659ef445fcaa23b9bc0c03683f948351c1",
+      "archived_sha256": "5593ad2db37d4525ef08dbb3e6d9c720d2dd86fa24206ebb4816616b0b14b859",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    },
+    {
+      "original": "docs/STAGE10_VERIFICATION.md",
+      "archive": "docs/archive/2026-11-25/STAGE10_VERIFICATION.md",
+      "original_sha256": "20868e2807f8a1e5c0c6ea821be4a6e68a117c0bcf0c6e6966574987e78bfbc9",
+      "original_git_blob": "22290fbaf4ad156b6bc21a00d7cf6c8c0f4af163",
+      "archived_sha256": "f1957f5bc4d7952e058a52b85ac9d7a1546c4e8c4d0e75591ab97f4e91b02ab3",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    },
+    {
+      "original": "docs/STATUS.md",
+      "archive": "docs/archive/2026-11-25/STATUS.md",
+      "original_sha256": "7e29002ab10d176b8408cdf90751d7accb94a18f872137aadd718be744c69eca",
+      "original_git_blob": "db9e578aca18d27e5c6316fb2046931f9b570cdd",
+      "archived_sha256": "27e00ad4ccd15a2cbdbb935d6dfeda26ff046ab1941642f052eebdfd335a2b79",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    },
+    {
+      "original": "docs/STORAGE.md",
+      "archive": "docs/archive/2026-11-25/STORAGE.md",
+      "original_sha256": "22a210558f8d3215dda383b4aa95c42f0adb3a197e8fea5cc9a52407488e453b",
+      "original_git_blob": "eafd07bb8f5927bb03e4a2d351a7d34394bc6ed9",
+      "archived_sha256": "5579757d3f4083f3f3fd720defc7d3a739d63f0cdf0f2ba4c98ec7ec6bc1bd71",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    },
+    {
+      "original": "docs/SUBMISSION_AUDIT.md",
+      "archive": "docs/archive/2026-11-25/SUBMISSION_AUDIT.md",
+      "original_sha256": "4d7dad7ed3f732b32dd4539cede25f423dbb03203d042a3404bfcc0e1acac7e1",
+      "original_git_blob": "cb42817b856da4001da97957c4f7ce81b9f5e411",
+      "archived_sha256": "ef26ced0e359e13834b65b9d6c2c4898cf5a3870faf053618e9c90a49e375903",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    },
+    {
+      "original": "docs/VISION_BASELINE.md",
+      "archive": "docs/archive/2026-11-25/VISION_BASELINE.md",
+      "original_sha256": "d301f035a73840e116323a2ea01c57a17d8240aac4d9fc7242100bf0834d424f",
+      "original_git_blob": "7e1726f17038bde82ab403478329f79f32ea927f",
+      "archived_sha256": "f2d243ace5f798e1c071ad7d3ba169b5147667a91aaf03d2bf964768d48eb928",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    },
+    {
+      "original": "docs/VISION_CALIBRATION.md",
+      "archive": "docs/archive/2026-11-25/VISION_CALIBRATION.md",
+      "original_sha256": "8aa36724aae8a0f66acb0dfb1391c1d48427203f070998e799f1f548c6b267fe",
+      "original_git_blob": "b00eca161740f7c5d6827c1e2a2a7b2657378440",
+      "archived_sha256": "18913a56f39ec9c784b662d14c93a5033f80b632cafdda9d845e964eb5ab52fa",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    },
+    {
+      "original": "docs/VISION_EVALUATION.md",
+      "archive": "docs/archive/2026-11-25/VISION_EVALUATION.md",
+      "original_sha256": "3a5f97ff55f9a4dcc7f41a838ace600c8344d14011ee91bb6af5305afdee4fcf",
+      "original_git_blob": "255ebcf19423db1d8eb18dbdbdb2bb9d256dc604",
+      "archived_sha256": "fde58d2219a3022095d00b8bd988745b78530de9831a00166d11998ab487c6ef",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    },
+    {
+      "original": "docs/VISION_TRAINING.md",
+      "archive": "docs/archive/2026-11-25/VISION_TRAINING.md",
+      "original_sha256": "ab10c854103f6ee3ea4a73992a4d2fc357ce182417c6edcd07ee763775db93d5",
+      "original_git_blob": "c49262261eae3c8c7a700319901efa88fb349499",
+      "archived_sha256": "8abd6f37e0af91c818f36acf876fcc914b2c55a2c82bb05a95335335be75e5fb",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    },
+    {
+      "original": "docs/superpowers/plans/2026-11-24-hackathon-readme.md",
+      "archive": "docs/archive/2026-11-25/superpowers/plans/2026-11-24-hackathon-readme.md",
+      "original_sha256": "248dbb6f4c44b0069b372f71c6ee6e85b5eae16a4520b02f14b506b4243a6dc5",
+      "original_git_blob": "d63861827fb0f0d8f6ab1a6ce9ee598c0ed21699",
+      "archived_sha256": "75197c17c29d66b63874680ecf1b5870cc2faf5ad82bd0b2fdf4c71557c2b96b",
+      "preservation": "Original full text retained; archive banner added and Markdown links/relocated current README anchor updated."
+    }
+  ]
+}

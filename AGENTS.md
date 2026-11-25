@@ -1,4 +1,4 @@
-# ForgeSight AI — Agent Instructions
+# ForgeSight — Agent Instructions
 
 ## Scope
 - Follow `FORGESIGHT_STEP_BY_STEP_ROADMAP.md` as the stage order and proof gate.
@@ -25,6 +25,7 @@
 - Verify device-side evidence separately from PC-only tests.
 
 ## Current status
-- Llama ExecuTorch generation has been verified on the physical Jetson.
-- Stage 8.1 verified a live C270 frame and audited missing vision dependencies.
-- Next planned substep: prepare a separate compatible Jetson vision runtime and measure frozen EfficientAD inference.
+- Phase 1 source includes inspection, plugins, local ExecuTorch advice and history/report tools; offline saved-image operation has physical Jetson evidence.
+- Use `docs/STATUS.md` for current evidence scope and next actions. Earlier stage-by-stage records are preserved under `docs/archive/`.
+- Maintain the concise setup, user guide and technical report plus the required engineering summaries; do not append historical logs back into current guides.
+- Documentation changes stay on local `main`; do not push until the user explicitly confirms.

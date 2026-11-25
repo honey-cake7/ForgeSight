@@ -1,98 +1,59 @@
-# Setup and required assets
+# Setup
 
-Reviewed against source `081ba00`, 24 November 2026. This collects existing
-workflows; it is not a new clean-machine or Jetson deployment proof. WSL access
-was denied during the initial audit; a later feature audit ran focused tests in
-the existing isolated WSL environment. Do not install into Jetson system Python
-or change global packages.
+Run commands from a matching ForgeSight checkout. Models, datasets and runtime
+databases are excluded from Git. The procedures below use the recorded isolated
+environments; a clean-machine asset package has not yet been published.
 
-## Source and platform
+## 1. Source and assets
 
 ```sh
 git clone https://github.com/honey-cake7/ForgeSight.git
 cd ForgeSight
 ```
 
-After the documentation branch is published, select the reviewed revision
-explicitly. A default clone may not include this branch. Online training and
-downloads are separate from offline inference.
+| Required asset | Where it belongs / how it is checked |
+| --- | --- |
+| Original MVTec AD metal_nut images | `data/mvtec_ad/metal_nut/`; hashes/split in [metal_nut_v1.json](../manifests/metal_nut_v1.json). Obtain through [MVTec](https://www.mvtec.com/research-teaching/datasets/mvtec-ad) under its terms. |
+| PC calibrated model | `artifacts/vision/calibration_v1/efficientad_s_calibrated.pth` and sibling `score_policy.json`, bound by [calibration metadata](../manifests/efficientad_s_calibration_v1.json). |
+| Jetson vision export | `~/.local/share/forgesight/vision_cpu_v1/efficientad_s_calibrated.ts`; SHA-256 `8766c41a51a5444f57f564134427bbd2d2d95dd6ec5ff08b24698f00f7f55dcd`. |
+| Llama runtime bundle | `~/.local/share/forgesight/llama_cpu_v1/`, including matching PTE, tokenizer, profile/export/asset manifests and native libraries. Obtain publisher model access; preserve the bundle's hash chain. |
+| Optional screw recipe | Original screw data at `data/mvtec_ad/screw/`; stage both `plugins/metal_nut/efficientad_s.ts` and `plugins/screw/efficientad_s.ts` with hashes matching their recipes. |
 
-## Assets excluded from Git
+Restore authorized project artifacts for the exact tested bytes. Re-training
+creates a new experiment and need not reproduce identical model hashes.
+Historical Llama exports differ: do not combine files from different bundles.
 
-| Asset | Destination / binding | Acquisition and checks |
-| --- | --- | --- |
-| Original MVTec AD metal_nut images | `data/mvtec_ad/metal_nut/` | Obtain through the official source linked in [DATASET](DATASET.md); follow its license and frozen split. `manifests/metal_nut_v1.json` binds image hashes. |
-| Calibrated PC checkpoint and policy | `artifacts/vision/calibration_v1/efficientad_s_calibrated.pth` and sibling `score_policy.json` | Restore an authorized artifact copy, or follow [training](VISION_TRAINING.md) then [calibration](VISION_CALIBRATION.md). The app checks both against `manifests/efficientad_s_calibration_v1.json`. New training does not guarantee identical bytes. |
-| Teacher and training inputs | Paths in `manifests/vision_training_assets.json` | Required for training/model reconstruction; sources and hashes in [VISION_TRAINING](VISION_TRAINING.md). The PC checkpoint loader uses recorded local teacher paths; those assets/path settings must also be staged. |
-| Jetson TorchScript export | `$HOME/.local/share/forgesight/vision_cpu_v1/efficientad_s_calibrated.ts` | Transfer the trusted export or export the verified PC bundle below. SHA-256: `8766c41a51a5444f57f564134427bbd2d2d95dd6ec5ff08b24698f00f7f55dcd`. |
-| Llama source, PTE and tokenizer | Publisher assets under ignored model paths; deployed bundle under `$HOME/.local/share/forgesight/llama_cpu_v1` | Obtain publisher access for the pinned model revision; follow [EDGE_RUNTIME](EDGE_RUNTIME.md) and [JETSON_RUNTIME](JETSON_RUNTIME.md). Transfer matching stage files/manifests and native libraries. Historical exports and later device records have different PTE hashes; do not mix bundles. |
-| Optional plugin exports | `plugins/metal_nut/efficientad_s.ts`, `plugins/screw/efficientad_s.ts` | Follow [SCREW_PLUGIN](SCREW_PLUGIN.md); each recipe pins its model. Stage original screw images separately for replay. |
+## 2. PC / Ubuntu WSL
 
-There is no public model release or self-contained reviewer asset package
-linked here. An authorized local artifact handoff is currently needed for the
-exact tested bytes. This remains a submission reproducibility gap.
-
-## PC/WSL environment and replay
-
-The desktop app lock targets **Linux x86_64, Python 3.12.14 and CUDA**, not native
-Windows or Jetson. Use the prepared environment or create a new one with an
-available compatible Python and uv. The following adapts the recorded workflow;
-it was not reproduced on a new machine during this update:
+The app lock targets Linux x86_64, Python 3.12.14 and a CUDA-capable desktop.
+Root `requirements.txt` installs only the early Pillow environment. With
+compatible Python and uv already available, choose a fresh isolated location:
 
 ```sh
-# Ubuntu/WSL; compatible Python and uv must already be available.
 export FS_APP_ENV="$HOME/.cache/forgesight/app-readme-v1/venv"
 uv venv --python 3.12.14 "$FS_APP_ENV"
 uv pip sync --python "$FS_APP_ENV/bin/python" requirements/pylock.app.toml
 uv pip check --python "$FS_APP_ENV/bin/python"
 export FS_APP_PY="$FS_APP_ENV/bin/python"
-```
-
-Choose a new directory, preserving existing environments. The configured lab
-PC uses `/root/.cache/forgesight/app-v1/venv/bin/python`. See
-[ENVIRONMENT](ENVIRONMENT.md) for the recorded stack/source-only dependencies.
-Root `requirements.txt` is only the early Pillow environment. Vision, exporter,
-UI QA and ARM Llama locks serve different environments.
-
-After staging the required assets:
-
-```sh
 "$FS_APP_PY" -B -m forgesight.data_manifest --check
 "$FS_APP_PY" -B -m forgesight.operator_app
 ```
 
-Open `http://127.0.0.1:8765`, enter a new declared part ID and choose a replay
-example. Default model device is CUDA; add `--device cpu` to select CPU.
-Default history is `artifacts/runtime/inspections.sqlite3`.
-[PC operator behavior/API](OPERATOR_APP.md).
+Open `http://127.0.0.1:8765`. The desktop app defaults to CUDA; add
+`--device cpu` to select CPU. Existing lab interpreter:
+`/root/.cache/forgesight/app-v1/venv/bin/python`. Do not overwrite an existing
+environment. This path uses the PC checkpoint; it does not attach Jetson workers.
 
-## Jetson preparation and launch
+## 3. Prepared Jetson
 
-Keep the established prefixes separate:
+Keep the isolated vision and Llama prefixes separate. `/usr/bin/python3` runs
+the controller with the device's existing OpenCV/Pillow/NumPy; do not install
+into system Python. Initial ARM interpreter, wheelhouse and native-library
+setup are detailed in the archived [Llama runtime](archive/2026-11-25/JETSON_RUNTIME.md)
+and [vision setup](archive/2026-11-25/JETSON_VISION.md).
 
-- `~/.local/share/forgesight/vision_cpu_v1/venv`: isolated CPU Torch vision.
-- `~/.local/share/forgesight/llama_cpu_v1`: standalone Python, ExecuTorch
-  environment, staged model/tokenizer and native libraries.
-- `/usr/bin/python3`: existing controller/UI interpreter. Check its already
-  audited OpenCV, Pillow and NumPy; do not install into it from this guide.
-
-Follow [Jetson runtime](JETSON_RUNTIME.md) and [vision setup](JETSON_VISION.md)
-for compatible ARM interpreter/wheelhouse preparation. Copy the matching
-`forgesight/`, `configs/`, `guidance/` and required `manifests/` into the source
-root; stage dataset images at their original paths. Optional plugin mode also
-needs `plugins/` and both pinned exports.
-
-On the prepared PC, export the verified calibrated bundle to a new output:
-
-```sh
-"$FS_APP_PY" -B -m forgesight.vision_edge_export \
-  --output artifacts/vision/edge_export_v1/efficientad_s_calibrated.ts
-```
-
-Preserve existing artifacts. Compare the SHA-256 before transfer; a different
-export needs its own parity/provenance check, not a modified frozen reference.
-
-On the prepared Jetson, from the matching source root:
+Stage the matching `forgesight/`, `configs/`, `guidance/`, `manifests/` and
+required data in the source root. Then launch:
 
 ```sh
 export FS_VISION="$HOME/.local/share/forgesight/vision_cpu_v1"
@@ -102,41 +63,47 @@ sha256sum "$FS_VISION/efficientad_s_calibrated.ts"
   --model "$FS_VISION/efficientad_s_calibrated.ts" --port 8770
 ```
 
-Open `http://127.0.0.1:8770` on the Jetson. For connected PC viewing use the
-[SSH tunnel instructions](JETSON_LIVE_UI.md); a tunnel is not disconnected
-proof. Outputs default to `runs/live_inspections_v1/` relative to the source
-root. Existing runtime bundle staging must be complete before requesting advice.
+Open `http://127.0.0.1:8770` on the Jetson. Ctrl+C stops the service. Outputs
+default to `runs/live_inspections_v1/` relative to the launch directory. The
+default advisory path is manual; operator steps are in [USER_GUIDE](USER_GUIDE.md).
 
-Optional modes have extra requirements:
+## 4. Optional plugin / automatic-advice station
 
-- Four-type assessment: `--defect-type-profile configs/defect_type_mvtec_four_v1.json`.
-  Read [advisory routing](FORGEASSIST.md) before using assessed records.
-- Grounded automatic advice: `--grounded-auto-advice` and a dedicated
-  `--llama-worker-socket`; see [GROUNDED_ADVICE](GROUNDED_ADVICE.md).
-- Plugin demo: `--plugins-root plugins`, both `--vision-worker-socket` and
-  `--llama-worker-socket`, plus the recipe assets; see [SCREW_PLUGIN](SCREW_PLUGIN.md).
+After staging both recipe bundles, use a dedicated socket directory:
 
-These options exist in current source; no new combined-device acceptance run
-was performed for this documentation change.
+```sh
+export FS_SOCKET_DIR="$HOME/.cache/forgesight-station"
+mkdir -p "$FS_SOCKET_DIR"
+/usr/bin/python3 -B -m forgesight.jetson_live_ui \
+  --vision-python "$FS_VISION/venv/bin/python" \
+  --model "$FS_VISION/efficientad_s_calibrated.ts" \
+  --vision-worker-socket "$FS_SOCKET_DIR/vision.sock" \
+  --llama-worker-socket "$FS_SOCKET_DIR/llama.sock" \
+  --plugins-root plugins --port 8770
+```
 
-## Verification
+Plugin mode enables automatic grounded advice and the Part Recipe selector.
+Both vision models stay resident; the baseline model must match the metal-nut
+recipe. Stop an existing station before starting another on the same port.
+For single-part automatic advice, omit `--plugins-root` and add
+`--grounded-auto-advice` with the dedicated Llama socket. Optional metal-nut
+assessment uses `--defect-type-profile configs/defect_type_mvtec_four_v1.json`.
+The page's manual advice button auto-routes supported assessed records to
+`vision_choice`; standalone replay CLI callers choose `--advisory-mode vision_choice`.
+Unsupported record/profile combinations are refused. See [advice modes](USER_GUIDE.md#advice-modes).
 
-In the prepared app environment, from the repository root:
+For connected PC viewing, run `ssh -N -L 8770:127.0.0.1:8770 nvidia@<JETSON_IP>`
+on the PC. A tunnel is not disconnected proof. Desktop/menu shortcuts and
+Chromium/GTK viewer setup are in the archived [launcher guide](archive/2026-11-25/JETSON_DESKTOP_LAUNCHER.md).
+
+## 5. Verify and reproduce
 
 ```sh
 "$FS_APP_PY" -B -m unittest discover -s tests -q
 ```
 
-Some checks require compatible dependencies/assets. Device probes run on the
-Jetson separately; record source hashes, runtime versions, inputs and timing
-boundaries. Further instructions:
-
-- [Cached holdout metric reproduction](VISION_EVALUATION.md): summarize saved
-  predictions; do not repeat final-holdout inference or clear exposure records.
-- [Training](VISION_TRAINING.md), [calibration](VISION_CALIBRATION.md),
-  [export/parity](JETSON_VISION.md) and [offline gates](STAGE10_VERIFICATION.md).
-- [Storage queries, restart and review](STORAGE.md).
-
-Before submission, reproduce setup from a clean checkout with an authorized
-asset package and verify the intended device build. Those checks remain open.
-Stop the server with Ctrl+C when finished.
+Tests need the appropriate locked dependencies/assets. PC checks are separate
+from device proof. Training/export/cached evaluation commands are indexed in
+[TECHNICAL_REPORT](TECHNICAL_REPORT.md#reproducibility). Preserve existing
+artifacts and final-holdout exposure records; never clear them to tune a model.
+Exact clean-checkout reproduction still needs an authorized asset handoff.

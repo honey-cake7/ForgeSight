@@ -1,0 +1,364 @@
+> Historical snapshot archived on 25 November 2026. This page preserves development history; use the [current documentation](../../../README.md) for supported instructions.
+
+# Hardware evidence
+
+Stage 10.7 completed eight disconnected, cold ExecuTorch advisory processes
+from one saved inspection. Native process-wall p50/p95 were 20.690/20.942 s;
+controller process-wall p50/p95 were 21.079/21.304 s. Sampled native peak
+RSS p95 was 1,189,735 KiB; minimum sampled system MemAvailable was
+3,591,692 KiB. Across 169 samples, CPU-therm ranged 47.031–50.062 °C and
+GPU-therm 47.375–49.750 °C. These are advisory-only observations, not
+simultaneous camera/vision/LLM pressure or factory throughput. See
+`manifests/jetson_offline_advice_latency_v1.json`.
+
+Stage 10.6 completed 20 disconnected cold saved-image replays on the Jetson.
+Model-forward p50/p95 were 1,585/1,684 ms; replay-to-SQLite p50/p95 were
+7,499/7,677 ms; cold process-wall p50/p95 were 8,015/8,276 ms. Vision
+process peak RSS p95 was 437,163 KiB; minimum sampled system MemAvailable
+was 4,263,332 KiB. Across 162 samples, CPU-therm ranged 47.468–49.812 °C
+and GPU-therm 47.687–49.437 °C. These values describe repeated saved-image
+processes, not physical-part throughput or proven absence of throttling. See
+`manifests/jetson_offline_vision_latency_v1.json`.
+
+Stage 10.5 disconnected camera recovery used C270 `/dev/video0` after an
+unavailable index failed. The live 640x480 MJPG frame required 17 reads;
+16 dark startup frames were skipped. Camera open took 850 ms, capture until
+usable took 1,191 ms, frozen model forward took 1,756 ms, and the complete
+camera-to-diagnostic report took 9,842 ms. These are one room-scene diagnostic,
+not a nut inspection, frame rate or production throughput. Eleven network
+samples had a maximum observed 1.001 s gap. See
+`manifests/jetson_offline_camera_recovery_v1.json`.
+
+Stage 10.4 injected a missing model path and corrupt image copy into the
+Jetson saved-replay flow while Wi-Fi was disconnected. The valid recovery
+replay later ran a 1,777 ms frozen EfficientAD first forward and persisted
+PASS. Eleven route/interface samples had a maximum 1.001 s gap; Wi-Fi was
+restored and the recovery timer stopped. This single recovery forward is not
+a throughput estimate. See `manifests/jetson_offline_failure_recovery_v1.json`.
+
+Stage 10.3 served the saved-replay operator page over Jetson loopback while
+Wi-Fi was disconnected. One ExecuTorch advisory became visible through the
+local status API in 21.403 s; its native child took 20.888 s and sampled
+1,191,224 KiB peak RSS. A separate one-second native deadline yielded
+ADVICE_UNAVAILABLE in 1.537 s at the local status API, with no note. Thirty-
+three network samples had a maximum observed gap of 1.001 s. These are HTTP
+service observations, not a rendered browser or physical camera throughput.
+See `manifests/jetson_offline_loopback_ui_v1.json`.
+
+Stage 10.2 replayed three known saved images while the physical Jetson's
+Wi-Fi was disconnected. The first-forward times were 1,610, 1,663 and
+1,575 ms; individual vision-process peak RSS readings were 435,072,
+434,696 and 435,992 KiB. One separate ExecuTorch Llama native child took
+20.546 s and sampled 1,151,812 KiB peak RSS. Network state was sampled 46
+times, with a maximum observed interval of 1.001 s, and Wi-Fi was restored.
+These separate cold-process observations are not simultaneous memory use,
+p95 latency or physical camera throughput. See
+`manifests/jetson_offline_case_series_v1.json`.
+
+Stage 10.1 ran one fresh-process saved-image replay while the physical Jetson's
+Wi-Fi was disconnected. Network snapshots around vision and ExecuTorch advice
+showed no upstream route or Wi-Fi/ethernet IPv4 address; Wi-Fi was restored and
+the recovery timer canceled. EfficientAD first forward took 2,683 ms with
+436,600 KiB process peak RSS; native Llama child wall was 20.660 s with
+1,182,168 KiB sampled peak RSS. These are separate single-run measurements,
+not p50/p95, simultaneous peak use, camera throughput or complete offline
+acceptance. See `manifests/jetson_offline_saved_replay_pilot_v1.json`.
+
+Stage 9.1 ran the existing Llama 3.2 1B PTE through ExecuTorch/XNNPACK on the
+same Jetson for the saved nut replay. With two CPU threads, one run generated
+33 tokens from 82 prompt tokens; native load/inference took 3.041/1.955 s,
+whole native child wall time was 22.157 s and sampled peak child RSS was
+1,156,388 KiB. Vision was not concurrent, so these are separate process
+measurements and not combined memory/throughput proof. See
+`manifests/jetson_forgeassist_replay_v1.json`.
+
+The Jetson ran one `metal_nut` development-preview saved-image replay through
+the frozen CPU model, ForgeGrade and SQLite. First forward took 1,618 ms,
+vision-process peak RSS was 431,696 KiB, and replay-to-SQLite commit took
+7,443 ms. A fresh system-Python process read the exact saved record. This is
+one replay timing, not live camera throughput or simultaneous Llama load.
+See `manifests/jetson_saved_nut_replay_v1.json`.
+
+The Stage 8 live diagnostic found 12 nearly black startup frames before the
+C270 exposure settled; a bounded mean-luminance guard selected frame 13.
+The selected MJPG frame was 640x480 and showed the room rather than a fixed
+inspection surface. The frozen model ran on it and saved a raw map and overlay
+privately. One camera-to-report path took 10,047 ms; no part throughput or
+camera-domain accuracy can be inferred. See
+`manifests/jetson_camera_model_diagnostic_v1.json`.
+
+Stage 8.2 installed a separate Python 3.12.14 vision venv from the already
+staged ARM CPU Torch wheelhouse. Torch 2.14.0+cpu and NumPy 2.5.4 passed
+`pip check`; the Llama venv still reports Torch 2.14.0+cpu and ExecuTorch
+1.5.1+cpu, and system Python remains 3.8.10. A hash-checked frozen
+EfficientAD-S export ran one 256x256 benchmark image on CPU. First forward:
+1,699 ms; process peak RSS: 431,704 KiB. These exclude camera and Llama
+concurrency. See `manifests/jetson_efficientad_single_image_v1.json`.
+
+Stage 8.1 checked the C270 directly on the physical Jetson. GStreamer listed
+MJPEG 1280x720 and 640x480 at up to 30 fps, and YUY2 1280x720 at up to 10 fps.
+System OpenCV 4.5.4 opened `/dev/video0` through V4L2 and read one MJPG
+640x480 BGR frame in 0.339 s from call start. No image was saved and the
+camera's reported 30 fps was not measured throughput. The private Python 3.12
+Llama environment has CPU-only Torch and no OpenCV, torchvision, Pillow or
+Anomalib. See `manifests/jetson_camera_vision_preflight_v1.json`.
+
+Latest runtime checkpoint: Substep 2.10 generated 40 Llama tokens through
+ExecuTorch on this Orin Nano. The separate ARM64 CPU environment remains in use;
+system Python is still 3.8.10. Camera inspection remains open.
+
+Observed during Stage 0.1 on 2026-11-05 (Asia/Calcutta). Memory availability and
+free disk space are snapshots, not reserved resources.
+
+## Development PC: verified observations
+
+| Item | Observed value | Evidence |
+| --- | --- | --- |
+| Workstation | HP Z2 Tower G9 Workstation Desktop PC | `Get-CimInstance Win32_ComputerSystem` |
+| OS | Microsoft Windows 11 Pro, 64-bit, 10.0.26300 | `Get-CimInstance Win32_OperatingSystem` |
+| CPU | Intel Core i9-14900K, 24 cores, 32 logical processors | `Get-CimInstance Win32_Processor` |
+| RAM | 63.71 GiB usable physical RAM | Windows `GlobalMemoryStatusEx` |
+| GPU | NVIDIA RTX 2000 Ada Generation | `nvidia-smi` |
+| GPU memory | 16,380 MiB | `nvidia-smi --query-gpu=name,memory.total,driver_version --format=csv,noheader` |
+| GPU driver | 582.08 | Same GPU query |
+| C: storage | 475.68 GiB total; about 245.96 GiB free | Python `shutil.disk_usage` |
+| D: storage | 1,863.00 GiB total; about 1,824.01 GiB free | Python `shutil.disk_usage` |
+| WSL | Ubuntu, Linux 6.18.33.2-microsoft-standard-WSL2, x86_64 | `wsl --list --quiet`; `uname -srm` in Ubuntu |
+
+Initial sandboxed Windows management queries were denied. Repeating the
+read-only queries with approved escalation returned the observations above.
+The registry's legacy Windows product-name string differed from the OS query;
+the table uses the Windows management OS caption.
+
+## Platform eligibility clarification
+
+The organizer reply shared by the user on 2026-11-06 accepts NVIDIA Jetson
+Orin as an eligible PS5 platform, subject to mandatory on-device Llama through
+ExecuTorch and local defect/quality-control operation without cloud dependency.
+Continue with the proposed Orin Nano route. See the
+[recorded reply and implications](ORGANIZER_CLARIFICATION.md).
+Platform-family eligibility does not verify our actual module or deployment.
+
+## Jetson device inventory: AUTHENTICATED READ-ONLY AUDIT VERIFIED
+
+On 2026-11-11 an SSH session authenticated after the user-supplied device-console
+ED25519 fingerprint matched the advertised key. Strict host-key checking was
+retained; the verified key was saved on the PC. Credentials are not recorded in
+the repository or audit artifacts. The session closed normally after inspection.
+No package install, model transfer, flashing, power-mode change or camera stream
+was performed. This completes the first device inventory, not Stages 2 or 8.
+
+| Item | Actual observation |
+| --- | --- |
+| Device-tree model | NVIDIA Jetson Orin Nano Engineering Reference Developer Kit Super |
+| Module / carrier identifiers | `p3767-0003` / `p3768-0000`, `super` configuration |
+| Module interpretation | Orin Nano 8GB; NVIDIA maps P3767-0003 to this variant |
+| Architecture / CPU count | Linux `aarch64`; 6 online CPUs |
+| Kernel / L4T | `5.10.216-tegra`; release 35.6.1 |
+| OS / libc | Ubuntu 20.04.6 LTS; glibc 2.31 |
+| System Python | `/usr/bin/python3`, 3.8.10 |
+| Memory | 7,629,624 KiB (7.28 GiB) reported total; 4.28 GiB available at the final snapshot |
+| Swap | 3.64 GiB configured across six zram devices; not additional physical RAM |
+| Root storage | SD, `mmcblk1`, 119.2 GiB device; about 92.70 GiB free on root at the snapshot |
+| CUDA / cuDNN | nvcc 11.4.315; cuDNN package 8.6.0.166 for CUDA 11.4 |
+| Camera | Logitech C270, USB `046d:0825`; names at `/dev/video0` and `/dev/video1` refer to the same USB function |
+| Existing Python modules | NumPy 1.17.4, Pillow 7.0.0; `cv2` discoverable without importing it |
+| ML/advisory stack in system Python | Torch, torchvision and ExecuTorch not found by module/metadata checks; FastAPI/Uvicorn metadata absent |
+| Toolchain | GCC/G++ 9.4.0, CMake 3.16.3, Git 2.25.1 |
+| Power query | Reports `25W`, mode 1, but also EMC permission errors; full power/clock verification remains open |
+
+The hardware mapping comes from NVIDIA's [module table](https://docs.nvidia.com/jetson/archives/r36.4.3/DeveloperGuide/IN/QuickStart.html).
+NVIDIA maps [L4T 35.6.1 to JetPack 5.1.5](https://developer.nvidia.com/embedded/jetson-linux-r3561).
+The `nvidia-jetpack` metapackage is absent, so record this as a release-family
+mapping rather than a fully installed/verified JetPack bundle. The package query
+returned 1 because some requested package names were absent; its successful
+component-version output is retained. `v4l2-ctl` is unavailable, leaving format
+enumeration unverified. No attempt was made to install it. User-reported camera
+preview remains distinct from project-controlled frame capture and inference.
+
+`scripts/audit_jetson_readonly.py` ran on the actual Python 3.8 interpreter and
+uses only standard-library inspection. Existing project checks were limited to
+six named home/Desktop/projects paths; none existed. This is not an exhaustive
+search or permission to overwrite another directory. System ML modules were not
+imported, and no CUDA tensor or model forward was executed.
+
+The console initially altered long JSON lines; a first encoded capture also hit
+the capture token limit. Both attempts are retained. The final short-line
+compressed transfer passed SHA-256 verification before JSON parsing. Authoritative
+local evidence is `artifacts/hardware/jetson_audit_2026_11_11_01/device_audit.json`;
+the committed summary/provenance is `manifests/jetson_device_audit_v1.json`.
+The script was checked for Python 3.8 syntax and the transported source matched
+its local SHA-256. No broad PC test rerun or model-performance claim is made.
+
+Substep 2.8 subsequently read definitions from ten actual system libraries over
+authenticated SSH, without writing target files or importing ML runtimes. All
+33 ELF files in the three selected core CPU wheels match those library/version
+requirements. The target remains Python 3.8.10/glibc 2.31. No new interpreter,
+package, model or manual-audit folder was created. The user reports removing the
+manual-audit copy after running it; that folder was not recreated or relied on.
+See `docs/JETSON_RUNTIME.md` and the compatibility manifest.
+
+The candidate uses separate CPython 3.12.14 and CPU wheels. The interpreter asset
+was subsequently downloaded/hash-verified on the PC; its ten ARM native files
+bring the checked total to 43. A fresh read-only SSH probe confirmed the two
+additional libraries, libcrypt and libutil, for a total of 12 system libraries.
+System Python is still 3.8.10, the package inventory and previous ten library
+hashes are unchanged, and no interpreter/package/files were installed on target.
+The deleted manual-audit folder was not recreated. A native build remains a fallback and would need
+newer CMake. No OS change or source build on Jetson is selected. Llama generation,
+GPU vision, camera capture, latency/memory and offline operation remain unverified.
+
+### Arrival and connection history
+
+On 2026-11-11 (Asia/Calcutta), the user reported receiving an **NVIDIA Jetson
+Orin Nano 8GB and a Logitech USB webcam**. This supersedes the previous report
+that no device was available. The exact module/SKU, physical memory, JetPack/L4T,
+storage, power mode, webcam model and capture capability have not been read from
+the device. Treat 8GB and Logitech USB as user-reported facts until audited.
+
+At the arrival check, the Windows workspace was on `main` at `461276d`, clean before this
+documentation update. The read-only connection check found an SSH client, no
+configured SSH host in the user's config, and no matching present Jetson/USB
+network/serial/Logitech device through the selected Windows enumeration filter.
+This did not rule out a Jetson on the network. At that initial check, no login
+or address had been supplied and boot/setup state was unknown. No authenticated
+device session had been established.
+No installation, flashing, power-mode change or camera capture was attempted.
+
+The user subsequently reported a running Ubuntu desktop, working webcam preview
+in its camera app, login username `nvidia`, two IPv4 addresses and SSH service
+status `active`. These are supplied observations, not an authenticated audit.
+Private connection addresses stay in the ignored local evidence rather than
+the public documentation.
+
+A strict-host-key, batch-mode Windows SSH attempt to the supplied LAN address
+timed out on port 22 before authentication. A separate WSL TCP connection check
+returned `OSError: [Errno 113] No route to host`. Windows selected an on-link
+Wi-Fi route whose /23 subnet includes the supplied Jetson address. This alone
+does not establish reachability. Network isolation, endpoint configuration and
+address changes are possibilities, not confirmed causes. No host-key bypass,
+firewall change, installation or Jetson command was performed.
+
+The user then pasted Jetson terminal output: `wlan0` is UP with the supplied
+LAN address and /23 prefix; `docker0` is DOWN with the second address. SSH
+listens on IPv4 `0.0.0.0:22` and IPv6 `[::]:22`. A subsequent strict Windows
+SSH retry reached a server at the expected address, but stopped because no
+ED25519 host key is trusted yet. A read-only key scan captured the advertised
+public key and its SHA-256 fingerprint. Its identity is NOT VERIFIED until
+compared with the fingerprint read directly on the Jetson. No host-key check
+was bypassed, no known_hosts entry was added and no login was attempted.
+
+Raw initial results are in
+`artifacts/hardware/connection_attempt_2026_11_11_01/connection_report.json`;
+the reachable-server/candidate-key evidence is in
+`artifacts/hardware/connection_attempt_2026_11_11_02/`.
+Next: obtain `ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub` directly from
+the Jetson and compare fingerprints, then establish authentication. Run the
+read-only inventory below before choosing target packages
+or adapting the desktop runner. Then resume the earliest open Stage 2 mandatory
+Llama/ExecuTorch proof, followed by the Stage 8 vision/camera deployment gate.
+PC Substep 9.3 is secondary while hardware access is being established.
+
+During the original 2026-11-05 audit:
+
+- Present-device enumeration returned no Jetson/APX/NVIDIA USB, relevant USB
+  serial/network device, or camera matching the audit filters.
+- The PC's physical Ethernet adapter reported disconnected; Wi-Fi was active.
+- No Jetson SSH address or authenticated device session was established.
+
+Absence from these filters alone does not prove that no Jetson is connected by
+another route. No Jetson-side command has been executed.
+
+When the device becomes available, run a separate read-only audit on it. Start
+with the following Linux commands, recording errors as evidence too:
+
+```sh
+tr -d '\000' < /proc/device-tree/model
+uname -a
+uname -m
+cat /etc/os-release
+free -h
+df -h
+cat /etc/nv_tegra_release
+dpkg-query -W nvidia-jetpack nvidia-l4t-core
+ls /dev/video*
+```
+
+The `nvidia-jetpack` metapackage or camera nodes may be absent. Absence needs
+interpretation, not an installation attempt during the audit. Device model
+alone may not identify module SKU or physical RAM; confirm those separately.
+Camera presence does not prove capture, and free RAM does not establish LLM
+runtime feasibility.
+
+## Through Stage 5: hardware evidence boundary
+
+Stages 3.4?5 ran in the existing desktop WSL vision environment on the RTX 2000
+Ada. They add saved-image evaluation, replay gating and pixel grading only.
+No Jetson connection, camera command, JetPack change or on-device measurement
+occurred. Device availability is unchanged: BLOCKED - NOT VERIFIED. Desktop
+cached model-only timings are not complete inspection or Jetson timings.
+
+## Stage 6 persistence evidence
+
+The SQLite writer ran on desktop WSL; separate project-environment Python
+processes queried the committed records after the writer exited. Storage
+requires no GPU or added package. Actual vision replay still used the desktop
+RTX 2000 Ada, not Jetson. No device became connected or available in this step.
+The stage does not establish camera identity, edge database compatibility,
+thermal/latency behavior or disconnected Jetson operation.
+
+## Stage 7 local operator proof
+
+The API/model ran in a new WSL app environment on the desktop RTX 2000 Ada.
+Windows headless Chromium exercised the real loopback UI. Both valid image
+scores/geometry matched earlier results; server restart preserved two records.
+No Jetson or camera connected, and browser-local requests do not establish a
+disconnected edge test. Actual device inventory and camera domain remain the
+next Stage 8 gate. No desktop UI timing is promoted to Jetson performance.
+
+## Stage 9.1 advisory hardware boundary
+
+The actual Llama advisory test used the existing Linux x86_64 CPU ExecuTorch
+runner on desktop WSL, with eight PC CPU threads. One cold child process took
+8.457 seconds, native inference 1.348 seconds, sampled peak RSS 1,220,356 KiB.
+These exclude parent/UI/vision memory and are not Jetson limits or benchmarks.
+The 1B artifact, 128/512 prefill/context limits and 96-token generation bound
+were retained. The worker explicitly rejects unverified ARM use; actual native
+Jetson execution/compatibility and camera validation remain BLOCKED.
+
+## Stage 9.2 refusal-check boundary
+
+Input/output contract checks also passed in the minimal image environment,
+without Torch or Llama imports. This supports a lightweight host contract, not
+ARM execution proof. Two normal-length native PC runs used the same quantized
+1B artifact and 82-token prompt, with native inference intervals 1.361/1.362
+seconds and sampled child RSS 1,219,960/1,219,204 KiB. Truncation, timeout and
+missing-runtime checks kept advice unavailable. Whole-process load costs and
+CPU contention still need target measurements. No Jetson or camera was used;
+native ARM ExecuTorch execution and disconnected operation remain unverified.
+
+## Substep 2.9 actual device runtime boundary
+
+The actual Orin Nano now runs the separate Python 3.12.14 CPU venv at
+`/home/nvidia/.local/share/forgesight/llama_cpu_v1/venv`. Torch 2.14.0+cpu and
+ExecuTorch 1.5.1+cpu imported, CPU arithmetic returned 10.0, XNNPACK is registered,
+and loading the pinned libraries registered all three required Llama operators.
+System Python remains 3.8.10; system packages and five checked system/configuration
+files match before/after. No sudo, CUDA, camera, power-mode or OS changes were used.
+
+The one import/tensor probe took 12.284 seconds with peak process RSS 388,604 KiB.
+These exclude a loaded model and future vision/UI work; they are not inference
+benchmarks or proof of combined memory fit. The one-thread probe setting is not
+a model thread-budget decision. No PTE/tokenizer weights were copied and no
+Llama-generated response was produced. See `manifests/jetson_runtime_installation_v1.json`.
+
+## Substep 2.10 actual Llama model run
+
+The identified Orin Nano, reached at its new Wi-Fi address after matching the
+previously confirmed SSH host fingerprint, ran the 802,247,040-byte quantized
+Llama 3.2 1B PTE with the checked tokenizer. Two CPU threads produced 40 tokens.
+Native model load was 3.087 s; native inference 2.129 s; whole child process
+30.856 s. Sampled peak child RSS was 1,189,184 KiB. These are one-run values
+with no concurrent camera/vision/UI and no p50/p95 meaning. Full hashes, output
+and limits are in `manifests/jetson_llama_generation_v1.json`. No camera frame
+was captured, no physical part inspected and no disconnected test was run.
