@@ -147,8 +147,10 @@ def pack(args):
             with path.open('rb') as stream:
                 archive.addfile(member, stream)
     checksum = sha256(args.output)
-    args.output.with_suffix(args.output.suffix + '.sha256').write_text(checksum + '  ' + args.output.name + '\n')
-    args.output.with_suffix(args.output.suffix + '.manifest.json').write_text(json.dumps(index, indent=2) + '\n')
+    args.output.with_suffix(args.output.suffix + '.sha256').write_bytes(
+        (checksum + '  ' + args.output.name + '\n').encode('utf-8'))
+    args.output.with_suffix(args.output.suffix + '.manifest.json').write_bytes(
+        (json.dumps(index, indent=2) + '\n').encode('utf-8'))
     print(json.dumps({'bundle': str(args.output), 'sha256': checksum, 'files': len(files), 'bytes': args.output.stat().st_size}))
 
 
