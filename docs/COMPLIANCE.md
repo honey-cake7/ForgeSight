@@ -9,8 +9,8 @@
 | Run locally without cloud inference | Recorded offline Jetson saved-image workflows; latest combined cold-start/physical-camera acceptance remains scoped. |
 | Mandatory Llama / ExecuTorch | Llama 3.2 1B Instruct actually generated on-device via ExecuTorch/XNNPACK. Vision uses its separate CPU Torch runtime. |
 | Source and device application | Source/setup plus prepared reviewer application package with trained models and Jetson desktop launcher; [fresh-install/device proof](../manifests/reviewer_application_v1.json). [Download application](https://github.com/honey-cake7/ForgeSight/releases/tag/v1.0.0). |
-| Demo video | No video link currently recorded in the repository. |
-| Technical report | [Consolidated report](TECHNICAL_REPORT.md), including both runtimes, results and limits. |
+| Demo video | [Two-minute project demonstration](https://youtu.be/NZccgnyDJrY), supplied by the team. |
+| Technical report | [PDF submission report](https://github.com/honey-cake7/ForgeSight/releases/download/v1.0.0/ForgeSight_Submission_Report_Revised.pdf) and [repository technical report](TECHNICAL_REPORT.md), including both runtimes, results and limits. |
 
 The guide permits static/camera/video demonstrations and publishes no fixed FPS
 target. The project roadmap adds a physical-part proof gate. Module input power

@@ -7,6 +7,8 @@ exact trained models and offline ARM runtime inputs separately through the
 
 ## Reviewer application: install once, then click ForgeSight
 
+[Watch the two-minute application demonstration](https://youtu.be/NZccgnyDJrY).
+
 Use **`forgesight-reviewer-v1.tar`** and its **`.tar.sha256`** file from the
 [GitHub Release assets](https://github.com/honey-cake7/ForgeSight/releases/tag/v1.0.0).
 Download the companion `.tar.manifest.json` too. The package includes application source, both trained

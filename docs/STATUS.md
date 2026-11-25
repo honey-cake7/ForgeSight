@@ -28,6 +28,9 @@ recovery/logging, storage health and desktop launch tools. See the
 - Latest recorded hybrid prompt check: 12/15 model choices matched; three
   checklist fallbacks. This was not a whole-station upgrade.
 
+- Submission demonstration: [two-minute video](https://youtu.be/NZccgnyDJrY), provided by the
+  team; [PDF report](https://github.com/honey-cake7/ForgeSight/releases/download/v1.0.0/ForgeSight_Submission_Report_Revised.pdf) and [portable LaTeX](https://github.com/honey-cake7/ForgeSight/releases/download/v1.0.0/ForgeSight_LaTeX_Revised.zip).
+
 Measurement boundaries and supporting manifests are in [TECHNICAL_REPORT](TECHNICAL_REPORT.md).
 
 ## Still to document or verify
@@ -35,7 +38,7 @@ Measurement boundaries and supporting manifests are in [TECHNICAL_REPORT](TECHNI
 Fresh subtype/screw reliability, physical-camera accuracy, newest-build full
 disconnected cold start, full-cycle throughput/resource peaks, wall power and worst-case power
 remain scoped acceptance items. The roughly 3.8 s timing sum is an estimate.
-Link the demo and confirm asset handoff/code licensing for submission; artifacts
+Record the demo/release links in the entry and confirm code licensing; artifacts
 may exist outside this repo. The consolidated technical report now exists here.
 
 Next action: add the release/demo links to the hackathon entry and close

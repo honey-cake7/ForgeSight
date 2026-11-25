@@ -5,6 +5,9 @@ recorded experiments. This describes Phase 1 functionality and the scope of
 its evidence, including the separately scoped 25 November module-power test.
 No new training is claimed.
 
+[Two-minute demonstration](https://youtu.be/NZccgnyDJrY) ? [Submission PDF](https://github.com/honey-cake7/ForgeSight/releases/download/v1.0.0/ForgeSight_Submission_Report_Revised.pdf) ?
+[Portable LaTeX source](https://github.com/honey-cake7/ForgeSight/releases/download/v1.0.0/ForgeSight_LaTeX_Revised.zip).
+
 ## Problem and scope
 
 ForgeSight assists an operator inspecting metal components on a Jetson Orin

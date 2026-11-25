@@ -9,6 +9,9 @@ Images, advice and inspection history stay local during inference.
 
 Built with Llama.
 
+**[Watch the 2-minute demonstration](https://youtu.be/NZccgnyDJrY)** ?
+[Technical report (PDF)](https://github.com/honey-cake7/ForgeSight/releases/download/v1.0.0/ForgeSight_Submission_Report_Revised.pdf)
+
 Phase 1 includes the inspection station, metal-nut/screw recipes, guidance,
 review and reporting. Recorded Jetson saved-image workflows have offline
 proof. Physical-camera accuracy and newest-build acceptance remain scoped
@@ -186,7 +189,7 @@ foundations for these extensions. They do not establish completed Phase 2 proof.
 | --- | --- |
 | [Setup](docs/SETUP.md) | Assets, environments, launch commands and tests |
 | [User guide](docs/USER_GUIDE.md) | Features, operation, plugins, review and export |
-| [Technical report](docs/TECHNICAL_REPORT.md) | Architecture, datasets/models, both runtimes, measured results and limits |
+| [Technical report](docs/TECHNICAL_REPORT.md) ? [PDF](https://github.com/honey-cake7/ForgeSight/releases/download/v1.0.0/ForgeSight_Submission_Report_Revised.pdf) | Architecture, datasets/models, both runtimes, measured results and limits |
 | [Status](docs/STATUS.md) | Current evidence and remaining submission work |
 
 The [reviewer application setup](docs/SETUP.md#reviewer-application-install-once-then-click-forgesight)
@@ -196,9 +199,10 @@ provide the binary application; a clone alone excludes models.
 [Device verification](manifests/reviewer_application_v1.json) covers a fresh private
 installation, native generation, visible desktop launch and both saved-image recipes.
 
-The challenge submission needs source, a target-device application, demo video
-and technical report. No demo URL is recorded here yet. The app's inspection
-HTML/PDF exports are separate from the overall technical report.
+Submission materials include source, the target-device application, the
+[two-minute demonstration](https://youtu.be/NZccgnyDJrY) and the [technical report PDF](https://github.com/honey-cake7/ForgeSight/releases/download/v1.0.0/ForgeSight_Submission_Report_Revised.pdf).
+[Portable LaTeX source](https://github.com/honey-cake7/ForgeSight/releases/download/v1.0.0/ForgeSight_LaTeX_Revised.zip) is available with the release. The app's
+inspection HTML/PDF exports are separate from the overall technical report.
 
 Source is in `forgesight/`; policies/recipes in `configs/`, `guidance/`, `plugins/`;
 locks in `requirements/`; checks in `scripts/`, `tests/`; evidence in `manifests/`.

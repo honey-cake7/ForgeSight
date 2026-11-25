@@ -139,5 +139,10 @@
     "path": "artifacts/reviewer/reviewer_evidence.json",
     "sha256": "c135256ebc7ff4ae9f06190b60334aa41c64d32f2f30ed3d9f13cf72cfd0f8db",
     "availability": "Local ignored evidence; not included in a source clone."
+  },
+  "submission_links": {
+    "demonstration": "https://youtu.be/NZccgnyDJrY",
+    "technical_report_pdf": "https://github.com/honey-cake7/ForgeSight/releases/download/v1.0.0/ForgeSight_Submission_Report_Revised.pdf",
+    "portable_latex_source": "https://github.com/honey-cake7/ForgeSight/releases/download/v1.0.0/ForgeSight_LaTeX_Revised.zip"
   }
 }
