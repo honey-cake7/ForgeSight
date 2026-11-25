@@ -12,9 +12,10 @@
       "forgesight-reviewer-v1.tar.sha256",
       "forgesight-reviewer-v1.tar.manifest.json"
     ],
-    "publication": "PREPARED_LOCALLY_NOT_PUBLISHED",
-    "download_url": null,
-    "application_source": "Bundled working-tree source files individually hashed; source-only Git clone does not contain binary assets."
+    "publication": "GITHUB_RELEASE",
+    "download_url": "https://github.com/honey-cake7/ForgeSight/releases/download/v1.0.0/forgesight-reviewer-v1.tar",
+    "application_source": "Bundled working-tree source files individually hashed; source-only Git clone does not contain binary assets.",
+    "release_url": "https://github.com/honey-cake7/ForgeSight/releases/tag/v1.0.0"
   },
   "target": {
     "device": "NVIDIA Jetson Orin Nano 8GB",
@@ -132,7 +133,7 @@
     "Fresh private environments were tested on the existing recorded Jetson, not a wiped OS or second machine.",
     "Other JetPack/system-Python versions require separate validation.",
     "No new disconnected cold-start, physical-camera accuracy, throughput or advice-quality acceptance.",
-    "Prepared archive must be attached to the submission/release; no public download is claimed."
+    "Application binaries are distributed as release assets, not inside the source Git clone."
   ],
   "raw_evidence": {
     "path": "artifacts/reviewer/reviewer_evidence.json",

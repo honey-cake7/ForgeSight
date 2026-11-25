@@ -8,7 +8,7 @@
 | Log inspections | SQLite/JSON records, accepted errors, restart-safe IDs and append-only operator claims. |
 | Run locally without cloud inference | Recorded offline Jetson saved-image workflows; latest combined cold-start/physical-camera acceptance remains scoped. |
 | Mandatory Llama / ExecuTorch | Llama 3.2 1B Instruct actually generated on-device via ExecuTorch/XNNPACK. Vision uses its separate CPU Torch runtime. |
-| Source and device application | Source/setup plus prepared reviewer application package with trained models and Jetson desktop launcher; [fresh-install/device proof](../manifests/reviewer_application_v1.json). Package attachment/publication remains. |
+| Source and device application | Source/setup plus prepared reviewer application package with trained models and Jetson desktop launcher; [fresh-install/device proof](../manifests/reviewer_application_v1.json). [Download application](https://github.com/honey-cake7/ForgeSight/releases/tag/v1.0.0). |
 | Demo video | No video link currently recorded in the repository. |
 | Technical report | [Consolidated report](TECHNICAL_REPORT.md), including both runtimes, results and limits. |
 

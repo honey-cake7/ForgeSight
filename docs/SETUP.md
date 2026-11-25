@@ -2,18 +2,20 @@
 
 Run commands from a matching ForgeSight checkout. Models, datasets and runtime
 databases are excluded from Git. The reviewer application package supplies the
-exact trained models and offline ARM runtime inputs separately. Publication of
-that package requires the owner to attach it to the submission or a release.
+exact trained models and offline ARM runtime inputs separately through the
+[v1.0.0 release](https://github.com/honey-cake7/ForgeSight/releases/tag/v1.0.0).
 
 ## Reviewer application: install once, then click ForgeSight
 
 Use **`forgesight-reviewer-v1.tar`** and its **`.tar.sha256`** file from the
-submission handoff. The package includes application source, both trained
+[GitHub Release assets](https://github.com/honey-cake7/ForgeSight/releases/tag/v1.0.0).
+Download the companion `.tar.manifest.json` too. The package includes application source, both trained
 TorchScript vision exports, the calibrated PC checkpoint/policy, matching Llama
 PTE/tokenizer/manifests and model terms, pinned ARM Python and the offline
 wheelhouse. It excludes datasets, credentials and previous inspection history.
 It is a runnable application distribution, separate from the source-only clone.
-No public download URL is recorded until the owner publishes the prepared files.
+The [README download/install commands](../README.md#download-and-install-on-jetson)
+provide direct download URLs; use the application `.tar`, not GitHub's source-code archives.
 [Verified application evidence](../manifests/reviewer_application_v1.json): fresh
 private installation, native Llama generation, visible desktop window and both
 saved-image recipes passed on the recorded Jetson. This was not a wiped-OS test;
@@ -38,7 +40,7 @@ Do not substitute AD 2 or resized images. Review the bundled Llama license and
 use policy before using its model. No cloud inference or publisher token is
 needed to launch an already-authorized package.
 
-From the folder containing the two submission files, in a fresh working directory:
+From the folder containing the three release files, in a fresh working directory:
 
 ```sh
 sha256sum -c forgesight-reviewer-v1.tar.sha256
@@ -59,6 +61,9 @@ external through a link. The icon is the application SVG `forgesight/web/icon.sv
 It adds **ForgeSight** to the application menu and desktop. Select **Allow
 Launching** if the desktop requests trust, then double-click **ForgeSight**.
 Cold startup may take up to six minutes; subsequent clicks reuse the station.
+Use the normal desktop session. An isolated `dbus-run-session` diagnostic launch
+can emit GVFS/portal/keyring warnings; these are not proof of inference failure.
+Check the window, API and station log if startup fails.
 Closing the window leaves the backend available. Run from the installed user's
 graphical session; no terminal commands are needed for subsequent launches.
 

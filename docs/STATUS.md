@@ -24,7 +24,7 @@ recovery/logging, storage health and desktop launch tools. See the
 - Reviewer application package: fresh private install, bounded native Llama
   generation, generated desktop entry/visible window and both saved-image recipes
   passed on the recorded Jetson. [Evidence](../manifests/reviewer_application_v1.json).
-  The binary package is prepared locally; submission attachment/publication remains.
+  Application assets: [v1.0.0 release](https://github.com/honey-cake7/ForgeSight/releases/tag/v1.0.0).
 - Latest recorded hybrid prompt check: 12/15 model choices matched; three
   checklist fallbacks. This was not a whole-station upgrade.
 
@@ -38,9 +38,8 @@ remain scoped acceptance items. The roughly 3.8 s timing sum is an estimate.
 Link the demo and confirm asset handoff/code licensing for submission; artifacts
 may exist outside this repo. The consolidated technical report now exists here.
 
-Next action: publish the approved application assets, add the demo link and close
-submission items before Phase 2. The user authorized pushing source on
-25 November 2026; application release publication remains separate.
+Next action: add the release/demo links to the hackathon entry and close
+submission items before Phase 2. The user authorized source push and release publication on 25 November 2026.
 
 ## Continue on another PC
 
@@ -59,12 +58,12 @@ submission items before Phase 2. The user authorized pushing source on
   `/home/nvidia/Downloads/ForgeSight/` and this PC's `artifacts/submission/`.
   Archive SHA-256:
   `f284c9d555ac6cde8109c5f7e6cca96925d583875e14087753ba774248db2691`.
-  These binaries are ignored by Git; copy them separately to the other PC.
-  The checksum sidecar was corrected to Linux line endings. No public release
-  download exists yet.
+  These binaries are ignored by Git; download them separately from the
+  [release](https://github.com/honey-cake7/ForgeSight/releases/tag/v1.0.0).
+  The checksum sidecar uses Linux line endings.
 - This PC also has an untracked user file `scripts/record_timings.py`; it was
   preserved and must be copied separately if needed.
-- Remaining submission work: publish the three application files as release
-  assets, add release/demo URLs, decide the source-code license, and complete
+- Remaining submission work: add release/demo URLs to the hackathon entry,
+  decide the source-code license, and complete
   any remaining scoped device acceptance. Do not claim checklist fallback as
   accepted Llama advice or a successful camera scene as measured accuracy.
